@@ -10,6 +10,7 @@ export default function CategoriesTab({
   handleClearAllCategories,
   handleToggleCategoryMenuVisibility,
   handleOpenMergeCategories,
+  catModal,
   API_BASE_URL
 }) {
   const [selectedCats, setSelectedCats] = useState([]);
@@ -44,101 +45,169 @@ export default function CategoriesTab({
   };
 
   return (
-    <>
-      <div className="table-filter-bar" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "10px" }}>
-        <div className="search-input-wrapper">
-          <input
-            type="text"
-            className="search-input-premium"
-            placeholder="ابحث باسم القسم..."
-            value={catSearch}
-            onChange={(e) => setCatSearch(e.target.value)}
-          />
-          <span className="search-input-icon">🔍</span>
+    <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+      {/* Header and Add Button */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "15px", background: "var(--bg-glass)", padding: "20px", borderRadius: "16px", border: "var(--border-glass)", boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)" }}>
+        <div>
+          <h2 style={{ margin: 0, fontSize: "1.5rem", color: "var(--text-color)" }}>إدارة الأقسام</h2>
+          <p style={{ margin: "5px 0 0", color: "var(--text-muted)", fontSize: "0.9rem" }}>أضف أقسام جديدة، عدّل الحالية، أو تحكم في ظهورها في القائمة.</p>
+        </div>
+        <button 
+          className="action-btn"
+          onClick={() => catModal?.setShowCatModal(true)}
+          style={{
+            background: "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
+            color: "white",
+            padding: "12px 24px",
+            borderRadius: "12px",
+            fontWeight: "bold",
+            fontSize: "1rem",
+            boxShadow: "0 4px 15px rgba(59, 130, 246, 0.4)",
+            border: "none"
+          }}
+        >
+          ➕ إضافة قسم جديد
+        </button>
+      </div>
+
+      {/* Filters and Delete All */}
+      <div className="table-filter-bar" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "15px", background: "rgba(255, 255, 255, 0.02)", padding: "16px", borderRadius: "16px" }}>
+        <div style={{ display: "flex", gap: "15px", flexWrap: "wrap", flex: 1 }}>
+          <div className="search-input-wrapper" style={{ flex: 1, minWidth: "250px" }}>
+            <input
+              type="text"
+              className="search-input-premium"
+              placeholder="ابحث باسم القسم..."
+              value={catSearch}
+              onChange={(e) => setCatSearch(e.target.value)}
+              style={{ width: "100%" }}
+            />
+            <span className="search-input-icon">🔍</span>
+          </div>
+          <select 
+            className="form-input-premium" 
+            style={{ width: "auto", minWidth: "220px", background: "var(--bg-color)" }} 
+            value={visibilityFilter} 
+            onChange={(e) => setVisibilityFilter(e.target.value)}
+          >
+            <option value="all">-- كل الأقسام ({filteredCategories.length}) --</option>
+            <option value="visible">👁️ الأقسام الظاهرة بالقائمة فقط</option>
+            <option value="hidden">👁️‍🗨️ الأقسام المخفية من القائمة فقط</option>
+          </select>
         </div>
         
-        <select 
-          className="form-input-premium" 
-          style={{ width: "auto", minWidth: "200px" }} 
-          value={visibilityFilter} 
-          onChange={(e) => setVisibilityFilter(e.target.value)}
-        >
-          <option value="all">-- كل الأقسام --</option>
-          <option value="visible">👁️ الأقسام الظاهرة بالقائمة فقط</option>
-          <option value="hidden">👁️‍🗨️ الأقسام المخفية من القائمة فقط</option>
-        </select>
         <button
           onClick={handleClearAllCategories}
           className="action-btn"
           style={{
-            background: "linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)",
-            color: "#ffffff",
-            boxShadow: "0 0 15px rgba(239, 68, 68, 0.3)",
+            background: "linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(185, 28, 28, 0.1) 100%)",
+            color: "#ef4444",
+            border: "1px solid rgba(239, 68, 68, 0.3)",
             padding: "10px 20px",
             borderRadius: "10px",
-            fontWeight: "800",
-            fontSize: "0.85rem",
-            border: "none",
+            fontWeight: "bold",
+            fontSize: "0.9rem",
             cursor: "pointer"
           }}
         >
-          🗑️ حذف جميع الأقسام نهائياً
+          🗑️ حذف جميع الأقسام
         </button>
       </div>
 
+      {/* Bulk Actions Panel */}
       {selectedCats.length > 0 && (
         <div style={{
-          background: "var(--bg-glass)",
-          border: "var(--border-glass)",
-          borderRadius: "12px",
-          padding: "16px",
-          marginTop: "20px",
+          background: "linear-gradient(90deg, rgba(59, 130, 246, 0.1) 0%, rgba(147, 51, 234, 0.1) 100%)",
+          border: "1px solid rgba(147, 51, 234, 0.2)",
+          borderRadius: "16px",
+          padding: "20px",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          boxShadow: "0 10px 25px rgba(0,0,0,0.2)"
+          flexWrap: "wrap",
+          gap: "15px"
         }}>
           <div>
-            <span style={{ fontWeight: "bold", color: "var(--primary-color)" }}>تم تحديد {selectedCats.length} أقسام</span>
-            <button onClick={() => setSelectedCats([])} style={{ background: "transparent", border: "none", color: "var(--text-muted)", marginRight: "10px", cursor: "pointer" }}>إلغاء التحديد</button>
+            <h3 style={{ margin: 0, color: "var(--text-color)", display: "flex", alignItems: "center", gap: "10px" }}>
+              <span style={{ background: "var(--primary-color)", color: "white", padding: "4px 12px", borderRadius: "20px", fontSize: "0.9rem" }}>{selectedCats.length}</span>
+              أقسام محددة
+            </h3>
+            <button onClick={() => setSelectedCats([])} style={{ background: "transparent", border: "none", color: "var(--text-muted)", marginTop: "8px", cursor: "pointer", textDecoration: "underline" }}>إلغاء التحديد</button>
           </div>
-          <div style={{ display: "flex", gap: "10px" }}>
+          <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+            <button 
+              className="action-btn"
+              onClick={() => handleBulkToggleVisibility(true)}
+              style={{ background: "rgba(16, 185, 129, 0.15)", color: "#10b981", border: "1px solid rgba(16, 185, 129, 0.3)", padding: "10px 20px" }}
+            >
+              👁️ إظهار المحددين
+            </button>
+            <button 
+              className="action-btn"
+              onClick={() => handleBulkToggleVisibility(false)}
+              style={{ background: "rgba(239, 68, 68, 0.15)", color: "#ef4444", border: "1px solid rgba(239, 68, 68, 0.3)", padding: "10px 20px" }}
+            >
+              👁️‍🗨️ إخفاء المحددين
+            </button>
             <button 
               onClick={() => handleOpenMergeCategories(selectedCats, () => setSelectedCats([]))} 
               className="action-btn"
-              style={{ background: "linear-gradient(135deg, #4f46e5 0%, #8b5cf6 100%)", color: "white", padding: "8px 16px", borderRadius: "8px" }}
+              style={{ background: "linear-gradient(135deg, #4f46e5 0%, #8b5cf6 100%)", color: "white", padding: "10px 20px", border: "none" }}
             >
-              🔄 دمج الأقسام المحددة
+              🔄 تجميع (دمج)
             </button>
           </div>
         </div>
       )}
 
-      <div className="category-grid-premium" style={{ marginTop: "20px" }}>
-        <div style={{ width: "100%", padding: "10px 20px", display: "flex", alignItems: "center", gap: "10px", background: "rgba(255,255,255,0.05)", borderRadius: "10px", marginBottom: "10px" }}>
-          <input 
-            type="checkbox" 
-            checked={finalFilteredCats.length > 0 && selectedCats.length === finalFilteredCats.length}
-            onChange={handleSelectAll}
-            style={{ width: "18px", height: "18px", cursor: "pointer" }}
-          />
-          <span style={{ fontWeight: "bold", cursor: "pointer" }} onClick={handleSelectAll}>تحديد الكل</span>
-        </div>
+      {/* Grid Header / Select All */}
+      <div style={{ display: "flex", alignItems: "center", gap: "12px", background: "rgba(255, 255, 255, 0.05)", padding: "12px 20px", borderRadius: "12px" }}>
+        <input 
+          type="checkbox" 
+          checked={finalFilteredCats.length > 0 && selectedCats.length === finalFilteredCats.length}
+          onChange={handleSelectAll}
+          style={{ width: "20px", height: "20px", cursor: "pointer", accentColor: "var(--primary-color)" }}
+        />
+        <span style={{ fontWeight: "bold", cursor: "pointer", fontSize: "1.1rem" }} onClick={handleSelectAll}>تحديد كل الأقسام المعروضة</span>
+      </div>
+
+      {/* Grid */}
+      <div className="category-grid-premium">
         {finalFilteredCats.map((cat) => (
-          <div className="category-card-premium" key={cat.id} style={{ position: "relative" }}>
+          <div 
+            className="category-card-premium" 
+            key={cat.id} 
+            style={{ 
+              position: "relative",
+              border: selectedCats.includes(cat.id) ? "2px solid var(--primary-color)" : "1px solid rgba(255,255,255,0.05)",
+              transform: selectedCats.includes(cat.id) ? "translateY(-4px)" : "none",
+              transition: "all 0.3s ease"
+            }}
+          >
+            {/* Status Badge */}
+            <div style={{ position: "absolute", top: "15px", left: "15px", zIndex: 10 }}>
+              {cat.show_in_menu === false ? (
+                <span style={{ background: "rgba(239, 68, 68, 0.15)", color: "#ef4444", padding: "4px 8px", borderRadius: "8px", fontSize: "0.75rem", fontWeight: "bold" }}>مخفي 👁️‍🗨️</span>
+              ) : (
+                <span style={{ background: "rgba(16, 185, 129, 0.15)", color: "#10b981", padding: "4px 8px", borderRadius: "8px", fontSize: "0.75rem", fontWeight: "bold" }}>ظاهر 👁️</span>
+              )}
+            </div>
+
+            {/* Checkbox */}
             <div style={{ position: "absolute", top: "15px", right: "15px", zIndex: 10 }}>
               <input 
                 type="checkbox" 
                 checked={selectedCats.includes(cat.id)}
                 onChange={() => toggleSelectCat(cat.id)}
-                style={{ width: "20px", height: "20px", cursor: "pointer" }}
+                style={{ width: "22px", height: "22px", cursor: "pointer", accentColor: "var(--primary-color)" }}
               />
             </div>
-            <span className="category-icon-big" style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "80px", cursor: "pointer" }} onClick={() => toggleSelectCat(cat.id)}>
+
+            <span className="category-icon-big" style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "90px", cursor: "pointer", marginTop: "10px" }} onClick={() => toggleSelectCat(cat.id)}>
               {cat.image && (cat.image.startsWith("data:image") || cat.image.startsWith("http") || cat.image.startsWith("/uploads")) ? (
-                <img src={cat.image.startsWith("/uploads") ? `${API_BASE_URL}${cat.image}` : cat.image} alt={cat.name} style={{ width: "80px", height: "80px", objectFit: "contain", borderRadius: "12px" }} />
+                <img src={cat.image.startsWith("/uploads") ? `${API_BASE_URL}${cat.image}` : cat.image} alt={cat.name} style={{ width: "80px", height: "80px", objectFit: "contain", borderRadius: "12px", filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.2))" }} />
               ) : (
-                <>
+                <span style={{ fontSize: "3rem", filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.3))" }}>
                   {cat.image === "games" && "🎮"}
                   {cat.image === "apps" && "📱"}
                   {cat.image === "telecom" && "📞"}
@@ -146,52 +215,60 @@ export default function CategoriesTab({
                   {cat.image === "software" && "💻"}
                   {cat.image === "accounts" && "🔑"}
                   {cat.image === "default" && "📁"}
-                </>
+                </span>
               )}
             </span>
-            <h3 className="category-title-premium">{cat.name}</h3>
-            <span className="category-slug">
-              أيقونة: {cat.image && (cat.image.startsWith("data:image") || cat.image.startsWith("http") || cat.image.startsWith("/uploads")) ? "صورة مخصصة" : cat.image}
-            </span>
-            {cat.parent_id ? (
-              <span style={{ display: "inline-block", marginTop: "6px", padding: "4px 10px", borderRadius: "100px", background: "rgba(99, 102, 241, 0.15)", color: "#818cf8", fontSize: "0.8rem", fontWeight: "600", border: "1px solid rgba(99, 102, 241, 0.3)" }}>
-                🏷️ قسم فرعي من: {categories.find((c) => c.id === Number(cat.parent_id))?.name || "قسم رئيسي"}
-              </span>
-            ) : (
-              <span style={{ display: "inline-block", marginTop: "6px", padding: "4px 10px", borderRadius: "100px", background: "rgba(16, 185, 129, 0.15)", color: "#34d399", fontSize: "0.8rem", fontWeight: "600", border: "1px solid rgba(16, 185, 129, 0.3)" }}>
-                📁 قسم رئيسي
-              </span>
-            )}
+            
+            <h3 className="category-title-premium" style={{ marginTop: "15px", marginBottom: "5px", fontSize: "1.1rem", lineHeight: "1.4", minHeight: "45px" }}>{cat.name}</h3>
+            
+            <div style={{ display: "flex", flexDirection: "column", gap: "6px", alignItems: "center", marginBottom: "15px" }}>
+              {cat.parent_id ? (
+                <span style={{ display: "inline-block", padding: "4px 12px", borderRadius: "100px", background: "rgba(99, 102, 241, 0.1)", color: "#818cf8", fontSize: "0.8rem", fontWeight: "600", border: "1px solid rgba(99, 102, 241, 0.2)" }}>
+                  🏷️ فرعي
+                </span>
+              ) : (
+                <span style={{ display: "inline-block", padding: "4px 12px", borderRadius: "100px", background: "rgba(16, 185, 129, 0.1)", color: "#34d399", fontSize: "0.8rem", fontWeight: "600", border: "1px solid rgba(16, 185, 129, 0.2)" }}>
+                  📁 رئيسي
+                </span>
+              )}
+            </div>
 
-            <div style={{ marginTop: "15px", display: "flex", gap: "8px", flexDirection: "column" }}>
+            <div style={{ marginTop: "auto", display: "flex", gap: "8px", flexDirection: "column", width: "100%" }}>
               <button
                 onClick={() => handleToggleCategoryMenuVisibility(cat.id, cat.show_in_menu === false)}
                 className="action-btn"
                 style={{
-                  background: cat.show_in_menu === false ? "rgba(239, 68, 68, 0.1)" : "rgba(16, 185, 129, 0.1)",
-                  color: cat.show_in_menu === false ? "#ef4444" : "#10b981",
-                  border: cat.show_in_menu === false ? "1px solid rgba(239, 68, 68, 0.3)" : "1px solid rgba(16, 185, 129, 0.3)",
+                  background: cat.show_in_menu === false ? "rgba(16, 185, 129, 0.1)" : "rgba(239, 68, 68, 0.1)",
+                  color: cat.show_in_menu === false ? "#10b981" : "#ef4444",
+                  border: cat.show_in_menu === false ? "1px solid rgba(16, 185, 129, 0.3)" : "1px solid rgba(239, 68, 68, 0.3)",
                   justifyContent: "center",
-                  padding: "8px",
-                  borderRadius: "8px",
+                  padding: "10px",
+                  borderRadius: "10px",
                   fontWeight: "bold",
-                  cursor: "pointer"
+                  cursor: "pointer",
+                  width: "100%"
                 }}
               >
-                {cat.show_in_menu === false ? "👁️‍🗨️ مخفي من القائمة" : "👁️ يظهر في القائمة"}
+                {cat.show_in_menu === false ? "👁️ تفعيل الظهور" : "👁️‍🗨️ إخفاء القسم"}
               </button>
-              <div style={{ display: "flex", gap: "8px" }}>
-                <button onClick={() => handleOpenEditCat(cat)} className="action-btn btn-edit-premium" style={{ flex: 1, justifyContent: "center" }}>
-                  تعديل
+              <div style={{ display: "flex", gap: "8px", width: "100%" }}>
+                <button onClick={() => handleOpenEditCat(cat)} className="action-btn btn-edit-premium" style={{ flex: 1, justifyContent: "center", borderRadius: "10px" }}>
+                  ✏️ تعديل
                 </button>
-                <button onClick={() => handleDeleteCategory(cat.id)} className="action-btn btn-danger-premium" style={{ flex: 1, justifyContent: "center" }}>
-                  حذف
+                <button onClick={() => handleDeleteCategory(cat.id)} className="action-btn btn-danger-premium" style={{ flex: 1, justifyContent: "center", borderRadius: "10px" }}>
+                  🗑️ حذف
                 </button>
               </div>
             </div>
           </div>
         ))}
       </div>
-    </>
+      
+      {finalFilteredCats.length === 0 && (
+        <div style={{ textAlign: "center", padding: "40px", background: "var(--bg-glass)", borderRadius: "16px", color: "var(--text-muted)" }}>
+          <h3>لا توجد أقسام مطابقة للبحث أو الفلتر</h3>
+        </div>
+      )}
+    </div>
   );
 }
