@@ -124,8 +124,7 @@ export default function CategoriesTab({
           />
           <span style={{ fontWeight: "bold", cursor: "pointer" }} onClick={handleSelectAll}>تحديد الكل</span>
         </div>
-        <div className="grid-cards-container">
-          {finalFilteredCats.map((cat) => (
+        {finalFilteredCats.map((cat) => (
           <div className="category-card-premium" key={cat.id} style={{ position: "relative" }}>
             <div style={{ position: "absolute", top: "15px", right: "15px", zIndex: 10 }}>
               <input 
@@ -192,7 +191,6 @@ export default function CategoriesTab({
             </div>
           </div>
         ))}
-        </div>
       </div>
     </>
   );
