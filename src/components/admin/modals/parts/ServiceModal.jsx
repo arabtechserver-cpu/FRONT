@@ -3,7 +3,7 @@ import { AdminDashboardContext } from "../../AdminDashboardContext";
 
 export default function ServiceModal() {
   const { serviceModal } = useContext(AdminDashboardContext);
-  const { showServiceModal, setShowServiceModal, handleAddService, newServiceName, setNewServiceName, newServiceDesc, setNewServiceDesc, newServiceCatId, setNewServiceCatId, newServicePrice, setNewServicePrice, newServiceImage, setNewServiceImage, serviceUploadedFile, setServiceUploadedFile, newServiceApiProviderId, setNewServiceApiProviderId, newServicePriceType, setNewServicePriceType, newServicePricePerThousand, setNewServicePricePerThousand, newServiceIsPopular, setNewServiceIsPopular, newServiceShowInMenu, setNewServiceShowInMenu, newServicePackages, handleAddPkgInput, handleRemovePkgInput, handlePkgChange, newServiceFieldsTitle, setNewServiceFieldsTitle, newServiceFields, handleAddCatField, handleRemoveCatField, handleCatFieldChange, newServiceDownloadLink, setNewServiceDownloadLink, newServiceDownloadLinkTitle, setNewServiceDownloadLinkTitle } = serviceModal;
+  const { showServiceModal, setShowServiceModal, handleAddService, newServiceName, setNewServiceName, newServiceDesc, setNewServiceDesc, newServiceCatId, setNewServiceCatId, newServicePrice, setNewServicePrice, newServiceImage, setNewServiceImage, serviceUploadedFile, setServiceUploadedFile, newServiceApiProviderId, setNewServiceApiProviderId, newServicePriceType, setNewServicePriceType, newServicePricePerThousand, setNewServicePricePerThousand, newServiceIsPopular, setNewServiceIsPopular, newServiceShowInMenu, setNewServiceShowInMenu, newServiceIsBundle, setNewServiceIsBundle, newServiceBundleServices, setNewServiceBundleServices, newServicePackages, handleAddPkgInput, handleRemovePkgInput, handlePkgChange, newServiceFieldsTitle, setNewServiceFieldsTitle, newServiceFields, handleAddCatField, handleRemoveCatField, handleCatFieldChange, newServiceDownloadLink, setNewServiceDownloadLink, newServiceDownloadLinkTitle, setNewServiceDownloadLinkTitle } = serviceModal;
   const { categories, apiProviders } = useContext(AdminDashboardContext);
 
   if (!(showServiceModal)) return null;
@@ -329,7 +329,7 @@ export default function ServiceModal() {
                   value={newServiceFieldsTitle}
                   onChange={(e) => setNewServiceFieldsTitle(e.target.value)}
                   className="search-input-premium"
-                  style={{ padding: "12px 16px !important" }}
+                      style={{ padding: "12px 16px !important" }}
                 />
               </div>
 
@@ -346,8 +346,7 @@ export default function ServiceModal() {
                 </label>
               </div>
 
-              {/* Show in Menu Toggle */}
-              <div style={{ background: "rgba(59, 130, 246, 0.05)", padding: "15px", borderRadius: "12px", border: "1px solid rgba(59, 130, 246, 0.2)", display: "flex", alignItems: "center", gap: "10px", marginTop: "10px" }}>
+              <div className="form-group" style={{ marginBottom: "14px", display: "flex", alignItems: "center", gap: "10px", background: "rgba(255,255,255,0.02)", padding: "12px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
                 <input
                   type="checkbox"
                   id="newServiceShowInMenu"
@@ -359,6 +358,33 @@ export default function ServiceModal() {
                   <span>🍔 إظهار في القائمة الجانبية (الهامبرجر)</span>
                 </label>
               </div>
+
+              <div className="form-group" style={{ marginBottom: "14px", display: "flex", alignItems: "center", gap: "10px", background: "rgba(255,255,255,0.02)", padding: "12px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
+                <input
+                  type="checkbox"
+                  id="newServiceIsBundle"
+                  checked={newServiceIsBundle}
+                  onChange={(e) => setNewServiceIsBundle(e.target.checked)}
+                  style={{ width: "20px", height: "20px", accentColor: "#10b981", cursor: "pointer" }}
+                />
+                <label htmlFor="newServiceIsBundle" style={{ cursor: "pointer", fontWeight: "bold", color: "#6ee7b7", display: "flex", alignItems: "center", gap: "6px" }}>
+                  <span>📦 هذه الخدمة عبارة عن باقة مجمعة (Bundle)</span>
+                </label>
+              </div>
+              
+              {newServiceIsBundle && (
+                <div className="form-group" style={{ marginBottom: "14px", background: "rgba(16, 185, 129, 0.05)", padding: "12px", borderRadius: "12px", border: "1px solid rgba(16, 185, 129, 0.2)" }}>
+                  <label style={{ display: "block", marginBottom: "8px", color: "#6ee7b7", fontWeight: "bold" }}>أرقام (ID) الخدمات الفرعية:</label>
+                  <input
+                    type="text"
+                    value={Array.isArray(newServiceBundleServices) ? newServiceBundleServices.join(', ') : newServiceBundleServices}
+                    onChange={(e) => setNewServiceBundleServices(e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
+                    placeholder="مثال: 12, 15, 20"
+                    style={{ width: "100%", padding: "10px", borderRadius: "8px", border: "1px solid rgba(16, 185, 129, 0.3)", background: "rgba(0,0,0,0.2)", color: "#fff" }}
+                  />
+                  <small style={{ display: "block", marginTop: "6px", color: "var(--text-muted)" }}>أدخل أرقام الخدمات مفصولة بفاصلة (,). عند اختيار هذه الخدمة سيظهر للعميل قائمة لاختيار إحدى هذه الخدمات الفرعية.</small>
+                </div>
+              )}
 
               {/* Custom Fields Builder */}
               <div style={{ border: "1px solid rgba(255, 255, 255, 0.05)", padding: "18px", borderRadius: "16px", background: "rgba(255, 255, 255, 0.02)" }}>

@@ -13,6 +13,13 @@ export default function CategoriesTab({
   API_BASE_URL
 }) {
   const [selectedCats, setSelectedCats] = useState([]);
+  const [visibilityFilter, setVisibilityFilter] = useState("all");
+
+  const finalFilteredCats = filteredCategories.filter(c => {
+    if (visibilityFilter === "visible") return c.show_in_menu !== false;
+    if (visibilityFilter === "hidden") return c.show_in_menu === false;
+    return true;
+  });
 
   const toggleSelectCat = (id) => {
     setSelectedCats(prev => 
@@ -20,11 +27,19 @@ export default function CategoriesTab({
     );
   };
 
+  const handleBulkToggleVisibility = async (show) => {
+    if (!window.confirm('هل أنت متأكد من ' + (show ? 'إظهار' : 'إخفاء') + ' الأقسام المحددة (' + selectedCats.length + ')؟')) return;
+    for (const id of selectedCats) {
+      await handleToggleCategoryMenuVisibility(id, show);
+    }
+    setSelectedCats([]);
+  };
+
   const handleSelectAll = () => {
-    if (selectedCats.length === filteredCategories.length) {
+    if (selectedCats.length === finalFilteredCats.length) {
       setSelectedCats([]);
     } else {
-      setSelectedCats(filteredCategories.map(c => c.id));
+      setSelectedCats(finalFilteredCats.map(c => c.id));
     }
   };
 
@@ -41,6 +56,17 @@ export default function CategoriesTab({
           />
           <span className="search-input-icon">🔍</span>
         </div>
+        
+        <select 
+          className="form-input-premium" 
+          style={{ width: "auto", minWidth: "200px" }} 
+          value={visibilityFilter} 
+          onChange={(e) => setVisibilityFilter(e.target.value)}
+        >
+          <option value="all">-- كل الأقسام --</option>
+          <option value="visible">👁️ الأقسام الظاهرة بالقائمة فقط</option>
+          <option value="hidden">👁️‍🗨️ الأقسام المخفية من القائمة فقط</option>
+        </select>
         <button
           onClick={handleClearAllCategories}
           className="action-btn"
@@ -92,13 +118,14 @@ export default function CategoriesTab({
         <div style={{ width: "100%", padding: "10px 20px", display: "flex", alignItems: "center", gap: "10px", background: "rgba(255,255,255,0.05)", borderRadius: "10px", marginBottom: "10px" }}>
           <input 
             type="checkbox" 
-            checked={filteredCategories.length > 0 && selectedCats.length === filteredCategories.length}
+            checked={finalFilteredCats.length > 0 && selectedCats.length === finalFilteredCats.length}
             onChange={handleSelectAll}
             style={{ width: "18px", height: "18px", cursor: "pointer" }}
           />
           <span style={{ fontWeight: "bold", cursor: "pointer" }} onClick={handleSelectAll}>تحديد الكل</span>
         </div>
-        {filteredCategories.map((cat) => (
+        <div className="grid-cards-container">
+          {finalFilteredCats.map((cat) => (
           <div className="category-card-premium" key={cat.id} style={{ position: "relative" }}>
             <div style={{ position: "absolute", top: "15px", right: "15px", zIndex: 10 }}>
               <input 
@@ -165,6 +192,7 @@ export default function CategoriesTab({
             </div>
           </div>
         ))}
+        </div>
       </div>
     </>
   );

@@ -2524,14 +2524,14 @@ export default function DashboardProvider({ children }) {
         <div className="modal-overlay" onClick={() => setShowMergeCategoriesModal(false)} style={{ zIndex: 9999 }}>
           <div className="modal-content glass-panel" onClick={e => e.stopPropagation()} style={{ maxWidth: "500px" }}>
             <div className="modal-header">
-              <h2>دمج الأقسام المحددة</h2>
+              <h2>تجميع الأقسام المحددة</h2>
               <button className="close-btn" onClick={() => setShowMergeCategoriesModal(false)}>×</button>
             </div>
             <div className="modal-body" style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
-              <p style={{ color: "var(--text-muted)" }}>سيتم نقل جميع الخدمات من الأقسام المحددة ({mergeSourceIds.length} أقسام) إلى القسم الذي ستختاره بالأسفل، ثم سيتم حذف الأقسام المحددة القديمة.</p>
+              <p style={{ color: "var(--text-muted)" }}>سيتم تعيين الأقسام المحددة ({mergeSourceIds.length} أقسام) كأقسام فرعية داخل القسم الذي ستختاره بالأسفل، ولن يتم حذفها.</p>
               
               <div className="form-group">
-                <label>اختر القسم الهدف (الذي ستنتقل إليه الخدمات):</label>
+                <label>اختر القسم الأب (القسم الرئيسي):</label>
                 <select 
                   className="form-input-premium" 
                   value={mergeTargetId} 
@@ -2550,7 +2550,7 @@ export default function DashboardProvider({ children }) {
                   className="action-btn"
                   style={{ background: "linear-gradient(135deg, #10b981 0%, #059669 100%)", color: "white", flex: 1, padding: "12px", borderRadius: "8px", fontWeight: "bold" }}
                 >
-                  تأكيد ودمج
+                  تأكيد وتجميع
                 </button>
                 <button 
                   onClick={() => setShowMergeCategoriesModal(false)}

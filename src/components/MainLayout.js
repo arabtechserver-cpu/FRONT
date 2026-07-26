@@ -12,6 +12,7 @@ export default function MainLayout({ children }) {
 
   const [theme, setTheme] = useState("dark");
   const [menuOpen, setMenuOpen] = useState(false);
+  const [categoriesExpanded, setCategoriesExpanded] = useState(false);
   const [settings, setSettings] = useState({ site_name: "عرب تك سيرفر", site_logo: "/logo.jpg" });
   const [logoFailed, setLogoFailed] = useState(false);
 
@@ -385,16 +386,27 @@ export default function MainLayout({ children }) {
           </Link>
           
           <div className="mobile-drawer-dropdown-container" style={{ position: "relative" }}>
-            <div className="mobile-drawer-link" style={{ cursor: "pointer", display: "flex", justifyContent: "space-between" }} onClick={(e) => {
-              const el = e.currentTarget.nextElementSibling;
-              el.style.display = el.style.display === 'none' ? 'flex' : 'none';
-            }}>
+            <div 
+              className="mobile-drawer-link" 
+              style={{ cursor: "pointer", display: "flex", justifyContent: "space-between", background: categoriesExpanded ? "rgba(255,255,255,0.05)" : "transparent" }} 
+              onClick={() => setCategoriesExpanded(!categoriesExpanded)}
+            >
               <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                 <span style={{ fontSize: "1.2rem" }}>🛒</span> الأقسام والخدمات
               </div>
-              <span style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>▼</span>
+              <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", transform: categoriesExpanded ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.3s" }}>▼</span>
             </div>
-            <div className="mobile-drawer-dropdown-list" style={{ display: "none", flexDirection: "column", background: "rgba(0,0,0,0.1)", borderRadius: "8px", margin: "4px 10px", padding: "4px 0" }}>
+            <div 
+              className="mobile-drawer-dropdown-list" 
+              style={{ 
+                display: categoriesExpanded ? "flex" : "none", 
+                flexDirection: "column", 
+                background: "rgba(0,0,0,0.1)", 
+                borderRadius: "8px", 
+                margin: "4px 10px", 
+                padding: "4px 0" 
+              }}
+            >
               <Link href="/services" className="mobile-drawer-link" style={{ padding: "8px 16px", fontSize: "0.95rem" }} onClick={() => setMenuOpen(false)}>
                 ⭐ كل الخدمات
               </Link>

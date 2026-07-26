@@ -1029,3 +1029,21 @@
   flex-direction: column;
   gap: 16px;
 }
+
+/* Admin Drawer Forced Dark Mode */
+.mobile-drawer.admin-drawer-dark {
+  background: rgba(15, 23, 42, 0.98) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+.mobile-drawer.admin-drawer-dark .mobile-drawer-title, .mobile-drawer.admin-drawer-dark .mobile-drawer-link {
+  color: #fff !important;
+}
+
+
+.mobile-drawer.admin-drawer-dark, .mobile-drawer.admin-drawer-dark * {
+  color: #fff !important;
+}
+.mobile-drawer.admin-drawer-dark .mobile-drawer-link:hover {
+  background: rgba(255,255,255,0.1) !important;
+}
+

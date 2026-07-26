@@ -13,6 +13,7 @@ export default function ServiceDetail({ params }) {
   const [service, setService] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedPackage, setSelectedPackage] = useState(null);
+  const [selectedSubServiceId, setSelectedSubServiceId] = useState(null);
   const [customQuantity, setCustomQuantity] = useState(1000);
   const [copied, setCopied] = useState(false);
   const [step, setStep] = useState(1);
@@ -202,12 +203,28 @@ export default function ServiceDetail({ params }) {
         if (data.packages && data.packages.length > 0) {
           const urlParams = new URLSearchParams(window.location.search);
           const pkgId = urlParams.get('package');
-          const preselectedPkg = data.packages.find(p => String(p.id) === String(pkgId));
-          if (preselectedPkg) {
-            setSelectedPackage(preselectedPkg);
-            setTimeout(() => setStep(2), 300);
+          const subId = urlParams.get('sub');
+          
+          if (subId && data.is_bundle) {
+             setSelectedSubServiceId(subId);
+             const subService = data.bundle_services_data?.find(s => s.id.toString() === subId.toString());
+             if (subService && subService.packages && subService.packages.length > 0) {
+                const preselectedPkg = subService.packages.find(p => String(p.id) === String(pkgId));
+                if (preselectedPkg) {
+                  setSelectedPackage(preselectedPkg);
+                  setTimeout(() => setStep(2), 300);
+                } else {
+                  setSelectedPackage(subService.packages[0]);
+                }
+             }
           } else {
-            setSelectedPackage(data.packages[0]);
+            const preselectedPkg = data.packages.find(p => String(p.id) === String(pkgId));
+            if (preselectedPkg) {
+              setSelectedPackage(preselectedPkg);
+              setTimeout(() => setStep(2), 300);
+            } else {
+              setSelectedPackage(data.packages[0]);
+            }
           }
         }
         if (data.price_type === "dynamic") {
@@ -243,30 +260,38 @@ export default function ServiceDetail({ params }) {
   }, [serviceId]);
   /* eslint-enable react-hooks/set-state-in-effect */
 
+  const activeService = useMemo(() => {
+    if (!service) return null;
+    if (service.is_bundle && service.bundle_services_data && selectedSubServiceId) {
+      return service.bundle_services_data.find(s => s.id.toString() === selectedSubServiceId.toString()) || service;
+    }
+    return service;
+  }, [service, selectedSubServiceId]);
+
   const hasImage = useMemo(() => {
-    if (!service?.image) return false;
-    const img = service.image.trim();
+    if (!activeService?.image) return false;
+    const img = activeService.image.trim();
     if (img === "" || img === "default" || img.endsWith("/default")) return false;
     return !imageError;
-  }, [service?.image, imageError]);
+  }, [activeService?.image, imageError]);
 
   // Parse dynamic fields from service
   const serviceFields = useMemo(() => {
-    if (!service) return [];
+    if (!activeService) return [];
 
-    // Check service fields first
+    // Check activeService fields first
     let sFields = [];
-    if (Array.isArray(service.fields)) sFields = service.fields;
-    else if (typeof service.fields === 'string') {
-      try { sFields = JSON.parse(service.fields); } catch { }
+    if (Array.isArray(activeService.fields)) sFields = activeService.fields;
+    else if (typeof activeService.fields === 'string') {
+      try { sFields = JSON.parse(activeService.fields); } catch { }
     }
 
     if (sFields && sFields.length > 0) return sFields;
 
     // For synced API services with empty fields, add IMEI field if service type is imei
-    if (sFields !== null && Array.isArray(sFields) && service?.api_service_id) {
+    if (sFields !== null && Array.isArray(sFields) && activeService?.api_service_id) {
       // If it's an IMEI service type but has no fields, inject IMEI fallback
-      const svcType = (service.api_service_type || '').toLowerCase();
+      const svcType = (activeService.api_service_type || '').toLowerCase();
       if (svcType === 'imei') {
         return [
           { name: "imei", label: "IMEI / SN / ECID", type: "text", placeholder: "أدخل رقم IMEI أو الرقم التسلسلي (SN) أو ECID", required: true }
@@ -280,9 +305,9 @@ export default function ServiceDetail({ params }) {
 
     // Fallback to category fields
     let catFields = [];
-    if (Array.isArray(service.category_fields)) catFields = service.category_fields;
-    else if (typeof service.category_fields === 'string') {
-      try { catFields = JSON.parse(service.category_fields); } catch { }
+    if (Array.isArray(activeService.category_fields)) catFields = activeService.category_fields;
+    else if (typeof activeService.category_fields === 'string') {
+      try { catFields = JSON.parse(activeService.category_fields); } catch { }
     }
 
     if (catFields && catFields.length > 0) return catFields;
@@ -320,7 +345,7 @@ export default function ServiceDetail({ params }) {
 
       // 2. Add any admin fields that were not in this package (global custom fields added by admin)
       // Only do this if it's NOT a grouped API service (where serviceFields contains combined fields from other packages)
-      if (service?.api_service_id !== 'grouped' && Array.isArray(serviceFields)) {
+      if (activeService?.api_service_id !== 'grouped' && Array.isArray(serviceFields)) {
         for (const sf of serviceFields) {
           const id = (sf.name || sf.id || "").toLowerCase().trim();
           if (id && !packageFieldNames.has(id)) {
@@ -333,7 +358,7 @@ export default function ServiceDetail({ params }) {
       if (rawFields.length === 0 && Array.isArray(serviceFields) && serviceFields.length > 0) {
         rawFields = [...serviceFields];
       }
-    } else if (Array.isArray(serviceFields) && service?.fields !== null && service?.fields !== undefined) {
+    } else if (Array.isArray(serviceFields) && activeService?.fields !== null && activeService?.fields !== undefined) {
       // Only use serviceFields directly if it's explicitly set (even if empty `[]`)
       rawFields = [...serviceFields];
     } else {
@@ -378,15 +403,15 @@ export default function ServiceDetail({ params }) {
   }, [serviceFields, defaultFields]);
 
   const fieldsSectionTitle = useMemo(() => {
-    if (!service) return "بيانات الخدمة";
-    if (service.fields_title && service.fields_title.trim()) {
-      return service.fields_title.trim();
+    if (!activeService) return "بيانات الخدمة";
+    if (activeService.fields_title && activeService.fields_title.trim()) {
+      return activeService.fields_title.trim();
     }
-    if (service.category_fields_title && service.category_fields_title.trim()) {
-      return service.category_fields_title.trim();
+    if (activeService.category_fields_title && activeService.category_fields_title.trim()) {
+      return activeService.category_fields_title.trim();
     }
     return "بيانات الخدمة";
-  }, [service]);
+  }, [activeService]);
 
   const handleFieldChange = (fieldName, value) => {
     setFormData(prev => ({ ...prev, [fieldName]: value }));
@@ -423,7 +448,12 @@ export default function ServiceDetail({ params }) {
     e.preventDefault();
     setErrorMessage("");
 
-    const isDynamic = service.price_type === "dynamic" || (service.price_type === "both" && customerPricingMode === "dynamic");
+    if (service.is_bundle && !selectedSubServiceId) {
+      setErrorMessage("من فضلك اختر الخدمة المطلوبة من الباقة أولاً.");
+      return;
+    }
+
+    const isDynamic = activeService.price_type === "dynamic" || (activeService.price_type === "both" && customerPricingMode === "dynamic");
 
     if (!isDynamic && !selectedPackage) {
       setErrorMessage("من فضلك حدد الباقة المطلوبة.");
@@ -431,8 +461,8 @@ export default function ServiceDetail({ params }) {
     }
 
     if (isDynamic) {
-      const minQty = service.min_quantity || 100;
-      const maxQty = service.max_quantity || 0;
+      const minQty = activeService.min_quantity || 100;
+      const maxQty = activeService.max_quantity || 0;
       if (!customQuantity || customQuantity < minQty) {
         setErrorMessage(`من فضلك أدخل كمية صالحة (الحد الأدنى ${minQty}).`);
         return;
@@ -475,8 +505,8 @@ export default function ServiceDetail({ params }) {
 
     let computedPrice = 0;
     if (isDynamic) {
-      const usdPrice = (customQuantity / 1000) * (service.price_per_thousand || 0);
-      if (service.category_currency === 'USD' || service.category_currency === 'USDT' || service.category_currency === 'USDT') {
+      const usdPrice = (customQuantity / 1000) * (activeService.price_per_thousand || 0);
+      if (activeService.category_currency === 'USD' || activeService.category_currency === 'USDT') {
         const usdRate = (baseCurrency === 'USD' || baseCurrency === 'USDT') ? 1 : Number(exchangeRates?.["USD"] || 50);
         computedPrice = Number((usdPrice * usdRate).toFixed(2));
       } else {
@@ -484,7 +514,7 @@ export default function ServiceDetail({ params }) {
       }
     } else {
       let multiplier = selectedPackage?.requires_quantity ? (customQuantity || 1) : 1;
-      if (service.category_currency === 'USD' || service.category_currency === 'USDT') {
+      if (activeService.category_currency === 'USD' || activeService.category_currency === 'USDT') {
         // Use ?? (nullish coalescing) so that price=0 (free services) is NOT treated as falsy
         const usdPrice = (selectedPackage.usd_price != null) ? Number(selectedPackage.usd_price) : Number(selectedPackage.price ?? 0);
         const usdRate = (baseCurrency === 'USD' || baseCurrency === 'USDT') ? 1 : Number(exchangeRates?.["USD"] || 50);
@@ -511,7 +541,7 @@ export default function ServiceDetail({ params }) {
         method: "POST",
         headers,
         body: JSON.stringify({
-          service_id: service.id,
+          service_id: activeService.id,
           player_id: formData.player_id || formData[activeFields[0]?.name] || "",
           phone: formData.phone || formData[activeFields[1]?.name] || formData[activeFields[0]?.name] || "",
           package_name: computedPackageName,
@@ -595,12 +625,12 @@ export default function ServiceDetail({ params }) {
     return "⚡";
   };
 
-  const filteredPackages = !service?.packages
+  const filteredPackages = !activeService?.packages
     ? []
     : (() => {
       const query = (packageSearchTerm || "").trim().toLowerCase();
-      if (!query) return service.packages;
-      return service.packages.filter(pkg =>
+      if (!query) return activeService.packages;
+      return activeService.packages.filter(pkg =>
         (pkg.name || "").toLowerCase().includes(query)
       );
     })();
@@ -632,7 +662,41 @@ export default function ServiceDetail({ params }) {
 
   const packagesSection = (
     <div>
-      <h3 style={{ fontWeight: 800, marginBottom: "15px", fontSize: "1.1rem" }}>1. اختر الباقة المطلوبة:</h3>
+      {service.is_bundle && service.bundle_services_data && service.bundle_services_data.length > 0 && (
+        <div style={{ marginBottom: "24px", background: "rgba(16, 185, 129, 0.05)", padding: "20px", borderRadius: "14px", border: "1px solid rgba(16, 185, 129, 0.2)" }}>
+          <h3 style={{ fontWeight: 800, marginBottom: "15px", fontSize: "1.1rem", color: "#6ee7b7" }}>
+            1. اختر الخدمة من الباقة:
+          </h3>
+          <select
+            value={selectedSubServiceId || ""}
+            onChange={(e) => {
+              setSelectedSubServiceId(e.target.value);
+              setSelectedPackage(null); // reset package selection when service changes
+            }}
+            style={{
+              width: "100%",
+              padding: "14px 16px",
+              fontSize: "1rem",
+              borderRadius: "12px",
+              border: "1px solid rgba(16, 185, 129, 0.3)",
+              background: "rgba(0,0,0,0.4)",
+              color: "#fff",
+              outline: "none",
+              cursor: "pointer",
+              appearance: "none"
+            }}
+          >
+            <option value="" disabled>-- اختر الخدمة المطلوبة --</option>
+            {service.bundle_services_data.map(sub => (
+              <option key={sub.id} value={sub.id}>{sub.name}</option>
+            ))}
+          </select>
+        </div>
+      )}
+
+      <h3 style={{ fontWeight: 800, marginBottom: "15px", fontSize: "1.1rem" }}>
+        {service.is_bundle ? "2. اختر الباقة:" : "1. اختر الباقة المطلوبة:"}
+      </h3>
 
       {service.packages && service.packages.length > 3 && (
         <div style={{ marginBottom: "20px", position: "relative" }}>
@@ -762,7 +826,10 @@ export default function ServiceDetail({ params }) {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        const url = `${window.location.origin}/service/${serviceId}?package=${pkg.id}`;
+                        let url = `${window.location.origin}/service/${serviceId}?package=${pkg.id}`;
+                        if (service.is_bundle && selectedSubServiceId) {
+                          url += `&sub=${selectedSubServiceId}`;
+                        }
                         navigator.clipboard.writeText(url).then(() => alert("تم نسخ رابط الباقة بنجاح!"));
                       }}
                       style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "6px", color: "var(--text-muted)", cursor: "pointer", padding: "4px 8px", fontSize: "1rem", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s ease" }}
@@ -792,7 +859,9 @@ export default function ServiceDetail({ params }) {
 
   const customQuantitySection = (
     <div>
-      <h3 style={{ fontWeight: 800, marginBottom: "10px" }}>1. أدخل الكمية المطلوبة:</h3>
+      <h3 style={{ fontWeight: 800, marginBottom: "10px" }}>
+        {service.is_bundle ? "2. أدخل الكمية المطلوبة:" : "1. أدخل الكمية المطلوبة:"}
+      </h3>
       <p style={{ fontSize: "0.85rem", color: "var(--accent-color)", marginBottom: "12px", fontWeight: "bold" }}>
         سعر الـ 1000 وحدة هو: {baseCurrency === 'USD' || baseCurrency === 'USDT'
           ? `$ ${Number(service?.price_per_thousand || 0).toFixed(2)}`

@@ -19,7 +19,8 @@ export default function OrdersTab({
   handleManualRefund,
   deleteOrder,
   walletTransactions,
-  filteredWalletTransactions
+  filteredWalletTransactions,
+  apiProviders = []
 }) {
   return (
     <>
@@ -172,6 +173,11 @@ export default function OrdersTab({
                   {(order.is_api_order === 1 || order.is_api_order === true) && (
                     <div style={{ fontSize: "0.75rem", background: "rgba(168,85,247,0.12)", color: "#c084fc", padding: "4px 10px", borderRadius: "8px", display: "inline-flex", gap: "6px", alignItems: "center", marginTop: "6px", fontWeight: "bold" }}>
                       <span>🔌 طلب قادم من موزع API</span>
+                    </div>
+                  )}
+{order.api_provider_id && (
+                    <div style={{ fontSize: "0.75rem", background: "rgba(34, 211, 238, 0.12)", color: "#22d3ee", padding: "4px 10px", borderRadius: "8px", display: "inline-flex", gap: "6px", alignItems: "center", marginTop: "6px", fontWeight: "bold" }}>
+                      <span>🔗 مرتبط بمزود: {apiProviders.find(p => p.id === order.api_provider_id)?.name || `مجهول (${order.api_provider_id})`}</span>
                     </div>
                   )}
                   {order.api_order_id && (

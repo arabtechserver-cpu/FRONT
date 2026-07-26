@@ -3,7 +3,7 @@ import { AdminDashboardContext } from "../../AdminDashboardContext";
 
 export default function EditServiceModal() {
   const { editServiceModal } = useContext(AdminDashboardContext);
-  const { showEditServiceModal, setShowEditServiceModal, handleEditService, editServiceName, setEditServiceName, editServiceDesc, setEditServiceDesc, editServiceCatId, setEditServiceCatId, editServiceImage, setEditServiceImage, editServiceUploadedFile, setEditServiceUploadedFile, editServicePackages, handleAddEditPkgInput, handleRemoveEditPkgInput, handleEditPkgChange, editServiceFields, handleAddEditField, handleRemoveEditField, handleEditFieldChange, editServicePriceType, setEditServicePriceType, editServicePricePerThousand, setEditServicePricePerThousand, editServiceIsPopular, setEditServiceIsPopular, editServiceShowInMenu, setEditServiceShowInMenu, editServiceFieldsTitle, setEditServiceFieldsTitle, editServiceDownloadLink, setEditServiceDownloadLink, editServiceDownloadLinkTitle, setEditServiceDownloadLinkTitle, editServiceApiProviderId, setEditServiceApiProviderId } = editServiceModal;
+  const { showEditServiceModal, setShowEditServiceModal, handleEditService, editServiceName, setEditServiceName, editServiceDesc, setEditServiceDesc, editServiceCatId, setEditServiceCatId, editServiceImage, setEditServiceImage, editServiceUploadedFile, setEditServiceUploadedFile, editServicePackages, handleAddEditPkgInput, handleRemoveEditPkgInput, handleEditPkgChange, editServiceFields, handleAddEditField, handleRemoveEditField, handleEditFieldChange, editServicePriceType, setEditServicePriceType, editServicePricePerThousand, setEditServicePricePerThousand, editServiceIsPopular, setEditServiceIsPopular, editServiceShowInMenu, setEditServiceShowInMenu, editServiceIsBundle, setEditServiceIsBundle, editServiceBundleServices, setEditServiceBundleServices, editServiceFieldsTitle, setEditServiceFieldsTitle, editServiceDownloadLink, setEditServiceDownloadLink, editServiceDownloadLinkTitle, setEditServiceDownloadLinkTitle, editServiceApiProviderId, setEditServiceApiProviderId } = editServiceModal;
   const { categories, apiProviders, baseCurrency, API_BASE_URL } = useContext(AdminDashboardContext);
 
   if (!(showEditServiceModal)) return null;
@@ -406,6 +406,33 @@ export default function EditServiceModal() {
                   <span>🍔 إظهار في القائمة الجانبية (الهامبرجر)</span>
                 </label>
               </div>
+
+              <div className="form-group" style={{ marginBottom: "14px", display: "flex", alignItems: "center", gap: "10px", background: "rgba(255,255,255,0.02)", padding: "12px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
+                <input
+                  type="checkbox"
+                  id="editServiceIsBundleCheckbox"
+                  checked={editServiceIsBundle}
+                  onChange={(e) => setEditServiceIsBundle(e.target.checked)}
+                  style={{ width: "20px", height: "20px", accentColor: "#10b981", cursor: "pointer" }}
+                />
+                <label htmlFor="editServiceIsBundleCheckbox" style={{ cursor: "pointer", fontWeight: "bold", color: "#6ee7b7", display: "flex", alignItems: "center", gap: "6px" }}>
+                  <span>📦 هذه الخدمة عبارة عن باقة مجمعة (Bundle)</span>
+                </label>
+              </div>
+              
+              {editServiceIsBundle && (
+                <div className="form-group" style={{ marginBottom: "14px", background: "rgba(16, 185, 129, 0.05)", padding: "12px", borderRadius: "12px", border: "1px solid rgba(16, 185, 129, 0.2)" }}>
+                  <label style={{ display: "block", marginBottom: "8px", color: "#6ee7b7", fontWeight: "bold" }}>أرقام (ID) الخدمات الفرعية:</label>
+                  <input
+                    type="text"
+                    value={Array.isArray(editServiceBundleServices) ? editServiceBundleServices.join(', ') : editServiceBundleServices}
+                    onChange={(e) => setEditServiceBundleServices(e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
+                    placeholder="مثال: 12, 15, 20"
+                    style={{ width: "100%", padding: "10px", borderRadius: "8px", border: "1px solid rgba(16, 185, 129, 0.3)", background: "rgba(0,0,0,0.2)", color: "#fff" }}
+                  />
+                  <small style={{ display: "block", marginTop: "6px", color: "var(--text-muted)" }}>أدخل أرقام الخدمات مفصولة بفاصلة (,). عند اختيار هذه الخدمة سيظهر للعميل قائمة لاختيار إحدى هذه الخدمات الفرعية.</small>
+                </div>
+              )}
 
               {/* Custom Fields Builder */}
               <div style={{ border: "1px solid rgba(255, 255, 255, 0.05)", padding: "18px", borderRadius: "16px", background: "rgba(255, 255, 255, 0.02)" }}>
