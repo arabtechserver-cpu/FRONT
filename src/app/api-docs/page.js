@@ -143,8 +143,6 @@ export default function ApiDocsPage() {
               </span>
             </div>
 
-            </div>
-
             {loading ? (
               <div style={{ textAlign: "center", padding: "40px", color: "var(--primary-color)" }}>
                 <span style={{
