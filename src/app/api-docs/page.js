@@ -109,7 +109,6 @@ export default function ApiDocsPage() {
   };
 
   return (
-    <MainLayout>
       <div className="container" style={{ padding: "40px 20px" }}>
         <h1 style={{ fontSize: "2.5rem", fontWeight: 800, textAlign: "center", marginBottom: "20px", color: "var(--primary-color)" }}>
           إعدادات وشرح ربط الـ API
@@ -273,6 +272,5 @@ export default function ApiDocsPage() {
           </div>
         </div>
       </div>
-    </MainLayout>
   );
 }
