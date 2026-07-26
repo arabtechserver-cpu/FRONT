@@ -169,9 +169,14 @@ export default function OrdersTab({
                       return null;
                     }
                   })()}
+                  {(order.is_api_order === 1 || order.is_api_order === true) && (
+                    <div style={{ fontSize: "0.75rem", background: "rgba(168,85,247,0.12)", color: "#c084fc", padding: "4px 10px", borderRadius: "8px", display: "inline-flex", gap: "6px", alignItems: "center", marginTop: "6px", fontWeight: "bold" }}>
+                      <span>🔌 طلب قادم من موزع API</span>
+                    </div>
+                  )}
                   {order.api_order_id && (
                     <div style={{ fontSize: "0.75rem", background: "rgba(14,165,233,0.12)", color: "#38bdf8", padding: "4px 10px", borderRadius: "8px", display: "inline-flex", gap: "6px", alignItems: "center", marginTop: "6px", fontWeight: "bold" }}>
-                      <span>🔓 طلب API خارجي: #{order.api_order_id}</span>
+                      <span>🔓 تم تحويله لـ API خارجي: #{order.api_order_id}</span>
                       <span style={{ opacity: 0.85 }}>({order.api_status || 'Pending'})</span>
                     </div>
                   )}

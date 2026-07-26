@@ -88,6 +88,18 @@ export default function ApiResellersTab({
     }
   };
 
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newResellerSearch, setNewResellerSearch] = useState("");
+
+  const apiResellers = customers.filter(c => c.api_enabled || c.api_requested || c.api_key);
+  
+  // Apply the existing search filter to our filtered list
+  const displayCustomers = apiResellers.filter(c => 
+    c.username.toLowerCase().includes(customerSearch.toLowerCase()) || 
+    (c.phone && c.phone.includes(customerSearch)) ||
+    c.id.toString() === customerSearch
+  );
+
   return (
     <>
       <div className="premium-stats-grid">
@@ -95,17 +107,29 @@ export default function ApiResellersTab({
           <div className="stat-card-info">
             <span className="stat-card-title">موزعي الـ API المفعلين</span>
             <span className="stat-card-value">
-              {customers.filter(c => c.api_enabled).length}
+              {apiResellers.filter(c => c.api_enabled).length}
             </span>
           </div>
           <div className="stat-card-icon-wrapper" style={{ "--icon-bg": "rgba(234, 179, 8, 0.1)", "--icon-border": "rgba(234, 179, 8, 0.2)", "--icon-color": "#eab308" }}>
             🔑
           </div>
         </div>
+        
+        <div className="premium-stat-card" style={{ "--glow-color": "rgba(14, 165, 233, 0.15)" }}>
+          <div className="stat-card-info">
+            <span className="stat-card-title">طلبات الـ API المعلقة</span>
+            <span className="stat-card-value">
+              {apiResellers.filter(c => c.api_requested && !c.api_enabled).length}
+            </span>
+          </div>
+          <div className="stat-card-icon-wrapper" style={{ "--icon-bg": "rgba(14, 165, 233, 0.1)", "--icon-border": "rgba(14, 165, 233, 0.2)", "--icon-color": "#0ea5e9" }}>
+            ⏳
+          </div>
+        </div>
       </div>
 
-      <div className="table-filter-bar">
-        <div className="search-input-wrapper">
+      <div className="table-filter-bar" style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+        <div className="search-input-wrapper" style={{ flex: 1, minWidth: "250px" }}>
           <input
             type="text"
             className="search-input-premium"
@@ -115,6 +139,13 @@ export default function ApiResellersTab({
           />
           <span className="search-input-icon">🔍</span>
         </div>
+        <button 
+          onClick={() => setShowAddModal(true)}
+          className="action-btn" 
+          style={{ background: "#10b981", color: "white", padding: "10px 20px", fontWeight: "bold" }}
+        >
+          + إضافة موزع جديد
+        </button>
       </div>
 
       <div className="premium-table-wrapper">
@@ -130,21 +161,25 @@ export default function ApiResellersTab({
             </tr>
           </thead>
           <tbody>
-            {filteredCustomers.length === 0 ? (
+            {displayCustomers.length === 0 ? (
               <tr>
                 <td colSpan="6" style={{ textAlign: "center", padding: "40px", color: "#64748b" }}>
-                  لا يوجد عملاء يطابقون البحث.
+                  لا يوجد موزعين أو طلبات مطابقة.
                 </td>
               </tr>
             ) : (
-              filteredCustomers.map((customer) => (
+              displayCustomers.map((customer) => (
                 <tr key={customer.id}>
                   <td data-label="رقم العميل" style={{ fontWeight: 800, color: "#38bdf8" }}>#{customer.id}</td>
                   <td data-label="اسم المستخدم" style={{ fontWeight: 700 }}>{customer.username}</td>
                   <td data-label="حالة الـ API">
-                    <span className={`premium-badge ${customer.api_enabled ? "premium-badge-approved" : "premium-badge-rejected"}`}>
-                      {customer.api_enabled ? "مفعل" : "معطل"}
-                    </span>
+                    {customer.api_enabled ? (
+                      <span className="premium-badge premium-badge-approved">مفعل</span>
+                    ) : customer.api_requested ? (
+                      <span className="premium-badge" style={{ background: "rgba(245, 158, 11, 0.15)", color: "#fbbf24", border: "1px solid rgba(245, 158, 11, 0.3)" }}>طلب معلق</span>
+                    ) : (
+                      <span className="premium-badge premium-badge-rejected">معطل</span>
+                    )}
                   </td>
                   <td data-label="مفتاح الـ API" style={{ direction: "ltr", fontSize: "0.85rem", color: "#94a3b8" }}>
                     {customer.api_key || "لا يوجد مفتاح"}
@@ -168,6 +203,53 @@ export default function ApiResellersTab({
           </tbody>
         </table>
       </div>
+
+      {showAddModal && (
+        <div className="modal-overlay" onClick={() => setShowAddModal(false)} style={{ zIndex: 9999 }}>
+          <div className="modal-content glass-panel" onClick={e => e.stopPropagation()} style={{ maxWidth: "500px" }}>
+            <div className="modal-header">
+              <h2>إضافة موزع API جديد</h2>
+              <button className="close-btn" onClick={() => setShowAddModal(false)}>×</button>
+            </div>
+            <div className="modal-body" style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
+              <p style={{ color: "#94a3b8", fontSize: "0.9rem", margin: 0 }}>
+                ابحث عن العميل المراد تحويله إلى موزع API، ثم اضغط على اسمه لفتح إعداداته.
+              </p>
+              <input 
+                type="text"
+                className="form-input-premium"
+                placeholder="ابحث باسم المستخدم أو البريد..."
+                value={newResellerSearch}
+                onChange={e => setNewResellerSearch(e.target.value)}
+              />
+              <div style={{ maxHeight: "300px", overflowY: "auto", background: "rgba(0,0,0,0.2)", borderRadius: "8px", padding: "10px" }}>
+                {customers
+                  .filter(c => !c.api_enabled && !c.api_requested)
+                  .filter(c => newResellerSearch ? c.username.toLowerCase().includes(newResellerSearch.toLowerCase()) || c.email?.toLowerCase().includes(newResellerSearch.toLowerCase()) : true)
+                  .slice(0, 20)
+                  .map(c => (
+                    <div 
+                      key={c.id}
+                      style={{ padding: "10px", borderBottom: "1px solid rgba(255,255,255,0.05)", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center" }}
+                      onClick={() => {
+                        setShowAddModal(false);
+                        openEditModal(c);
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.05)"}
+                      onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
+                    >
+                      <div>
+                        <div style={{ fontWeight: "bold", color: "#e2e8f0" }}>{c.username}</div>
+                        <div style={{ fontSize: "0.8rem", color: "#64748b" }}>{c.email || c.phone || 'لا يوجد بيانات'}</div>
+                      </div>
+                      <span style={{ color: "#38bdf8", fontSize: "0.85rem", fontWeight: "bold" }}>اختر</span>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {editingCustomer && (
         <div className="modal-overlay" onClick={() => setEditingCustomer(null)} style={{ zIndex: 9999 }}>

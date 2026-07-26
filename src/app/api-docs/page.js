@@ -6,25 +6,27 @@ import { API_BASE_URL } from "@/config";
 
 export default function ApiDocsPage() {
   const [customer, setCustomer] = useState(null);
-  const [apiKey, setApiKey] = useState("");
+  const [apiData, setApiData] = useState(null);
+  const [allowedIpsText, setAllowedIpsText] = useState("");
   const [loading, setLoading] = useState(true);
+  const [savingIps, setSavingIps] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("customer_token");
     if (token) {
-      fetch(`${API_BASE_URL}/api/customer/me`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      .then(res => res.ok ? res.json() : null)
-      .then(data => {
-        if (data) {
-          setCustomer(data);
-          // Wait, the /me endpoint doesn't return api_key by default for security?
-          // Let's check, if it does, use it. If not, we will just show "تواصل مع الإدارة".
-          // We did not add api_key to /me in customerRoutes, so we will fetch it from a specific route if needed,
-          // or just tell the user to request it. But the user asked: "علشان اشغل API للعميل اضيف ID دارس للسيرفر او لاجيهاز".
+      Promise.all([
+        fetch(`${API_BASE_URL}/api/customer/me`, { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(`${API_BASE_URL}/api/customer/api-key`, { headers: { Authorization: `Bearer ${token}` } })
+      ])
+      .then(async ([resMe, resApi]) => {
+        if (resMe.ok) setCustomer(await resMe.json());
+        if (resApi.ok) {
+          const apiJson = await resApi.json();
+          setApiData(apiJson);
+          try {
+            const ips = JSON.parse(apiJson.api_allowed_ips || "[]");
+            setAllowedIpsText(ips.join(", "));
+          } catch(e) {}
         }
         setLoading(false);
       })
@@ -34,11 +36,83 @@ export default function ApiDocsPage() {
     }
   }, []);
 
+  const handleSaveIps = async () => {
+    const token = localStorage.getItem("customer_token");
+    if (!token) return;
+    
+    setSavingIps(true);
+    const ipsArray = allowedIpsText.split(",").map(i => i.trim()).filter(i => i);
+    
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/customer/api-key/allowed-ips`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ ips: ipsArray })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        alert("تم تحديث عناوين الـ IP بنجاح.");
+      } else {
+        alert("خطأ: " + data.message);
+      }
+    } catch(e) {
+      alert("حدث خطأ أثناء الحفظ.");
+    } finally {
+      setSavingIps(false);
+    }
+  };
+
+  const handleRegenerateKey = async () => {
+    if (!window.confirm("هل أنت متأكد من تغيير المفتاح؟ المفتاح القديم سيتوقف عن العمل فوراً.")) return;
+    
+    const token = localStorage.getItem("customer_token");
+    if (!token) return;
+    
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/customer/api-key/regenerate`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setApiData(prev => ({ ...prev, api_key: data.api_key }));
+        alert("تم توليد مفتاح جديد بنجاح.");
+      } else {
+        alert("خطأ: " + data.message);
+      }
+    } catch(e) {
+      alert("حدث خطأ أثناء توليد المفتاح.");
+    }
+  };
+
+  const handleRequestApi = async () => {
+    const token = localStorage.getItem("customer_token");
+    if (!token) return;
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/customer/request-api`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        setApiData(prev => ({ ...prev, api_requested: true }));
+        alert("تم إرسال طلب تفعيل الـ API للإدارة بنجاح.");
+      } else {
+        const data = await res.json();
+        alert("خطأ: " + data.message);
+      }
+    } catch (e) {
+      alert("حدث خطأ أثناء إرسال الطلب.");
+    }
+  };
+
   return (
     <MainLayout>
       <div className="container" style={{ padding: "40px 20px" }}>
         <h1 style={{ fontSize: "2.5rem", fontWeight: 800, textAlign: "center", marginBottom: "20px", color: "var(--primary-color)" }}>
-          شرح ربط الـ API (للموزعين)
+          إعدادات وشرح ربط الـ API
         </h1>
         
         <div style={{ maxWidth: "800px", margin: "0 auto", background: "rgba(30, 41, 59, 0.7)", padding: "30px", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.1)", boxShadow: "0 10px 30px rgba(0,0,0,0.5)" }}>
@@ -51,7 +125,7 @@ export default function ApiDocsPage() {
           </div>
 
           <h2 style={{ color: "#fff", marginBottom: "15px", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "10px" }}>
-            بيانات الربط الأساسية (API Credentials)
+            بيانات الربط الخاصة بك (API Credentials)
           </h2>
           
           <div style={{ background: "rgba(0,0,0,0.3)", padding: "20px", borderRadius: "8px", marginBottom: "30px", fontSize: "1.1rem" }}>
@@ -65,16 +139,61 @@ export default function ApiDocsPage() {
             <div style={{ marginBottom: "15px" }}>
               <strong>اسم المستخدم (Username):</strong>
               <span style={{ margin: "0 10px", color: "#94a3b8" }}>
-                {customer ? customer.username : "اسم المستخدم الخاص بك لدينا"}
+                {customer ? customer.username : "قم بتسجيل الدخول لمعرفة بياناتك"}
               </span>
             </div>
 
-            <div>
-              <strong>مفتاح الـ API (API Key):</strong>
-              <span style={{ margin: "0 10px", color: "#f87171", fontWeight: "bold" }}>
-                للحصول على مفتاح الـ API وتفعيل الحساب، يرجى التواصل مع الإدارة وتزويدهم بالـ (IP) الخاص بسيرفرك ليتم إضافته للقائمة البيضاء.
-              </span>
-            </div>
+            {apiData ? (
+              apiData.api_enabled ? (
+                <>
+                  <div style={{ marginBottom: "15px", display: "flex", alignItems: "center", flexWrap: "wrap", gap: "10px" }}>
+                    <strong>مفتاح الـ API (Key):</strong>
+                    <code style={{ background: "rgba(255,255,255,0.1)", padding: "4px 8px", borderRadius: "4px", color: "#fcd34d", direction: "ltr" }}>
+                      {apiData.api_key || "لا يوجد مفتاح (قم بالتوليد الآن)"}
+                    </code>
+                    <button 
+                      onClick={handleRegenerateKey}
+                      style={{ background: "#ef4444", color: "white", border: "none", padding: "5px 10px", borderRadius: "4px", cursor: "pointer", fontSize: "0.9rem" }}
+                    >
+                      توليد مفتاح جديد
+                    </button>
+                  </div>
+                  
+                  <div style={{ marginTop: "20px", background: "rgba(255,255,255,0.02)", padding: "15px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.05)" }}>
+                    <label style={{ display: "block", marginBottom: "8px", fontWeight: "bold", color: "#e2e8f0" }}>
+                      عناوين الـ IP المسموحة (للحماية):
+                    </label>
+                    <input 
+                      type="text" 
+                      value={allowedIpsText}
+                      onChange={(e) => setAllowedIpsText(e.target.value)}
+                      placeholder="أدخل IP سيرفرك هنا. للعديد افصل بينها بفاصلة (,)"
+                      style={{ width: "100%", padding: "10px", borderRadius: "4px", border: "1px solid #334155", background: "#0f172a", color: "white", marginBottom: "10px" }}
+                    />
+                    <button 
+                      onClick={handleSaveIps}
+                      disabled={savingIps}
+                      style={{ background: "#10b981", color: "white", border: "none", padding: "8px 15px", borderRadius: "4px", cursor: "pointer", fontSize: "0.95rem" }}
+                    >
+                      {savingIps ? "جاري الحفظ..." : "حفظ الـ IPs"}
+                    </button>
+                  </div>
+                </>
+              ) : apiData.api_requested ? (
+                <div style={{ color: "#fbbf24", fontWeight: "bold", background: "rgba(245, 158, 11, 0.1)", padding: "15px", borderRadius: "8px" }}>
+                  طلب تفعيل الـ API الخاص بك قيد المراجعة حالياً من قبل الإدارة.
+                </div>
+              ) : (
+                <div style={{ color: "#f87171", fontWeight: "bold", background: "rgba(248, 113, 113, 0.1)", padding: "15px", borderRadius: "8px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "10px" }}>
+                  <span>حساب الـ API الخاص بك غير مفعل حالياً.</span>
+                  <button onClick={handleRequestApi} style={{ background: "#ef4444", color: "white", border: "none", padding: "8px 15px", borderRadius: "4px", cursor: "pointer", fontWeight: "bold" }}>
+                    طلب تفعيل حساب الـ API
+                  </button>
+                </div>
+              )
+            ) : (
+              <div style={{ color: "#94a3b8" }}>يرجى تسجيل الدخول لعرض وتفعيل بيانات الـ API الخاصة بك.</div>
+            )}
           </div>
 
           <h2 style={{ color: "#fff", marginBottom: "15px", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "10px" }}>
@@ -91,8 +210,8 @@ export default function ApiDocsPage() {
           <div style={{ marginTop: "40px", padding: "20px", background: "rgba(245, 158, 11, 0.1)", borderRadius: "8px", border: "1px solid rgba(245, 158, 11, 0.3)" }}>
             <h3 style={{ margin: "0 0 10px", color: "#fbbf24" }}>⚠️ ملاحظات هامة</h3>
             <ul style={{ margin: 0, paddingRight: "20px", color: "#fef3c7", lineHeight: 1.6 }}>
-              <li>لن تعمل الطلبات إذا لم يكن الـ IP الخاص بسيرفرك مضافاً لدينا في اللوحة حمايةً لحسابك.</li>
-              <li>جميع الطلبات القادمة من الـ API سيتم تسعيرها بناءً على نسبة المكسب (Markup) المحددة لحسابك.</li>
+              <li>لن تعمل الطلبات إذا لم تقم بإضافة الـ IP الخاص بسيرفرك في القائمة البيضاء (IP Whitelist) بالأعلى.</li>
+              <li>جميع الطلبات القادمة من الـ API سيتم تسعيرها بناءً على نسبة المكسب (Markup) المحددة لحسابك بواسطة الإدارة.</li>
               <li>تأكد من وجود رصيد كافٍ في محفظتك لدينا، وإلا فسيتم رفض طلباتك تلقائياً.</li>
               <li>بعض الطلبات الخاصة عبر الـ API قد تتطلب موافقة يدوية من قبل الإدارة قبل البدء في التنفيذ.</li>
             </ul>
