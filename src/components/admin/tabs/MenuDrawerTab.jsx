@@ -14,6 +14,24 @@ export default function MenuDrawerTab({
     return true;
   });
 
+  const handleHideAll = async () => {
+    if (!window.confirm(`هل أنت متأكد من إخفاء جميع الأقسام المعروضة حالياً وعددها (${filteredCategories.length})؟`)) return;
+    for (const cat of filteredCategories) {
+      if (cat.show_in_menu !== false) {
+        await handleToggleCategoryMenuVisibility(cat.id, false);
+      }
+    }
+  };
+
+  const handleShowAll = async () => {
+    if (!window.confirm(`هل أنت متأكد من إظهار جميع الأقسام المعروضة حالياً وعددها (${filteredCategories.length})؟`)) return;
+    for (const cat of filteredCategories) {
+      if (cat.show_in_menu === false) {
+        await handleToggleCategoryMenuVisibility(cat.id, true);
+      }
+    }
+  };
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
       <div style={{ background: "linear-gradient(135deg, rgba(79, 70, 229, 0.15) 0%, rgba(139, 92, 246, 0.1) 100%)", padding: "24px", borderRadius: "20px", border: "1px solid rgba(79, 70, 229, 0.3)" }}>
@@ -47,6 +65,22 @@ export default function MenuDrawerTab({
           <option value="visible">الظاهرة فقط 👁️</option>
           <option value="hidden">المخفية فقط 👁️‍🗨️</option>
         </select>
+
+        <button 
+          onClick={handleHideAll}
+          className="glass-btn"
+          style={{ background: "rgba(239, 68, 68, 0.15)", border: "1px solid rgba(239, 68, 68, 0.4)", color: "#ef4444", fontWeight: "bold", padding: "10px 20px" }}
+        >
+          👁️‍🗨️ إخفاء الكل ({filteredCategories.filter(c => c.show_in_menu !== false).length})
+        </button>
+
+        <button 
+          onClick={handleShowAll}
+          className="glass-btn"
+          style={{ background: "rgba(16, 185, 129, 0.15)", border: "1px solid rgba(16, 185, 129, 0.4)", color: "#10b981", fontWeight: "bold", padding: "10px 20px" }}
+        >
+          👁️ إظهار الكل ({filteredCategories.filter(c => c.show_in_menu === false).length})
+        </button>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "16px" }}>
