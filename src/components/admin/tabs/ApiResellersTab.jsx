@@ -92,7 +92,7 @@ export default function ApiResellersTab({
   const [newResellerSearch, setNewResellerSearch] = useState("");
 
   const isTruthy = (val) => val === true || val === 1 || val === "1" || val === "true";
-  const apiResellers = customers.filter(c => isTruthy(c.api_enabled) || isTruthy(c.api_requested) || (c.api_key && c.api_key !== "null" && c.api_key !== ""));
+  const apiResellers = customers.filter(c => isTruthy(c.api_enabled) || (c.api_key && c.api_key !== "null" && c.api_key !== ""));
   
   // Apply the existing search filter to our filtered list
   const displayCustomers = apiResellers.filter(c => 
@@ -113,18 +113,6 @@ export default function ApiResellersTab({
           </div>
           <div className="stat-card-icon-wrapper" style={{ "--icon-bg": "rgba(234, 179, 8, 0.1)", "--icon-border": "rgba(234, 179, 8, 0.2)", "--icon-color": "#eab308" }}>
             🔑
-          </div>
-        </div>
-        
-        <div className="premium-stat-card" style={{ "--glow-color": "rgba(14, 165, 233, 0.15)" }}>
-          <div className="stat-card-info">
-            <span className="stat-card-title">طلبات الـ API المعلقة</span>
-            <span className="stat-card-value">
-              {apiResellers.filter(c => c.api_requested && !c.api_enabled).length}
-            </span>
-          </div>
-          <div className="stat-card-icon-wrapper" style={{ "--icon-bg": "rgba(14, 165, 233, 0.1)", "--icon-border": "rgba(14, 165, 233, 0.2)", "--icon-color": "#0ea5e9" }}>
-            ⏳
           </div>
         </div>
       </div>
@@ -176,8 +164,6 @@ export default function ApiResellersTab({
                   <td data-label="حالة الـ API">
                     {customer.api_enabled ? (
                       <span className="premium-badge premium-badge-approved">مفعل</span>
-                    ) : customer.api_requested ? (
-                      <span className="premium-badge" style={{ background: "rgba(245, 158, 11, 0.15)", color: "#fbbf24", border: "1px solid rgba(245, 158, 11, 0.3)" }}>طلب معلق</span>
                     ) : (
                       <span className="premium-badge premium-badge-rejected">معطل</span>
                     )}

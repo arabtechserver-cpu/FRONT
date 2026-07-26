@@ -96,15 +96,15 @@ export default function ApiDocsPage() {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` }
       });
+      const data = await res.json();
       if (res.ok) {
-        setApiData(prev => ({ ...prev, api_requested: true }));
-        alert("تم إرسال طلب تفعيل الـ API للإدارة بنجاح.");
+        setApiData(prev => ({ ...prev, api_enabled: true, api_requested: false, api_key: data.api_key || prev?.api_key }));
+        alert("تم تفعيل الـ API وإنشاء المفتاح بنجاح.");
       } else {
-        const data = await res.json();
         alert("خطأ: " + data.message);
       }
     } catch (e) {
-      alert("حدث خطأ أثناء إرسال الطلب.");
+      alert("حدث خطأ أثناء الاتصال بالخادم.");
     }
   };
 
@@ -196,13 +196,13 @@ export default function ApiDocsPage() {
                 </>
               ) : apiData.api_requested ? (
                 <div style={{ color: "var(--accent-color)", fontWeight: "bold", background: "rgba(245, 158, 11, 0.1)", padding: "15px", borderRadius: "8px" }}>
-                  طلب تفعيل الـ API الخاص بك قيد المراجعة حالياً من قبل الإدارة.
+                  سيتم تفعيل الـ API الخاص بك قريباً.
                 </div>
               ) : (
                 <div style={{ color: "var(--danger-color)", fontWeight: "bold", background: "rgba(248, 113, 113, 0.1)", padding: "15px", borderRadius: "8px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "10px" }}>
                   <span>حساب الـ API الخاص بك غير مفعل حالياً.</span>
                   <button onClick={handleRequestApi} className="glass-btn" style={{ background: "var(--danger-color)", color: "white", padding: "10px 20px" }}>
-                    طلب تفعيل حساب الـ API
+                    تفعيل حساب الـ API فوراً
                   </button>
                 </div>
               )
