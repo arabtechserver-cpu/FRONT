@@ -224,28 +224,34 @@ export default function ApiResellersTab({
                 onChange={e => setNewResellerSearch(e.target.value)}
               />
               <div style={{ maxHeight: "300px", overflowY: "auto", background: "rgba(0,0,0,0.2)", borderRadius: "8px", padding: "10px" }}>
-                {customers
-                  .filter(c => !c.api_enabled && !c.api_requested)
-                  .filter(c => newResellerSearch ? c.username.toLowerCase().includes(newResellerSearch.toLowerCase()) || c.email?.toLowerCase().includes(newResellerSearch.toLowerCase()) : true)
-                  .slice(0, 20)
-                  .map(c => (
-                    <div 
-                      key={c.id}
-                      style={{ padding: "10px", borderBottom: "1px solid rgba(255,255,255,0.05)", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center" }}
-                      onClick={() => {
-                        setShowAddModal(false);
-                        openEditModal(c);
-                      }}
-                      onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.05)"}
-                      onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
-                    >
-                      <div>
-                        <div style={{ fontWeight: "bold", color: "#e2e8f0" }}>{c.username}</div>
-                        <div style={{ fontSize: "0.8rem", color: "#64748b" }}>{c.email || c.phone || 'لا يوجد بيانات'}</div>
+                {!newResellerSearch ? (
+                  <p style={{ textAlign: "center", color: "#64748b", margin: "20px 0" }}>
+                    قم بكتابة اسم العميل للبحث...
+                  </p>
+                ) : (
+                  customers
+                    .filter(c => !c.api_enabled && !c.api_requested)
+                    .filter(c => c.username.toLowerCase().includes(newResellerSearch.toLowerCase()) || c.email?.toLowerCase().includes(newResellerSearch.toLowerCase()))
+                    .slice(0, 20)
+                    .map(c => (
+                      <div 
+                        key={c.id}
+                        style={{ padding: "10px", borderBottom: "1px solid rgba(255,255,255,0.05)", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center" }}
+                        onClick={() => {
+                          setShowAddModal(false);
+                          openEditModal(c);
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.05)"}
+                        onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
+                      >
+                        <div>
+                          <div style={{ fontWeight: "bold", color: "#e2e8f0" }}>{c.username}</div>
+                          <div style={{ fontSize: "0.8rem", color: "#64748b" }}>{c.email || c.phone || 'لا يوجد بيانات'}</div>
+                        </div>
+                        <span style={{ color: "#38bdf8", fontSize: "0.85rem", fontWeight: "bold" }}>اختر</span>
                       </div>
-                      <span style={{ color: "#38bdf8", fontSize: "0.85rem", fontWeight: "bold" }}>اختر</span>
-                    </div>
-                  ))}
+                    ))
+                )}
               </div>
             </div>
           </div>
