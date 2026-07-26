@@ -765,9 +765,9 @@ export default function DashboardProvider({ children }) {
 
   const isUnlockerOrder = useCallback((order) => {
     if (!order) return false;
-    if (order.api_source === "amrr-unlocker") return true;
+    if (order.api_provider_id || order.api_source) return true;
     const relatedService = services.find((service) => Number(service.id) === Number(order.service_id));
-    return relatedService?.api_source === "amrr-unlocker";
+    return Boolean(relatedService?.api_provider_id || relatedService?.api_source);
   }, [services]);
 
   const checkUnlockerOrderStatus = async (orderId) => {

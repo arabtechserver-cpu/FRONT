@@ -205,7 +205,7 @@ export default function OrdersTab({
                 </button>
                 {order.status === "pending" && (
                   <>
-                    {order.api_source === "amrr-unlocker" ? (
+                    {order.api_provider_id || order.api_source ? (
                       <>
                         <button onClick={() => handleApproveOrder(order)} className="action-btn" style={{ background: "rgba(14,165,233,0.18)", border: "1px solid rgba(14,165,233,0.3)", color: "#0ea5e9", fontSize: "0.8rem", padding: "6px 14px", fontWeight: "bold" }}>
                           ⚡ اعتماد وإرسال للـAPI
@@ -232,7 +232,7 @@ export default function OrdersTab({
                     )}
                   </>
                 )}
-                {order.status === "processing" && order.api_source === "amrr-unlocker" && (
+                {order.status === "processing" && (order.api_provider_id || order.api_source) && (
                   <>
                     <button onClick={() => checkUnlockerOrderStatus(order.id)} className="action-btn" style={{ background: "rgba(34,197,94,0.18)", border: "1px solid rgba(34,197,94,0.3)", color: "#22c55e", fontSize: "0.8rem", padding: "6px 14px", fontWeight: "bold" }}>
                       🔄 تحديث حالة API
