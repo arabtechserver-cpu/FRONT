@@ -192,7 +192,16 @@ export default function ApiDocsPage() {
                 </div>
               )
             ) : (
-              <div style={{ color: "#94a3b8" }}>يرجى تسجيل الدخول لعرض وتفعيل بيانات الـ API الخاصة بك.</div>
+              <div style={{ textAlign: "center", padding: "40px 20px", background: "rgba(59, 130, 246, 0.05)", borderRadius: "12px", border: "1px dashed rgba(59, 130, 246, 0.3)" }}>
+                <span style={{ fontSize: "3rem", display: "block", marginBottom: "15px" }}>🔒</span>
+                <h3 style={{ color: "#60a5fa", marginBottom: "10px", fontSize: "1.5rem" }}>يجب تسجيل الدخول أولاً</h3>
+                <p style={{ color: "#94a3b8", marginBottom: "25px", fontSize: "1.1rem" }}>
+                  يرجى تسجيل الدخول بحسابك أو إنشاء حساب جديد للتمكن من طلب تفعيل الـ API وعرض بيانات الربط الخاصة بك.
+                </p>
+                <a href="/login" style={{ display: "inline-block", background: "linear-gradient(135deg, var(--primary-color) 0%, #8b5cf6 100%)", color: "white", padding: "12px 30px", borderRadius: "30px", fontWeight: "bold", textDecoration: "none", fontSize: "1.1rem", boxShadow: "0 4px 15px rgba(79, 70, 229, 0.4)", transition: "transform 0.2s" }}>
+                  تسجيل الدخول / حساب جديد
+                </a>
+              </div>
             )}
           </div>
 

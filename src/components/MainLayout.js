@@ -417,15 +417,13 @@ export default function MainLayout({ children }) {
           ))}
           
           {isCustomerLoggedIn && (
-            <>
-              <Link href="/wallet" className="mobile-drawer-link" onClick={() => setMenuOpen(false)}>
-                <span style={{ fontSize: "1.2rem" }}>💳</span> شحن رصيدي
-              </Link>
-              <Link href="/api-docs" className="mobile-drawer-link" onClick={() => setMenuOpen(false)}>
-                <span style={{ fontSize: "1.2rem" }}>🔌</span> الربط عبر الـ API
-              </Link>
-            </>
+            <Link href="/wallet" className="mobile-drawer-link" onClick={() => setMenuOpen(false)}>
+              <span style={{ fontSize: "1.2rem" }}>💳</span> شحن رصيدي
+            </Link>
           )}
+          <Link href="/api-docs" className="mobile-drawer-link" onClick={() => setMenuOpen(false)}>
+            <span style={{ fontSize: "1.2rem" }}>🔌</span> الربط عبر الـ API
+          </Link>
           <Link href="/terms" className="mobile-drawer-link" onClick={() => setMenuOpen(false)}>
             <span style={{ fontSize: "1.2rem" }}>⚖️</span> الشروط وسياسة الاسترجاع
           </Link>
