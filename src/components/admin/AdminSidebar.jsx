@@ -16,6 +16,7 @@ export default function AdminSidebar() {
 
   const tabs = [
     { tab: "orders", icon: "📥", label: "طلبات الخدمات" },
+    { tab: "menu-drawer", icon: "📱", label: "قائمة الموبايل الجانبية" },
     { tab: "categories", icon: "📁", label: "إدارة الأقسام" },
     { tab: "services", icon: "⚡", label: "إدارة الخدمات" },
     { tab: "api-providers", icon: "🔌", label: "مزودي الـ API" },
