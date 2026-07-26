@@ -1065,13 +1065,7 @@ export default function DashboardProvider({ children }) {
     if (!confirm("هل أنت متأكد من حذف هذا القسم؟ سيتم حذف جميع الخدمات التابعة له تلقائياً!")) return;
 
     await secureDeleteFetch(`${API_BASE_URL}/api/categories/${id}`, () => {
-      setCategories(prev => prev.filter(c => c.id !== id).map(c => {
-        if (Number(c.parent_id) === Number(id)) {
-          return { ...c, parent_id: null };
-        }
-        return c;
-      }));
-      setServices(prev => prev.filter(s => s.category_id !== id));
+      fetchData(true);
     });
   };
 
@@ -1110,8 +1104,7 @@ export default function DashboardProvider({ children }) {
       { sourceIds: mergeSourceIds, targetId: mergeTargetId },
       () => {
         alert("تم دمج الأقسام ونقل الخدمات بنجاح!");
-        fetchCategories();
-        fetchServices();
+        fetchData(true);
         if (onMergeSuccessCallback) onMergeSuccessCallback();
       },
       "يرجى إدخال كود التحقق (OTP) لإتمام عملية الدمج.",
@@ -1289,7 +1282,7 @@ export default function DashboardProvider({ children }) {
       const data = await res.json();
       if (res.ok) {
         setCategories(categories.map(c => c.id === id ? { ...c, show_in_menu: currentVal } : c));
-        fetchCategories(); // Re-fetch to ensure synchronization
+        fetchData(true); // Re-fetch to ensure synchronization
       } else {
         alert(data.message || "حدث خطأ");
       }
