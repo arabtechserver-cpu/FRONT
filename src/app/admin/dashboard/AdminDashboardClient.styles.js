@@ -14,6 +14,15 @@ const dashboardStyles = `
           overflow-x: hidden;
         }
 
+        .admin-mobile-topbar {
+          display: none;
+          align-items: center;
+          justify-content: space-between;
+          padding: 15px 20px;
+          background: rgba(255,255,255,0.03);
+          border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
         /* Ambient animated aurora bg spheres */
         .admin-dashboard-root::before, .admin-dashboard-root::after {
           content: '';
@@ -875,6 +884,10 @@ const dashboardStyles = `
           }
           .premium-sidebar {
             display: none !important;
+          }
+
+          .admin-mobile-topbar {
+            display: flex;
           }
 
           .admin-burger-btn {
