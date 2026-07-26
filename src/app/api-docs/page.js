@@ -15,12 +15,12 @@ export default function ApiDocsPage() {
     const token = localStorage.getItem("customer_token");
     if (token) {
       Promise.all([
-        fetch(`${API_BASE_URL}/api/customer/me`, { headers: { Authorization: `Bearer ${token}` } }),
-        fetch(`${API_BASE_URL}/api/customer/api-key`, { headers: { Authorization: `Bearer ${token}` } })
+        fetch(`${API_BASE_URL}/api/customer/me`, { headers: { Authorization: `Bearer ${token}` } }).catch(() => null),
+        fetch(`${API_BASE_URL}/api/customer/dev-settings`, { headers: { Authorization: `Bearer ${token}` } }).catch(() => null)
       ])
       .then(async ([resMe, resApi]) => {
-        if (resMe.ok) setCustomer(await resMe.json());
-        if (resApi.ok) {
+        if (resMe && resMe.ok) setCustomer(await resMe.json());
+        if (resApi && resApi.ok) {
           const apiJson = await resApi.json();
           setApiData(apiJson);
           try {
@@ -44,7 +44,7 @@ export default function ApiDocsPage() {
     const ipsArray = allowedIpsText.split(",").map(i => i.trim()).filter(i => i);
     
     try {
-      const res = await fetch(`${API_BASE_URL}/api/customer/api-key/allowed-ips`, {
+      const res = await fetch(`${API_BASE_URL}/api/customer/dev-settings/allowed-ips`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -72,7 +72,7 @@ export default function ApiDocsPage() {
     if (!token) return;
     
     try {
-      const res = await fetch(`${API_BASE_URL}/api/customer/api-key/regenerate`, {
+      const res = await fetch(`${API_BASE_URL}/api/customer/dev-settings/regenerate`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` }
       });
