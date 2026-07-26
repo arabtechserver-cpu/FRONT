@@ -91,7 +91,8 @@ export default function ApiResellersTab({
   const [showAddModal, setShowAddModal] = useState(false);
   const [newResellerSearch, setNewResellerSearch] = useState("");
 
-  const apiResellers = customers.filter(c => c.api_enabled || c.api_requested || c.api_key);
+  const isTruthy = (val) => val === true || val === 1 || val === "1" || val === "true";
+  const apiResellers = customers.filter(c => isTruthy(c.api_enabled) || isTruthy(c.api_requested) || (c.api_key && c.api_key !== "null" && c.api_key !== ""));
   
   // Apply the existing search filter to our filtered list
   const displayCustomers = apiResellers.filter(c => 
