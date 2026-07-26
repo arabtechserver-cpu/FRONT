@@ -140,7 +140,12 @@ export default function OrdersTab({
               {/* Row 2: Customer + Service */}
               <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
                 <div style={{ flex: 1, minWidth: "120px" }}>
-                  <div style={{ fontSize: "0.73rem", color: "#64748b", marginBottom: "2px" }}>العميل</div>
+                  <div style={{ fontSize: "0.73rem", color: "#64748b", marginBottom: "2px", display: "flex", alignItems: "center", gap: "6px" }}>
+                    العميل
+                    {(order.is_api_order === true || order.is_api_order === 1 || order.api_reseller_id) && (
+                      <span style={{ background: "#8b5cf6", color: "white", padding: "1px 6px", borderRadius: "4px", fontSize: "0.65rem", fontWeight: "bold", letterSpacing: "1px" }}>API</span>
+                    )}
+                  </div>
                   <div style={{ fontWeight: 700, color: order.customer_username && order.customer_username.includes("زائر") ? "#94a3b8" : "#fbbf24", fontSize: "0.9rem" }}>
                     {order.customer_username || "زائر"}
                   </div>
