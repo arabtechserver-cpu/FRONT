@@ -33,6 +33,10 @@ export default function CustomerLogin() {
   const [forgotIdentifier, setForgotIdentifier] = useState("");
   const [forgotToken, setForgotToken] = useState("");
 
+  // Change Password State
+  const [changePassStep, setChangePassStep] = useState(0); // 0=none, 1=otp sent, enter new pass
+  const [changePassNew, setChangePassNew] = useState("");
+
   const router = useRouter();
 
   useEffect(() => {
@@ -323,6 +327,54 @@ export default function CustomerLogin() {
     router.refresh();
   };
 
+  const handleChangePasswordRequest = async (method) => {
+    setError(""); setSuccess(""); setSubmitting(true);
+    const token = localStorage.getItem("customer_token");
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/customer/request-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ method })
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || "حدث خطأ.");
+      setSuccess(data.message);
+      setChangePassStep(1);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleChangePasswordSubmit = async (e) => {
+    e.preventDefault();
+    setError(""); setSuccess("");
+    if (!changePassNew || changePassNew.length < 6) {
+      setError("كلمة المرور يجب أن تكون 6 أحرف على الأقل.");
+      return;
+    }
+    setSubmitting(true);
+    const token = localStorage.getItem("customer_token");
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/customer/change-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ otp: otpCode.trim(), newPassword: changePassNew })
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || "حدث خطأ.");
+      setSuccess(data.message);
+      setChangePassStep(0);
+      setOtpCode("");
+      setChangePassNew("");
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   if (!isMounted) {
     return null;
   }
@@ -413,26 +465,93 @@ export default function CustomerLogin() {
               </div>
 
               {/* Navigation Actions */}
-              <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "10px" }}>
-                <Link href="/orders" className="glass-btn glass-btn-primary" style={{ padding: "12px", textAlign: "center", textDecoration: "none", width: "100%", borderRadius: "12px", fontWeight: "bold" }}>
-                  📦 تتبع واستعراض طلباتي
-                </Link>
-                <Link href="/wallet" className="glass-btn" style={{ padding: "12px", textAlign: "center", textDecoration: "none", width: "100%", borderRadius: "12px", fontWeight: "bold", background: "rgba(255,255,255,0.05)" }}>
-                  💳 شحن رصيد المحفظة
-                </Link>
-              </div>
+              {changePassStep === 0 ? (
+                <>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "10px" }}>
+                    <Link href="/orders" className="glass-btn glass-btn-primary" style={{ padding: "12px", textAlign: "center", textDecoration: "none", width: "100%", borderRadius: "12px", fontWeight: "bold" }}>
+                      📦 تتبع واستعراض طلباتي
+                    </Link>
+                    <Link href="/wallet" className="glass-btn" style={{ padding: "12px", textAlign: "center", textDecoration: "none", width: "100%", borderRadius: "12px", fontWeight: "bold", background: "rgba(255,255,255,0.05)" }}>
+                      💳 شحن رصيد المحفظة
+                    </Link>
+                    <button
+                      onClick={() => handleChangePasswordRequest("email")}
+                      className="glass-btn"
+                      style={{ padding: "12px", width: "100%", borderRadius: "12px", fontWeight: "bold", background: "rgba(255,255,255,0.05)" }}
+                      disabled={submitting}
+                    >
+                      {submitting ? "جاري الإرسال..." : "🔒 تغيير كلمة المرور"}
+                    </button>
+                  </div>
 
-              <hr style={{ opacity: 0.08, margin: "10px 0" }} />
+                  <hr style={{ opacity: 0.08, margin: "10px 0" }} />
 
-              {/* Logout Action */}
-              <button
-                onClick={handleLogout}
-                className="glass-btn"
-                style={{ padding: "12px", width: "100%", borderRadius: "12px", color: "var(--danger-color)", fontWeight: "bold", background: "rgba(244, 63, 94, 0.05)", border: "1px solid rgba(244, 63, 94, 0.15)" }}
-              >
-                🚪 تسجيل الخروج من الحساب
-              </button>
+                  {/* Logout Action */}
+                  <button
+                    onClick={handleLogout}
+                    className="glass-btn"
+                    style={{ padding: "12px", width: "100%", borderRadius: "12px", color: "var(--danger-color)", fontWeight: "bold", background: "rgba(244, 63, 94, 0.05)", border: "1px solid rgba(244, 63, 94, 0.15)" }}
+                  >
+                    🚪 تسجيل الخروج من الحساب
+                  </button>
+                </>
+              ) : (
+                <form onSubmit={handleChangePasswordSubmit} style={{ display: "flex", flexDirection: "column", gap: "15px", marginTop: "10px", padding: "15px", background: "rgba(0,0,0,0.3)", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.1)" }}>
+                  <h3 style={{ margin: "0 0 10px 0", color: "var(--primary-color)", textAlign: "center" }}>تغيير كلمة المرور</h3>
+                  <p style={{ color: "var(--text-muted)", fontSize: "0.85rem", textAlign: "center", marginBottom: "5px" }}>
+                    تم إرسال كود التحقق. يرجى إدخاله هنا مع كلمة المرور الجديدة.
+                  </p>
+                  
+                  <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
+                    <label style={{ fontSize: "0.85rem", fontWeight: "bold" }}>كود التحقق (OTP):</label>
+                    <input
+                      type="text"
+                      placeholder="1 2 3 4 5 6"
+                      value={otpCode}
+                      onChange={(e) => setOtpCode(e.target.value)}
+                      maxLength={6}
+                      style={{ width: "100%", padding: "10px", borderRadius: "8px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "white", textAlign: "center", letterSpacing: "5px", fontWeight: "bold" }}
+                      required
+                    />
+                  </div>
 
+                  <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
+                    <label style={{ fontSize: "0.85rem", fontWeight: "bold" }}>كلمة المرور الجديدة:</label>
+                    <div style={{ position: "relative" }}>
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        placeholder="أدخل كلمة المرور الجديدة"
+                        value={changePassNew}
+                        onChange={(e) => setChangePassNew(e.target.value)}
+                        style={{ width: "100%", padding: "10px 40px 10px 10px", borderRadius: "8px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "white" }}
+                        required
+                      />
+                      <button type="button" onClick={() => setShowPassword(!showPassword)} style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", background: "none", border: "none", color: "var(--primary-color)", cursor: "pointer", fontSize: "0.8rem", fontWeight: "bold" }}>
+                        {showPassword ? "إخفاء" : "إظهار"}
+                      </button>
+                    </div>
+                  </div>
+
+                  <button type="submit" disabled={submitting} className="glass-btn glass-btn-primary" style={{ padding: "12px", borderRadius: "8px", marginTop: "10px" }}>
+                    {submitting ? "جاري الحفظ..." : "حفظ كلمة المرور"}
+                  </button>
+                  <button type="button" onClick={() => { setChangePassStep(0); setOtpCode(""); setChangePassNew(""); }} className="glass-btn" style={{ padding: "10px", borderRadius: "8px", background: "rgba(255,255,255,0.04)" }}>
+                    إلغاء
+                  </button>
+                </form>
+              )}
+
+              {error && (
+                <div style={{ padding: "10px 14px", background: "rgba(244, 63, 94, 0.1)", borderRight: "4px solid var(--danger-color)", color: "var(--danger-color)", borderRadius: "8px", fontSize: "0.85rem", fontWeight: "600", marginTop: "10px" }}>
+                  ⚠️ {error}
+                </div>
+              )}
+
+              {success && (
+                <div style={{ padding: "10px 14px", background: "rgba(16, 185, 129, 0.1)", borderRight: "4px solid var(--success-color)", color: "var(--success-color)", borderRadius: "8px", fontSize: "0.85rem", fontWeight: "600", marginTop: "10px" }}>
+                  ✓ {success}
+                </div>
+              )}
             </div>
           ) : (
             <div style={{ textAlign: "center", padding: "20px", color: "var(--danger-color)" }}>فشل تحميل الملف الشخصي. يرجى تسجيل الدخول مجدداً.</div>
