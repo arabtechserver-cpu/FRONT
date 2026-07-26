@@ -36,7 +36,7 @@ export default function AdminSidebar() {
       {adminDrawerOpen && (
         <div className="mobile-drawer-overlay" onClick={() => setAdminDrawerOpen(false)} />
       )}
-      <div className={`mobile-drawer ${adminDrawerOpen ? "open" : "closed"}`}>
+      <div className={`mobile-drawer admin-drawer-dark ${adminDrawerOpen ? "open" : "closed"}`}>
         <div className="mobile-drawer-header">
           <span className="mobile-drawer-title">
             <div className="logo-circle" style={{ width: "32px", height: "32px", fontSize: "1rem" }}>Z</div>

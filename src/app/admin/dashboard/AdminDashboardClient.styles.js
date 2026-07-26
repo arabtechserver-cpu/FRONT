@@ -23,6 +23,51 @@ const dashboardStyles = `
           border-bottom: 1px solid rgba(255,255,255,0.05);
         }
 
+        /* Force dark theme on admin drawer */
+        :global([data-theme="light"]) .admin-drawer-dark,
+        .admin-dashboard-root .admin-drawer-dark {
+          background: #0f172a !important;
+          border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+        }
+        :global([data-theme="light"]) .admin-drawer-dark .mobile-drawer-header {
+          border-bottom: 1px solid rgba(255, 255, 255, 0.07) !important;
+        }
+        :global([data-theme="light"]) .admin-drawer-dark .mobile-drawer-title,
+        :global([data-theme="light"]) .admin-drawer-dark .mobile-drawer-link {
+          color: #f8fafc !important;
+        }
+        :global([data-theme="light"]) .admin-drawer-dark .mobile-drawer-link {
+          background: rgba(255, 255, 255, 0.04) !important;
+          border-color: rgba(255, 255, 255, 0.07) !important;
+        }
+        :global([data-theme="light"]) .admin-drawer-dark .mobile-drawer-link:hover {
+          background: rgba(255, 255, 255, 0.08) !important;
+          border-color: rgba(0, 180, 216, 0.25) !important;
+        }
+        :global([data-theme="light"]) .admin-drawer-dark .mobile-drawer-link.active {
+          background: linear-gradient(135deg, rgba(0,180,216,0.15) 0%, rgba(139,92,246,0.08) 100%) !important;
+          border-color: rgba(0,180,216,0.3) !important;
+          color: #38bdf8 !important;
+        }
+        :global([data-theme="light"]) .admin-drawer-dark .mobile-drawer-user-card {
+          background: linear-gradient(135deg, rgba(0,180,216,0.10) 0%, rgba(139,92,246,0.08) 100%) !important;
+          border-color: rgba(0,180,216,0.2) !important;
+          color: #38bdf8 !important;
+        }
+        :global([data-theme="light"]) .admin-drawer-dark .mobile-drawer-divider {
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent) !important;
+        }
+        :global([data-theme="light"]) .admin-drawer-dark .mobile-drawer-close {
+          border-color: rgba(255, 255, 255, 0.10) !important;
+          background: rgba(255, 255, 255, 0.06) !important;
+          color: #94a3b8 !important;
+        }
+        :global([data-theme="light"]) .admin-drawer-dark .mobile-drawer-close:hover {
+          background: rgba(244, 63, 94, 0.15) !important;
+          border-color: rgba(244, 63, 94, 0.3) !important;
+          color: #f87171 !important;
+        }
+
         /* Ambient animated aurora bg spheres */
         .admin-dashboard-root::before, .admin-dashboard-root::after {
           content: '';
