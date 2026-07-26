@@ -1281,8 +1281,7 @@ export default function DashboardProvider({ children }) {
       });
       const data = await res.json();
       if (res.ok) {
-        setCategories(categories.map(c => c.id === id ? { ...c, show_in_menu: currentVal } : c));
-        fetchData(true); // Re-fetch to ensure synchronization
+        setCategories(prev => prev.map(c => c.id === id ? { ...c, show_in_menu: currentVal } : c));
       } else {
         alert(data.message || "حدث خطأ");
       }
