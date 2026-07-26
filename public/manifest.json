@@ -1,0 +1,65 @@
+{
+  "name": "عرب تك سيرفر",
+  "short_name": "عرب تك سيرفر",
+  "description": "سيرفر عرب تك لخدمات وبرامج السوفت وير",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#141a28",
+  "theme_color": "#00b4d8",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/icons/icon-16.png",
+      "type": "image/png",
+      "sizes": "16x16"
+    },
+    {
+      "src": "/icons/icon-32.png",
+      "type": "image/png",
+      "sizes": "32x32"
+    },
+    {
+      "src": "/icons/icon-48.png",
+      "type": "image/png",
+      "sizes": "48x48"
+    },
+    {
+      "src": "/icons/icon-64.png",
+      "type": "image/png",
+      "sizes": "64x64"
+    },
+    {
+      "src": "/icons/icon-96.png",
+      "type": "image/png",
+      "sizes": "96x96"
+    },
+    {
+      "src": "/icons/icon-128.png",
+      "type": "image/png",
+      "sizes": "128x128"
+    },
+    {
+      "src": "/icons/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/icons/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
+    }
+  ]
+}
