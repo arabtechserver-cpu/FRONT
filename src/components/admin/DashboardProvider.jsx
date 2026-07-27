@@ -2059,7 +2059,7 @@ export default function DashboardProvider({ children }) {
       setEditCatLinkedCategories,
       applyToServices,
       categories,
-      setapplyToServices,
+      setApplyToServices,
       editCatId
     },
     editServiceModal: {
