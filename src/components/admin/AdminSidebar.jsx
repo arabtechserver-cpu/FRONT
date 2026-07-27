@@ -20,6 +20,7 @@ export default function AdminSidebar() {
     { tab: "categories", icon: "📁", label: "إدارة الأقسام" },
     { tab: "services", icon: "⚡", label: "إدارة الخدمات" },
     { tab: "api-providers", icon: "🔌", label: "مزودي الـ API" },
+    { tab: "amrr_unlocker", icon: "🔗", label: "بوابة Amrr Unlocker" },
     { tab: "banners", icon: "🖼️", label: "إدارة البانر الإعلاني" },
     { tab: "reviews", icon: "⭐", label: "آراء العملاء" },
     { tab: "memberships", icon: "⭐", label: "نظام العضويات" },
