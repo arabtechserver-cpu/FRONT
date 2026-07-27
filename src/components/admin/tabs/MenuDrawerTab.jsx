@@ -5,32 +5,10 @@ export default function MenuDrawerTab({
   handleToggleCategoryMenuVisibility
 }) {
   const [searchTerm, setSearchTerm] = useState("");
-  const [filter, setFilter] = useState("all");
-
   const filteredCategories = categories.filter(c => {
     if (searchTerm && !c.name.toLowerCase().includes(searchTerm.toLowerCase())) return false;
-    if (filter === "visible") return c.show_in_menu !== false;
-    if (filter === "hidden") return c.show_in_menu === false;
     return true;
   });
-
-  const handleHideAll = async () => {
-    if (!window.confirm(`هل أنت متأكد من إخفاء جميع الأقسام المعروضة حالياً وعددها (${filteredCategories.length})؟`)) return;
-    for (const cat of filteredCategories) {
-      if (cat.show_in_menu !== false) {
-        await handleToggleCategoryMenuVisibility(cat.id, false);
-      }
-    }
-  };
-
-  const handleShowAll = async () => {
-    if (!window.confirm(`هل أنت متأكد من إظهار جميع الأقسام المعروضة حالياً وعددها (${filteredCategories.length})؟`)) return;
-    for (const cat of filteredCategories) {
-      if (cat.show_in_menu === false) {
-        await handleToggleCategoryMenuVisibility(cat.id, true);
-      }
-    }
-  };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
@@ -55,32 +33,7 @@ export default function MenuDrawerTab({
           <span className="search-input-icon">🔍</span>
         </div>
         
-        <select 
-          className="form-input-premium" 
-          style={{ width: "auto", minWidth: "150px" }}
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-        >
-          <option value="all">الكل</option>
-          <option value="visible">الظاهرة فقط 👁️</option>
-          <option value="hidden">المخفية فقط 👁️‍🗨️</option>
-        </select>
 
-        <button 
-          onClick={handleHideAll}
-          className="glass-btn"
-          style={{ background: "rgba(239, 68, 68, 0.15)", border: "1px solid rgba(239, 68, 68, 0.4)", color: "#ef4444", fontWeight: "bold", padding: "10px 20px" }}
-        >
-          👁️‍🗨️ إخفاء الكل ({filteredCategories.filter(c => c.show_in_menu !== false).length})
-        </button>
-
-        <button 
-          onClick={handleShowAll}
-          className="glass-btn"
-          style={{ background: "rgba(16, 185, 129, 0.15)", border: "1px solid rgba(16, 185, 129, 0.4)", color: "#10b981", fontWeight: "bold", padding: "10px 20px" }}
-        >
-          👁️ إظهار الكل ({filteredCategories.filter(c => c.show_in_menu === false).length})
-        </button>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "16px" }}>
@@ -104,30 +57,7 @@ export default function MenuDrawerTab({
               </div>
             </div>
 
-            <button 
-              onClick={() => handleToggleCategoryMenuVisibility(cat.id, cat.show_in_menu === false)}
-              style={{
-                width: "100%",
-                padding: "10px",
-                borderRadius: "10px",
-                border: cat.show_in_menu === false ? "1px solid rgba(16, 185, 129, 0.4)" : "1px solid rgba(239, 68, 68, 0.4)",
-                background: cat.show_in_menu === false ? "rgba(16, 185, 129, 0.15)" : "rgba(239, 68, 68, 0.15)",
-                color: cat.show_in_menu === false ? "#10b981" : "#ef4444",
-                fontWeight: "bold",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "8px",
-                transition: "all 0.2s"
-              }}
-            >
-              {cat.show_in_menu === false ? (
-                <><span>👁️</span> إظهار في القائمة</>
-              ) : (
-                <><span>👁️‍🗨️</span> إخفاء من القائمة</>
-              )}
-            </button>
+
           </div>
         ))}
       </div>

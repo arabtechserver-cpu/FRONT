@@ -16,11 +16,7 @@ export default function CategoriesTab({
   const [selectedCats, setSelectedCats] = useState([]);
   const [visibilityFilter, setVisibilityFilter] = useState("all");
 
-  const finalFilteredCats = filteredCategories.filter(c => {
-    if (visibilityFilter === "visible") return c.show_in_menu !== false;
-    if (visibilityFilter === "hidden") return c.show_in_menu === false;
-    return true;
-  });
+  const finalFilteredCats = filteredCategories;
 
   const toggleSelectCat = (id) => {
     setSelectedCats(prev => 
@@ -28,13 +24,7 @@ export default function CategoriesTab({
     );
   };
 
-  const handleBulkToggleVisibility = async (show) => {
-    if (!window.confirm('هل أنت متأكد من ' + (show ? 'إظهار' : 'إخفاء') + ' الأقسام المحددة (' + selectedCats.length + ')؟')) return;
-    for (const id of selectedCats) {
-      await handleToggleCategoryMenuVisibility(id, show);
-    }
-    setSelectedCats([]);
-  };
+
 
   const handleSelectAll = () => {
     if (selectedCats.length === finalFilteredCats.length) {
@@ -84,16 +74,7 @@ export default function CategoriesTab({
             />
             <span className="search-input-icon">🔍</span>
           </div>
-          <select 
-            className="form-input-premium" 
-            style={{ width: "auto", minWidth: "220px", background: "var(--bg-color)" }} 
-            value={visibilityFilter} 
-            onChange={(e) => setVisibilityFilter(e.target.value)}
-          >
-            <option value="all">-- كل الأقسام ({filteredCategories.length}) --</option>
-            <option value="visible">👁️ الأقسام الظاهرة بالقائمة فقط</option>
-            <option value="hidden">👁️‍🗨️ الأقسام المخفية من القائمة فقط</option>
-          </select>
+
         </div>
         
         <button
@@ -135,20 +116,7 @@ export default function CategoriesTab({
             <button onClick={() => setSelectedCats([])} style={{ background: "transparent", border: "none", color: "var(--text-muted)", marginTop: "8px", cursor: "pointer", textDecoration: "underline" }}>إلغاء التحديد</button>
           </div>
           <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-            <button 
-              className="action-btn"
-              onClick={() => handleBulkToggleVisibility(true)}
-              style={{ background: "rgba(16, 185, 129, 0.15)", color: "#10b981", border: "1px solid rgba(16, 185, 129, 0.3)", padding: "10px 20px" }}
-            >
-              👁️ إظهار المحددين
-            </button>
-            <button 
-              className="action-btn"
-              onClick={() => handleBulkToggleVisibility(false)}
-              style={{ background: "rgba(239, 68, 68, 0.15)", color: "#ef4444", border: "1px solid rgba(239, 68, 68, 0.3)", padding: "10px 20px" }}
-            >
-              👁️‍🗨️ إخفاء المحددين
-            </button>
+
             <button 
               onClick={() => handleOpenMergeCategories(selectedCats, () => setSelectedCats([]))} 
               className="action-btn"
@@ -184,14 +152,7 @@ export default function CategoriesTab({
               transition: "all 0.3s ease"
             }}
           >
-            {/* Status Badge */}
-            <div style={{ position: "absolute", top: "15px", left: "15px", zIndex: 10 }}>
-              {cat.show_in_menu === false ? (
-                <span style={{ background: "rgba(239, 68, 68, 0.15)", color: "#ef4444", padding: "4px 8px", borderRadius: "8px", fontSize: "0.75rem", fontWeight: "bold" }}>مخفي 👁️‍🗨️</span>
-              ) : (
-                <span style={{ background: "rgba(16, 185, 129, 0.15)", color: "#10b981", padding: "4px 8px", borderRadius: "8px", fontSize: "0.75rem", fontWeight: "bold" }}>ظاهر 👁️</span>
-              )}
-            </div>
+
 
             {/* Checkbox */}
             <div style={{ position: "absolute", top: "15px", right: "15px", zIndex: 10 }}>
@@ -234,23 +195,7 @@ export default function CategoriesTab({
             </div>
 
             <div style={{ marginTop: "auto", display: "flex", gap: "8px", flexDirection: "column", width: "100%" }}>
-              <button
-                onClick={() => handleToggleCategoryMenuVisibility(cat.id, cat.show_in_menu === false)}
-                className="action-btn"
-                style={{
-                  background: cat.show_in_menu === false ? "rgba(16, 185, 129, 0.1)" : "rgba(239, 68, 68, 0.1)",
-                  color: cat.show_in_menu === false ? "#10b981" : "#ef4444",
-                  border: cat.show_in_menu === false ? "1px solid rgba(16, 185, 129, 0.3)" : "1px solid rgba(239, 68, 68, 0.3)",
-                  justifyContent: "center",
-                  padding: "10px",
-                  borderRadius: "10px",
-                  fontWeight: "bold",
-                  cursor: "pointer",
-                  width: "100%"
-                }}
-              >
-                {cat.show_in_menu === false ? "👁️ تفعيل الظهور" : "👁️‍🗨️ إخفاء القسم"}
-              </button>
+
               <div style={{ display: "flex", gap: "8px", width: "100%" }}>
                 <button onClick={() => handleOpenEditCat(cat)} className="action-btn btn-edit-premium" style={{ flex: 1, justifyContent: "center", borderRadius: "10px" }}>
                   ✏️ تعديل
