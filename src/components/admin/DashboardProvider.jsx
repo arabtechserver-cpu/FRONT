@@ -86,7 +86,8 @@ export default function DashboardProvider({ children }) {
   const [editCatUploadedFile, setEditCatUploadedFile] = useState(null);
   const [editCatFields, setEditCatFields] = useState(defaultFields);
   const [editCatFieldsTitle, setEditCatFieldsTitle] = useState("بيانات الخدمة");
-  const [applyToServices, setApplyToServices] = useState(false);
+  const [applyToServices,
+        categories, setApplyToServices] = useState(false);
   const [editCatParentId, setEditCatParentId] = useState("");
   const [editCatLinkedCategories, setEditCatLinkedCategories] = useState([]);
 
@@ -1347,6 +1348,7 @@ export default function DashboardProvider({ children }) {
           fields: editCatFields,
           fields_title: editCatFieldsTitle,
           apply_to_services: applyToServices,
+        categories,
           parent_id: editCatParentId || null
         })
       });
@@ -2051,7 +2053,9 @@ export default function DashboardProvider({ children }) {
       editCatLinkedCategories,
       setEditCatLinkedCategories,
       applyToServices,
-      setApplyToServices,
+        categories,
+      setapplyToServices,
+        categories,
       editCatId
     },
     editServiceModal: {
