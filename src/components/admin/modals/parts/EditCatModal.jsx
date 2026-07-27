@@ -3,7 +3,7 @@ import { AdminDashboardContext } from "../../AdminDashboardContext";
 
 export default function EditCatModal() {
   const { editCatModal, errorMsg } = useContext(AdminDashboardContext);
-  const { showEditCatModal, setShowEditCatModal, handleEditCategory, editCatName, setEditCatName, editCatImage, setEditCatImage, editCatUploadedFile, setEditCatUploadedFile, editCatFieldsTitle, setEditCatFieldsTitle, editCatFields, handleAddEditCatField, handleRemoveEditCatField, handleEditCatFieldChange, editCatParentId, setEditCatParentId, applyToServices, setApplyToServices, editCatId, categories } = editCatModal;
+  const { showEditCatModal, setShowEditCatModal, handleEditCategory, editCatName, setEditCatName, editCatImage, setEditCatImage, editCatUploadedFile, setEditCatUploadedFile, editCatFieldsTitle, setEditCatFieldsTitle, editCatFields, handleAddEditCatField, handleRemoveEditCatField, handleEditCatFieldChange, editCatParentId, setEditCatParentId, editCatLinkedCategories, setEditCatLinkedCategories, applyToServices, setApplyToServices, editCatId, categories } = editCatModal;
 
   if (!(showEditCatModal)) return null;
 
@@ -142,7 +142,7 @@ export default function EditCatModal() {
               </div>
 
               <div className="form-group" style={{ marginBottom: "14px" }}>
-                <label>عنوان قسم بيانات الخدمة (اختياري - الافتراضي: &quot;بيانات الخدمة&quot;):</label>
+                <label>عنوان قسم بيانات الخدمة (اختياري - الافتراضي: "بيانات الخدمة"):</label>
                 <input
                   type="text"
                   placeholder="مثال: بيانات الخدمة، بيانات لاعب ببجي"
