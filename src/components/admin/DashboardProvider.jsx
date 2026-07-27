@@ -86,8 +86,7 @@ export default function DashboardProvider({ children }) {
   const [editCatUploadedFile, setEditCatUploadedFile] = useState(null);
   const [editCatFields, setEditCatFields] = useState(defaultFields);
   const [editCatFieldsTitle, setEditCatFieldsTitle] = useState("بيانات الخدمة");
-  const [applyToServices,
-        categories, setApplyToServices] = useState(false);
+  const [applyToServices, setApplyToServices] = useState(false);
   const [editCatParentId, setEditCatParentId] = useState("");
   const [editCatLinkedCategories, setEditCatLinkedCategories] = useState([]);
 
@@ -1097,15 +1096,22 @@ export default function DashboardProvider({ children }) {
 
   const handleConfirmMergeCategories = async () => {
     if (!mergeTargetId) {
-      alert("يرجى اختيار القسم الهدف للدمج.");
+      alert("يرجى اختيار القسم الذي تريد الدمج بداخله.");
       return;
     }
+
+    const finalSourceIds = mergeSourceIds.filter(id => String(id) !== String(mergeTargetId));
+    if (finalSourceIds.length === 0) {
+      alert("يجب تحديد أقسام أخرى لدمجها داخل القسم الرئيسي المختار.");
+      return;
+    }
+
     setShowMergeCategoriesModal(false);
     
     await secureActionFetch(
       `${API_BASE_URL}/api/categories/merge`,
       "POST",
-      { sourceIds: mergeSourceIds, targetId: mergeTargetId },
+      { sourceIds: finalSourceIds, targetId: mergeTargetId },
       () => {
         alert("تم دمج الأقسام ونقل الخدمات بنجاح!");
         fetchData(true);
@@ -1348,7 +1354,6 @@ export default function DashboardProvider({ children }) {
           fields: editCatFields,
           fields_title: editCatFieldsTitle,
           apply_to_services: applyToServices,
-        categories,
           parent_id: editCatParentId || null
         })
       });
@@ -1476,12 +1481,12 @@ export default function DashboardProvider({ children }) {
   };
 
   const handleCatFieldChange = (index, field, value) => {
-    setNewCatFields(prev => prev.map((f, i) => {
+    setNewCatFields(prev => setNewCatFields(prev.map((f, i) => {
       if (i === index) {
         return { ...f, [field]: value };
       }
       return f;
-    }));
+    })));
   };
 
   const handleAddEditCatField = () => {
@@ -2053,9 +2058,8 @@ export default function DashboardProvider({ children }) {
       editCatLinkedCategories,
       setEditCatLinkedCategories,
       applyToServices,
-        categories,
+      categories,
       setapplyToServices,
-        categories,
       editCatId
     },
     editServiceModal: {
