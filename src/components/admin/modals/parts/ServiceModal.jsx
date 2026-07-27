@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { AdminDashboardContext } from "../../AdminDashboardContext";
 
 export default function ServiceModal() {
-  const { serviceModal } = useContext(AdminDashboardContext);
+  const { serviceModal, errorMsg } = useContext(AdminDashboardContext);
   const { showServiceModal, setShowServiceModal, handleAddService, newServiceName, setNewServiceName, newServiceDesc, setNewServiceDesc, newServiceCatId, setNewServiceCatId, newServicePrice, setNewServicePrice, newServiceImage, setNewServiceImage, serviceUploadedFile, setServiceUploadedFile, newServiceApiProviderId, setNewServiceApiProviderId, newServicePriceType, setNewServicePriceType, newServicePricePerThousand, setNewServicePricePerThousand, newServiceIsPopular, setNewServiceIsPopular, newServiceShowInMenu, setNewServiceShowInMenu, newServiceIsBundle, setNewServiceIsBundle, newServiceBundleServices, setNewServiceBundleServices, newServicePackages, handleAddPkgInput, handleRemovePkgInput, handlePkgChange, newServiceFieldsTitle, setNewServiceFieldsTitle, newServiceFields, handleAddField, handleRemoveField, handleFieldChange, newServiceDownloadLink, setNewServiceDownloadLink, newServiceDownloadLinkTitle, setNewServiceDownloadLinkTitle } = serviceModal;
   const { categories, apiProviders } = useContext(AdminDashboardContext);
 

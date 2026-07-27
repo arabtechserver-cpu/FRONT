@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { AdminDashboardContext } from "../../AdminDashboardContext";
 
 export default function EditCatModal() {
-  const { editCatModal } = useContext(AdminDashboardContext);
+  const { editCatModal, errorMsg } = useContext(AdminDashboardContext);
   const { showEditCatModal, setShowEditCatModal, handleEditCategory, editCatName, setEditCatName, editCatImage, setEditCatImage, editCatUploadedFile, setEditCatUploadedFile, editCatFieldsTitle, setEditCatFieldsTitle, editCatFields, handleAddEditCatField, handleRemoveEditCatField, handleEditCatFieldChange, editCatParentId, setEditCatParentId, applyToServices, setApplyToServices, editCatId } = editCatModal;
 
   if (!(showEditCatModal)) return null;

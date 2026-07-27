@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { AdminDashboardContext } from "../../AdminDashboardContext";
 
 export default function CodeModal() {
-  const { codeModal } = useContext(AdminDashboardContext);
+  const { codeModal, errorMsg } = useContext(AdminDashboardContext);
   const { codeModalOrder, showCodeModal, setShowCodeModal, codeModalStatusToUpdate, codeValue, setCodeValue, orderDownloadLinkValue, setOrderDownloadLinkValue, orderDownloadLinkTitleValue, setOrderDownloadLinkTitleValue, handleSubmitCodeModal, updateOrderCodeAndStatus } = codeModal;
 
   if (!(showCodeModal && codeModalOrder)) return null;

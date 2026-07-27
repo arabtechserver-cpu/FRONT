@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { AdminDashboardContext } from "../../AdminDashboardContext";
 
 export default function EditBannerModal() {
-  const { editBannerModal } = useContext(AdminDashboardContext);
+  const { editBannerModal, errorMsg } = useContext(AdminDashboardContext);
   const { showEditBannerModal, setShowEditBannerModal, handleEditBanner, editBannerTitle, setEditBannerTitle, editBannerHighlight, setEditBannerHighlight, editBannerDesc, setEditBannerDesc, editBannerBadge, setEditBannerBadge, editBannerColor, setEditBannerColor, editBannerIcon, setEditBannerIcon, editBannerUploadedFile, setEditBannerUploadedFile } = editBannerModal;
 
   if (!(showEditBannerModal)) return null;

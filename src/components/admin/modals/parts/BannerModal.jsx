@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { AdminDashboardContext } from "../../AdminDashboardContext";
 
 export default function BannerModal() {
-  const { bannerModal } = useContext(AdminDashboardContext);
+  const { bannerModal, errorMsg } = useContext(AdminDashboardContext);
   const { showBannerModal, setShowBannerModal, handleAddBanner, newBannerTitle, setNewBannerTitle, newBannerHighlight, setNewBannerHighlight, newBannerDesc, setNewBannerDesc, newBannerBadge, setNewBannerBadge, newBannerColor, setNewBannerColor, newBannerIcon, setNewBannerIcon, bannerUploadedFile, setBannerUploadedFile } = bannerModal;
 
   if (!(showBannerModal)) return null;

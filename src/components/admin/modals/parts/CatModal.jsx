@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { AdminDashboardContext } from "../../AdminDashboardContext";
 
 export default function CatModal() {
-  const { catModal } = useContext(AdminDashboardContext);
+  const { catModal, errorMsg } = useContext(AdminDashboardContext);
   const { showCatModal, setShowCatModal, handleAddCategory, newCatName, setNewCatName, newCatImage, setNewCatImage, catUploadedFile, setCatUploadedFile, newCatFieldsTitle, setNewCatFieldsTitle, newCatFields, handleAddField, handleRemoveField, handleFieldChange, newCatParentId, setNewCatParentId, categories, API_BASE_URL } = catModal;
 
   if (!(showCatModal)) return null;
