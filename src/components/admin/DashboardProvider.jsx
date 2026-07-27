@@ -1359,7 +1359,8 @@ export default function DashboardProvider({ children }) {
           fields: editCatFields,
           fields_title: editCatFieldsTitle,
           apply_to_services: applyToServices,
-          parent_id: editCatParentId || null
+          parent_id: editCatParentId || null,
+          linked_categories: editCatLinkedCategories
         })
       });
 
