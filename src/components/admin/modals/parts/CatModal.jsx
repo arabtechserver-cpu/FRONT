@@ -136,7 +136,7 @@ export default function CatModal() {
                   <h4 style={{ fontWeight: 800, fontSize: "0.9rem" }}>حقول البيانات المطلوبة من العميل عند الشراء:</h4>
                   <button 
                     type="button" 
-                    onClick={handleAddCatField} 
+                    onClick={handleAddField} 
                     className="action-btn"
                     style={{ background: "rgba(6, 182, 212, 0.2)", color: "#22d3ee", border: "1px solid rgba(6, 182, 212, 0.3)" }}
                   >
@@ -160,7 +160,7 @@ export default function CatModal() {
                         <span style={{ fontSize: "0.82rem", color: "#22d3ee", fontWeight: "800" }}>الحقل المطلوب #{idx + 1}</span>
                         <button
                           type="button"
-                          onClick={() => handleRemoveCatField(idx)}
+                          onClick={() => handleRemoveField(idx)}
                           style={{ background: "none", border: "none", color: "#f87171", fontSize: "0.82rem", cursor: "pointer", fontWeight: "bold" }}
                         >
                           حذف الحقل ×
@@ -173,7 +173,7 @@ export default function CatModal() {
                             type="text"
                             placeholder="معرّف الحقل (ID مثل: player_id)"
                             value={f.id}
-                            onChange={(e) => handleCatFieldChange(idx, "id", e.target.value)}
+                            onChange={(e) => handleFieldChange(idx, "id", e.target.value)}
                             required
                           />
                         </div>
@@ -183,7 +183,7 @@ export default function CatModal() {
                             type="text"
                             placeholder="اسم الحقل بالعربية"
                             value={f.label}
-                            onChange={(e) => handleCatFieldChange(idx, "label", e.target.value)}
+                            onChange={(e) => handleFieldChange(idx, "label", e.target.value)}
                             required
                           />
                         </div>
@@ -193,14 +193,14 @@ export default function CatModal() {
                             type="text"
                             placeholder="نص تلميح تلميحي"
                             value={f.placeholder || ""}
-                            onChange={(e) => handleCatFieldChange(idx, "placeholder", e.target.value)}
+                            onChange={(e) => handleFieldChange(idx, "placeholder", e.target.value)}
                           />
                         </div>
                         <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
                           <span style={{ fontSize: "0.78rem", color: "#94a3b8", fontWeight: "bold" }}>نوع المدخل:</span>
                           <select
                             value={f.type}
-                            onChange={(e) => handleCatFieldChange(idx, "type", e.target.value)}
+                            onChange={(e) => handleFieldChange(idx, "type", e.target.value)}
                             style={{
                               padding: "8px 12px",
                               borderRadius: "10px",
