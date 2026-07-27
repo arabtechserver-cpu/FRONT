@@ -244,9 +244,27 @@ export default function CategoryServices({ params }) {
     return "⚡";
   };
 
+  
   const currentCategory = allCategories.find(c => c.id === Number(categoryId));
   const parentCategory = currentCategory?.parent_id ? allCategories.find(c => c.id === Number(currentCategory.parent_id)) : null;
-  const subCategories = allCategories.filter(c => Number(c.parent_id) === Number(categoryId)).sort((a, b) => a.name.localeCompare(b.name, 'en'));
+  
+  let subCategories = allCategories.filter(c => Number(c.parent_id) === Number(categoryId));
+  
+  // Merge linked_categories into subCategories
+  if (currentCategory && currentCategory.linked_categories && Array.isArray(currentCategory.linked_categories)) {
+    const linkedIds = currentCategory.linked_categories.map(id => Number(id));
+    const linkedCats = allCategories.filter(c => linkedIds.includes(Number(c.id)));
+    
+    // Add them only if they are not already in subCategories
+    linkedCats.forEach(lCat => {
+      if (!subCategories.find(sc => sc.id === lCat.id)) {
+        subCategories.push(lCat);
+      }
+    });
+  }
+  
+  subCategories = subCategories.sort((a, b) => a.name.localeCompare(b.name, 'en'));
+
 
   return (
     <>

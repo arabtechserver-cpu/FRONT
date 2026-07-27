@@ -52,6 +52,7 @@ export default function DashboardProvider({ children }) {
   const [newCatFields, setNewCatFields] = useState(defaultFields);
   const [newCatFieldsTitle, setNewCatFieldsTitle] = useState("بيانات الخدمة");
   const [newCatParentId, setNewCatParentId] = useState("");
+  const [newCatLinkedCategories, setNewCatLinkedCategories] = useState([]);
 
   const [showServiceModal, setShowServiceModal] = useState(false);
   const [newServiceName, setNewServiceName] = useState("");
@@ -87,6 +88,7 @@ export default function DashboardProvider({ children }) {
   const [editCatFieldsTitle, setEditCatFieldsTitle] = useState("بيانات الخدمة");
   const [applyToServices, setApplyToServices] = useState(false);
   const [editCatParentId, setEditCatParentId] = useState("");
+  const [editCatLinkedCategories, setEditCatLinkedCategories] = useState([]);
 
   // Edit Service Modal / Form states
   const [showEditServiceModal, setShowEditServiceModal] = useState(false);
@@ -1038,7 +1040,7 @@ export default function DashboardProvider({ children }) {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`
         },
-        body: JSON.stringify({ name: newCatName, image: catUploadedFile || newCatImage, fields: newCatFields, fields_title: newCatFieldsTitle, parent_id: newCatParentId || null })
+        body: JSON.stringify({ name: newCatName, image: catUploadedFile || newCatImage, fields: newCatFields, fields_title: newCatFieldsTitle, parent_id: newCatParentId || null, linked_categories: newCatLinkedCategories })
       });
 
       const data = await response.json();
@@ -1054,6 +1056,7 @@ export default function DashboardProvider({ children }) {
       setNewCatFields(defaultFields);
       setNewCatFieldsTitle("بيانات الخدمة");
       setNewCatParentId("");
+      setNewCatLinkedCategories([]);
       setShowCatModal(false);
     } catch (err) {
       setErrorMsg(err.message);
@@ -1316,6 +1319,7 @@ export default function DashboardProvider({ children }) {
     setEditCatFields(parsedFields && parsedFields.length > 0 ? parsedFields : defaultFields);
     setEditCatFieldsTitle(cat.fields_title || "بيانات الخدمة");
     setEditCatParentId(cat.parent_id || "");
+    setEditCatLinkedCategories(cat.linked_categories || []);
 
     setShowEditCatModal(true);
   };
@@ -1980,6 +1984,8 @@ export default function DashboardProvider({ children }) {
       handleFieldChange,
       newCatParentId,
       setNewCatParentId,
+      newCatLinkedCategories,
+      setNewCatLinkedCategories,
       categories,
       API_BASE_URL
     },
@@ -2042,6 +2048,8 @@ export default function DashboardProvider({ children }) {
       handleEditCatFieldChange,
       editCatParentId,
       setEditCatParentId,
+      editCatLinkedCategories,
+      setEditCatLinkedCategories,
       applyToServices,
       setApplyToServices,
       editCatId
