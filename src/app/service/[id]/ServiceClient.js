@@ -1554,7 +1554,7 @@ export default function ServiceDetail({ params }) {
             </div>
 
             <div style={{ marginTop: "6px", fontSize: "0.75rem", color: "var(--text-muted)", lineHeight: "1.6", background: "rgba(255, 255, 255, 0.02)", padding: "10px 14px", borderRadius: "10px", border: "1px solid rgba(255, 255, 255, 0.05)" }}>
-              📢 بمجرد إتمام الطلب، سيتم مراجعة الدفع وتنفيذ الخدمة في حسابك في غضون 5 إلى 15 دقيقة فقط كحد أقصى.
+              📢 {service.api_delivery_time ? `مدة التنفيذ المتوقعة: ${service.api_delivery_time}` : 'بمجرد إتمام الطلب، سيتم مراجعة الدفع وتنفيذ الخدمة في حسابك في غضون 5 إلى 15 دقيقة فقط كحد أقصى.'}
             </div>
           </div>
 
