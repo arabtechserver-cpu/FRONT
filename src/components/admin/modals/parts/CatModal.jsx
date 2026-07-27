@@ -53,6 +53,29 @@ export default function CatModal() {
               </div>
 
               <div className="form-group" style={{ marginBottom: 0 }}>
+                <label>تجميع أقسام فرعية داخل هذا القسم (Linked Categories):</label>
+                <select
+                  multiple
+                  value={newCatLinkedCategories || []}
+                  onChange={(e) => {
+                    const options = Array.from(e.target.options);
+                    const selected = options.filter(o => o.selected).map(o => o.value);
+                    setNewCatLinkedCategories(selected);
+                  }}
+                  className="search-input-premium"
+                  style={{ padding: "12px 18px", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.08)", background: "rgba(13, 18, 36, 0.7)", color: "#fff", fontSize: "0.95rem", outline: "none", width: "100%", height: "150px" }}
+                >
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      📁 {cat.name}
+                    </option>
+                  ))}
+                </select>
+                <p style={{ fontSize: "0.75rem", color: "#94a3b8", marginTop: "5px" }}>يمكنك تحديد أكثر من قسم (باستخدام Ctrl أو Command).</p>
+              </div>
+
+
+              <div className="form-group" style={{ marginBottom: 0 }}>
                 <label>أيقونة القسم التعبيرية (الافتراضية):</label>
                 <select 
                   value={newCatImage} 
