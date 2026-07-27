@@ -1326,7 +1326,12 @@ export default function DashboardProvider({ children }) {
     setEditCatFields(parsedFields && parsedFields.length > 0 ? parsedFields : defaultFields);
     setEditCatFieldsTitle(cat.fields_title || "بيانات الخدمة");
     setEditCatParentId(cat.parent_id || "");
-    setEditCatLinkedCategories(cat.linked_categories || []);
+    let parsedLinked = [];
+    try {
+      parsedLinked = typeof cat.linked_categories === 'string' ? JSON.parse(cat.linked_categories) : (cat.linked_categories || []);
+    } catch (e) { parsedLinked = []; }
+    setEditCatLinkedCategories(Array.isArray(parsedLinked) ? parsedLinked.map(String) : []);
+
 
     setShowEditCatModal(true);
   };

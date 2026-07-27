@@ -54,24 +54,39 @@ export default function EditCatModal() {
 
               <div className="form-group" style={{ marginBottom: 0 }}>
                 <label>تجميع أقسام فرعية داخل هذا القسم (Linked Categories):</label>
-                <select
-                  multiple
-                  value={editCatLinkedCategories || []}
-                  onChange={(e) => {
-                    const options = Array.from(e.target.options);
-                    const selected = options.filter(o => o.selected).map(o => o.value);
-                    setEditCatLinkedCategories(selected);
-                  }}
-                  className="search-input-premium"
-                  style={{ padding: "12px 18px", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.08)", background: "rgba(13, 18, 36, 0.7)", color: "#fff", fontSize: "0.95rem", outline: "none", width: "100%", height: "150px" }}
-                >
-                  {categories.map((cat) => (
-                    <option key={cat.id} value={cat.id}>
-                      📁 {cat.name}
-                    </option>
-                  ))}
-                </select>
-                <p style={{ fontSize: "0.75rem", color: "#94a3b8", marginTop: "5px" }}>يمكنك تحديد أكثر من قسم (باستخدام Ctrl أو Command).</p>
+                <div style={{
+                  maxHeight: "200px",
+                  overflowY: "auto",
+                  padding: "12px",
+                  borderRadius: "12px",
+                  border: "1px solid rgba(255, 255, 255, 0.08)",
+                  background: "rgba(13, 18, 36, 0.7)",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "8px"
+                }}>
+                  {categories.map((cat) => {
+                    const isSelected = (editCatLinkedCategories || []).includes(String(cat.id));
+                    return (
+                      <label key={cat.id} style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", color: isSelected ? "#38bdf8" : "#fff" }}>
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={(e) => {
+                            const checked = e.target.checked;
+                            setEditCatLinkedCategories(prev => {
+                              const current = prev || [];
+                              if (checked) return [...current, String(cat.id)];
+                              return current.filter(id => id !== String(cat.id));
+                            });
+                          }}
+                          style={{ cursor: "pointer", width: "16px", height: "16px", accentColor: "#38bdf8" }}
+                        />
+                        📁 {cat.name}
+                      </label>
+                    );
+                  })}
+                </div>
               </div>
 
 
