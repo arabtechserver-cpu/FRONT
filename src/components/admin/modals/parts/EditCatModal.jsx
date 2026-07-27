@@ -3,7 +3,7 @@ import { AdminDashboardContext } from "../../AdminDashboardContext";
 
 export default function EditCatModal() {
   const { editCatModal, errorMsg } = useContext(AdminDashboardContext);
-  const { showEditCatModal, setShowEditCatModal, handleEditCategory, editCatName, setEditCatName, editCatImage, setEditCatImage, editCatUploadedFile, setEditCatUploadedFile, editCatFieldsTitle, setEditCatFieldsTitle, editCatFields, handleAddEditCatField, handleRemoveEditCatField, handleEditCatFieldChange, editCatParentId, setEditCatParentId, applyToServices, setApplyToServices, editCatId } = editCatModal;
+  const { showEditCatModal, setShowEditCatModal, handleEditCategory, editCatName, setEditCatName, editCatImage, setEditCatImage, editCatUploadedFile, setEditCatUploadedFile, editCatFieldsTitle, setEditCatFieldsTitle, editCatFields, handleAddEditCatField, handleRemoveEditCatField, handleEditCatFieldChange, editCatParentId, setEditCatParentId, applyToServices, setApplyToServices, editCatId, categories } = editCatModal;
 
   if (!(showEditCatModal)) return null;
 
