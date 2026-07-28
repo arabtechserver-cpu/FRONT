@@ -16,7 +16,7 @@ export default function MenuDrawerTab({
         <h2 style={{ fontSize: "1.5rem", fontWeight: "900", color: "#fff", marginBottom: "8px", display: "flex", alignItems: "center", gap: "10px" }}>
           <span>📱</span> إدارة القائمة الجانبية (الهامبورجر)
         </h2>
-        <p style={{ color: "var(--text-muted)", fontSize: "0.95rem", lineHeight: "1.6" }}>
+        <p style={{ color: "#fff", fontSize: "0.95rem", lineHeight: "1.6" }}>
           تحكم بكل سهولة في الأقسام التي تظهر في القائمة الجانبية للموبايل. إخفاء القسم من هنا يخفيه من القائمة فقط ولا يحذفه من الموقع!
         </p>
       </div>
@@ -52,20 +52,39 @@ export default function MenuDrawerTab({
               <div style={{ width: "40px", height: "40px", borderRadius: "10px", background: cat.color || "var(--primary-color)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: "1.2rem" }}>
                 {cat.icon ? <i className={`fa fa-${cat.icon}`}></i> : "📁"}
               </div>
-              <div style={{ flex: 1, fontWeight: "bold", fontSize: "1rem", color: "var(--text-main)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              <div style={{ flex: 1, fontWeight: "bold", fontSize: "1rem", color: "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                 {cat.name}
               </div>
             </div>
 
-
-          </div>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "10px" }}>
+              <span style={{ fontSize: "0.85rem", color: "#fff", fontWeight: "bold" }}>
+                {cat.show_in_menu ? "🟢 يظهر في القائمة" : "🔴 مخفي من القائمة"}
+              </span>
+              <button
+                onClick={() => handleToggleCategoryMenuVisibility(cat.id, cat.show_in_menu)}
+                style={{
+                  background: cat.show_in_menu ? "rgba(239, 68, 68, 0.1)" : "rgba(34, 197, 94, 0.1)",
+                  color: cat.show_in_menu ? "#f87171" : "#4ade80",
+                  border: `1px solid ${cat.show_in_menu ? "rgba(239, 68, 68, 0.3)" : "rgba(34, 197, 94, 0.3)"}`,
+                  padding: "6px 12px",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  fontSize: "0.85rem",
+                  fontWeight: "bold",
+                  transition: "all 0.2s"
+                }}
+              >
+                {cat.show_in_menu ? "إخفاء" : "إظهار"}
+              </button>
+            </div>          </div>
         ))}
       </div>
 
       {filteredCategories.length === 0 && (
         <div style={{ padding: "40px", textAlign: "center", background: "var(--bg-glass)", borderRadius: "16px", border: "var(--border-glass)" }}>
           <span style={{ fontSize: "3rem", display: "block", marginBottom: "15px", opacity: 0.5 }}>🔍</span>
-          <h3 style={{ color: "var(--text-main)", fontSize: "1.2rem", fontWeight: "bold" }}>لا توجد أقسام مطابقة</h3>
+          <h3 style={{ color: "#fff", fontSize: "1.2rem", fontWeight: "bold" }}>لا توجد أقسام مطابقة</h3>
         </div>
       )}
     </div>
