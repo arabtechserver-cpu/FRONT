@@ -11,7 +11,7 @@ const WHATSAPP_CHANNEL = "https://whatsapp.com/channel/0029VbD0n6C17En1xFJRPV0H"
 const TELEGRAM_CHANNEL = "https://t.me/arabtechserveronline";
 const FACEBOOK_PAGE = "https://www.facebook.com/ARABTECHSERVEROnline";
 const TIKTOK_ACCOUNT = "https://tiktok.com/@arabtechsuppurt";
-const YOUTUBE_CHANNEL = "https://youtube.com/@arabtechsreveronline?si=1sznDeiGn6jAz5o3";
+const YOUTUBE_CHANNEL = "https://youtube.com/@arab-tech-server?si=1L5yUgv_jlCk3Vez";
 
 export default function ContactFloatingButton() {
   const [open, setOpen] = useState(false);

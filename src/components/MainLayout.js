@@ -890,7 +890,7 @@ export default function MainLayout({ children }) {
 
               {/* YouTube Channel */}
               <a
-                href="https://youtube.com/@arabtechsreveronline?si=1sznDeiGn6jAz5o3"
+                href="https://youtube.com/@arab-tech-server?si=1L5yUgv_jlCk3Vez"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
