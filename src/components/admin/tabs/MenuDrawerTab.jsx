@@ -2,7 +2,8 @@ import React, { useState } from "react";
 
 export default function MenuDrawerTab({
   categories,
-  handleToggleCategoryMenuVisibility
+  handleToggleCategoryMenuVisibility,
+  handleHideAllCategoriesFromMenu
 }) {
   const [searchTerm, setSearchTerm] = useState("");
   const filteredCategories = categories.filter(c => {
@@ -21,7 +22,7 @@ export default function MenuDrawerTab({
         </p>
       </div>
 
-      <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", background: "var(--bg-glass)", padding: "16px", borderRadius: "16px", border: "var(--border-glass)" }}>
+      <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", background: "rgba(0,0,0,0.3)", padding: "16px", borderRadius: "16px", border: "var(--border-glass)", alignItems: "center" }}>
         <div className="search-input-wrapper" style={{ flex: 1, minWidth: "250px" }}>
           <input 
             type="text" 
@@ -33,7 +34,28 @@ export default function MenuDrawerTab({
           <span className="search-input-icon">🔍</span>
         </div>
         
-
+        <button 
+          onClick={handleHideAllCategoriesFromMenu}
+          style={{
+            background: "rgba(239, 68, 68, 0.15)",
+            color: "#f87171",
+            border: "1px solid rgba(239, 68, 68, 0.3)",
+            padding: "10px 20px",
+            borderRadius: "12px",
+            cursor: "pointer",
+            fontSize: "0.95rem",
+            fontWeight: "bold",
+            transition: "all 0.2s",
+            display: "flex",
+            alignItems: "center",
+            gap: "8px"
+          }}
+          onMouseOver={(e) => { e.currentTarget.style.background = "rgba(239, 68, 68, 0.25)"; }}
+          onMouseOut={(e) => { e.currentTarget.style.background = "rgba(239, 68, 68, 0.15)"; }}
+        >
+          <i className="fa fa-eye-slash"></i>
+          إخفاء الكل
+        </button>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "16px" }}>

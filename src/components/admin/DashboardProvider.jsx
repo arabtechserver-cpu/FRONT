@@ -1281,17 +1281,16 @@ export default function DashboardProvider({ children }) {
     });
   };
 
-  // Open Edit Category Modal
   const handleToggleCategoryMenuVisibility = async (id, currentVal) => {
     try {
       const res = await fetch(`${API_BASE_URL}/api/categories/${id}/menu-visibility`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ show_in_menu: currentVal })
+        body: JSON.stringify({ show_in_menu: !currentVal })
       });
       const data = await res.json();
       if (res.ok) {
-        setCategories(prev => prev.map(c => c.id === id ? { ...c, show_in_menu: currentVal } : c));
+        setCategories(prev => prev.map(c => c.id === id ? { ...c, show_in_menu: !currentVal } : c));
       } else {
         alert(data.message || "حدث خطأ");
       }
@@ -1301,6 +1300,27 @@ export default function DashboardProvider({ children }) {
     }
   };
 
+  const handleHideAllCategoriesFromMenu = async () => {
+    if (!confirm("هل أنت متأكد أنك تريد إخفاء جميع الأقسام من القائمة الجانبية؟")) return;
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/categories/hide-all-menu`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setCategories(prev => prev.map(c => ({ ...c, show_in_menu: false })));
+        alert(data.message || "تم إخفاء جميع الأقسام بنجاح");
+      } else {
+        alert(data.message || "حدث خطأ");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("خطأ في الاتصال");
+    }
+  };
+
+  // Open Edit Category Modal
   const handleOpenEditCat = (cat) => {
     setErrorMsg("");
     setEditCatId(cat.id);
@@ -2342,6 +2362,7 @@ export default function DashboardProvider({ children }) {
     handleOpenCodeModal: typeof handleOpenCodeModal !== 'undefined' ? handleOpenCodeModal : undefined,
     handleOpenEditBanner: typeof handleOpenEditBanner !== 'undefined' ? handleOpenEditBanner : undefined,
     handleToggleCategoryMenuVisibility: typeof handleToggleCategoryMenuVisibility !== 'undefined' ? handleToggleCategoryMenuVisibility : undefined,
+    handleHideAllCategoriesFromMenu: typeof handleHideAllCategoriesFromMenu !== 'undefined' ? handleHideAllCategoriesFromMenu : undefined,
     handleOpenEditCat: typeof handleOpenEditCat !== 'undefined' ? handleOpenEditCat : undefined,
     handleOpenEditCustomer: typeof handleOpenEditCustomer !== 'undefined' ? handleOpenEditCustomer : undefined,
     handleOpenEditService: typeof handleOpenEditService !== 'undefined' ? handleOpenEditService : undefined,
