@@ -746,7 +746,7 @@ export default function DashboardProvider({ children }) {
 
 
   const triggerUnlockerOrderApproval = useCallback(async (orderId) => {
-    if (!confirm("هل أنت متأكد من تفعيل هذا الطلب وإرساله إلى Amrr Unlocker؟")) return;
+    if (!confirm("هل أنت متأكد من تفعيل هذا الطلب وإرساله لمزود الـ API المرتبط؟")) return;
     try {
       const response = await fetch(`${API_BASE_URL}/api/unlocker/place-order/${orderId}`, {
         method: "POST",
