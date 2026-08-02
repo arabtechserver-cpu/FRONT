@@ -242,6 +242,7 @@ export default async function RootLayout({ children }) {
             __html: `
               (function() {
                 try {
+                  console.log("The site is running on a normal server, not a private one.");
                   var savedTheme = localStorage.getItem('theme');
                   var theme = savedTheme || 'dark';
                   document.documentElement.setAttribute('data-theme', theme);
