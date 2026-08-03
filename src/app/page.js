@@ -51,6 +51,79 @@ const WHY_US = [
   { icon: "💰", title: "أفضل الأسعار", desc: "أسعار تنافسية بدون رسوم خفية." },
 ];
 
+// ─── FEATURED CATEGORIES ─────────────────────────────────────────────────────────────
+const FEATURED_CATEGORIES = [
+  {
+    image: "", // Placeholder
+    items: [
+      {
+        url: "#",
+        img: "", // Placeholder
+        title: "#7552 Tecno / Infinix / iTel ANTI-CRACK EXCEPTION ERROR FIX DONE REMOTELY",
+        time: "30 Miniutes"
+      },
+      {
+        url: "#",
+        img: "", // Placeholder
+        title: "#6863 TECNO INFINIX MDM - (ازاله حساب ام دي ام نهائيا ) ❤ 7 DAYS ❤❤✔ MAX 10",
+        time: "7-10 days"
+      },
+      {
+        url: "#",
+        img: "", // Placeholder
+        title: "#7462 Tecno ID, Infinix ID Removal - Cloud ID Officially OFF (All Models Supported)",
+        time: "1-7 Days"
+      }
+    ]
+  },
+  {
+    image: "", // Placeholder
+    items: [
+      {
+        url: "#",
+        img: "", // Placeholder
+        title: "HONOR KEY > 🟢 > 30 MIN",
+        time: "30"
+      },
+      {
+        url: "#",
+        img: "", // Placeholder
+        title: "HONOR KEY 12 > 🟡 > 24 HOURS",
+        time: "24 HOURS"
+      },
+      {
+        url: "#",
+        img: "", // Placeholder
+        title: "#6875 Samsung FRP Remove By IMEI 💚💲💚💲 الاندرويد المدعوم من اندرويد 11 الى 14 فقط 👌",
+        time: "Miniutes"
+      }
+    ]
+  },
+  {
+    image: "", // Placeholder
+    items: [
+      {
+        url: "#",
+        img: "", // Placeholder
+        title: "#7464 [Rent] - DFT Pro Tool Rent - Source 2 - [ 48 Hours ]",
+        time: "Instant Miniutes"
+      },
+      {
+        url: "#",
+        img: "", // Placeholder
+        title: "#7471 [Rent] - TFM Tool Pro Rent [ 6 Hours ] (Source 1) - Dont Buy Credit Rent Time Over Credit no use no refund",
+        time: "Miniutes Miniutes"
+      },
+      {
+        url: "#",
+        img: "", // Placeholder
+        title: "#7710 Samsung FRP Android 10 to 14 ✅ A04s, A12, A13, A32, A33, A34, A53, A52, A52s, A23, A24, A15, S20, S21, Note 20, Note 20 ultra Only these models supported max ⚠️Android 15/16 Not Supported",
+        time: "Miniutes"
+      }
+    ]
+  }
+];
+
 export default function Home() {
   const [categories, setCategories]         = useState([]);
   const [loading, setLoading]               = useState(true);
@@ -232,6 +305,74 @@ export default function Home() {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* ══════════════════════════════════════════════════════
+          FEATURED CATEGORIES (أقسام مميزة)
+      ══════════════════════════════════════════════════════ */}
+      <div className="hp-featured-section" style={{ marginBottom: "40px" }}>
+        <h2 className="hp-section-title">أقسام مميزة</h2>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "20px" }}>
+          {FEATURED_CATEGORIES.map((cat, idx) => (
+            <div key={idx} style={{
+              background: "var(--bg-glass)",
+              border: "var(--border-glass)",
+              borderRadius: "12px",
+              overflow: "hidden",
+              boxShadow: "var(--shadow-card)",
+              display: "flex",
+              flexDirection: "column",
+              transition: "box-shadow 0.2s ease",
+            }}>
+              {cat.image ? (
+                <img
+                  src={cat.image}
+                  alt="Featured Category"
+                  style={{ width: "100%", height: "180px", objectFit: "cover", display: "block" }}
+                />
+              ) : (
+                <div style={{ width: "100%", height: "120px", display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(255,255,255,0.02)", borderBottom: "1px solid var(--border-glass)", color: "var(--text-muted)", fontSize: "0.9rem" }}>
+                  بدون صورة رئيسية
+                </div>
+              )}
+              <ul style={{ listStyle: "none", margin: 0, padding: "12px 16px 0", display: "flex", flexDirection: "column", flex: 1 }}>
+                {cat.items.map((item, i) => (
+                  <li key={i} style={{ borderBottom: i < cat.items.length - 1 ? "1px solid var(--border-glass)" : "none", padding: "14px 0" }}>
+                    <Link href={item.url} style={{ textDecoration: "none", color: "inherit", display: "flex", gap: "12px", alignItems: "flex-start", direction: "ltr" }}>
+                      {item.img && (
+                        <img
+                          src={item.img}
+                          alt={item.title}
+                          style={{ width: "105px", height: "70px", objectFit: "cover", borderRadius: "8px", flexShrink: 0, border: "1px solid rgba(255,255,255,0.1)" }}
+                        />
+                      )}
+                      <div style={{ flex: 1, minWidth: 0, direction: "rtl", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                        <p style={{ margin: "0 0 8px", fontSize: "0.84rem", fontWeight: 600, color: "var(--text-main)", lineHeight: 1.4,
+                          display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                          {item.title}
+                        </p>
+                        <span style={{
+                          display: "inline-block",
+                          padding: "2px 10px",
+                          background: "rgba(245,158,11,0.12)",
+                          color: "#fbbf24",
+                          border: "1px solid rgba(245,158,11,0.25)",
+                          borderRadius: "6px",
+                          fontSize: "11px",
+                          fontWeight: 700,
+                          textTransform: "uppercase",
+                          width: "fit-content",
+                        }}>
+                          {item.time}
+                        </span>
+                      </div>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* ══════════════════════════════════════════════════════
