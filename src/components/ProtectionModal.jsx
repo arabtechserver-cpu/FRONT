@@ -9,20 +9,11 @@ export default function ProtectionModal() {
 
   useEffect(() => {
     setMounted(true);
-    if (typeof window !== "undefined") {
-      const isVerified = sessionStorage.getItem("site_verified");
-      if (isVerified === "true") {
-        setVerified(true);
-      }
-    }
   }, []);
 
   if (!mounted || verified || !FEATURES.showProtectionModal) return null;
 
   const handleVerify = () => {
-    if (typeof window !== "undefined") {
-      sessionStorage.setItem("site_verified", "true");
-    }
     setVerified(true);
   };
 

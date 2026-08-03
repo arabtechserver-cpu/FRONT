@@ -559,6 +559,27 @@ export default function MainLayout({ children }) {
           </div>
         )}
 
+        {/* Top Warning Banner */}
+        <div style={{
+          background: "linear-gradient(90deg, #b91c1c 0%, #dc2626 50%, #b91c1c 100%)",
+          color: "#ffffff",
+          textAlign: "center",
+          padding: "10px 16px",
+          fontWeight: "800",
+          fontSize: "0.95rem",
+          boxShadow: "0 2px 10px rgba(220, 38, 38, 0.4)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "8px",
+          position: "relative",
+          zIndex: 1001
+        }}>
+          <span>🛡️</span>
+          <span>يرجى نقل الموقع على سيرفر خاص لتجنب المشاكل</span>
+          <span>🛡️</span>
+        </div>
+
         {/* Top Navbar */}
         <header className="custom-navbar" style={{
           display: 'flex',
