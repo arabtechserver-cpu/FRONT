@@ -2477,6 +2477,7 @@ export default function DashboardProvider({ children }) {
     walletSearch: typeof walletSearch !== 'undefined' ? walletSearch : undefined,
     walletTransactions: typeof walletTransactions !== 'undefined' ? walletTransactions : undefined,
     whatsappNumbers: typeof whatsappNumbers !== 'undefined' ? whatsappNumbers : undefined,
+    API_BASE_URL: typeof API_BASE_URL !== 'undefined' ? API_BASE_URL : undefined,
   };
 
   return (

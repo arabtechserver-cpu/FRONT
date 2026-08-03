@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
 import { AdminDashboardContext } from "../../AdminDashboardContext";
+import { API_BASE_URL } from "@/config";
 
 export default function EditBannerModal() {
   const { editBannerModal, errorMsg } = useContext(AdminDashboardContext);

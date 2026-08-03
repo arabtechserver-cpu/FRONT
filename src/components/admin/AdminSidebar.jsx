@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AdminDashboardContext } from "@/components/admin/AdminDashboardContext";
 import { FEATURES } from "@/features";
+import { API_BASE_URL } from "@/config";
 
 export default function AdminSidebar() {
   const context = useContext(AdminDashboardContext);

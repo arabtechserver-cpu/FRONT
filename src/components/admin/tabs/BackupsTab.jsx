@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { API_BASE_URL } from "@/config";
 
 export default function BackupsTab({ token, API_BASE_URL }) {
   const [backups, setBackups] = useState([]);

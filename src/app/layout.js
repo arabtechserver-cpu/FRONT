@@ -242,7 +242,6 @@ export default async function RootLayout({ children }) {
             __html: `
               (function() {
                 try {
-                  console.log("يرجى نقل الموقع على سيرفر خاص لتجنب المشاكل");
                   var savedTheme = localStorage.getItem('theme');
                   var theme = savedTheme || 'dark';
                   document.documentElement.setAttribute('data-theme', theme);

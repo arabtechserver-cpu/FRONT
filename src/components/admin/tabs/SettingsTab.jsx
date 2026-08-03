@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { API_BASE_URL } from "@/config";
 
 const AccordionItem = ({ isActive, onToggle, title, icon, children, isDanger }) => {
   const baseColor = isDanger ? "#f87171" : "#38bdf8";
