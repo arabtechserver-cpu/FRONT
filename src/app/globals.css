@@ -626,7 +626,8 @@ button, input, textarea, select { font-family: var(--font-cairo); }
 .hero-banner {
   position: relative;
   overflow: hidden;
-  height: 550px;
+  min-height: 360px;
+  height: clamp(380px, 50vh, 560px);
   margin-bottom: 40px;
   border-radius: 0;
   border: none;
@@ -655,7 +656,8 @@ button, input, textarea, select { font-family: var(--font-cairo); }
 }
 @media (min-width: 993px) {
   .hero-banner {
-    height: 650px;
+    min-height: 460px;
+    height: clamp(460px, 55vh, 640px);
     margin-top: -20px;
   }
 }

@@ -247,9 +247,28 @@ export default function Home() {
                 padding: "80px 80px 90px 80px"
               }}
             >
-              {/* Full Banner Cover Image if image URL */}
+              {/* Full Banner Auto-fit Image if image URL */}
               {isImageSlide && (
                 <>
+                  {/* Ambient Blurred Backdrop Fill */}
+                  <img
+                    src={imageUrl}
+                    alt=""
+                    aria-hidden="true"
+                    style={{
+                      position: "absolute",
+                      top: "-10%",
+                      left: "-10%",
+                      width: "120%",
+                      height: "120%",
+                      objectFit: "cover",
+                      filter: "blur(30px) brightness(0.4)",
+                      zIndex: 0,
+                      transform: "scale(1.1)"
+                    }}
+                  />
+
+                  {/* Main Uncropped Auto-fit Crisp Image */}
                   <img
                     src={imageUrl}
                     alt={slide.title}
@@ -259,11 +278,13 @@ export default function Home() {
                       left: 0,
                       width: "100%",
                       height: "100%",
-                      objectFit: "cover",
-                      objectPosition: "center",
-                      zIndex: 0
+                      objectFit: "contain",
+                      objectPosition: "center right",
+                      zIndex: 1
                     }}
                   />
+
+                  {/* Dark Gradient Overlay for Text Protection */}
                   <div
                     style={{
                       position: "absolute",
@@ -271,8 +292,8 @@ export default function Home() {
                       left: 0,
                       right: 0,
                       bottom: 0,
-                      background: "linear-gradient(to left, rgba(15, 23, 42, 0.92) 0%, rgba(15, 23, 42, 0.7) 50%, rgba(15, 23, 42, 0.25) 100%)",
-                      zIndex: 1
+                      background: "linear-gradient(to left, rgba(15, 23, 42, 0.92) 0%, rgba(15, 23, 42, 0.65) 50%, rgba(15, 23, 42, 0.15) 100%)",
+                      zIndex: 2
                     }}
                   />
                 </>
