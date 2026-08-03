@@ -291,16 +291,8 @@ export default function ServiceDetail({ params }) {
     // For synced API services with empty fields, add IMEI field if service type is imei
     if (sFields !== null && Array.isArray(sFields) && activeService?.api_service_id) {
       // If it's an IMEI service type but has no fields, inject IMEI fallback
-      const svcType = (activeService.api_service_type || '').toLowerCase();
-      if (svcType === 'imei') {
-        return [
-          { name: "imei", label: "IMEI / SN / ECID", type: "text", placeholder: "أدخل رقم IMEI أو الرقم التسلسلي (SN) أو ECID", required: true }
-        ];
-      }
-      // For non-IMEI API services (server/remote) with no custom fields, add player_id
-      return [
-        { name: "player_id", label: "معرّف الجهاز / ID", type: "text", placeholder: "أدخل معرّف الجهاز بدقة هنا", required: true }
-      ];
+      // Removed the forced injection of imei or player_id when no fields are present,
+      // as the user wants to cancel the default system fields.
     }
 
     // Fallback to category fields
@@ -315,9 +307,7 @@ export default function ServiceDetail({ params }) {
     return [];
   }, [service]);
 
-  const defaultFields = useMemo(() => ([
-    { name: "player_id", label: "معرّف الحساب (ID)", type: "text", placeholder: "أدخل معرّف الحساب بدقة هنا", required: true }
-  ]), []);
+  const defaultFields = useMemo(() => ([]), []);
 
   const activeFields = useMemo(() => {
     let rawFields = [];
@@ -358,11 +348,8 @@ export default function ServiceDetail({ params }) {
       if (rawFields.length === 0 && Array.isArray(serviceFields) && serviceFields.length > 0) {
         rawFields = [...serviceFields];
       }
-    } else if (Array.isArray(serviceFields) && activeService?.fields !== null && activeService?.fields !== undefined) {
-      // Only use serviceFields directly if it's explicitly set (even if empty `[]`)
+    } else if (Array.isArray(serviceFields)) {
       rawFields = [...serviceFields];
-    } else {
-      rawFields = [...defaultFields];
     }
 
 
@@ -393,7 +380,8 @@ export default function ServiceDetail({ params }) {
       .filter(f => {
         const fid = (f.name || f.id || "").toLowerCase().trim();
         // Hide standalone phone/tel fields (they are collected separately in payment section)
-        return fid !== "phone" && fid !== "tel";
+        // Also hide provider quantity fields because they are collected via customQuantity
+        return fid !== "phone" && fid !== "tel" && fid !== "quantity" && fid !== "qty" && fid !== "qnt";
       })
       .map(f => ({
         ...f,
