@@ -130,28 +130,20 @@ export default function Home() {
             <div className="notice-row" aria-label="Announcements">
               <div className="notice-track" role="presentation">
                 <div className="notice-set" role="presentation">
-                  <span className="notice-pill"><i className="fas fa-bolt"></i> نرحب بكم في عرب تك سيرفر حيث الخدمات الآمنة والفورية</span>
-                  <span className="notice-pill"><i className="fas fa-shield-alt"></i> Welcome to Arab Tech Server for secure and instant service</span>
-                  <span className="notice-pill" data-social-key="whatsapp" data-social-scope="notice">
-                    <i className="fab fa-whatsapp" data-social-icon=""></i>
-                    <span data-social-notice-label="">واتساب 1: +1 (672) 897-2935</span>
-                  </span>
-                  <span className="notice-pill" data-social-key="whatsapp2" data-social-scope="notice">
-                    <i className="fab fa-whatsapp" data-social-icon=""></i>
-                    <span data-social-notice-label="">واتساب 2: +249 12 366 7227</span>
-                  </span>
+                  <a href="https://wa.me/16728972935" target="_blank" rel="noopener noreferrer" className="notice-pill" style={{ textDecoration: "none" }}>
+                    💬 <span style={{ fontWeight: "bold" }}>واتساب 1: +1 (672) 897-2935</span>
+                  </a>
+                  <a href="https://wa.me/249123667227" target="_blank" rel="noopener noreferrer" className="notice-pill" style={{ textDecoration: "none" }}>
+                    💬 <span style={{ fontWeight: "bold" }}>واتساب 2: +249 12 366 7227</span>
+                  </a>
                 </div>
                 <div className="notice-set" aria-hidden="true" role="presentation">
-                  <span className="notice-pill"><i className="fas fa-bolt"></i> نرحب بكم في عرب تك سيرفر حيث الخدمات الآمنة والفورية</span>
-                  <span className="notice-pill"><i className="fas fa-shield-alt"></i> Welcome to Arab Tech Server for secure and instant service</span>
-                  <span className="notice-pill" data-social-key="whatsapp" data-social-scope="notice">
-                    <i className="fab fa-whatsapp" data-social-icon=""></i>
-                    <span data-social-notice-label="">واتساب 1: +1 (672) 897-2935</span>
-                  </span>
-                  <span className="notice-pill" data-social-key="whatsapp2" data-social-scope="notice">
-                    <i className="fab fa-whatsapp" data-social-icon=""></i>
-                    <span data-social-notice-label="">واتساب 2: +249 12 366 7227</span>
-                  </span>
+                  <a href="https://wa.me/16728972935" target="_blank" rel="noopener noreferrer" className="notice-pill" style={{ textDecoration: "none" }}>
+                    💬 <span style={{ fontWeight: "bold" }}>واتساب 1: +1 (672) 897-2935</span>
+                  </a>
+                  <a href="https://wa.me/249123667227" target="_blank" rel="noopener noreferrer" className="notice-pill" style={{ textDecoration: "none" }}>
+                    💬 <span style={{ fontWeight: "bold" }}>واتساب 2: +249 12 366 7227</span>
+                  </a>
                 </div>
               </div>
             </div>

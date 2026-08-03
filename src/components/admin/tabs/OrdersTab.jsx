@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 export default function OrdersTab({
   stats,
@@ -22,6 +22,15 @@ export default function OrdersTab({
   filteredWalletTransactions,
   apiProviders = []
 }) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(25);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [orderSearch, orderFilter]);
+
+  const totalPages = Math.ceil(filteredOrders.length / itemsPerPage) || 1;
+  const paginatedOrders = filteredOrders.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
   return (
     <>
       <div className="premium-stats-grid">
@@ -114,7 +123,7 @@ export default function OrdersTab({
             لا توجد أي طلبات شحن تطابق معايير البحث.
           </div>
         ) : (
-          filteredOrders.map((order) => (
+          paginatedOrders.map((order) => (
             <div key={order.id} style={{
               background: "rgba(255,255,255,0.02)",
               border: "1px solid rgba(255,255,255,0.06)",
@@ -272,6 +281,93 @@ export default function OrdersTab({
           ))
         )}
       </div>
+
+      {/* Orders Pagination Controls */}
+      {filteredOrders.length > 0 && (
+        <div style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexWrap: "wrap",
+          gap: "15px",
+          background: "rgba(255, 255, 255, 0.03)",
+          padding: "16px 20px",
+          borderRadius: "16px",
+          border: "1px solid rgba(255, 255, 255, 0.05)",
+          marginTop: "16px"
+        }}>
+          <div style={{ color: "#94a3b8", fontSize: "0.9rem", fontWeight: 600 }}>
+            عرض من <span style={{ color: "#38bdf8", fontWeight: 800 }}>{(currentPage - 1) * itemsPerPage + 1}</span> إلى <span style={{ color: "#38bdf8", fontWeight: 800 }}>{Math.min(currentPage * itemsPerPage, filteredOrders.length)}</span> من إجمالي <span style={{ color: "#fbbf24", fontWeight: 800 }}>{filteredOrders.length}</span> طلب
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: "14px", flexWrap: "wrap" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <span style={{ fontSize: "0.85rem", color: "#64748b" }}>عرض لكل صفحة:</span>
+              <select
+                value={itemsPerPage}
+                onChange={(e) => { setItemsPerPage(Number(e.target.value)); setCurrentPage(1); }}
+                style={{
+                  background: "rgba(0, 0, 0, 0.4)",
+                  border: "1px solid rgba(255, 255, 255, 0.1)",
+                  borderRadius: "8px",
+                  color: "#fff",
+                  padding: "6px 10px",
+                  fontSize: "0.85rem",
+                  cursor: "pointer",
+                  outline: "none"
+                }}
+              >
+                <option value={15}>15</option>
+                <option value={25}>25</option>
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+              </select>
+            </div>
+
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <button
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                type="button"
+                style={{
+                  padding: "8px 16px",
+                  background: currentPage === 1 ? "rgba(255, 255, 255, 0.02)" : "rgba(59, 130, 246, 0.2)",
+                  border: `1px solid ${currentPage === 1 ? "rgba(255, 255, 255, 0.05)" : "rgba(59, 130, 246, 0.4)"}`,
+                  borderRadius: "10px",
+                  color: currentPage === 1 ? "#64748b" : "#3b82f6",
+                  fontWeight: "bold",
+                  fontSize: "0.85rem",
+                  cursor: currentPage === 1 ? "not-allowed" : "pointer"
+                }}
+              >
+                ◀ السابق
+              </button>
+
+              <span style={{ fontSize: "0.9rem", fontWeight: 700, color: "#cbd5e1", padding: "0 6px" }}>
+                صفحة <span style={{ color: "#38bdf8" }}>{currentPage}</span> من <span style={{ color: "#38bdf8" }}>{totalPages}</span>
+              </span>
+
+              <button
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                type="button"
+                style={{
+                  padding: "8px 16px",
+                  background: currentPage === totalPages ? "rgba(255, 255, 255, 0.02)" : "rgba(59, 130, 246, 0.2)",
+                  border: `1px solid ${currentPage === totalPages ? "rgba(255, 255, 255, 0.05)" : "rgba(59, 130, 246, 0.4)"}`,
+                  borderRadius: "10px",
+                  color: currentPage === totalPages ? "#64748b" : "#3b82f6",
+                  fontWeight: "bold",
+                  fontSize: "0.85rem",
+                  cursor: currentPage === totalPages ? "not-allowed" : "pointer"
+                }}
+              >
+                التالي ▶
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div style={{ marginTop: "28px", border: "1px solid rgba(255,255,255,0.05)", borderRadius: "18px", padding: "18px", background: "rgba(255,255,255,0.02)" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px", gap: "12px", flexWrap: "wrap" }}>

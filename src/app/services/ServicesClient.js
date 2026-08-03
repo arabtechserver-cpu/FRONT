@@ -206,36 +206,20 @@ export default function ServicesClient() {
           <div className="notice-row" aria-label="Announcements">
             <div className="notice-track" role="presentation">
               <div className="notice-set" role="presentation">
-                <span className="notice-pill"><i className="fas fa-bolt"></i> Instant delivery on most services</span>
-                <span className="notice-pill"><i className="fas fa-shield-alt"></i> Secure checkout + trusted support</span>
-                <span className="notice-pill" data-social-key="whatsapp" data-social-scope="notice">
-                  <i className="fab fa-whatsapp" data-social-icon=""></i>
-                  <span data-social-notice-label="">WhatsApp: +201097160605</span>
-                </span>
-                <span className="notice-pill" data-social-key="telegram_channel" data-social-scope="notice">
-                  <i className="fab fa-telegram-plane" data-social-icon=""></i>
-                  <span data-social-notice-label="">Telegram: @eaunlock</span>
-                </span>
-                <span className="notice-pill" data-social-key="email" data-social-scope="notice">
-                  <i className="fas fa-envelope" data-social-icon=""></i>
-                  <span data-social-notice-label="">support@ea-unlocker.com</span>
-                </span>
+                <a href="https://wa.me/16728972935" target="_blank" rel="noopener noreferrer" className="notice-pill" style={{ textDecoration: "none" }}>
+                  💬 <span style={{ fontWeight: "bold" }}>واتساب 1: +1 (672) 897-2935</span>
+                </a>
+                <a href="https://wa.me/249123667227" target="_blank" rel="noopener noreferrer" className="notice-pill" style={{ textDecoration: "none" }}>
+                  💬 <span style={{ fontWeight: "bold" }}>واتساب 2: +249 12 366 7227</span>
+                </a>
               </div>
               <div className="notice-set" aria-hidden="true" role="presentation">
-                <span className="notice-pill"><i className="fas fa-bolt"></i> Instant delivery on most services</span>
-                <span className="notice-pill"><i className="fas fa-shield-alt"></i> Secure checkout + trusted support</span>
-                <span className="notice-pill" data-social-key="whatsapp" data-social-scope="notice">
-                  <i className="fab fa-whatsapp" data-social-icon=""></i>
-                  <span data-social-notice-label="">WhatsApp: +201097160605</span>
-                </span>
-                <span className="notice-pill" data-social-key="telegram_channel" data-social-scope="notice">
-                  <i className="fab fa-telegram-plane" data-social-icon=""></i>
-                  <span data-social-notice-label="">Telegram: @eaunlock</span>
-                </span>
-                <span className="notice-pill" data-social-key="email" data-social-scope="notice">
-                  <i className="fas fa-envelope" data-social-icon=""></i>
-                  <span data-social-notice-label="">support@ea-unlocker.com</span>
-                </span>
+                <a href="https://wa.me/16728972935" target="_blank" rel="noopener noreferrer" className="notice-pill" style={{ textDecoration: "none" }}>
+                  💬 <span style={{ fontWeight: "bold" }}>واتساب 1: +1 (672) 897-2935</span>
+                </a>
+                <a href="https://wa.me/249123667227" target="_blank" rel="noopener noreferrer" className="notice-pill" style={{ textDecoration: "none" }}>
+                  💬 <span style={{ fontWeight: "bold" }}>واتساب 2: +249 12 366 7227</span>
+                </a>
               </div>
             </div>
           </div>
