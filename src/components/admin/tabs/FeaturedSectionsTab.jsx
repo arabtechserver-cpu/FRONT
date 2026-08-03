@@ -13,7 +13,7 @@ function toBase64(file) {
 }
 
 // ─── Item editor (one service inside a section) ──────────────────────────────
-function ItemRow({ item, onChange, onRemove, index }) {
+function ItemRow({ item, onChange, onRemove, index, availableServices, isFirst, isLast, onMoveUp, onMoveDown }) {
   const imgRef = useRef();
 
   const handleImgUpload = async (e) => {
@@ -52,6 +52,37 @@ function ItemRow({ item, onChange, onRemove, index }) {
 
       {/* fields */}
       <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 8, minWidth: 200 }}>
+        
+        {/* Service Selector */}
+        {availableServices && availableServices.length > 0 && (
+          <select
+            value={item.serviceId || ""}
+            onChange={(e) => {
+              const sId = e.target.value;
+              const s = availableServices.find(x => x.id.toString() === sId);
+              if (s) {
+                onChange({
+                  ...item,
+                  serviceId: sId,
+                  title: s.name,
+                  url: `/service/${s.id}`,
+                  time: s.time || ""
+                });
+              } else {
+                onChange({ ...item, serviceId: "" });
+              }
+            }}
+            style={{
+              width: "100%", background: "rgba(16,185,129,0.05)", border: "1px solid rgba(16,185,129,0.2)",
+              borderRadius: 8, padding: "8px 12px", color: "#34d399", fontSize: "0.85rem",
+              outline: "none", cursor: "pointer"
+            }}
+          >
+            <option value="">-- الجلب التلقائي (اختر خدمة من النظام) --</option>
+            {availableServices.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+          </select>
+        )}
+
         <input
           type="text"
           placeholder="عنوان الخدمة (مثال: #7552 Tecno ANTI-CRACK...)"
@@ -86,20 +117,47 @@ function ItemRow({ item, onChange, onRemove, index }) {
         </div>
       </div>
 
-      <button
-        onClick={onRemove}
-        style={{
-          background: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.3)",
-          color: "#f87171", borderRadius: 8, padding: "6px 12px", cursor: "pointer",
-          fontSize: "0.8rem", fontWeight: 700, flexShrink: 0
-        }}
-      >✕</button>
+      <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+        <button
+          onClick={onRemove}
+          title="حذف"
+          style={{
+            background: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.3)",
+            color: "#f87171", borderRadius: 8, padding: "6px 12px", cursor: "pointer",
+            fontSize: "0.8rem", fontWeight: 700, flexShrink: 0
+          }}
+        >✕</button>
+        <div style={{ display: "flex", gap: 4 }}>
+          <button
+            onClick={onMoveUp}
+            disabled={isFirst}
+            title="تحريك لأعلى"
+            style={{
+              background: isFirst ? "rgba(255,255,255,0.05)" : "rgba(56,189,248,0.1)", 
+              border: `1px solid ${isFirst ? "rgba(255,255,255,0.1)" : "rgba(56,189,248,0.3)"}`,
+              color: isFirst ? "#64748b" : "#38bdf8", borderRadius: 6, padding: "4px 8px", 
+              cursor: isFirst ? "not-allowed" : "pointer", flex: 1
+            }}
+          >↑</button>
+          <button
+            onClick={onMoveDown}
+            disabled={isLast}
+            title="تحريك لأسفل"
+            style={{
+              background: isLast ? "rgba(255,255,255,0.05)" : "rgba(56,189,248,0.1)", 
+              border: `1px solid ${isLast ? "rgba(255,255,255,0.1)" : "rgba(56,189,248,0.3)"}`,
+              color: isLast ? "#64748b" : "#38bdf8", borderRadius: 6, padding: "4px 8px", 
+              cursor: isLast ? "not-allowed" : "pointer", flex: 1
+            }}
+          >↓</button>
+        </div>
+      </div>
     </div>
   );
 }
 
 // ─── Section editor ───────────────────────────────────────────────────────────
-function SectionEditor({ section, onChange, onRemove, index }) {
+function SectionEditor({ section, onChange, onRemove, index, categories, services }) {
   const coverRef = useRef();
 
   const handleCoverUpload = async (e) => {
@@ -123,6 +181,20 @@ function SectionEditor({ section, onChange, onRemove, index }) {
     onChange({ ...section, items: (section.items || []).filter((_, j) => j !== i) });
   };
 
+  const moveItem = (i, direction) => {
+    const items = [...(section.items || [])];
+    if (direction === "up" && i > 0) {
+      [items[i - 1], items[i]] = [items[i], items[i - 1]];
+    } else if (direction === "down" && i < items.length - 1) {
+      [items[i], items[i + 1]] = [items[i + 1], items[i]];
+    }
+    onChange({ ...section, items });
+  };
+
+  const filteredServices = section.categoryId
+    ? (services || []).filter(s => s.category_id?.toString() === section.categoryId.toString())
+    : (services || []);
+
   return (
     <div style={{
       background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.08)",
@@ -141,6 +213,24 @@ function SectionEditor({ section, onChange, onRemove, index }) {
             fontSize: "0.85rem", fontWeight: 700
           }}
         >🗑️ حذف القسم</button>
+      </div>
+
+      {/* category selector */}
+      <div style={{ marginBottom: 16 }}>
+        <p style={{ margin: "0 0 8px", fontSize: "0.82rem", color: "#94a3b8" }}>
+          🔍 <strong style={{ color: "#e2e8f0" }}>فلترة الخدمات (اختياري)</strong>: اختر قسم من نظامك ليسهل عليك جلب الخدمات تلقائياً.
+        </p>
+        <select
+          value={section.categoryId || ""}
+          onChange={(e) => onChange({ ...section, categoryId: e.target.value })}
+          style={{
+            width: "100%", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.15)",
+            borderRadius: 8, padding: "10px 14px", color: "#e2e8f0", fontSize: "0.9rem", outline: "none"
+          }}
+        >
+          <option value="">-- عرض كل الخدمات في النظام --</option>
+          {(categories || []).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+        </select>
       </div>
 
       {/* cover image */}
@@ -184,7 +274,7 @@ function SectionEditor({ section, onChange, onRemove, index }) {
       {/* items */}
       <div style={{ marginBottom: 14 }}>
         <p style={{ margin: "0 0 10px", fontSize: "0.82rem", color: "#94a3b8", fontWeight: 700 }}>
-          📋 الخدمات داخل هذا القسم ({(section.items || []).length})
+          📋 الخدمات داخل هذا القسم ({(section.items || []).length}) - <span>اضغط على الأسهم للترتيب</span>
         </p>
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           {(section.items || []).map((item, i) => (
@@ -194,6 +284,11 @@ function SectionEditor({ section, onChange, onRemove, index }) {
               item={item}
               onChange={upd => updateItem(i, upd)}
               onRemove={() => removeItem(i)}
+              availableServices={filteredServices}
+              isFirst={i === 0}
+              isLast={i === (section.items || []).length - 1}
+              onMoveUp={() => moveItem(i, "up")}
+              onMoveDown={() => moveItem(i, "down")}
             />
           ))}
         </div>
@@ -212,7 +307,7 @@ function SectionEditor({ section, onChange, onRemove, index }) {
 }
 
 // ─── Main Tab ─────────────────────────────────────────────────────────────────
-export default function FeaturedSectionsTab({ featuredSections, setFeaturedSections, token }) {
+export default function FeaturedSectionsTab({ featuredSections, setFeaturedSections, token, categories, services }) {
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState("");
   const [msgType, setMsgType] = useState("success"); // success | error
@@ -341,6 +436,8 @@ export default function FeaturedSectionsTab({ featuredSections, setFeaturedSecti
               key={i}
               index={i}
               section={sec}
+              categories={categories}
+              services={services}
               onChange={upd => updateSection(i, upd)}
               onRemove={() => removeSection(i)}
             />

@@ -10,6 +10,8 @@ export default function Page() {
       featuredSections={context.featuredSections}
       setFeaturedSections={context.setFeaturedSections}
       token={context.token}
+      categories={context.categories}
+      services={context.services}
     />
   );
 }
