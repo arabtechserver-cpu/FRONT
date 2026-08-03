@@ -6,9 +6,12 @@
     "dev": "next dev --webpack",
     "build": "next build",
     "start": "node -e \"const fs=require('fs'); fs.rmSync('.next/cache', {recursive:true, force:true});\" && next start",
-    "toggle-api": "node toggle_features.js api",
-    "toggle-protection": "node toggle_features.js protection",
-    "toggle-all": "node toggle_features.js toggle",
+    "toggle-api": "node التحكم_بالمميزات.js api",
+    "toggle-protection": "node التحكم_بالمميزات.js protection",
+    "toggle-all": "node التحكم_بالمميزات.js toggle",
+    "التحكم-بالمميزات": "node التحكم_بالمميزات.js",
+    "اخفاء-واظهار-الربط": "node التحكم_بالمميزات.js api",
+    "اخفاء-واظهار-الحماية": "node التحكم_بالمميزات.js protection",
     "lint": "eslint"
   },
   "dependencies": {
