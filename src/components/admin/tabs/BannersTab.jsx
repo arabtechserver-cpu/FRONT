@@ -6,12 +6,43 @@ export default function BannersTab({
   bannerSearch,
   setBannerSearch,
   handleOpenEditBanner,
-  handleDeleteBanner
+  handleDeleteBanner,
+  bannerModal
 }) {
-  const filteredBanners = banners.filter((b) => b.title.toLowerCase().includes(bannerSearch.toLowerCase()));
+  const filteredBanners = (banners || []).filter((b) => (b.title || "").toLowerCase().includes((bannerSearch || "").toLowerCase()));
 
   return (
-    <>
+    <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+      {/* Header and Add Button */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "15px", background: "var(--bg-glass)", padding: "20px", borderRadius: "16px", border: "var(--border-glass)", boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)" }}>
+        <div>
+          <h2 style={{ margin: 0, fontSize: "1.5rem", color: "var(--text-color)" }}>🖼️ إدارة البانر الإعلاني</h2>
+          <p style={{ margin: "5px 0 0", color: "var(--text-muted)", fontSize: "0.9rem" }}>أضف شرائح جديدة للمعاينة في الصفحة الرئيسية، عدّل الحالية، أو احذفها.</p>
+        </div>
+        <button 
+          className="action-btn"
+          onClick={() => bannerModal?.setShowBannerModal(true)}
+          type="button"
+          style={{
+            background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+            color: "white",
+            padding: "12px 24px",
+            borderRadius: "12px",
+            fontWeight: "bold",
+            fontSize: "1rem",
+            border: "none",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            boxShadow: "0 4px 14px rgba(16, 185, 129, 0.4)",
+            transition: "all 0.3s ease"
+          }}
+        >
+          <span>➕</span> إضافة شريحة إعلانية جديدة
+        </button>
+      </div>
+
       <div className="table-filter-bar" style={{ justifyContent: "flex-start" }}>
         <div className="search-input-wrapper">
           <input
@@ -92,6 +123,6 @@ export default function BannersTab({
           </tbody>
         </table>
       </div>
-    </>
+    </div>
   );
 }
