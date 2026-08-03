@@ -241,6 +241,19 @@ export default function Home() {
                 transition: "opacity 0.6s ease-in-out, visibility 0.6s"
               }}
             >
+              {/* Full-cover background image for image slides */}
+              {isImage && (
+                <>
+                  <img
+                    src={imgSrc}
+                    alt={slide.title}
+                    className="banner-bg-img"
+                  />
+                  <div className="banner-bg-overlay" />
+                </>
+              )}
+
+              {/* Text Content */}
               <div className="banner-info">
                 <span className="banner-badge" style={{ borderColor: slide.color, color: slide.color, background: `${slide.color}22` }}>{slide.badge}</span>
                 <h1 className="banner-title">
@@ -255,17 +268,12 @@ export default function Home() {
                 )}
               </div>
 
-              <div className="banner-graphic">
-                {isImage ? (
-                  <img
-                    src={imgSrc}
-                    alt={slide.title}
-                    className="banner-img-clean"
-                  />
-                ) : (
+              {/* Graphic – emoji only (image slides have bg-img above) */}
+              {!isImage && (
+                <div className="banner-graphic">
                   <span className="coin-icon" style={{ color: slide.color, filter: `drop-shadow(0 0 30px ${slide.color}88)` }}>{slide.icon}</span>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           );
         })}
