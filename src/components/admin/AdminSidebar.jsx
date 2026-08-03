@@ -4,6 +4,7 @@ import React, { useContext } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AdminDashboardContext } from "@/components/admin/AdminDashboardContext";
+import { FEATURES } from "@/features";
 
 export default function AdminSidebar() {
   const context = useContext(AdminDashboardContext);
@@ -14,7 +15,7 @@ export default function AdminSidebar() {
   
   const pathname = usePathname();
 
-  const tabs = [
+  const allTabs = [
     { tab: "orders", icon: "📥", label: "طلبات الخدمات" },
     { tab: "menu-drawer", icon: "📱", label: "قائمة الموبايل الجانبية" },
     { tab: "categories", icon: "📁", label: "إدارة الأقسام" },
@@ -31,6 +32,8 @@ export default function AdminSidebar() {
     { tab: "gmail", icon: "📧", label: "بوابة ربط الجميل" },
     { tab: "backups", icon: "💾", label: "النسخ الاحتياطي" },
   ];
+
+  const tabs = allTabs.filter(t => FEATURES.showApiDocs || t.tab !== "api_resellers");
 
   return (
     <>

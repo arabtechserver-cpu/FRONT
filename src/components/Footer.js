@@ -5,6 +5,8 @@ import { API_BASE_URL } from "@/config";
 import Link from "next/link";
 import LoopsNewsletterForm from "./LoopsNewsletterForm";
 
+import { FEATURES } from "@/features";
+
 export default function Footer() {
   const [settings, setSettings] = useState({ site_name: "عرب تك سيرفر", site_logo: "/logo.jpg" });
 
@@ -53,7 +55,7 @@ export default function Footer() {
             <Link href="/wallet">💳 محفظتي وشحن الرصيد</Link>
             <Link href="/login">👤 تسجيل الدخول / حساب جديد</Link>
             <Link href="/terms">⚖️ سياسة الاستخدام</Link>
-            <Link href="/api-docs">🔌 شرح ربط الـ API</Link>
+            {FEATURES.showApiDocs && <Link href="/api-docs">🔌 شرح ربط الـ API</Link>}
           </div>
         </div>
 

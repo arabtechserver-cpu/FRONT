@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { API_BASE_URL } from "@/config";
 import PasswordChangeModal from "./PasswordChangeModal";
+import ProtectionModal from "./ProtectionModal";
+import { FEATURES } from "@/features";
 
 export default function MainLayout({ children }) {
   const router = useRouter();
@@ -428,9 +430,11 @@ export default function MainLayout({ children }) {
               <span style={{ fontSize: "1.2rem" }}>💳</span> شحن رصيدي
             </Link>
           )}
-          <Link href="/api-docs" className="mobile-drawer-link" onClick={() => setMenuOpen(false)}>
-            <span style={{ fontSize: "1.2rem" }}>🔌</span> الربط عبر الـ API
-          </Link>
+          {FEATURES.showApiDocs && (
+            <Link href="/api-docs" className="mobile-drawer-link" onClick={() => setMenuOpen(false)}>
+              <span style={{ fontSize: "1.2rem" }}>🔌</span> الربط عبر الـ API
+            </Link>
+          )}
           <Link href="/terms" className="mobile-drawer-link" onClick={() => setMenuOpen(false)}>
             <span style={{ fontSize: "1.2rem" }}>⚖️</span> الشروط وسياسة الاسترجاع
           </Link>
@@ -623,7 +627,9 @@ export default function MainLayout({ children }) {
                       </div>
                       <Link href="/orders" className="header-dropdown-item" onClick={() => setProfileMenuOpen(false)}>📦 طلباتي</Link>
                       <Link href="/wallet" className="header-dropdown-item" onClick={() => setProfileMenuOpen(false)}>💳 شحن المحفظة</Link>
-                      <Link href="/api-docs" className="header-dropdown-item" onClick={() => setProfileMenuOpen(false)}>🔌 الربط عبر الـ API</Link>
+                      {FEATURES.showApiDocs && (
+                        <Link href="/api-docs" className="header-dropdown-item" onClick={() => setProfileMenuOpen(false)}>🔌 الربط عبر الـ API</Link>
+                      )}
                       <button onClick={() => { setProfileMenuOpen(false); window.dispatchEvent(new CustomEvent('openPasswordChangeModal')); }} className="header-dropdown-item" type="button">🔐 تغيير كلمة المرور</button>
                       <button onClick={() => { handleCustomerLogout(); setProfileMenuOpen(false); }} className="header-dropdown-item" style={{ color: 'var(--danger-color)', width: '100%', textAlign: 'right' }} type="button">🚪 تسجيل الخروج</button>
                     </div>
@@ -643,6 +649,7 @@ export default function MainLayout({ children }) {
         <main className="main-content-inner">
           {children}
           <PasswordChangeModal />
+          <ProtectionModal />
         </main>
       </div>
 
