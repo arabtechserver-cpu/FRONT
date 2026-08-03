@@ -227,45 +227,79 @@ export default function Home() {
         </div>
 
         {/* slides */}
-        {slides.map((slide, idx) => (
-          <div
-            key={idx}
-            className="banner-content"
-            style={{ opacity: currentSlide === idx ? 1 : 0, visibility: currentSlide === idx ? "visible" : "hidden", transition: "opacity 0.6s ease-in-out, visibility 0.6s" }}
-          >
-            <div className="banner-info">
-              <span className="banner-badge" style={{ borderColor: slide.color, color: slide.color, background: `${slide.color}22` }}>{slide.badge}</span>
-              <h1 className="banner-title">
-                {slide.title}<br />
-                <span style={{ backgroundImage: `linear-gradient(135deg,#fff 0%,${slide.color} 100%)`, WebkitBackgroundClip: "text", backgroundClip: "text", WebkitTextFillColor: "transparent" }}>{slide.highlight}</span>
-              </h1>
-              <p className="banner-desc">{slide.desc}</p>
-              {slide.link && (
-                <Link href={slide.link} className="hero-cta-btn" style={{ "--cta-color": slide.color }}>
-                  دخول القسم الآن ←
-                </Link>
+        {slides.map((slide, idx) => {
+          const isImageSlide = slide.icon && (slide.icon.startsWith("data:") || slide.icon.startsWith("http") || slide.icon.startsWith("/uploads"));
+          const imageUrl = isImageSlide ? (slide.icon.startsWith("/uploads") ? `${API_BASE_URL}${slide.icon}` : slide.icon) : null;
+
+          return (
+            <div
+              key={idx}
+              className="banner-content"
+              style={{
+                opacity: currentSlide === idx ? 1 : 0,
+                visibility: currentSlide === idx ? "visible" : "hidden",
+                transition: "opacity 0.6s ease-in-out, visibility 0.6s",
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                padding: "80px 80px 90px 80px"
+              }}
+            >
+              {/* Full Banner Cover Image if image URL */}
+              {isImageSlide && (
+                <>
+                  <img
+                    src={imageUrl}
+                    alt={slide.title}
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      objectPosition: "center",
+                      zIndex: 0
+                    }}
+                  />
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      background: "linear-gradient(to left, rgba(15, 23, 42, 0.92) 0%, rgba(15, 23, 42, 0.7) 50%, rgba(15, 23, 42, 0.25) 100%)",
+                      zIndex: 1
+                    }}
+                  />
+                </>
+              )}
+
+              <div className="banner-info" style={{ position: "relative", zIndex: 2 }}>
+                <span className="banner-badge" style={{ borderColor: slide.color, color: slide.color, background: `${slide.color}22` }}>{slide.badge}</span>
+                <h1 className="banner-title">
+                  {slide.title}<br />
+                  <span style={{ backgroundImage: `linear-gradient(135deg,#fff 0%,${slide.color} 100%)`, WebkitBackgroundClip: "text", backgroundClip: "text", WebkitTextFillColor: "transparent" }}>{slide.highlight}</span>
+                </h1>
+                <p className="banner-desc">{slide.desc}</p>
+                {slide.link && (
+                  <Link href={slide.link} className="hero-cta-btn" style={{ "--cta-color": slide.color }}>
+                    دخول القسم الآن ←
+                  </Link>
+                )}
+              </div>
+
+              {!isImageSlide && (
+                <div className="banner-graphic" style={{ position: "relative", zIndex: 2 }}>
+                  <span className="coin-icon" style={{ color: slide.color, filter: `drop-shadow(0 0 30px ${slide.color}88)` }}>{slide.icon}</span>
+                </div>
               )}
             </div>
-            <div className="banner-graphic">
-              {slide.icon && (slide.icon.startsWith("data:") || slide.icon.startsWith("http") || slide.icon.startsWith("/uploads")) ? (
-                <img
-                  src={slide.icon.startsWith("/uploads") ? `${API_BASE_URL}${slide.icon}` : slide.icon}
-                  alt={slide.title}
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    maxWidth: "100%",
-                    maxHeight: "100%",
-                    objectFit: "contain",
-                    filter: `drop-shadow(0 0 30px ${slide.color}88)`
-                  }}
-                />
-              ) : (
-                <span className="coin-icon" style={{ color: slide.color, filter: `drop-shadow(0 0 30px ${slide.color}88)` }}>{slide.icon}</span>
-              )}
-            </div>
-          </div>
-        ))}
+          );
+        })}
 
         {/* search */}
         <div className="hero-search-container">
