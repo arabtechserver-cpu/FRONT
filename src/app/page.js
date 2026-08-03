@@ -202,19 +202,23 @@ export default function Home() {
             <div className="notice-row" aria-label="Announcements">
               <div className="notice-track" role="presentation">
                 <div className="notice-set" role="presentation">
-                  <a href="https://wa.me/249123667227" target="_blank" rel="noopener noreferrer" className="notice-pill" style={{ textDecoration: "none", direction: "ltr", unicodeBidi: "embed" }}>
-                    💬 واتساب 1: +249 12 366 7227
+                  <a href="https://wa.me/249123667227" target="_blank" rel="noopener noreferrer" className="notice-pill" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                    <span>💬 واتساب 1:</span>
+                    <span dir="ltr" style={{ direction: "ltr", unicodeBidi: "isolate", fontWeight: "bold" }}>+249 12 366 7227</span>
                   </a>
-                  <a href="https://wa.me/16728972935" target="_blank" rel="noopener noreferrer" className="notice-pill" style={{ textDecoration: "none", direction: "ltr", unicodeBidi: "embed" }}>
-                    💬 واتساب 2: +1 (672) 897-2935
+                  <a href="https://wa.me/16728972935" target="_blank" rel="noopener noreferrer" className="notice-pill" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                    <span>💬 واتساب 2:</span>
+                    <span dir="ltr" style={{ direction: "ltr", unicodeBidi: "isolate", fontWeight: "bold" }}>+1 (672) 897-2935</span>
                   </a>
                 </div>
                 <div className="notice-set" aria-hidden="true" role="presentation">
-                  <a href="https://wa.me/249123667227" target="_blank" rel="noopener noreferrer" className="notice-pill" style={{ textDecoration: "none", direction: "ltr", unicodeBidi: "embed" }}>
-                    💬 واتساب 1: +249 12 366 7227
+                  <a href="https://wa.me/249123667227" target="_blank" rel="noopener noreferrer" className="notice-pill" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                    <span>💬 واتساب 1:</span>
+                    <span dir="ltr" style={{ direction: "ltr", unicodeBidi: "isolate", fontWeight: "bold" }}>+249 12 366 7227</span>
                   </a>
-                  <a href="https://wa.me/16728972935" target="_blank" rel="noopener noreferrer" className="notice-pill" style={{ textDecoration: "none", direction: "ltr", unicodeBidi: "embed" }}>
-                    💬 واتساب 2: +1 (672) 897-2935
+                  <a href="https://wa.me/16728972935" target="_blank" rel="noopener noreferrer" className="notice-pill" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                    <span>💬 واتساب 2:</span>
+                    <span dir="ltr" style={{ direction: "ltr", unicodeBidi: "isolate", fontWeight: "bold" }}>+1 (672) 897-2935</span>
                   </a>
                 </div>
               </div>

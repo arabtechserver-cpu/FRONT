@@ -755,7 +755,10 @@ export default function MainLayout({ children }) {
               >
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                   <span style={{ fontSize: "1.2rem" }}>🟢</span>
-                  <span>واتساب الإدارة 1 (+249 12 366 7227)</span>
+                  <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                    <span>واتساب الإدارة 1</span>
+                    <span dir="ltr" style={{ direction: "ltr", unicodeBidi: "isolate" }}>(+249 12 366 7227)</span>
+                  </div>
                 </div>
                 <span style={{ color: "#10b981" }}>←</span>
               </a>
@@ -782,7 +785,10 @@ export default function MainLayout({ children }) {
               >
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                   <span style={{ fontSize: "1.2rem" }}>🟢</span>
-                  <span>واتساب الإدارة 2 (+1 672-897-2935)</span>
+                  <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                    <span>واتساب الإدارة 2</span>
+                    <span dir="ltr" style={{ direction: "ltr", unicodeBidi: "isolate" }}>(+1 672-897-2935)</span>
+                  </div>
                 </div>
                 <span style={{ color: "#22d3ee" }}>←</span>
               </a>
