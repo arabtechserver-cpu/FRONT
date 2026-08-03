@@ -36,10 +36,10 @@ const getCategoryData = cache(async function getCategoryData(id) {
 
 const getCategoryServices = cache(async function getCategoryServices(catId) {
   try {
-    const res = await fetch(`${API_BASE_URL}/api/services`, { next: { revalidate: 3600 } });
+    const res = await fetch(`${API_BASE_URL}/api/services?category_id=${catId}`, { next: { revalidate: 3600 } });
     if (res.ok) {
       const services = await res.json();
-      return (Array.isArray(services) ? services : []).filter(s => Number(s.category_id) === Number(catId));
+      return Array.isArray(services) ? services : [];
     }
   } catch (err) {
     console.error("Error fetching services in metadata:", err.message || err);

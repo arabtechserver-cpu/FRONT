@@ -17,7 +17,7 @@ export default async function sitemap() {
   const apiBaseUrl = API_BASE_URL;
   const [categories, services] = await Promise.all([
     fetchJson(`${apiBaseUrl}/api/categories`),
-    fetchJson(`${apiBaseUrl}/api/services`)
+    fetchJson(`${apiBaseUrl}/api/services/menu`)
   ]);
 
   // Static URLs
