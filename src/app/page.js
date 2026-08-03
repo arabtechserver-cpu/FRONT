@@ -248,7 +248,18 @@ export default function Home() {
             </div>
             <div className="banner-graphic">
               {slide.icon && (slide.icon.startsWith("data:") || slide.icon.startsWith("http") || slide.icon.startsWith("/uploads")) ? (
-                <img src={slide.icon.startsWith("/uploads") ? `${API_BASE_URL}${slide.icon}` : slide.icon} alt={slide.title} style={{ width: 200, height: 200, objectFit: "contain", filter: `drop-shadow(0 0 30px ${slide.color}88)` }} />
+                <img
+                  src={slide.icon.startsWith("/uploads") ? `${API_BASE_URL}${slide.icon}` : slide.icon}
+                  alt={slide.title}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    maxWidth: "100%",
+                    maxHeight: "100%",
+                    objectFit: "contain",
+                    filter: `drop-shadow(0 0 30px ${slide.color}88)`
+                  }}
+                />
               ) : (
                 <span className="coin-icon" style={{ color: slide.color, filter: `drop-shadow(0 0 30px ${slide.color}88)` }}>{slide.icon}</span>
               )}
