@@ -133,7 +133,7 @@ export default function Home() {
             <div className="notice-row" aria-label="Announcements">
               <div className="notice-track" role="presentation">
                 <div className="notice-set" role="presentation">
-                  <span className="notice-pill" style={{ color: "#fff", background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)" }}>
+                  <span className="notice-pill" style={{ color: "#000", background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)" }}>
                     ✨ مرحبا بكم هنا سيرفر عرب تك متاح جميع الخدمات بفضل الله واسعار مناسبه للجميع
                   </span>
                   <a href="https://wa.me/249123667227" target="_blank" rel="noopener noreferrer" className="notice-pill" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "6px" }}>
@@ -146,7 +146,7 @@ export default function Home() {
                   </a>
                 </div>
                 <div className="notice-set" aria-hidden="true" role="presentation">
-                  <span className="notice-pill" style={{ color: "#fff", background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)" }}>
+                  <span className="notice-pill" style={{ color: "#000", background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)" }}>
                     ✨ مرحبا بكم هنا سيرفر عرب تك متاح جميع الخدمات بفضل الله واسعار مناسبه للجميع
                   </span>
                   <a href="https://wa.me/249123667227" target="_blank" rel="noopener noreferrer" className="notice-pill" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "6px" }}>
