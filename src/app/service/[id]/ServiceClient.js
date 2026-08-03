@@ -14,7 +14,7 @@ export default function ServiceDetail({ params }) {
   const [loading, setLoading] = useState(true);
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [selectedSubServiceId, setSelectedSubServiceId] = useState(null);
-  const [customQuantity, setCustomQuantity] = useState(1000);
+  const [customQuantity, setCustomQuantity] = useState(1);
   const [copied, setCopied] = useState(false);
   const [step, setStep] = useState(1);
   const [customerPricingMode, setCustomerPricingMode] = useState("packages");
@@ -193,7 +193,10 @@ export default function ServiceDetail({ params }) {
   useEffect(() => {
     setLoading(true);
     setImageError(false);
-    fetch(`${API_BASE_URL}/api/services/${serviceId}`)
+    const token = typeof window !== 'undefined' ? localStorage.getItem("customer_token") : null;
+    const headers = {};
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+    fetch(`${API_BASE_URL}/api/services/${serviceId}`, { headers })
       .then(res => {
         if (!res.ok) throw new Error();
         return res.json();
@@ -1542,7 +1545,7 @@ export default function ServiceDetail({ params }) {
             </div>
 
             <div style={{ marginTop: "6px", fontSize: "0.75rem", color: "var(--text-muted)", lineHeight: "1.6", background: "rgba(255, 255, 255, 0.02)", padding: "10px 14px", borderRadius: "10px", border: "1px solid rgba(255, 255, 255, 0.05)" }}>
-              📢 {service.api_delivery_time ? `مدة التنفيذ المتوقعة: ${service.api_delivery_time}` : 'بمجرد إتمام الطلب، سيتم مراجعة الدفع وتنفيذ الخدمة في حسابك في غضون 5 إلى 15 دقيقة فقط كحد أقصى.'}
+              📢 {(activeService?.api_delivery_time || service?.api_delivery_time) ? `مدة التنفيذ المتوقعة: ${activeService?.api_delivery_time || service?.api_delivery_time}` : 'بمجرد إتمام الطلب، سيتم مراجعة الدفع وتنفيذ الخدمة في غضون وقت قصير.'}
             </div>
           </div>
 
