@@ -228,8 +228,8 @@ export default function Home() {
 
         {/* slides */}
         {slides.map((slide, idx) => {
-          const isImageSlide = slide.icon && (slide.icon.startsWith("data:") || slide.icon.startsWith("http") || slide.icon.startsWith("/uploads"));
-          const imageUrl = isImageSlide ? (slide.icon.startsWith("/uploads") ? `${API_BASE_URL}${slide.icon}` : slide.icon) : null;
+          const isImage = slide.icon && (slide.icon.startsWith("data:") || slide.icon.startsWith("http") || slide.icon.startsWith("/uploads"));
+          const imgSrc = isImage ? (slide.icon.startsWith("/uploads") ? `${API_BASE_URL}${slide.icon}` : slide.icon) : null;
 
           return (
             <div
@@ -238,68 +238,10 @@ export default function Home() {
               style={{
                 opacity: currentSlide === idx ? 1 : 0,
                 visibility: currentSlide === idx ? "visible" : "hidden",
-                transition: "opacity 0.6s ease-in-out, visibility 0.6s",
-                position: "absolute",
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                padding: "80px 80px 90px 80px"
+                transition: "opacity 0.6s ease-in-out, visibility 0.6s"
               }}
             >
-              {/* Full Banner Auto-fit Image if image URL */}
-              {isImageSlide && (
-                <>
-                  {/* Ambient Blurred Backdrop Fill */}
-                  <img
-                    src={imageUrl}
-                    alt=""
-                    aria-hidden="true"
-                    style={{
-                      position: "absolute",
-                      top: "-10%",
-                      left: "-10%",
-                      width: "120%",
-                      height: "120%",
-                      objectFit: "cover",
-                      filter: "blur(30px) brightness(0.4)",
-                      zIndex: 0,
-                      transform: "scale(1.1)"
-                    }}
-                  />
-
-                  {/* Main Uncropped Auto-fit Crisp Image */}
-                  <img
-                    src={imageUrl}
-                    alt={slide.title}
-                    style={{
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "contain",
-                      objectPosition: "center right",
-                      zIndex: 1
-                    }}
-                  />
-
-                  {/* Dark Gradient Overlay for Text Protection */}
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      background: "linear-gradient(to left, rgba(15, 23, 42, 0.92) 0%, rgba(15, 23, 42, 0.65) 50%, rgba(15, 23, 42, 0.15) 100%)",
-                      zIndex: 2
-                    }}
-                  />
-                </>
-              )}
-
-              <div className="banner-info" style={{ position: "relative", zIndex: 2 }}>
+              <div className="banner-info">
                 <span className="banner-badge" style={{ borderColor: slide.color, color: slide.color, background: `${slide.color}22` }}>{slide.badge}</span>
                 <h1 className="banner-title">
                   {slide.title}<br />
@@ -313,11 +255,17 @@ export default function Home() {
                 )}
               </div>
 
-              {!isImageSlide && (
-                <div className="banner-graphic" style={{ position: "relative", zIndex: 2 }}>
+              <div className="banner-graphic">
+                {isImage ? (
+                  <img
+                    src={imgSrc}
+                    alt={slide.title}
+                    className="banner-img-clean"
+                  />
+                ) : (
                   <span className="coin-icon" style={{ color: slide.color, filter: `drop-shadow(0 0 30px ${slide.color}88)` }}>{slide.icon}</span>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           );
         })}
