@@ -1,6 +1,5 @@
 @import "tailwindcss";
 
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;600;700;800;900&display=swap');
 @import './components.css';
 @import './layout.css';
 @import './navbar.css';
@@ -118,7 +117,7 @@
 
 :root {
   --font-scale: 1;
-  --font-cairo:  'Cairo', 'Outfit', sans-serif;
+  --font-cairo:  var(--font-cairo-google), var(--font-outfit-google), sans-serif;
   --border-radius-xs: 8px;
   --border-radius-sm: 14px;
   --border-radius-md: 20px;
@@ -720,7 +719,6 @@ button, input, textarea, select { font-family: var(--font-cairo); }
   z-index: 10;
   font-weight: 700;
   font-size: 0.88rem;
-  direction: ltr;
 }
 
 [data-theme="light"] .notice-bar-container {

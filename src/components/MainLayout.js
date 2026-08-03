@@ -735,33 +735,6 @@ export default function MainLayout({ children }) {
             <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
               {/* WhatsApp Support 1 */}
               <a
-                href="https://wa.me/16728972935"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  padding: "12px 16px",
-                  background: "rgba(34, 211, 238, 0.1)",
-                  border: "1px solid rgba(34, 211, 238, 0.15)",
-                  borderRadius: "14px",
-                  color: "#22d3ee",
-                  textDecoration: "none",
-                  fontWeight: "bold",
-                  fontSize: "0.92rem",
-                  transition: "transform 0.2s"
-                }}
-              >
-                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  <span style={{ fontSize: "1.2rem" }}>🟢</span>
-                  <span>واتساب الإدارة 1 (+1 672-897-2935)</span>
-                </div>
-                <span style={{ color: "#22d3ee" }}>←</span>
-              </a>
-
-              {/* WhatsApp Support 2 */}
-              <a
                 href="https://wa.me/249123667227"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -782,9 +755,36 @@ export default function MainLayout({ children }) {
               >
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                   <span style={{ fontSize: "1.2rem" }}>🟢</span>
-                  <span>واتساب الإدارة 2 (+249 12 366 7227)</span>
+                  <span>واتساب الإدارة 1 (+249 12 366 7227)</span>
                 </div>
                 <span style={{ color: "#10b981" }}>←</span>
+              </a>
+
+              {/* WhatsApp Support 2 */}
+              <a
+                href="https://wa.me/16728972935"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  padding: "12px 16px",
+                  background: "rgba(34, 211, 238, 0.1)",
+                  border: "1px solid rgba(34, 211, 238, 0.15)",
+                  borderRadius: "14px",
+                  color: "#22d3ee",
+                  textDecoration: "none",
+                  fontWeight: "bold",
+                  fontSize: "0.92rem",
+                  transition: "transform 0.2s"
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <span style={{ fontSize: "1.2rem" }}>🟢</span>
+                  <span>واتساب الإدارة 2 (+1 672-897-2935)</span>
+                </div>
+                <span style={{ color: "#22d3ee" }}>←</span>
               </a>
 
               {/* WhatsApp Community */}

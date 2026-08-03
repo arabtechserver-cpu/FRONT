@@ -3,6 +3,21 @@ import ContactFloatingButton from "../components/ContactFloatingButton";
 import MainLayout from "../components/MainLayout";
 import { API_BASE_URL, SITE_URL, fetchWithTimeout } from "../config";
 import { cache } from "react";
+import { Cairo, Outfit } from "next/font/google";
+
+const cairo = Cairo({
+  subsets: ["arabic", "latin"],
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
+  variable: "--font-cairo-google",
+  display: "swap",
+});
+
+const outfit = Outfit({
+  subsets: ["latin"],
+  weight: ["400", "600", "700", "800", "900"],
+  variable: "--font-outfit-google",
+  display: "swap",
+});
 
 // Skip API fetch during Vercel build when the API is not reachable
 const isBuildTime = typeof window === "undefined" && (API_BASE_URL.includes("localhost") || API_BASE_URL.includes("127.0.0.1"));
@@ -209,7 +224,7 @@ export default async function RootLayout({ children }) {
   };
 
   return (
-    <html lang="ar" dir="rtl" suppressHydrationWarning>
+    <html lang="ar" dir="rtl" suppressHydrationWarning className={`${cairo.variable} ${outfit.variable}`}>
       <head>
         <meta name="google-site-verification" content="BpQsEK6Xln0FauVIlj0qYpPxuzvoYrACWOehkyBc5-U" />
         {/* PWA Settings */}
