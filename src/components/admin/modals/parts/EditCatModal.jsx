@@ -4,7 +4,7 @@ import { API_BASE_URL } from "@/config";
 
 export default function EditCatModal() {
   const { editCatModal, errorMsg } = useContext(AdminDashboardContext);
-  const { showEditCatModal, setShowEditCatModal, handleEditCategory, editCatName, setEditCatName, editCatImage, setEditCatImage, editCatUploadedFile, setEditCatUploadedFile, editCatFieldsTitle, setEditCatFieldsTitle, editCatFields, handleAddEditCatField, handleRemoveEditCatField, handleEditCatFieldChange, editCatParentId, setEditCatParentId, editCatLinkedCategories, setEditCatLinkedCategories, applyToServices, setApplyToServices, editCatId, categories } = editCatModal;
+  const { showEditCatModal, setShowEditCatModal, handleEditCategory, editCatName, setEditCatName, editCatImage, setEditCatImage, editCatUploadedFile, setEditCatUploadedFile, editCatFieldsTitle, setEditCatFieldsTitle, editCatFields, handleAddEditCatField, handleRemoveEditCatField, handleEditCatFieldChange, editCatParentId, setEditCatParentId, editCatLinkedCategories, setEditCatLinkedCategories, editCatIsFeatured, setEditCatIsFeatured, editCatCoverImage, setEditCatCoverImage, applyToServices, setApplyToServices, editCatId, categories } = editCatModal;
 
   if (!(showEditCatModal)) return null;
 
@@ -156,6 +156,63 @@ export default function EditCatModal() {
                   </div>
                 )}
               </div>
+
+              <div className="form-group" style={{ marginBottom: "14px" }}>
+                <label style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", color: editCatIsFeatured ? "#38bdf8" : "#fff", background: "rgba(255,255,255,0.02)", padding: "12px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
+                  <input
+                    type="checkbox"
+                    checked={editCatIsFeatured}
+                    onChange={(e) => setEditCatIsFeatured(e.target.checked)}
+                    style={{ cursor: "pointer", width: "18px", height: "18px", accentColor: "#38bdf8" }}
+                  />
+                  <span>⭐ تمييز هذا القسم (عرضه في الرئيسية)</span>
+                </label>
+              </div>
+
+              {editCatIsFeatured && (
+                <div className="form-group" style={{ marginBottom: "14px" }}>
+                  <label>صورة الغلاف الكبيرة (تظهر في الرئيسية للقسم المميز):</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                          setEditCatCoverImage(reader.result);
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                    style={{
+                      padding: "10px 18px",
+                      borderRadius: "12px",
+                      border: "1px solid rgba(255, 255, 255, 0.08)",
+                      background: "rgba(13, 18, 36, 0.7)",
+                      color: "#ffffff",
+                      fontSize: "0.95rem",
+                      width: "100%"
+                    }}
+                  />
+                  {editCatCoverImage && (
+                    <div style={{ marginTop: "10px", display: "flex", alignItems: "center", gap: "10px" }}>
+                      <img src={editCatCoverImage.startsWith("/uploads") ? `${API_BASE_URL}${editCatCoverImage}` : editCatCoverImage} alt="Cover Preview" style={{ width: "120px", height: "60px", objectFit: "cover", borderRadius: "8px", border: "1px solid rgba(255, 255, 255, 0.1)" }} />
+                      <button
+                        type="button"
+                        onClick={() => setEditCatCoverImage(null)}
+                        className="action-btn btn-danger-premium"
+                        style={{ padding: "4px 8px", fontSize: "0.75rem" }}
+                      >
+                        حذف الغلاف
+                      </button>
+                    </div>
+                  )}
+                  {!editCatCoverImage && (
+                    <p style={{ fontSize: "0.8rem", color: "#94a3b8", marginTop: "8px" }}>إذا لم تختر صورة جديدة، سيتم الاحتفاظ بالصورة السابقة (إن وجدت).</p>
+                  )}
+                </div>
+              )}
 
               <div className="form-group" style={{ marginBottom: "14px" }}>
                 <label>عنوان قسم بيانات الخدمة (اختياري - الافتراضي: "بيانات الخدمة"):</label>

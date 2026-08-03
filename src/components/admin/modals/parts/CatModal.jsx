@@ -4,7 +4,7 @@ import { API_BASE_URL } from "@/config";
 
 export default function CatModal() {
   const { catModal, errorMsg } = useContext(AdminDashboardContext);
-  const { showCatModal, setShowCatModal, handleAddCategory, newCatName, setNewCatName, newCatImage, setNewCatImage, catUploadedFile, setCatUploadedFile, newCatFieldsTitle, setNewCatFieldsTitle, newCatFields, handleAddField, handleRemoveField, handleFieldChange, newCatParentId, setNewCatParentId, newCatLinkedCategories, setNewCatLinkedCategories, categories } = catModal;
+  const { showCatModal, setShowCatModal, handleAddCategory, newCatName, setNewCatName, newCatImage, setNewCatImage, catUploadedFile, setCatUploadedFile, newCatFieldsTitle, setNewCatFieldsTitle, newCatFields, handleAddField, handleRemoveField, handleFieldChange, newCatParentId, setNewCatParentId, newCatLinkedCategories, setNewCatLinkedCategories, newCatIsFeatured, setNewCatIsFeatured, newCatCoverImage, setNewCatCoverImage, categories } = catModal;
 
   if (!(showCatModal)) return null;
 
@@ -156,6 +156,60 @@ export default function CatModal() {
                   </div>
                 )}
               </div>
+
+              <div className="form-group" style={{ marginBottom: "14px" }}>
+                <label style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", color: newCatIsFeatured ? "#38bdf8" : "#fff", background: "rgba(255,255,255,0.02)", padding: "12px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
+                  <input
+                    type="checkbox"
+                    checked={newCatIsFeatured}
+                    onChange={(e) => setNewCatIsFeatured(e.target.checked)}
+                    style={{ cursor: "pointer", width: "18px", height: "18px", accentColor: "#38bdf8" }}
+                  />
+                  <span>⭐ تمييز هذا القسم (عرضه في الرئيسية)</span>
+                </label>
+              </div>
+
+              {newCatIsFeatured && (
+                <div className="form-group" style={{ marginBottom: "14px" }}>
+                  <label>صورة الغلاف الكبيرة (تظهر في الرئيسية للقسم المميز):</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                          setNewCatCoverImage(reader.result);
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                    style={{
+                      padding: "10px 18px",
+                      borderRadius: "12px",
+                      border: "1px solid rgba(255, 255, 255, 0.08)",
+                      background: "rgba(13, 18, 36, 0.7)",
+                      color: "#ffffff",
+                      fontSize: "0.95rem",
+                      width: "100%"
+                    }}
+                  />
+                  {newCatCoverImage && (
+                    <div style={{ marginTop: "10px", display: "flex", alignItems: "center", gap: "10px" }}>
+                      <img src={newCatCoverImage} alt="Cover Preview" style={{ width: "120px", height: "60px", objectFit: "cover", borderRadius: "8px", border: "1px solid rgba(255, 255, 255, 0.1)" }} />
+                      <button
+                        type="button"
+                        onClick={() => setNewCatCoverImage(null)}
+                        className="action-btn btn-danger-premium"
+                        style={{ padding: "4px 8px", fontSize: "0.75rem" }}
+                      >
+                        حذف الغلاف
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
 
               <div className="form-group" style={{ marginBottom: "14px" }}>
                 <label>عنوان قسم بيانات الخدمة (اختياري - الافتراضي: &quot;بيانات الخدمة&quot;):</label>

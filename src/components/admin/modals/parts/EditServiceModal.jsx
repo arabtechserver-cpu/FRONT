@@ -4,7 +4,7 @@ import { API_BASE_URL } from "@/config";
 
 export default function EditServiceModal() {
   const { editServiceModal, errorMsg } = useContext(AdminDashboardContext);
-  const { showEditServiceModal, setShowEditServiceModal, handleEditService, editServiceName, setEditServiceName, editServiceDesc, setEditServiceDesc, editServiceCatId, setEditServiceCatId, editServiceImage, setEditServiceImage, editServiceUploadedFile, setEditServiceUploadedFile, editServicePackages, handleAddEditPkgInput, handleRemoveEditPkgInput, handleEditPkgChange, editServiceFields, handleAddEditField, handleRemoveEditField, handleEditFieldChange, editServicePriceType, setEditServicePriceType, editServicePricePerThousand, setEditServicePricePerThousand, editServiceIsPopular, setEditServiceIsPopular, editServiceShowInMenu, setEditServiceShowInMenu, editServiceIsBundle, setEditServiceIsBundle, editServiceBundleServices, setEditServiceBundleServices, editServiceFieldsTitle, setEditServiceFieldsTitle, editServiceDownloadLink, setEditServiceDownloadLink, editServiceDownloadLinkTitle, setEditServiceDownloadLinkTitle, editServiceApiProviderId, setEditServiceApiProviderId } = editServiceModal;
+  const { showEditServiceModal, setShowEditServiceModal, handleEditService, editServiceName, setEditServiceName, editServiceDesc, setEditServiceDesc, editServiceCatId, setEditServiceCatId, editServiceImage, setEditServiceImage, editServiceUploadedFile, setEditServiceUploadedFile, editServicePackages, handleAddEditPkgInput, handleRemoveEditPkgInput, handleEditPkgChange, editServiceFields, handleAddEditField, handleRemoveEditField, handleEditFieldChange, editServicePriceType, setEditServicePriceType, editServicePricePerThousand, setEditServicePricePerThousand, editServiceIsPopular, setEditServiceIsPopular, editServiceShowInMenu, setEditServiceShowInMenu, editServiceIsFeatured, setEditServiceIsFeatured, editServiceIsBundle, setEditServiceIsBundle, editServiceBundleServices, setEditServiceBundleServices, editServiceFieldsTitle, setEditServiceFieldsTitle, editServiceDownloadLink, setEditServiceDownloadLink, editServiceDownloadLinkTitle, setEditServiceDownloadLinkTitle, editServiceApiProviderId, setEditServiceApiProviderId } = editServiceModal;
   const { categories, apiProviders, baseCurrency, API_BASE_URL } = useContext(AdminDashboardContext);
 
   if (!(showEditServiceModal)) return null;
@@ -405,6 +405,20 @@ export default function EditServiceModal() {
                 />
                 <label htmlFor="editServiceShowInMenuCheckbox" style={{ cursor: "pointer", fontWeight: "bold", color: "#93c5fd", display: "flex", alignItems: "center", gap: "6px" }}>
                   <span>🍔 إظهار في القائمة الجانبية (الهامبرجر)</span>
+                </label>
+              </div>
+
+              {/* Is Featured Toggle */}
+              <div style={{ background: "rgba(56, 189, 248, 0.05)", padding: "15px", borderRadius: "12px", border: "1px solid rgba(56, 189, 248, 0.2)", display: "flex", alignItems: "center", gap: "10px", marginTop: "10px", marginBottom: "14px" }}>
+                <input
+                  type="checkbox"
+                  id="editServiceIsFeaturedCheckbox"
+                  checked={editServiceIsFeatured}
+                  onChange={(e) => setEditServiceIsFeatured(e.target.checked)}
+                  style={{ width: "20px", height: "20px", accentColor: "#38bdf8", cursor: "pointer" }}
+                />
+                <label htmlFor="editServiceIsFeaturedCheckbox" style={{ cursor: "pointer", fontWeight: "bold", color: "#7dd3fc", display: "flex", alignItems: "center", gap: "6px" }}>
+                  <span>⭐ تمييز الخدمة (عرضها في الرئيسية)</span>
                 </label>
               </div>
 

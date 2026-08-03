@@ -1047,3 +1047,153 @@
   background: rgba(255,255,255,0.1) !important;
 }
 
+/* ════════════════════════════════════════════════════════
+   MOBILE SPACING OVERRIDES — تحسين المسافات للجوال
+   يشمل كل صفحات المستخدم: الرئيسية، الخدمات، الأقسام،
+   الطلبات، المحفظة، الملف الشخصي
+════════════════════════════════════════════════════════ */
+@media (max-width: 600px) {
+
+  /* ── Layout container ── */
+  .main-content,
+  .page-container,
+  .container,
+  [class*="content-wrap"],
+  [class*="page-wrap"] {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+
+  /* ── Section headings ── */
+  .hp-section-title {
+    font-size: 1.05rem !important;
+    margin-bottom: 12px !important;
+  }
+
+  /* ── Stats bar ── */
+  .hp-stats-bar {
+    padding: 10px 12px !important;
+    gap: 10px 8px !important;
+    border-radius: 12px !important;
+    margin-bottom: 16px !important;
+  }
+  .hp-stat-icon { font-size: 1.2rem !important; }
+  .hp-stat-val  { font-size: 0.95rem !important; }
+  .hp-stat-label{ font-size: 0.68rem !important; }
+
+  /* ── Section tabs ── */
+  .hp-section-tabs {
+    gap: 8px !important;
+    margin-bottom: 14px !important;
+  }
+  .hp-tab-btn {
+    padding: 7px 12px !important;
+    font-size: 0.8rem !important;
+    border-radius: 10px !important;
+  }
+
+  /* ── Service panel ── */
+  .hp-services-panel {
+    border-radius: 14px !important;
+    margin-bottom: 20px !important;
+  }
+  .hp-panel-header {
+    padding: 12px 14px 10px !important;
+  }
+  .hp-list {
+    gap: 0 !important;
+  }
+  .hp-row {
+    padding: 10px 12px !important;
+    gap: 8px !important;
+    border-radius: 0 !important;
+  }
+  .hp-row-icon {
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 8px !important;
+    font-size: 1rem !important;
+  }
+  .hp-row-name  { font-size: 0.82rem !important; }
+  .hp-row-sub   { font-size: 0.7rem  !important; }
+  .hp-row-btn   { padding: 3px 8px   !important; font-size: 0.7rem !important; }
+
+  /* ── Category cards (cc-grid) ── */
+  .cc-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 8px !important;
+    margin-bottom: 20px !important;
+  }
+  .cc-card { border-radius: 12px !important; }
+
+  /* ── Service cards (scc) ── */
+  .scc-list { gap: 8px !important; }
+  .scc-card { padding: 10px !important; border-radius: 12px !important; }
+  .scc-thumb { width: 52px !important; height: 52px !important; border-radius: 8px !important; flex-shrink: 0; }
+  .scc-name  { font-size: 0.82rem !important; }
+  .scc-meta  { font-size: 0.7rem !important; }
+
+  /* ── Why us cards ── */
+  .hp-why-grid { gap: 8px !important; }
+  .hp-why-card { padding: 14px 10px !important; border-radius: 12px !important; }
+  .hp-why-icon { font-size: 1.5rem !important; margin-bottom: 6px !important; }
+  .hp-why-title{ font-size: 0.82rem !important; }
+  .hp-why-desc { font-size: 0.72rem !important; }
+
+  /* ── FAQ ── */
+  .faq-question { padding: 12px 14px !important; font-size: 0.85rem !important; }
+  .faq-answer   { padding: 0 14px 12px !important; font-size: 0.8rem !important; }
+
+  /* ── Order history page ── */
+  .orders-page,
+  [class*="order-list"],
+  [class*="orders-list"] {
+    padding: 10px !important;
+  }
+
+  /* ── Wallet page ── */
+  [class*="wallet-card"],
+  [class*="wallet-balance"] {
+    padding: 14px !important;
+    border-radius: 14px !important;
+  }
+
+  /* ── Mini panels ── */
+  .hp-mini-panels { gap: 10px !important; margin-bottom: 20px !important; }
+  .hp-mini-card { border-radius: 12px !important; }
+  .hp-mini-header { padding: 10px 12px !important; }
+  .hp-mini-row { padding: 7px 12px !important; gap: 8px !important; }
+  .hp-mini-icon { width: 28px !important; height: 28px !important; }
+  .hp-mini-row-name  { font-size: 0.78rem !important; }
+  .hp-mini-row-price { font-size: 0.7rem  !important; }
+
+  /* ── Hero banner ── */
+  .hero-banner { padding: 0 !important; }
+  .hero-slide  { padding: 20px 14px !important; border-radius: 0 !important; }
+  .hero-title  { font-size: 1.15rem !important; }
+  .hero-desc   { font-size: 0.82rem !important; }
+
+  /* ── Notice bar ── */
+  .notice-bar-container { padding: 6px 0 !important; }
+  .notice-pill { font-size: 0.75rem !important; padding: 4px 10px !important; }
+
+  /* ── General spacing ── */
+  .hp-featured-section,
+  .hp-why-us,
+  .hp-reviews-section,
+  .faq-section {
+    margin-bottom: 24px !important;
+  }
+}
+
+/* ── Extra small phones (≤380px) ── */
+@media (max-width: 380px) {
+  .cc-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 6px !important;
+  }
+  .hp-featured-item-img { width: 60px !important; height: 42px !important; }
+  .hp-stat-item { gap: 6px !important; }
+}
+
+

@@ -24,6 +24,7 @@ export default function AdminSidebar() {
     { tab: "api-providers", icon: "🔌", label: "مزودي الـ API" },
     { tab: "amrr_unlocker", icon: "🔗", label: "بوابة Amrr Unlocker" },
     { tab: "banners", icon: "🖼️", label: "إدارة البانر الإعلاني" },
+    { tab: "featured-sections", icon: "⭐", label: "الأقسام المميزة" },
     { tab: "reviews", icon: "⭐", label: "آراء العملاء" },
     { tab: "memberships", icon: "⭐", label: "نظام العضويات" },
     { tab: "wallets", icon: "💳", label: "طلبات شحن الرصيد" },

@@ -53,6 +53,8 @@ export default function DashboardProvider({ children }) {
   const [newCatFieldsTitle, setNewCatFieldsTitle] = useState("بيانات الخدمة");
   const [newCatParentId, setNewCatParentId] = useState("");
   const [newCatLinkedCategories, setNewCatLinkedCategories] = useState([]);
+  const [newCatIsFeatured, setNewCatIsFeatured] = useState(false);
+  const [newCatCoverImage, setNewCatCoverImage] = useState(null);
 
   const [showServiceModal, setShowServiceModal] = useState(false);
   const [newServiceName, setNewServiceName] = useState("");
@@ -67,6 +69,7 @@ export default function DashboardProvider({ children }) {
   const [newServicePricePerThousand, setNewServicePricePerThousand] = useState(0);
   const [newServiceIsPopular, setNewServiceIsPopular] = useState(false);
   const [newServiceShowInMenu, setNewServiceShowInMenu] = useState(true);
+  const [newServiceIsFeatured, setNewServiceIsFeatured] = useState(false);
 
   // Package list builder
   const [newServicePackages, setNewServicePackages] = useState([
@@ -89,6 +92,8 @@ export default function DashboardProvider({ children }) {
   const [applyToServices, setApplyToServices] = useState(false);
   const [editCatParentId, setEditCatParentId] = useState("");
   const [editCatLinkedCategories, setEditCatLinkedCategories] = useState([]);
+  const [editCatIsFeatured, setEditCatIsFeatured] = useState(false);
+  const [editCatCoverImage, setEditCatCoverImage] = useState(null);
 
   // Edit Service Modal / Form states
   const [showEditServiceModal, setShowEditServiceModal] = useState(false);
@@ -108,6 +113,7 @@ export default function DashboardProvider({ children }) {
   const [editServiceDownloadLinkTitle, setEditServiceDownloadLinkTitle] = useState("تحميل الأداة");
   const [editServiceIsPopular, setEditServiceIsPopular] = useState(false);
   const [editServiceShowInMenu, setEditServiceShowInMenu] = useState(true);
+  const [editServiceIsFeatured, setEditServiceIsFeatured] = useState(false);
 
   // Banners data & form states
   const [banners, setBanners] = useState([]);
@@ -169,6 +175,7 @@ export default function DashboardProvider({ children }) {
   const [waStatus, setWaStatus] = useState("disconnected"); // 'disconnected'|'loading'|'qr'|'ready'
   const [waQR, setWaQR] = useState(null);
   const waPollingRef = useRef(null);
+  const [featuredSections, setFeaturedSections] = useState([]);
 
   const [newAdminUsername, setNewAdminUsername] = useState("");
   const [globalMarkupPercent, setGlobalMarkupPercent] = useState(0);
@@ -480,6 +487,9 @@ export default function DashboardProvider({ children }) {
           }
           if (settingsData.announcement_text !== undefined) {
             setAnnouncementText(settingsData.announcement_text);
+          }
+          if (settingsData.featured_sections !== undefined) {
+            setFeaturedSections(Array.isArray(settingsData.featured_sections) ? settingsData.featured_sections : []);
           }
         }
       }
@@ -1040,7 +1050,7 @@ export default function DashboardProvider({ children }) {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`
         },
-        body: JSON.stringify({ name: newCatName, image: catUploadedFile || newCatImage, fields: newCatFields, fields_title: newCatFieldsTitle, parent_id: newCatParentId || null, linked_categories: newCatLinkedCategories })
+        body: JSON.stringify({ name: newCatName, image: catUploadedFile || newCatImage, fields: newCatFields, fields_title: newCatFieldsTitle, parent_id: newCatParentId || null, linked_categories: newCatLinkedCategories, is_featured: newCatIsFeatured, cover_image: newCatCoverImage })
       });
 
       const data = await response.json();
@@ -1057,6 +1067,8 @@ export default function DashboardProvider({ children }) {
       setNewCatFieldsTitle("بيانات الخدمة");
       setNewCatParentId("");
       setNewCatLinkedCategories([]);
+      setNewCatIsFeatured(false);
+      setNewCatCoverImage(null);
       setShowCatModal(false);
     } catch (err) {
       setErrorMsg(err.message);
@@ -1351,7 +1363,8 @@ export default function DashboardProvider({ children }) {
       parsedLinked = typeof cat.linked_categories === 'string' ? JSON.parse(cat.linked_categories) : (cat.linked_categories || []);
     } catch (e) { parsedLinked = []; }
     setEditCatLinkedCategories(Array.isArray(parsedLinked) ? parsedLinked.map(String) : []);
-
+    setEditCatIsFeatured(!!cat.is_featured);
+    setEditCatCoverImage(null); // Wait for user to upload a new one, or leave null to keep existing if unchanged
 
     setShowEditCatModal(true);
   };
@@ -1380,7 +1393,9 @@ export default function DashboardProvider({ children }) {
           fields_title: editCatFieldsTitle,
           apply_to_services: applyToServices,
           parent_id: editCatParentId || null,
-          linked_categories: editCatLinkedCategories
+          linked_categories: editCatLinkedCategories,
+          is_featured: editCatIsFeatured,
+          cover_image: editCatCoverImage !== null ? editCatCoverImage : undefined
         })
       });
 
@@ -1390,7 +1405,7 @@ export default function DashboardProvider({ children }) {
         throw new Error(data.message || "فشل تعديل القسم.");
       }
 
-      setCategories(prev => prev.map(c => c.id === editCatId ? { ...c, name: editCatName, image: data.image, fields: data.fields, fields_title: data.fields_title, parent_id: data.parent_id } : c));
+      setCategories(prev => prev.map(c => c.id === editCatId ? { ...c, name: editCatName, image: data.image, fields: data.fields, fields_title: data.fields_title, parent_id: data.parent_id, is_featured: data.is_featured, cover_image: data.cover_image !== undefined ? data.cover_image : c.cover_image } : c));
 
       if (applyToServices) {
         setServices(prev => prev.map(s => Number(s.category_id) === Number(editCatId) ? {
@@ -1451,6 +1466,7 @@ export default function DashboardProvider({ children }) {
     setEditServiceDownloadLinkTitle(service.download_link_title || "تحميل الأداة");
     setEditServiceIsPopular(service.is_popular ? true : false);
     setEditServiceShowInMenu(service.show_in_menu === false ? false : true);
+    setEditServiceIsFeatured(!!service.is_featured);
 
     setShowEditServiceModal(true);
   };
@@ -2019,6 +2035,10 @@ export default function DashboardProvider({ children }) {
       setNewCatParentId,
       newCatLinkedCategories,
       setNewCatLinkedCategories,
+      newCatIsFeatured,
+      setNewCatIsFeatured,
+      newCatCoverImage,
+      setNewCatCoverImage,
       categories,
       API_BASE_URL
     },
@@ -2044,10 +2064,14 @@ export default function DashboardProvider({ children }) {
       setNewServicePriceType,
       newServicePricePerThousand,
       setNewServicePricePerThousand,
+      setNewServiceDownloadLinkTitle,
       newServiceIsPopular,
       setNewServiceIsPopular,
       newServiceShowInMenu,
       setNewServiceShowInMenu,
+      newServiceIsFeatured,
+      setNewServiceIsFeatured,
+      apiProviders,
       newServicePackages,
       handleAddPkgInput,
       handleRemovePkgInput,
@@ -2083,6 +2107,10 @@ export default function DashboardProvider({ children }) {
       setEditCatParentId,
       editCatLinkedCategories,
       setEditCatLinkedCategories,
+      editCatIsFeatured,
+      setEditCatIsFeatured,
+      editCatCoverImage,
+      setEditCatCoverImage,
       applyToServices,
       categories,
       setApplyToServices,
@@ -2116,10 +2144,14 @@ export default function DashboardProvider({ children }) {
       setEditServicePriceType,
       editServicePricePerThousand,
       setEditServicePricePerThousand,
+      setEditServiceDownloadLinkTitle,
       editServiceIsPopular,
       setEditServiceIsPopular,
       editServiceShowInMenu,
       setEditServiceShowInMenu,
+      editServiceIsFeatured,
+      setEditServiceIsFeatured,
+      apiProviders,
       editServiceFieldsTitle,
       setEditServiceFieldsTitle,
       editServiceDownloadLink,
@@ -2341,6 +2373,8 @@ export default function DashboardProvider({ children }) {
     faviconUploadedFile: typeof faviconUploadedFile !== 'undefined' ? faviconUploadedFile : undefined,
     fetchUnlockerBalance: typeof fetchUnlockerBalance !== 'undefined' ? fetchUnlockerBalance : undefined,
     fetchUnlockerServices: typeof fetchUnlockerServices !== 'undefined' ? fetchUnlockerServices : undefined,
+    featuredSections: typeof featuredSections !== 'undefined' ? featuredSections : [],
+    setFeaturedSections: typeof setFeaturedSections !== 'undefined' ? setFeaturedSections : undefined,
     filteredCategories: typeof filteredCategories !== 'undefined' ? filteredCategories : undefined,
     filteredCustomers: typeof filteredCustomers !== 'undefined' ? filteredCustomers : undefined,
     filteredOrders: typeof filteredOrders !== 'undefined' ? filteredOrders : undefined,

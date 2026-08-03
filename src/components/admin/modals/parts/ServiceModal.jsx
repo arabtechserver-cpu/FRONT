@@ -3,7 +3,7 @@ import { AdminDashboardContext } from "../../AdminDashboardContext";
 
 export default function ServiceModal() {
   const { serviceModal, errorMsg } = useContext(AdminDashboardContext);
-  const { showServiceModal, setShowServiceModal, handleAddService, newServiceName, setNewServiceName, newServiceDesc, setNewServiceDesc, newServiceCatId, setNewServiceCatId, newServicePrice, setNewServicePrice, newServiceImage, setNewServiceImage, serviceUploadedFile, setServiceUploadedFile, newServiceApiProviderId, setNewServiceApiProviderId, newServicePriceType, setNewServicePriceType, newServicePricePerThousand, setNewServicePricePerThousand, newServiceIsPopular, setNewServiceIsPopular, newServiceShowInMenu, setNewServiceShowInMenu, newServiceIsBundle, setNewServiceIsBundle, newServiceBundleServices, setNewServiceBundleServices, newServicePackages, handleAddPkgInput, handleRemovePkgInput, handlePkgChange, newServiceFieldsTitle, setNewServiceFieldsTitle, newServiceFields, handleAddField, handleRemoveField, handleFieldChange, newServiceDownloadLink, setNewServiceDownloadLink, newServiceDownloadLinkTitle, setNewServiceDownloadLinkTitle } = serviceModal;
+  const { showServiceModal, setShowServiceModal, handleAddService, newServiceName, setNewServiceName, newServiceDesc, setNewServiceDesc, newServiceCatId, setNewServiceCatId, newServicePrice, setNewServicePrice, newServiceImage, setNewServiceImage, serviceUploadedFile, setServiceUploadedFile, newServiceApiProviderId, setNewServiceApiProviderId, newServicePriceType, setNewServicePriceType, newServicePricePerThousand, setNewServicePricePerThousand, newServiceIsPopular, setNewServiceIsPopular, newServiceShowInMenu, setNewServiceShowInMenu, newServiceIsFeatured, setNewServiceIsFeatured, newServiceIsBundle, setNewServiceIsBundle, newServiceBundleServices, setNewServiceBundleServices, newServicePackages, handleAddPkgInput, handleRemovePkgInput, handlePkgChange, newServiceFieldsTitle, setNewServiceFieldsTitle, newServiceFields, handleAddField, handleRemoveField, handleFieldChange, newServiceDownloadLink, setNewServiceDownloadLink, newServiceDownloadLinkTitle, setNewServiceDownloadLinkTitle } = serviceModal;
   const { categories, apiProviders } = useContext(AdminDashboardContext);
 
   if (!(showServiceModal)) return null;
@@ -322,6 +322,30 @@ export default function ServiceModal() {
               </div>
 
               <div className="form-group" style={{ marginBottom: "14px" }}>
+                <label style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", color: newServiceIsPopular ? "#f59e0b" : "#fff", background: "rgba(255,255,255,0.02)", padding: "12px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
+                  <input
+                    type="checkbox"
+                    checked={newServiceIsPopular}
+                    onChange={(e) => setNewServiceIsPopular(e.target.checked)}
+                    style={{ cursor: "pointer", width: "18px", height: "18px", accentColor: "#f59e0b" }}
+                  />
+                  <span>🔥 تمييز كخدمة شائعة (الأكثر طلباً)</span>
+                </label>
+              </div>
+              
+              <div className="form-group" style={{ marginBottom: "14px" }}>
+                <label style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", color: newServiceIsFeatured ? "#38bdf8" : "#fff", background: "rgba(255,255,255,0.02)", padding: "12px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
+                  <input
+                    type="checkbox"
+                    checked={newServiceIsFeatured}
+                    onChange={(e) => setNewServiceIsFeatured(e.target.checked)}
+                    style={{ cursor: "pointer", width: "18px", height: "18px", accentColor: "#38bdf8" }}
+                  />
+                  <span>⭐ تمييز الخدمة (عرضها في الرئيسية)</span>
+                </label>
+              </div>
+
+              <div className="form-group" style={{ marginBottom: "14px" }}>
                 <label>عنوان قسم بيانات الخدمة (اختياري - في حال رغبتك بتخصيصه لهذه الخدمة فقط):</label>
                 <input
                   type="text"
@@ -329,21 +353,8 @@ export default function ServiceModal() {
                   value={newServiceFieldsTitle}
                   onChange={(e) => setNewServiceFieldsTitle(e.target.value)}
                   className="search-input-premium"
-                      style={{ padding: "12px 16px !important" }}
+                  style={{ padding: "12px 16px !important" }}
                 />
-              </div>
-
-              <div className="form-group" style={{ marginBottom: "14px", display: "flex", alignItems: "center", gap: "10px", background: "rgba(255,255,255,0.02)", padding: "12px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
-                <input
-                  type="checkbox"
-                  id="newServiceIsPopular"
-                  checked={newServiceIsPopular}
-                  onChange={(e) => setNewServiceIsPopular(e.target.checked)}
-                  style={{ width: "20px", height: "20px", accentColor: "#f59e0b", cursor: "pointer" }}
-                />
-                <label htmlFor="newServiceIsPopular" style={{ cursor: "pointer", fontWeight: "bold", color: "#fcd34d", display: "flex", alignItems: "center", gap: "6px" }}>
-                  <span>⭐ إضافة إلى قسم "الخدمات الأكثر طلباً" في الصفحة الرئيسية</span>
-                </label>
               </div>
 
               <div className="form-group" style={{ marginBottom: "14px", display: "flex", alignItems: "center", gap: "10px", background: "rgba(255,255,255,0.02)", padding: "12px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
