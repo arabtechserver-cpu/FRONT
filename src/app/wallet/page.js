@@ -420,70 +420,21 @@ export default function WalletPage() {
           <p style={{ color: "var(--text-muted)", fontSize: "0.95rem" }}>اختر طريقة الدفع المناسبة لشحن رصيدك.</p>
         </div>
 
-        {/* ── PayPal Direct Payment Block ── */}
-        <div style={{ background: "linear-gradient(135deg, rgba(0,112,186,0.12), rgba(0,48,135,0.07))", border: "1.5px solid rgba(0,112,186,0.4)", borderRadius: "20px", padding: "24px", display: "flex", flexDirection: "column", gap: "16px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "14px", flexWrap: "wrap" }}>
-            <div style={{ background: "linear-gradient(135deg, #003087, #009cde)", borderRadius: "12px", padding: "10px 18px", fontWeight: 900, color: "#fff", fontSize: "1rem", letterSpacing: "1px", display: "flex", alignItems: "center", gap: "6px" }}>
-              <span style={{ fontSize: "1.3rem" }}>🅿️</span> PayPal
-            </div>
-            <div>
-              <div style={{ fontWeight: 900, fontSize: "1.1rem", color: "var(--text-main)" }}>الدفع المباشر بـ PayPal</div>
-              <div style={{ color: "#60a5fa", fontSize: "0.83rem", marginTop: "2px" }}>دفع في نفس الصفحة (In-Context) • فوري</div>
-            </div>
-          </div>
+        {(() => {
+          const hasBackendPaypal = paymentMethods.some(pm => pm.name.toLowerCase().includes("paypal") || pm.name.includes("باي بال"));
+          const allMethods = hasBackendPaypal ? paymentMethods : [
+            { id: "paypal_direct", name: "الدفع بـ PayPal", isDirectPaypal: true },
+            ...paymentMethods
+          ];
 
-          <div>
-            <input
-              id="paypal-amount-input"
-              type="number"
-              min="1"
-              step="0.01"
-              placeholder="أدخل المبلغ بالدولار USD (مثال: 10)"
-              value={paypalAmount}
-              onChange={(e) => setPaypalAmount(e.target.value)}
-              style={{
-                width: "100%", padding: "15px 18px", fontSize: "1.1rem", borderRadius: "14px",
-                background: "rgba(255,255,255,0.05)", border: "2px solid rgba(255,255,255,0.15)",
-                color: "var(--text-main)", outline: "none", boxSizing: "border-box",
-                transition: "border-color 0.2s", marginBottom: "16px"
-              }}
-              onFocus={(e) => e.target.style.borderColor = "#0070ba"}
-              onBlur={(e) => e.target.style.borderColor = "rgba(255,255,255,0.15)"}
-            />
-          </div>
+          if (allMethods.length === 0) {
+            return <div style={{ color: "var(--text-muted)" }}>يرجى تهيئة طرق الدفع من لوحة التحكم.</div>;
+          }
 
-          {paypalAmount && Number(paypalAmount) >= 1 ? (
-            <div style={{ background: "#fff", borderRadius: "8px", padding: "10px 10px 0 10px" }}>
-              <PayPalScriptProvider options={{ "client-id": process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "AbX4oyjwSWN9g7w83UNF_H1iBxJw6Y_nB-RQyz7jwrwwqTPf4Jj0qvkf0KDhnJiczh6xG3ZNv35zGRLO", currency: "USD" }}>
-                <PayPalButtons 
-                  forceReRender={[paypalAmount]}
-                  style={{ layout: "vertical", shape: "rect", color: "gold", label: "paypal" }}
-                  createOrder={createPaypalOrder}
-                  onApprove={onPaypalApprove}
-                  onError={(err) => setPaypalError("تعذر إكمال عملية الدفع عبر PayPal.")}
-                />
-              </PayPalScriptProvider>
-            </div>
-          ) : (
-            <div style={{ color: "var(--text-muted)", fontSize: "0.95rem" }}>يرجى إدخال مبلغ 1 دولار أو أكثر لإظهار أزرار الدفع.</div>
-          )}
-        </div>
-
-        {/* Divider */}
-        {paymentMethods.length > 0 && (
-          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            <div style={{ flex: 1, height: "1px", background: "rgba(255,255,255,0.08)" }} />
-            <span style={{ color: "var(--text-muted)", fontSize: "0.85rem", whiteSpace: "nowrap" }}>أو ادفع عبر طرق أخرى</span>
-            <div style={{ flex: 1, height: "1px", background: "rgba(255,255,255,0.08)" }} />
-          </div>
-        )}
-
-        {paymentMethods.length === 0 ? (
-          <div style={{ color: "var(--text-muted)" }}>يرجى تهيئة طرق الدفع من لوحة التحكم.</div>
-        ) : (
-          <>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "16px", marginBottom: "24px" }}>
-              {paymentMethods.map((pm) => {
+          return (
+            <>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "16px", marginBottom: "24px" }}>
+                {allMethods.map((pm) => {
                 const isSelected = selectedMethodId === pm.id;
                 return (
                   <div
@@ -526,7 +477,7 @@ export default function WalletPage() {
               })}
             </div>
 
-            {selectedMethodId && paymentMethods.find(pm => pm.id === selectedMethodId) && (
+            {selectedMethodId && allMethods.find(pm => pm.id === selectedMethodId) && (
               <div style={{
                 border: "1px solid var(--primary-color)",
                 borderRadius: "16px",
@@ -535,7 +486,61 @@ export default function WalletPage() {
                 animation: "fadeIn 0.4s ease-in-out"
               }}>
                 {(() => {
-                  const pm = paymentMethods.find(pm => pm.id === selectedMethodId);
+                  const pm = allMethods.find(pm => pm.id === selectedMethodId);
+                  const isPaypal = pm.isDirectPaypal || pm.name.toLowerCase().includes("paypal") || pm.name.includes("باي بال");
+
+                  if (isPaypal) {
+                    return (
+                      <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "14px", flexWrap: "wrap" }}>
+                          <div style={{ background: "linear-gradient(135deg, #003087, #009cde)", borderRadius: "12px", padding: "10px 18px", fontWeight: 900, color: "#fff", fontSize: "1rem", letterSpacing: "1px", display: "flex", alignItems: "center", gap: "6px" }}>
+                            <span style={{ fontSize: "1.3rem" }}>🅿️</span> PayPal
+                          </div>
+                          <div>
+                            <div style={{ fontWeight: 900, fontSize: "1.1rem", color: "var(--text-main)" }}>الدفع المباشر بـ PayPal</div>
+                            <div style={{ color: "#60a5fa", fontSize: "0.83rem", marginTop: "2px" }}>دفع في نفس الصفحة (In-Context) • فوري</div>
+                          </div>
+                        </div>
+
+                        <div>
+                          <input
+                            id="paypal-amount-input"
+                            type="number"
+                            min="1"
+                            step="0.01"
+                            placeholder="أدخل المبلغ بالدولار USD (مثال: 10)"
+                            value={paypalAmount}
+                            onChange={(e) => setPaypalAmount(e.target.value)}
+                            style={{
+                              width: "100%", padding: "15px 18px", fontSize: "1.1rem", borderRadius: "14px",
+                              background: "rgba(255,255,255,0.05)", border: "2px solid rgba(255,255,255,0.15)",
+                              color: "var(--text-main)", outline: "none", boxSizing: "border-box",
+                              transition: "border-color 0.2s", marginBottom: "16px"
+                            }}
+                            onFocus={(e) => e.target.style.borderColor = "#0070ba"}
+                            onBlur={(e) => e.target.style.borderColor = "rgba(255,255,255,0.15)"}
+                          />
+                        </div>
+
+                        {paypalAmount && Number(paypalAmount) >= 1 ? (
+                          <div style={{ background: "#fff", borderRadius: "8px", padding: "10px 10px 0 10px" }}>
+                            <PayPalScriptProvider options={{ "client-id": process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "AbX4oyjwSWN9g7w83UNF_H1iBxJw6Y_nB-RQyz7jwrwwqTPf4Jj0qvkf0KDhnJiczh6xG3ZNv35zGRLO", currency: "USD" }}>
+                              <PayPalButtons 
+                                forceReRender={[paypalAmount]}
+                                style={{ layout: "vertical", shape: "rect", color: "gold", label: "paypal" }}
+                                createOrder={createPaypalOrder}
+                                onApprove={onPaypalApprove}
+                                onError={(err) => setPaypalError("تعذر إكمال عملية الدفع عبر PayPal.")}
+                              />
+                            </PayPalScriptProvider>
+                          </div>
+                        ) : (
+                          <div style={{ color: "var(--text-muted)", fontSize: "0.95rem" }}>يرجى إدخال مبلغ 1 دولار أو أكثر لإظهار أزرار الدفع.</div>
+                        )}
+                      </div>
+                    );
+                  }
+
                   return (
                     <div>
                       <div style={{ marginBottom: "24px" }}>
@@ -640,8 +645,9 @@ export default function WalletPage() {
                 })()}
               </div>
             )}
-          </>
-        )}
+            </>
+          );
+        })()}
       </section>
 
       {/* WhatsApp Modal */}
