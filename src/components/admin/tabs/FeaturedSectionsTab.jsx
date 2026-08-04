@@ -220,17 +220,48 @@ function SectionEditor({ section, onChange, onRemove, index, categories, service
         <p style={{ margin: "0 0 8px", fontSize: "0.82rem", color: "#94a3b8" }}>
           🔍 <strong style={{ color: "#e2e8f0" }}>فلترة الخدمات (اختياري)</strong>: اختر قسم من نظامك ليسهل عليك جلب الخدمات تلقائياً.
         </p>
-        <select
-          value={section.categoryId || ""}
-          onChange={(e) => onChange({ ...section, categoryId: e.target.value })}
-          style={{
-            width: "100%", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.15)",
-            borderRadius: 8, padding: "10px 14px", color: "#e2e8f0", fontSize: "0.9rem", outline: "none"
-          }}
-        >
-          <option value="">-- عرض كل الخدمات في النظام --</option>
-          {(categories || []).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-        </select>
+        <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+          <select
+            value={section.categoryId || ""}
+            onChange={(e) => onChange({ ...section, categoryId: e.target.value })}
+            style={{
+              flex: "1 1 200px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.15)",
+              borderRadius: 8, padding: "10px 14px", color: "#e2e8f0", fontSize: "0.9rem", outline: "none"
+            }}
+          >
+            <option value="">-- عرض كل الخدمات في النظام --</option>
+            {(categories || []).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+          </select>
+
+          {section.categoryId && (
+            <button
+              onClick={() => {
+                const newItems = filteredServices.map(s => ({
+                  title: s.name,
+                  url: `/service/${s.id}`,
+                  img: "",
+                  time: s.time || "",
+                  serviceId: s.id.toString()
+                }));
+                const existingIds = (section.items || []).map(i => i.serviceId?.toString());
+                const toAdd = newItems.filter(item => !existingIds.includes(item.serviceId));
+                if (toAdd.length > 0) {
+                  onChange({ ...section, items: [...(section.items || []), ...toAdd] });
+                } else {
+                  alert("جميع خدمات هذا القسم موجودة بالفعل في القائمة.");
+                }
+              }}
+              style={{
+                background: "rgba(16,185,129,0.15)", border: "1px solid rgba(16,185,129,0.3)",
+                color: "#34d399", borderRadius: 8, padding: "10px 16px", cursor: "pointer",
+                fontSize: "0.9rem", fontWeight: 700, whiteSpace: "nowrap"
+              }}
+              title="سحب جميع الخدمات الموجودة في هذا القسم وإضافتها للقائمة بنقرة واحدة"
+            >
+              📥 جلب جميع خدمات القسم ({filteredServices.length})
+            </button>
+          )}
+        </div>
       </div>
 
       {/* cover image */}
