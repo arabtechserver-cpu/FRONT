@@ -990,3 +990,14 @@ button, input, textarea, select { font-family: var(--font-cairo); }
 /* ==========================================================================
    SPLIT CSS FILES - Imported for performance and maintainability
    ========================================================================== */
+
+/* ── PayPal / Utility Animations ── */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.7; transform: scale(1.08); }
+}

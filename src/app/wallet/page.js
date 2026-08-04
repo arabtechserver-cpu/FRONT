@@ -33,6 +33,12 @@ export default function WalletPage() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [theme, setTheme] = useState("dark");
   const [hydrated, setHydrated] = useState(false);
+  // ── PayPal states ──
+  const [paypalAmount, setPaypalAmount] = useState("");
+  const [paypalLoading, setPaypalLoading] = useState(false);
+  const [paypalSuccess, setPaypalSuccess] = useState(null);
+  const [paypalError, setPaypalError] = useState("");
+  const [capturingPaypal, setCapturingPaypal] = useState(false);
 
   useEffect(() => {
     setToken(localStorage.getItem("customer_token") || "");
@@ -85,6 +91,60 @@ export default function WalletPage() {
         setLoadingRates(false);
         setHydrated(true);
       });
+  }, []);
+
+  // ── Handle PayPal return redirect (capture after PayPal approval) ──────────
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const paypalStatus = urlParams.get("paypal");
+    const paypalToken = urlParams.get("token"); // PayPal Order ID
+
+    if (paypalStatus === "success" && paypalToken) {
+      // Clean URL immediately so refresh won't re-trigger
+      window.history.replaceState({}, document.title, "/wallet");
+
+      const savedToken = localStorage.getItem("customer_token");
+      if (!savedToken) return;
+
+      setCapturingPaypal(true);
+
+      fetch(`${API_BASE_URL}/api/wallet/paypal/capture-order`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${savedToken}`,
+        },
+        body: JSON.stringify({ orderId: paypalToken }),
+      })
+        .then((r) => r.json())
+        .then((data) => {
+          setCapturingPaypal(false);
+          if (data.balance !== undefined) {
+            setPaypalSuccess(data);
+            // Refresh customer balance
+            fetch(`${API_BASE_URL}/api/customer/me`, {
+              headers: { Authorization: `Bearer ${savedToken}` },
+            })
+              .then((r) => r.ok ? r.json() : null)
+              .then((me) => { if (me) setCustomer(me); });
+            // Refresh requests list
+            fetch(`${API_BASE_URL}/api/customer/wallet-requests`, {
+              headers: { Authorization: `Bearer ${savedToken}` },
+            })
+              .then((r) => r.ok ? r.json() : null)
+              .then((reqs) => { if (reqs) setRequests(reqs); });
+          } else {
+            setPaypalError(data.message || "فشل تأكيد الدفع من PayPal.");
+          }
+        })
+        .catch(() => {
+          setCapturingPaypal(false);
+          setPaypalError("تعذر الاتصال بالخادم لتأكيد الدفع.");
+        });
+    } else if (paypalStatus === "cancel") {
+      window.history.replaceState({}, document.title, "/wallet");
+      setPaypalError("تم إلغاء عملية الدفع من PayPal.");
+    }
   }, []);
 
   useEffect(() => {
@@ -229,13 +289,83 @@ export default function WalletPage() {
     router.push("/login");
   };
 
+  // ── PayPal direct payment handler ──
+  const handlePaypalPay = async () => {
+    setPaypalError("");
+    setPaypalLoading(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/wallet/paypal/create-order`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ amount: paypalAmount }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
+      if (data.approvalUrl) {
+        window.location.href = data.approvalUrl;
+      } else {
+        throw new Error("لم يتم إنشاء رابط PayPal.");
+      }
+    } catch (err) {
+      setPaypalLoading(false);
+      setPaypalError(err.message || "تعذر إنشاء طلب PayPal.");
+    }
+  };
+
   if (!hydrated) {
     return <div style={{ textAlign: "center", padding: "50px", color: "var(--text-muted)" }}>جاري تحميل المحفظة...</div>;
   }
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "24px", maxWidth: "800px", margin: "0 auto" }}>
-      {/* Wallet Balance Top Card */}
+
+      {/* ── PayPal Capturing Overlay ── */}
+      {capturingPaypal && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.88)", backdropFilter: "blur(14px)", zIndex: 99999, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "20px" }}>
+          <div style={{ fontSize: "4.5rem", animation: "pulse 1.5s ease-in-out infinite" }}>⏳</div>
+          <div style={{ fontSize: "1.4rem", fontWeight: 900, color: "#fff" }}>جاري تأكيد دفعك وشحن الرصيد...</div>
+          <div style={{ color: "#94a3b8", fontSize: "0.95rem" }}>يرجى الانتظار، هذا يستغرق ثوان فقط...</div>
+        </div>
+      )}
+
+      {/* ── PayPal Success Modal ── */}
+      {paypalSuccess && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)", backdropFilter: "blur(12px)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }}>
+          <div style={{ background: "var(--bg-card)", border: "1.5px solid rgba(34,197,94,0.4)", borderRadius: "28px", padding: "36px", maxWidth: "400px", width: "100%", textAlign: "center", boxShadow: "0 25px 60px rgba(0,0,0,0.6)" }}>
+            <div style={{ fontSize: "5rem", marginBottom: "16px" }}>🎉</div>
+            <h3 style={{ fontSize: "1.6rem", fontWeight: 900, color: "#22c55e", marginBottom: "16px" }}>تم الدفع بنجاح!</h3>
+            <div style={{ background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.25)", borderRadius: "16px", padding: "22px", marginBottom: "20px" }}>
+              <div style={{ fontSize: "2.8rem", fontWeight: 900, color: "#22c55e" }}>$ {Number(paypalSuccess.amount).toFixed(2)}</div>
+              <div style={{ color: "#94a3b8", fontSize: "0.9rem", marginTop: "8px" }}>تم إضافتها لمحفظتك تلقائياً ✅</div>
+            </div>
+            <div style={{ color: "var(--text-muted)", fontSize: "0.92rem", marginBottom: "24px" }}>
+              رصيدك الحالي: <strong style={{ color: "#22c55e", fontSize: "1.1rem" }}>$ {Number(paypalSuccess.balance).toFixed(2)} USD</strong>
+            </div>
+            <button
+              onClick={() => setPaypalSuccess(null)}
+              style={{ width: "100%", padding: "15px", background: "linear-gradient(135deg, #22c55e, #16a34a)", border: "none", borderRadius: "14px", color: "#fff", fontSize: "1.05rem", fontWeight: 900, cursor: "pointer", transition: "transform 0.2s" }}
+              onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.02)"}
+              onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+            >
+              رائع! إغلاق ✨
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── PayPal Error Toast ── */}
+      {paypalError && (
+        <div style={{ position: "fixed", top: "20px", left: "50%", transform: "translateX(-50%)", background: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.45)", borderRadius: "14px", padding: "14px 24px", color: "#ef4444", fontWeight: 700, zIndex: 9998, display: "flex", alignItems: "center", gap: "10px", backdropFilter: "blur(10px)", boxShadow: "0 10px 30px rgba(0,0,0,0.4)" }}>
+          <span>⚠️</span>
+          <span>{paypalError}</span>
+          <button onClick={() => setPaypalError("")} style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer", fontSize: "1.3rem", marginRight: "8px", lineHeight: 1 }}>✕</button>
+        </div>
+      )}
+
+      {/* ── Wallet Balance Top Card ── */}
       <section className="glass-panel" style={{ padding: "30px", borderRadius: "24px", textAlign: "center", background: "linear-gradient(135deg, rgba(34,197,94,0.15), rgba(16,185,129,0.05))", border: "1px solid rgba(34,197,94,0.3)", boxShadow: "0 10px 30px -10px rgba(34,197,94,0.2)" }}>
         <h2 style={{ color: "var(--text-muted)", fontSize: "1.1rem", marginBottom: "8px", fontWeight: "bold" }}>الرصيد الحالي للمحفظة</h2>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px" }}>
@@ -246,15 +376,94 @@ export default function WalletPage() {
         </div>
       </section>
 
-      {/* Recharge Wallet Section (Accordion Style) */}
+      {/* ── Recharge Wallet Section ── */}
       <section className="glass-panel" style={{ display: "flex", flexDirection: "column", gap: "20px", padding: "24px", borderRadius: "24px" }}>
         <div>
           <h2 style={{ fontWeight: 900, fontSize: "1.4rem", marginBottom: "8px", display: "flex", alignItems: "center", gap: "8px" }}>
             <span style={{ fontSize: "1.6rem" }}>⚡</span> شحن المحفظة
           </h2>
-          <p style={{ color: "var(--text-muted)", fontSize: "0.95rem" }}>اختر طريقة الدفع المناسبة لعرض بيانات التحويل وإرفاق الوصل.</p>
+          <p style={{ color: "var(--text-muted)", fontSize: "0.95rem" }}>اختر طريقة الدفع المناسبة لشحن رصيدك.</p>
         </div>
-        
+
+        {/* ── PayPal Direct Payment Block ── */}
+        <div style={{ background: "linear-gradient(135deg, rgba(0,112,186,0.12), rgba(0,48,135,0.07))", border: "1.5px solid rgba(0,112,186,0.4)", borderRadius: "20px", padding: "24px", display: "flex", flexDirection: "column", gap: "16px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "14px", flexWrap: "wrap" }}>
+            {/* PayPal logo area */}
+            <div style={{ background: "linear-gradient(135deg, #003087, #009cde)", borderRadius: "12px", padding: "10px 18px", fontWeight: 900, color: "#fff", fontSize: "1rem", letterSpacing: "1px", display: "flex", alignItems: "center", gap: "6px" }}>
+              <span style={{ fontSize: "1.3rem" }}>🅿️</span> PayPal
+            </div>
+            <div>
+              <div style={{ fontWeight: 900, fontSize: "1.1rem", color: "var(--text-main)" }}>الدفع المباشر بـ PayPal</div>
+              <div style={{ color: "#60a5fa", fontSize: "0.83rem", marginTop: "2px" }}>تلقائي 100% • آمن • فوري</div>
+            </div>
+            <div style={{ marginRight: "auto", background: "rgba(234,179,8,0.15)", border: "1px solid rgba(234,179,8,0.35)", borderRadius: "8px", padding: "4px 12px", fontSize: "0.78rem", color: "#fbbf24", fontWeight: 700 }}>
+              Sandbox - وضع تجريبي
+            </div>
+          </div>
+
+          <div style={{ display: "flex", gap: "12px", alignItems: "stretch", flexWrap: "wrap" }}>
+            <div style={{ flex: 1, minWidth: "140px" }}>
+              <input
+                id="paypal-amount-input"
+                type="number"
+                min="1"
+                step="0.01"
+                placeholder="المبلغ بالدولار USD"
+                value={paypalAmount}
+                onChange={(e) => setPaypalAmount(e.target.value)}
+                style={{
+                  width: "100%", padding: "13px 16px", fontSize: "1rem", borderRadius: "12px",
+                  background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)",
+                  color: "var(--text-main)", outline: "none", boxSizing: "border-box",
+                  transition: "border-color 0.2s"
+                }}
+                onFocus={(e) => e.target.style.borderColor = "#0070ba"}
+                onBlur={(e) => e.target.style.borderColor = "rgba(255,255,255,0.12)"}
+              />
+            </div>
+            <button
+              id="paypal-pay-btn"
+              disabled={paypalLoading || !paypalAmount || Number(paypalAmount) < 1}
+              onClick={handlePaypalPay}
+              style={{
+                padding: "13px 28px", borderRadius: "12px", border: "none",
+                cursor: (paypalLoading || !paypalAmount || Number(paypalAmount) < 1) ? "not-allowed" : "pointer",
+                background: (paypalLoading || !paypalAmount || Number(paypalAmount) < 1)
+                  ? "rgba(255,255,255,0.06)"
+                  : "linear-gradient(135deg, #0070ba, #003087)",
+                color: "#fff", fontWeight: 900, fontSize: "1rem",
+                display: "flex", alignItems: "center", gap: "8px",
+                transition: "all 0.25s", whiteSpace: "nowrap",
+                opacity: (!paypalAmount || Number(paypalAmount) < 1) ? 0.5 : 1,
+                boxShadow: paypalLoading ? "none" : "0 4px 15px rgba(0,112,186,0.35)",
+              }}
+              onMouseEnter={(e) => { if (!paypalLoading && paypalAmount && Number(paypalAmount) >= 1) e.currentTarget.style.transform = "translateY(-1px)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; }}
+            >
+              {paypalLoading
+                ? <><span style={{ display: "inline-block", animation: "spin 0.8s linear infinite" }}>🔄</span> جاري التحويل...</>
+                : <>💳 ادفع الآن بـ PayPal</>
+              }
+            </button>
+          </div>
+
+          {paypalAmount && Number(paypalAmount) >= 1 && (
+            <div style={{ background: "rgba(0,112,186,0.1)", borderRadius: "10px", padding: "11px 16px", fontSize: "0.88rem", color: "#60a5fa", display: "flex", alignItems: "center", gap: "8px" }}>
+              <span>💵</span>
+              <span>ستدفع <strong style={{ color: "#93c5fd" }}>${Number(paypalAmount).toFixed(2)} USD</strong> عبر PayPal • سيُشحن رصيدك تلقائياً بعد تأكيد الدفع</span>
+            </div>
+          )}
+        </div>
+
+        {/* Divider */}
+        {paymentMethods.length > 0 && (
+          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            <div style={{ flex: 1, height: "1px", background: "rgba(255,255,255,0.08)" }} />
+            <span style={{ color: "var(--text-muted)", fontSize: "0.85rem", whiteSpace: "nowrap" }}>أو ادفع عبر طرق أخرى</span>
+            <div style={{ flex: 1, height: "1px", background: "rgba(255,255,255,0.08)" }} />
+          </div>
+        )}
+
         {paymentMethods.length === 0 ? (
           <div style={{ color: "var(--text-muted)" }}>يرجى تهيئة طرق الدفع من لوحة التحكم.</div>
         ) : (
@@ -490,7 +699,12 @@ export default function WalletPage() {
             {requests.map((request) => (
               <div key={request.id} style={{ padding: "18px", borderRadius: "16px", background: "rgba(255, 255, 255, 0.02)", border: "1px solid rgba(255, 255, 255, 0.06)", display: "flex", flexDirection: "column", gap: "12px" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", gap: "10px", flexWrap: "wrap", alignItems: "center" }}>
-                  <strong style={{ fontSize: "1.1rem" }}>طلب #{request.id}</strong>
+                  <strong style={{ fontSize: "1.1rem" }}>
+                    طلب #{request.id}
+                    {request.notes && request.notes.includes("paypal_order") && (
+                      <span style={{ marginRight: "8px", background: "rgba(0,112,186,0.15)", border: "1px solid rgba(0,112,186,0.3)", borderRadius: "6px", padding: "2px 8px", fontSize: "0.75rem", color: "#60a5fa", fontWeight: 700 }}>PayPal</span>
+                    )}
+                  </strong>
                   <span className={`badge badge-${request.status}`} style={{ padding: "6px 12px", borderRadius: "8px", fontSize: "0.85rem" }}>
                     {request.status === "pending" && "قيد الانتظار ⏳"}
                     {request.status === "approved" && "تم الاعتماد ✅"}
@@ -502,7 +716,7 @@ export default function WalletPage() {
                   <div>العملة: <strong style={{ color: "var(--text-main)" }}>{request.currency || "USD"}</strong></div>
                   <div>من رقم: <strong style={{ color: "var(--text-main)" }}>{request.sender_phone || "-"}</strong></div>
                   <div>بتاريخ: <strong style={{ color: "var(--text-main)" }}>{new Date(request.created_at).toLocaleString("ar-EG")}</strong></div>
-                  {request.notes && (
+                  {request.notes && !request.notes.includes("paypal_order") && (
                     <div style={{ gridColumn: "span 2", background: "rgba(0,0,0,0.2)", padding: "10px", borderRadius: "8px", marginTop: "4px" }}>
                       الملاحظات: <strong style={{ color: "var(--text-main)" }}>{request.notes.replace(/^\[تم تحويل:[^\]]+\]\s*/, "")}</strong>
                     </div>
