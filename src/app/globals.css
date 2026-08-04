@@ -209,9 +209,9 @@
   --warning-color:   #b8860b;
   --danger-color:   #8b0000;
 
-  --text-main:       #3e2723;
-  --text-muted:      #5d4037;
-  --text-faint:      #8d6e63;
+  --text-main:       #000000;
+  --text-muted:      #1e293b;
+  --text-faint:      #334155;
 
   --navbar-bg:       rgba(255,252,245,0.96);
   --drawer-bg:       rgba(255,250,240,0.98);
@@ -1014,3 +1014,4 @@ button, input, textarea, select { font-family: var(--font-cairo); }
     box-shadow: none !important;
   }
 }
+
