@@ -4,16 +4,16 @@ import Link from "next/link";
 
 export default function TermsPage() {
   return (
-    <div style={{ maxWidth: "900px", margin: "0 auto", padding: "20px 10px", direction: "rtl" }}>
-      <div className="glass-panel" style={{ padding: "30px", borderRadius: "24px", backdropFilter: "blur(20px)" }}>
+    <div style={{ maxWidth: "900px", margin: "0 auto", padding: "40px 20px", direction: "rtl" }}>
+      <div className="glass-panel" style={{ padding: "40px", borderRadius: "24px", backdropFilter: "blur(20px)", background: "rgba(10, 15, 30, 0.7)", border: "1px solid rgba(255,255,255,0.05)", boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)" }}>
         
         {/* Header */}
-        <div style={{ textAlign: "center", marginBottom: "35px", borderBottom: "1px solid rgba(255,255,255,0.08)", paddingBottom: "25px" }}>
-          <div style={{ fontSize: "3rem", marginBottom: "10px" }}>⚖️</div>
-          <h1 style={{ fontSize: "1.8rem", fontWeight: 900, color: "#ffffff", marginBottom: "10px" }}>
+        <div style={{ textAlign: "center", marginBottom: "40px", borderBottom: "1px solid rgba(255,255,255,0.08)", paddingBottom: "30px" }}>
+          <div style={{ fontSize: "3.5rem", marginBottom: "15px", filter: "drop-shadow(0 0 20px rgba(234, 179, 8, 0.5))" }}>⚖️</div>
+          <h1 style={{ fontSize: "2.2rem", fontWeight: 900, color: "#ffffff", margin: "0 0 15px 0", background: "linear-gradient(135deg, #fff 0%, #fde047 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
             شروط الاستخدام وسياسة الاسترجاع
           </h1>
-          <p style={{ color: "var(--text-muted)", fontSize: "0.95rem", maxWidth: "600px", margin: "0 auto", lineHeight: "1.6" }}>
+          <p style={{ color: "var(--text-muted)", fontSize: "1rem", maxWidth: "600px", margin: "0 auto", lineHeight: "1.6" }}>
             سياسة العمل الرسمية لمنصة "عرب تك" الخاصة بالخدمات الرقمية، تفعيلات السيرفرات، وأدوات السوفت وير.
           </p>
         </div>

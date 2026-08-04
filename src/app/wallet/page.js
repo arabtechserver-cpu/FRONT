@@ -410,13 +410,25 @@ export default function WalletPage() {
       )}
 
       {/* ── Wallet Balance Top Card ── */}
-      <section className="glass-panel" style={{ padding: "30px", borderRadius: "24px", textAlign: "center", background: "linear-gradient(135deg, rgba(34,197,94,0.15), rgba(16,185,129,0.05))", border: "1px solid rgba(34,197,94,0.3)", boxShadow: "0 10px 30px -10px rgba(34,197,94,0.2)" }}>
-        <h2 style={{ color: "var(--text-muted)", fontSize: "1.1rem", marginBottom: "8px", fontWeight: "bold" }}>الرصيد الحالي للمحفظة</h2>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px" }}>
-          <div style={{ fontSize: "3rem", fontWeight: 900, color: "#22c55e", textShadow: "0 2px 10px rgba(34,197,94,0.2)" }}>
+      <section style={{ 
+        padding: "40px 30px", 
+        borderRadius: "24px", 
+        textAlign: "center", 
+        background: "linear-gradient(135deg, rgba(10, 15, 30, 0.9) 0%, rgba(30, 41, 59, 0.95) 100%)", 
+        border: "1px solid rgba(234, 179, 8, 0.3)", 
+        boxShadow: "0 20px 40px -10px rgba(234, 179, 8, 0.15), inset 0 0 20px rgba(234, 179, 8, 0.05)",
+        position: "relative",
+        overflow: "hidden"
+      }}>
+        {/* Glow effect */}
+        <div style={{ position: "absolute", top: "-50%", left: "-50%", width: "200%", height: "200%", background: "radial-gradient(circle, rgba(234,179,8,0.05) 0%, transparent 60%)", pointerEvents: "none" }}></div>
+        
+        <h2 style={{ color: "#cbd5e1", fontSize: "1.1rem", marginBottom: "15px", fontWeight: "bold", position: "relative", zIndex: 2 }}>الرصيد الحالي للمحفظة</h2>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", position: "relative", zIndex: 2 }}>
+          <div style={{ fontSize: "3.5rem", fontWeight: 900, background: "linear-gradient(to right, #fde047, #eab308, #ca8a04)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", filter: "drop-shadow(0 4px 12px rgba(234,179,8,0.3))" }}>
             $ {Number(customer?.balance || 0).toFixed(2)}
           </div>
-          <span style={{ fontSize: "1.2rem", color: "#22c55e", fontWeight: "bold", opacity: 0.8, marginTop: "10px" }}>USD</span>
+          <span style={{ fontSize: "1.3rem", color: "#eab308", fontWeight: "bold", opacity: 0.9, marginTop: "15px" }}>USD</span>
         </div>
       </section>
 
@@ -453,20 +465,21 @@ export default function WalletPage() {
                       setSelectedMethodId(pm.id);
                     }}
                     style={{
-                      border: isSelected ? "2px solid var(--primary-color)" : "1px solid rgba(255,255,255,0.1)",
-                      borderRadius: "16px",
-                      background: isSelected ? "rgba(139, 92, 246, 0.05)" : "rgba(255,255,255,0.02)",
+                      border: isSelected ? "2px solid #3b82f6" : "1px solid rgba(255,255,255,0.08)",
+                      borderRadius: "20px",
+                      background: isSelected ? "linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(37, 99, 235, 0.05) 100%)" : "rgba(255,255,255,0.02)",
                       overflow: "hidden",
-                      transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                      transition: "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
                       cursor: "pointer",
                       display: "flex",
                       flexDirection: "column",
                       alignItems: "center",
                       justifyContent: "center",
-                      padding: "20px",
-                      gap: "12px",
+                      padding: "25px",
+                      gap: "15px",
                       textAlign: "center",
-                      boxShadow: isSelected ? "0 4px 20px rgba(139, 92, 246, 0.2)" : "none"
+                      boxShadow: isSelected ? "0 10px 30px -10px rgba(59, 130, 246, 0.4)" : "0 4px 6px -1px rgba(0,0,0,0.1)",
+                      transform: isSelected ? "translateY(-5px)" : "translateY(0)"
                     }}
                   >
                     {pm.logo ? (
@@ -478,7 +491,7 @@ export default function WalletPage() {
                         {pm.name.toLowerCase().includes("paypal") || pm.name.includes("باي بال") ? "🅿️" : pm.name.toLowerCase().includes("bnb") || pm.name.toLowerCase().includes("crypto") ? "🟡" : "🏦"}
                       </div>
                     )}
-                    <span style={{ fontSize: "1.1rem", fontWeight: 800, color: isSelected ? "var(--primary-color)" : "var(--text-main)" }}>
+                    <span style={{ fontSize: "1.2rem", fontWeight: 900, color: isSelected ? "#3b82f6" : "#f1f5f9" }}>
                       {pm.name}
                     </span>
                   </div>

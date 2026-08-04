@@ -1,89 +1,93 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { API_BASE_URL } from "@/config";
+import React from "react";
 import Link from "next/link";
-import LoopsNewsletterForm from "./LoopsNewsletterForm";
 
-import { FEATURES } from "@/features";
-
-export default function Footer() {
-  const [settings, setSettings] = useState({ site_name: "عرب تك سيرفر", site_logo: "/logo.jpg" });
-
-  useEffect(() => {
-    fetch(`${API_BASE_URL}/api/settings?t=${Date.now()}`)
-      .then(res => res.ok ? res.json() : null)
-      .then(data => {
-        if (data) {
-          setSettings(data);
-        }
-      })
-      .catch(err => console.error("Failed to fetch settings", err));
-  }, []);
-
+export default function Footer({ siteName = "Arab Tech Server", siteLogo = "/logo.jpg" }) {
   return (
-    <footer className="footer">
-      <div className="footer-top">
-        {/* About column */}
-        <div className="footer-column">
-          <div className="logo-container" style={{ cursor: "default", display: "flex", alignItems: "center", gap: "8px" }}>
-            {settings.site_logo && settings.site_logo !== "default" ? (
-              <img 
-                src={settings.site_logo.startsWith("http") || settings.site_logo.startsWith("/") || settings.site_logo.startsWith("data:") ? settings.site_logo : `${API_BASE_URL}${settings.site_logo}`} 
-                alt={settings.site_name} 
-                style={{ width: "36px", height: "36px", borderRadius: "8px", objectFit: "cover" }} 
-              />
-            ) : (
-              <div className="logo-circle" style={{ width: "36px", height: "36px", fontSize: "1.2rem" }}>
-                {settings.site_name ? settings.site_name.charAt(0) : "S"}
+    <footer style={{
+      background: "rgba(10, 15, 30, 0.95)",
+      borderTop: "1px solid rgba(255, 255, 255, 0.05)",
+      padding: "60px 20px 30px",
+      marginTop: "auto",
+      position: "relative",
+      zIndex: 10,
+      backdropFilter: "blur(20px)"
+    }}>
+      <div style={{ maxWidth: "1200px", margin: "0 auto", display: "flex", flexDirection: "column", gap: "40px" }}>
+        
+        {/* Top Section */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "40px", direction: "rtl" }}>
+          
+          {/* Brand & About */}
+          <div>
+            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "20px" }}>
+              <img src={siteLogo} alt={siteName} style={{ width: "45px", height: "45px", borderRadius: "12px", objectFit: "contain", border: "1px solid rgba(255,255,255,0.1)" }} />
+              <h3 style={{ margin: 0, fontSize: "1.4rem", fontWeight: 900, background: "linear-gradient(135deg, #fff 0%, #a8b2d1 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+                {siteName}
+              </h3>
+            </div>
+            <p style={{ color: "#94a3b8", fontSize: "0.95rem", lineHeight: "1.7", margin: 0 }}>
+              المنصة الرائدة لخدمات السيرفرات، أدوات السوفت وير، وتفعيل الباقات بأسعار تنافسية. نقدم خدمات احترافية لدعم أعمالك التقنية.
+            </p>
+          </div>
+
+          {/* Quick Links */}
+          <div>
+            <h4 style={{ color: "#fff", fontSize: "1.1rem", fontWeight: 800, marginBottom: "20px", position: "relative", display: "inline-block" }}>
+              روابط سريعة
+              <div style={{ position: "absolute", bottom: "-8px", right: 0, width: "40%", height: "2px", background: "var(--primary-color, #3b82f6)", borderRadius: "2px" }}></div>
+            </h4>
+            <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "12px" }}>
+              <li><Link href="/" style={{ color: "#94a3b8", textDecoration: "none", fontSize: "0.95rem", transition: "color 0.2s" }} onMouseEnter={e => e.target.style.color = "#fff"} onMouseLeave={e => e.target.style.color = "#94a3b8"}>الرئيسية</Link></li>
+              <li><Link href="/services" style={{ color: "#94a3b8", textDecoration: "none", fontSize: "0.95rem", transition: "color 0.2s" }} onMouseEnter={e => e.target.style.color = "#fff"} onMouseLeave={e => e.target.style.color = "#94a3b8"}>الخدمات</Link></li>
+              <li><Link href="/wallet" style={{ color: "#94a3b8", textDecoration: "none", fontSize: "0.95rem", transition: "color 0.2s" }} onMouseEnter={e => e.target.style.color = "#fff"} onMouseLeave={e => e.target.style.color = "#94a3b8"}>شحن الرصيد</Link></li>
+            </ul>
+          </div>
+
+          {/* Legal */}
+          <div>
+            <h4 style={{ color: "#fff", fontSize: "1.1rem", fontWeight: 800, marginBottom: "20px", position: "relative", display: "inline-block" }}>
+              السياسات والشروط
+              <div style={{ position: "absolute", bottom: "-8px", right: 0, width: "40%", height: "2px", background: "var(--primary-color, #3b82f6)", borderRadius: "2px" }}></div>
+            </h4>
+            <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "12px" }}>
+              <li><Link href="/terms" style={{ color: "#94a3b8", textDecoration: "none", fontSize: "0.95rem", transition: "color 0.2s" }} onMouseEnter={e => e.target.style.color = "#fff"} onMouseLeave={e => e.target.style.color = "#94a3b8"}>شروط الاستخدام</Link></li>
+              <li><Link href="/privacy" style={{ color: "#94a3b8", textDecoration: "none", fontSize: "0.95rem", transition: "color 0.2s" }} onMouseEnter={e => e.target.style.color = "#fff"} onMouseLeave={e => e.target.style.color = "#94a3b8"}>سياسة الخصوصية</Link></li>
+              <li><Link href="/terms" style={{ color: "#94a3b8", textDecoration: "none", fontSize: "0.95rem", transition: "color 0.2s" }} onMouseEnter={e => e.target.style.color = "#fff"} onMouseLeave={e => e.target.style.color = "#94a3b8"}>سياسة الاسترجاع</Link></li>
+            </ul>
+          </div>
+
+          {/* Contact */}
+          <div>
+            <h4 style={{ color: "#fff", fontSize: "1.1rem", fontWeight: 800, marginBottom: "20px", position: "relative", display: "inline-block" }}>
+              تواصل معنا
+              <div style={{ position: "absolute", bottom: "-8px", right: 0, width: "40%", height: "2px", background: "var(--primary-color, #3b82f6)", borderRadius: "2px" }}></div>
+            </h4>
+            <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "10px", color: "#94a3b8", fontSize: "0.95rem" }}>
+                <span style={{ background: "rgba(255,255,255,0.05)", padding: "8px", borderRadius: "8px" }}>✉️</span>
+                arab.tech.services2@gmail.com
               </div>
-            )}
-            <span style={{ fontSize: "1.2rem" }}>{settings.site_name}</span>
+              <div style={{ display: "flex", alignItems: "center", gap: "10px", color: "#94a3b8", fontSize: "0.95rem" }}>
+                <span style={{ background: "rgba(255,255,255,0.05)", padding: "8px", borderRadius: "8px" }}>💬</span>
+                الدعم الفني عبر واتساب
+              </div>
+            </div>
           </div>
-          <p className="footer-desc" style={{ marginTop: "10px" }}>
-            المنصة العربية الأسرع والأكثر أماناً لتفعيل برامج السوفت وير وتفعيلات الأدوات والاشتراكات الخدمية بأفضل الأسعار على مدار الساعة.
+
+        </div>
+
+        {/* Bottom Section */}
+        <div style={{ borderTop: "1px solid rgba(255, 255, 255, 0.05)", paddingTop: "30px", display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
+          <p style={{ color: "#64748b", fontSize: "0.85rem", margin: 0, textAlign: "center" }}>
+            جميع الحقوق محفوظة © {new Date().getFullYear()} - {siteName}
           </p>
-          <LoopsNewsletterForm />
-        </div>
-
-        {/* Links column */}
-        <div className="footer-column">
-          <h4 className="footer-title">روابط سريعة</h4>
-          <div className="footer-links">
-            <Link href="/">🏠 الصفحة الرئيسية</Link>
-            <Link href="/orders">📦 تتبع طلباتي ومشترياتي</Link>
-            <Link href="/wallet">💳 محفظتي وشحن الرصيد</Link>
-            <Link href="/login">👤 تسجيل الدخول / حساب جديد</Link>
-            <Link href="/terms">⚖️ سياسة الاستخدام</Link>
-            {FEATURES.showApiDocs && <Link href="/api-docs">🔌 شرح ربط الـ API</Link>}
+          <div style={{ display: "flex", gap: "15px" }}>
+            <span style={{ color: "#64748b", fontSize: "0.8rem", opacity: 0.7 }}>Powered by ArabTech</span>
           </div>
         </div>
 
-        {/* Support column */}
-        <div className="footer-column">
-          <h4 className="footer-title">الدعم الفني والمساعدة</h4>
-          <p className="footer-desc">
-            فريق الدعم الفني متواجد لمساعدتكم 24 ساعة طوال أيام الأسبوع لحل أي مشكلة تتعلق بالخدمات أو الدفع.
-          </p>
-          <div className="footer-links" style={{ marginTop: "5px" }}>
-            <a href="https://wa.me/249123667227" target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-              <span>💬 واتساب الإدارة 1</span>
-              <bdi dir="ltr" style={{ display: "inline-block" }}>(+249&nbsp;12&nbsp;366&nbsp;7227)</bdi>
-            </a>
-            <a href="https://wa.me/16728972935" target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-              <span>💬 واتساب الإدارة 2</span>
-              <bdi dir="ltr" style={{ display: "inline-block" }}>(+1&nbsp;672-897-2935)</bdi>
-            </a>
-            <a href="https://chat.whatsapp.com/DINRDwU2lVjFcGRowxT3m5" target="_blank" rel="noopener noreferrer">💬 مجتمع واتساب عرب تك</a>
-            <a href="https://www.facebook.com/ARABTECHSERVEROnline" target="_blank" rel="noopener noreferrer">📘 صفحة فيسبوك عرب تك</a>
-            <a href="https://tiktok.com/@arabtechsuppurt" target="_blank" rel="noopener noreferrer">🎵 تيك توك عرب تك</a>
-            <a href="mailto:arab.tech.services2@gmail.com">📧 البريد الإلكتروني (arab.tech.services2@gmail.com)</a>
-          </div>
-        </div>
-      </div>
-
-      <div className="footer-bottom">
-        جميع الحقوق محفوظة © {new Date().getFullYear()} لصالح {settings.site_name}. تصميم فخم ومطور بالكامل.
       </div>
     </footer>
   );

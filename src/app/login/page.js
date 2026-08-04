@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { API_BASE_URL } from "@/config";
+import { Turnstile } from '@marsidev/react-turnstile';
 
 export default function CustomerLogin() {
   const [activeTab, setActiveTab] = useState("login"); // login, register
@@ -27,6 +28,9 @@ export default function CustomerLogin() {
   const [otpKey, setOtpKey] = useState("");
   const [otpCode, setOtpCode] = useState("");
   const [otpInfo, setOtpInfo] = useState("");
+
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const turnstileRef = useRef();
 
   // Forgot Password State
   const [forgotStep, setForgotStep] = useState(0); // 0=none, 1=request, 2=verify, 3=reset
@@ -139,12 +143,17 @@ export default function CustomerLogin() {
       }
     }
 
+    if (!turnstileToken) {
+      setError("يرجى التحقق من الكابتشا الأمني.");
+      return;
+    }
+
     setSubmitting(true);
 
     const endpoint = activeTab === "login" ? "login" : "register";
     const bodyObj = activeTab === "login" 
-      ? { username, password } 
-      : { username, email, password, phone };
+      ? { username, password, 'cf-turnstile-response': turnstileToken } 
+      : { username, email, password, phone, 'cf-turnstile-response': turnstileToken };
 
     try {
       const response = await fetch(`${API_BASE_URL}/api/customer/${endpoint}`, {
@@ -158,6 +167,8 @@ export default function CustomerLogin() {
       const data = await response.json();
 
       if (!response.ok) {
+        turnstileRef.current?.reset();
+        setTurnstileToken("");
         throw new Error(data.message || "حدث خطأ أثناء معالجة الطلب.");
       }
 
@@ -192,6 +203,8 @@ export default function CustomerLogin() {
       }, 1000);
     } catch (err) {
       setError(err.message || "تعذر الاتصال بالخادم، يرجى المحاولة لاحقاً.");
+      turnstileRef.current?.reset();
+      setTurnstileToken("");
     } finally {
       setSubmitting(false);
     }
@@ -242,12 +255,16 @@ export default function CustomerLogin() {
 
   const handleForgotPasswordRequest = async (e) => {
     e.preventDefault();
+    if (!turnstileToken) {
+      setError("يرجى التحقق من الكابتشا الأمني.");
+      return;
+    }
     setError(""); setSuccess(""); setSubmitting(true);
     try {
       const response = await fetch(`${API_BASE_URL}/api/customer/forgot-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ identifier: forgotIdentifier })
+        body: JSON.stringify({ identifier: forgotIdentifier, 'cf-turnstile-response': turnstileToken })
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || "حدث خطأ.");
@@ -255,6 +272,8 @@ export default function CustomerLogin() {
       setForgotStep(2);
     } catch (err) {
       setError(err.message);
+      turnstileRef.current?.reset();
+      setTurnstileToken("");
     } finally {
       setSubmitting(false);
     }
@@ -275,7 +294,11 @@ export default function CustomerLogin() {
         body: JSON.stringify({ identifier: forgotIdentifier, code: otpCode.trim() })
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.message || "الكود غير صحيح.");
+      if (!response.ok) {
+        turnstileRef.current?.reset();
+        setTurnstileToken("");
+        throw new Error(data.message || "الكود غير صحيح.");
+      }
       setForgotToken(data.token);
       setSuccess(data.message);
       setOtpCode(""); // clear for next time
@@ -813,6 +836,14 @@ export default function CustomerLogin() {
                     required
                   />
                 </div>
+                <div style={{ marginTop: "15px", marginBottom: "15px", display: "flex", justifyContent: "center" }}>
+                  <Turnstile 
+                    ref={turnstileRef}
+                    siteKey="0x4AAAAAAEGa8uvGDLwzrReL"
+                    options={{ theme: 'auto', action: 'turnstile-spin-v2' }}
+                    onSuccess={(token) => setTurnstileToken(token)}
+                  />
+                </div>
                 {error && <div style={{ padding: "10px", background: "rgba(244, 63, 94, 0.1)", color: "var(--danger-color)", borderRadius: "8px", fontSize: "0.85rem" }}>⚠️ {error}</div>}
                 {success && <div style={{ padding: "10px", background: "rgba(16, 185, 129, 0.1)", color: "var(--success-color)", borderRadius: "8px", fontSize: "0.85rem" }}>✓ {success}</div>}
                 <button type="submit" disabled={submitting} className="glass-btn glass-btn-primary animate-line line-7" style={{ padding: "12px", borderRadius: "12px" }}>
@@ -898,6 +929,16 @@ export default function CustomerLogin() {
                     </button>
                   </div>
                 </div>
+
+                <div style={{ marginTop: "15px", display: "flex", justifyContent: "center" }}>
+                  <Turnstile 
+                    ref={turnstileRef}
+                    siteKey="0x4AAAAAAEGa8uvGDLwzrReL"
+                    options={{ theme: 'auto', action: 'turnstile-spin-v2' }}
+                    onSuccess={(token) => setTurnstileToken(token)}
+                  />
+                </div>
+
                 {error && <div style={{ padding: "10px", background: "rgba(244, 63, 94, 0.1)", color: "var(--danger-color)", borderRadius: "8px", fontSize: "0.85rem" }}>⚠️ {error}</div>}
                 {success && <div style={{ padding: "10px", background: "rgba(16, 185, 129, 0.1)", color: "var(--success-color)", borderRadius: "8px", fontSize: "0.85rem" }}>✓ {success}</div>}
                 <button type="submit" disabled={submitting} className="glass-btn glass-btn-primary animate-line line-7" style={{ padding: "12px", borderRadius: "12px" }}>
@@ -1028,6 +1069,15 @@ export default function CustomerLogin() {
                 </div>
               </>
             )}
+
+            <div style={{ marginTop: "15px", marginBottom: "15px", display: "flex", justifyContent: "center" }}>
+              <Turnstile 
+                ref={turnstileRef}
+                siteKey="0x4AAAAAAEGa8uvGDLwzrReL"
+                options={{ theme: 'auto', action: 'turnstile-spin-v2' }}
+                onSuccess={(token) => setTurnstileToken(token)}
+              />
+            </div>
 
             {error && (
               <div style={{ padding: "10px 14px", background: "rgba(244, 63, 94, 0.1)", borderRight: "4px solid var(--danger-color)", color: "var(--danger-color)", borderRadius: "8px", fontSize: "0.85rem", fontWeight: "600" }}>

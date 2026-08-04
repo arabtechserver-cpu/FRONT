@@ -262,7 +262,7 @@ export default function ApiResellersTab({
 
       {editingCustomer && (
         <div className="modal-overlay" onClick={() => setEditingCustomer(null)} style={{ zIndex: 9999 }}>
-          <div className="modal-content glass-panel" onClick={e => e.stopPropagation()} style={{ maxWidth: "550px" }}>
+          <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: "550px", background: "var(--surface-color, #111827)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "16px", boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)" }}>
             <div className="modal-header" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "15px" }}>
               <h2>إدارة API للعميل: {editingCustomer.username}</h2>
               <button className="close-btn" onClick={() => setEditingCustomer(null)}>×</button>
@@ -317,16 +317,17 @@ export default function ApiResellersTab({
                 </div>
 
                 <div className="form-group">
-                  <label>عناوين الـ IP المسموح لها (IP Whitelist):</label>
+                  <label>عناوين الـ IP المسموح لها (IP Whitelist) - <span style={{ color: "#ef4444" }}>إلزامي</span>:</label>
                   <input
                     type="text"
                     className="form-input-premium"
                     value={apiAllowedIps}
                     onChange={(e) => setApiAllowedIps(e.target.value)}
                     placeholder="مثال: 192.168.1.1, 8.8.8.8 (افصل بينها بفاصلة)"
+                    required={apiEnabled}
                   />
-                  <small style={{ color: "#94a3b8", marginTop: "4px", display: "block" }}>
-                    اتركه فارغاً للسماح من أي مكان. يفضل وضع الـ IP الخاص بسيرفر الموزع للحماية.
+                  <small style={{ color: "#ef4444", marginTop: "4px", display: "block", fontWeight: "bold" }}>
+                    يجب إضافة الـ IP الخاص بسيرفر الموزع لتخطي كابتشا Cloudflare. لن تعمل الـ API بدون هذا الـ IP.
                   </small>
                 </div>
 

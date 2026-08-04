@@ -6,7 +6,9 @@ import { useRouter, usePathname } from "next/navigation";
 import { API_BASE_URL } from "@/config";
 import PasswordChangeModal from "./PasswordChangeModal";
 import ProtectionModal from "./ProtectionModal";
+import Footer from "./Footer";
 import { FEATURES } from "@/features";
+
 
 export default function MainLayout({ children }) {
   const router = useRouter();
@@ -35,10 +37,17 @@ export default function MainLayout({ children }) {
   const [menuCategories, setMenuCategories] = useState([]);
   const [showInstallBanner, setShowInstallBanner] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
-  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const [pwaInstallable, setPwaInstallable] = useState(false);
+  const [logoLang, setLogoLang] = useState("ar");
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setLogoLang(prev => prev === "ar" ? "en" : "ar");
+    }, 4000);
+    return () => clearInterval(timer);
+  }, []);
   const [supportModalOpen, setSupportModalOpen] = useState(false);
   const [selectedBalanceCurrency, setSelectedBalanceCurrency] = useState("");
-  const [isUnlocked, setIsUnlocked] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [fontScale, setFontScale] = useState(1);
   const [passwordModalOpen, setPasswordModalOpen] = useState(false);
@@ -63,9 +72,6 @@ export default function MainLayout({ children }) {
       || document.referrer.includes('android-app://');
     const isDismissed = localStorage.getItem("pwa_dismissed") === "true";
     setShowInstallBanner(!isStandalone && !isDismissed);
-
-    // Captcha enabled on every refresh
-    setIsUnlocked(false);
 
     // Font Scale
     const savedScale = localStorage.getItem("font_scale");
@@ -310,30 +316,6 @@ export default function MainLayout({ children }) {
       <div className="animated-shape shape-3"></div>
       <div className="animated-shape shape-4"></div>
 
-      {isMounted && !isUnlocked && (
-        <div style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: "rgba(10, 15, 30, 0.96)",
-          backdropFilter: "blur(16px)",
-          zIndex: 999999,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: "20px"
-        }}>
-          <SliderCaptcha onSuccess={() => {
-            setTimeout(() => {
-              setIsUnlocked(true);
-            }, 200);
-          }} />
-        </div>
-      )}
-
-      
 
       {/* Mobile Drawer Overlay */}
       {menuOpen && (
@@ -347,17 +329,11 @@ export default function MainLayout({ children }) {
       <div className={`mobile-drawer ${menuOpen ? "open" : "closed"}`}>
         <div className="mobile-drawer-header" style={{ borderBottom: '1px solid rgba(255,255,255,0.07)', paddingBottom: '16px', marginBottom: '4px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <div style={{
-              width: '40px', height: '40px',
-              background: 'linear-gradient(135deg, var(--primary-color) 0%, #8b5cf6 100%)',
-              borderRadius: '12px',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontWeight: 900, fontSize: '1.1rem', color: 'white',
-              boxShadow: '0 4px 15px rgba(79,70,229,0.4)',
-              flexShrink: 0
-            }}>
-              {settings.site_name ? settings.site_name.charAt(0) : 'A'}
-            </div>
+            {settings.site_logo && settings.site_logo !== 'default' && !logoFailed ? (
+              <img src={settings.site_logo.startsWith('http') || settings.site_logo.startsWith('/') || settings.site_logo.startsWith('data:') ? settings.site_logo : `${API_BASE_URL}${settings.site_logo}`} alt={settings.site_name} onError={() => setLogoFailed(true)} style={{ width: '40px', height: '40px', borderRadius: '8px', objectFit: 'contain', flexShrink: 0, filter: 'drop-shadow(0 2px 5px rgba(234,179,8,0.2))' }} />
+            ) : (
+              <img src="/logo.jpg" alt={settings.site_name || "Logo"} style={{ width: '40px', height: '40px', borderRadius: '8px', objectFit: 'contain', flexShrink: 0, filter: 'drop-shadow(0 2px 5px rgba(234,179,8,0.2))' }} />
+            )}
             <div>
               <div style={{ fontWeight: 900, fontSize: '1rem', color: 'var(--text-main)', letterSpacing: '-0.01em' }}>{settings.site_name}</div>
               <div style={{ fontSize: '0.72rem', color: 'var(--primary-color)', fontWeight: 700, marginTop: '1px' }}>خدمات آمنة وفورية ⚡</div>
@@ -367,16 +343,16 @@ export default function MainLayout({ children }) {
         </div>
 
         {isCustomerLoggedIn && customerUser ? (
-          <div className="mobile-drawer-user-card" style={{ marginBottom: "15px", display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "6px", padding: "16px", background: "linear-gradient(135deg, rgba(79, 70, 229, 0.15), rgba(139, 92, 246, 0.1))", borderRadius: "16px", border: "1px solid rgba(79, 70, 229, 0.2)" }}>
-            <div style={{ fontSize: "1rem", fontWeight: 800 }}>مرحباً، {customerUser.username} 👋</div>
-            <div style={{ fontSize: "0.9rem", color: "var(--primary-color)", fontWeight: 900, background: "rgba(255,255,255,0.05)", padding: "6px 12px", borderRadius: "8px", display: "inline-block" }}>
+          <div className="mobile-drawer-user-card" style={{ marginBottom: "15px", display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "6px", padding: "16px", background: "linear-gradient(135deg, rgba(234, 179, 8, 0.1), rgba(202, 138, 4, 0.05))", borderRadius: "16px", border: "1px solid rgba(234, 179, 8, 0.2)" }}>
+            <div style={{ fontSize: "1rem", fontWeight: 800, color: "var(--text-main)" }}>مرحباً، {customerUser.username} 👋</div>
+            <div style={{ fontSize: "0.9rem", color: "#eab308", fontWeight: 900, background: "rgba(255,255,255,0.05)", padding: "6px 12px", borderRadius: "8px", display: "inline-block", border: "1px solid rgba(234, 179, 8, 0.15)" }}>
               {renderBalanceDropdownAndValue(customerUser)}
             </div>
           </div>
         ) : (
-          <Link href="/login" className="mobile-drawer-link" onClick={() => setMenuOpen(false)} style={{ background: "var(--primary-color)", color: "white", justifyContent: "center", borderRadius: "12px", padding: "14px" }}>
-            <span style={{ fontSize: "1.2rem" }}>👤</span>
-            تسجيل الدخول / حساب جديد
+          <Link href="/login" className="mobile-drawer-link" onClick={() => setMenuOpen(false)} style={{ background: "rgba(234, 179, 8, 0.1)", color: "#eab308", fontWeight: 700, justifyContent: "center", borderRadius: "10px", padding: "10px", border: "1px solid rgba(234, 179, 8, 0.3)", boxShadow: "0 4px 20px rgba(234, 179, 8, 0.1)", fontSize: "0.85rem", gap: "8px" }}>
+            <span style={{ fontSize: "1.1rem", display: "flex", alignItems: "center" }}>👤</span>
+            <span style={{ color: "#eab308" }}>تسجيل الدخول / حساب جديد</span>
           </Link>
         )}
 
@@ -576,7 +552,7 @@ export default function MainLayout({ children }) {
           <div className="custom-navbar-glow"></div>
           
           {/* Right Section (Logo & Mobile Menu) */}
-          <div className="flex items-center gap-3" style={{ minWidth: 0, overflow: 'hidden' }}>
+          <div className="flex items-center gap-3" style={{ minWidth: 0 }}>
             <button className="header-btn w-9 h-9" type="button" aria-label="القائمة" onClick={() => setMenuOpen(!menuOpen)} style={{ flexShrink: 0 }}>
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-menu w-5 h-5">
                 <line x1="4" x2="20" y1="12" y2="12"></line>
@@ -584,15 +560,20 @@ export default function MainLayout({ children }) {
                 <line x1="4" x2="20" y1="18" y2="18"></line>
               </svg>
             </button>
-            <Link className="flex items-center gap-2" style={{ textDecoration: 'none', minWidth: 0, overflow: 'hidden' }} href="/">
+            <Link className="flex items-center gap-2" style={{ textDecoration: 'none', minWidth: 0 }} href="/">
               {settings.site_logo && settings.site_logo !== 'default' && !logoFailed ? (
-                <img src={settings.site_logo.startsWith('http') || settings.site_logo.startsWith('/') || settings.site_logo.startsWith('data:') ? settings.site_logo : `${API_BASE_URL}${settings.site_logo}`} alt={settings.site_name} onError={() => setLogoFailed(true)} style={{ width: '28px', height: '28px', borderRadius: '6px', objectFit: 'cover', flexShrink: 0 }} />
+                <img src={settings.site_logo.startsWith('http') || settings.site_logo.startsWith('/') || settings.site_logo.startsWith('data:') ? settings.site_logo : `${API_BASE_URL}${settings.site_logo}`} alt={settings.site_name} onError={() => setLogoFailed(true)} style={{ width: '40px', height: '40px', borderRadius: '8px', objectFit: 'contain', flexShrink: 0, filter: 'drop-shadow(0 2px 5px rgba(234,179,8,0.2))' }} />
               ) : (
-                <div className="w-7 h-7 rounded-lg flex items-center justify-center font-black text-sm" style={{ background: 'linear-gradient(135deg, rgb(79, 70, 229) 0%, rgb(99, 102, 241) 100%)', color: '#ffffff', boxShadow: 'rgba(79, 70, 229, 0.3) 0px 2px 10px', flexShrink: 0 }}>
-                  {settings.site_name ? settings.site_name.charAt(0) : 'S'}
-                </div>
+                <img src="/logo.jpg" alt={settings.site_name || "Logo"} style={{ width: '40px', height: '40px', borderRadius: '8px', objectFit: 'contain', flexShrink: 0, filter: 'drop-shadow(0 2px 5px rgba(234,179,8,0.2))' }} />
               )}
-              <span className="font-black" style={{ color: 'var(--text-main)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontSize: 'clamp(0.7rem, 2.5vw, 0.875rem)', maxWidth: '160px' }}>{settings.site_name}</span>
+              <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', height: '24px', overflowY: 'hidden', minWidth: '180px' }}>
+                <span className={`font-black absolute transition-all duration-700 ease-in-out ${logoLang === 'ar' ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full'}`} style={{ color: '#eab308', whiteSpace: 'nowrap', fontSize: 'clamp(0.9rem, 3vw, 1.15rem)', letterSpacing: '0.5px', textShadow: '0 2px 10px rgba(234, 179, 8, 0.4)' }}>
+                  عرب تك سيرفر online
+                </span>
+                <span className={`font-black absolute transition-all duration-700 ease-in-out ${logoLang === 'en' ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-full'}`} style={{ color: '#eab308', whiteSpace: 'nowrap', fontSize: 'clamp(0.85rem, 2.5vw, 1rem)', letterSpacing: '0.5px', textShadow: '0 2px 10px rgba(234, 179, 8, 0.4)' }}>
+                  Arab Tech Server
+                </span>
+              </div>
             </Link>
           </div>
 
@@ -650,6 +631,7 @@ export default function MainLayout({ children }) {
           {children}
           <PasswordChangeModal />
           <ProtectionModal />
+          <Footer siteName={settings.site_name} siteLogo={settings.site_logo} />
         </main>
       </div>
 
@@ -960,121 +942,4 @@ export default function MainLayout({ children }) {
   );
 }
 
-const SliderCaptcha = ({ onSuccess }) => {
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [isVerifying, setIsVerifying] = useState(false);
 
-  const handleVerify = () => {
-    if (isSuccess || isVerifying) return;
-    setIsVerifying(true);
-    // Simulate a short network delay for realism
-    setTimeout(() => {
-      setIsVerifying(false);
-      setIsSuccess(true);
-      setTimeout(() => {
-        onSuccess();
-      }, 500); // short delay to show success state before closing
-    }, 800);
-  };
-
-  return (
-    <div style={{
-      position: "relative",
-      background: "linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(34, 211, 238, 0.05) 100%)",
-      border: "1px solid rgba(255, 255, 255, 0.1)",
-      borderRadius: "24px",
-      padding: "30px 24px",
-      width: "100%",
-      maxWidth: "360px",
-      textAlign: "center",
-      boxShadow: "0 20px 40px rgba(0,0,0,0.5), inset 0 0 20px rgba(255,255,255,0.02)",
-      backdropFilter: "blur(20px)",
-      overflow: "hidden"
-    }}>
-      {/* Animated Background Effect */}
-      <div style={{
-        position: "absolute",
-        top: "-50%",
-        left: "-50%",
-        width: "200%",
-        height: "200%",
-        background: "radial-gradient(circle, rgba(16,185,129,0.1) 0%, transparent 60%)",
-        animation: "spin-bg 10s linear infinite",
-        zIndex: 0,
-        pointerEvents: "none"
-      }} />
-
-      <style>
-        {`
-          @keyframes spin-bg { 100% { transform: rotate(360deg); } }
-          @keyframes pulse-verify { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); } 70% { transform: scale(1.02); box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
-          @keyframes spin-spinner { 100% { transform: rotate(360deg); } }
-        `}
-      </style>
-
-      <div style={{ position: "relative", zIndex: 1 }}>
-        <div style={{ fontSize: "2.5rem", marginBottom: "15px", filter: "drop-shadow(0 0 10px rgba(255,255,255,0.2))" }}>
-          {isSuccess ? "✅" : "🛡️"}
-        </div>
-        <h3 style={{ fontWeight: 800, color: "#fff", marginBottom: "8px", fontSize: "1.2rem" }}>
-          نظام حماية الموقع
-        </h3>
-        <p style={{ color: "#94a3b8", fontSize: "0.85rem", marginBottom: "25px", lineHeight: "1.5" }}>
-          يرجى النقر على الزر أدناه للتحقق من أنك إنسان
-        </p>
-
-        {/* Click to Verify Button */}
-        <button
-          onClick={handleVerify}
-          disabled={isSuccess || isVerifying}
-          style={{
-            position: "relative",
-            width: "100%",
-            height: "54px",
-            background: isSuccess
-              ? "linear-gradient(90deg, #10b981 0%, #059669 100%)"
-              : "linear-gradient(90deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.1) 100%)",
-            border: isSuccess ? "none" : "1px solid rgba(255, 255, 255, 0.15)",
-            borderRadius: "16px",
-            color: "#fff",
-            fontSize: "1rem",
-            fontWeight: "bold",
-            cursor: isSuccess || isVerifying ? "default" : "pointer",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "10px",
-            boxShadow: isSuccess
-              ? "0 0 20px rgba(16, 185, 129, 0.4)"
-              : "0 8px 20px rgba(0,0,0,0.2)",
-            transition: "all 0.3s ease",
-            animation: !isSuccess && !isVerifying ? "pulse-verify 2.5s infinite" : "none",
-            outline: "none"
-          }}
-        >
-          {isVerifying ? (
-            <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <span style={{
-                width: "18px", height: "18px", border: "2px solid #fff",
-                borderBottomColor: "transparent", borderRadius: "50%",
-                display: "inline-block", animation: "spin-spinner 1s linear infinite"
-              }}></span>
-              جاري التحقق...
-            </span>
-          ) : isSuccess ? (
-            "تم التحقق بنجاح ✓"
-          ) : (
-            <>
-              <div style={{
-                width: "22px", height: "22px", borderRadius: "6px",
-                border: "2px solid rgba(255,255,255,0.5)", display: "inline-block",
-                background: "rgba(0,0,0,0.2)"
-              }}></div>
-              أنا إنسان (انقر للتحقق)
-            </>
-          )}
-        </button>
-      </div>
-    </div>
-  );
-};

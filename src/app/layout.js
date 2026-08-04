@@ -257,9 +257,8 @@ export default async function RootLayout({ children }) {
             __html: `
               (function() {
                 try {
-                  var savedTheme = localStorage.getItem('theme');
-                  var theme = savedTheme || 'dark';
-                  document.documentElement.setAttribute('data-theme', theme);
+                  document.documentElement.setAttribute('data-theme', 'light');
+                  localStorage.setItem('theme', 'light');
                 } catch (e) {
                   console.error('Failed to set theme early:', e);
                 }
