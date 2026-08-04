@@ -16,6 +16,7 @@ export default function MainLayout({ children }) {
 
   const [theme, setTheme] = useState("dark");
   const [menuOpen, setMenuOpen] = useState(false);
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const [categoriesExpanded, setCategoriesExpanded] = useState(false);
   const [settings, setSettings] = useState({ site_name: "عرب تك سيرفر", site_logo: "/logo.jpg" });
   const [logoFailed, setLogoFailed] = useState(false);
