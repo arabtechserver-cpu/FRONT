@@ -370,7 +370,7 @@ export default function WalletPage() {
       {capturingPaypal && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.88)", backdropFilter: "blur(14px)", zIndex: 99999, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "20px" }}>
           <div style={{ fontSize: "4.5rem", animation: "pulse 1.5s ease-in-out infinite" }}>⏳</div>
-          <div style={{ fontSize: "1.4rem", fontWeight: 900, color: "var(--text-main)" }}>جاري تأكيد دفعك وشحن الرصيد...</div>
+          <div style={{ fontSize: "1.4rem", fontWeight: 900, color: "#cbd5e1" }}>جاري تأكيد دفعك وشحن الرصيد...</div>
           <div style={{ color: "#94a3b8", fontSize: "0.95rem" }}>يرجى الانتظار، هذا يستغرق ثوان فقط...</div>
         </div>
       )}
@@ -390,7 +390,7 @@ export default function WalletPage() {
             </div>
             <button
               onClick={() => setPaypalSuccess(null)}
-              style={{ width: "100%", padding: "15px", background: "linear-gradient(135deg, #22c55e, #16a34a)", border: "none", borderRadius: "14px", color: "var(--text-main)", fontSize: "1.05rem", fontWeight: 900, cursor: "pointer", transition: "transform 0.2s" }}
+              style={{ width: "100%", padding: "15px", background: "linear-gradient(135deg, #22c55e, #16a34a)", border: "none", borderRadius: "14px", color: "#cbd5e1", fontSize: "1.05rem", fontWeight: 900, cursor: "pointer", transition: "transform 0.2s" }}
               onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.02)"}
               onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
             >
@@ -517,11 +517,11 @@ export default function WalletPage() {
                     return (
                       <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: "14px", flexWrap: "wrap" }}>
-                          <div style={{ background: "linear-gradient(135deg, #003087, #009cde)", borderRadius: "12px", padding: "10px 18px", fontWeight: 900, color: "var(--text-main)", fontSize: "1rem", letterSpacing: "1px", display: "flex", alignItems: "center", gap: "6px" }}>
+                          <div style={{ background: "linear-gradient(135deg, #003087, #009cde)", borderRadius: "12px", padding: "10px 18px", fontWeight: 900, color: "#cbd5e1", fontSize: "1rem", letterSpacing: "1px", display: "flex", alignItems: "center", gap: "6px" }}>
                             <span style={{ fontSize: "1.3rem" }}>🅿️</span> PayPal
                           </div>
                           <div>
-                            <div style={{ fontWeight: 900, fontSize: "1.1rem", color: "var(--text-main)" }}>الدفع المباشر بـ PayPal</div>
+                            <div style={{ fontWeight: 900, fontSize: "1.1rem", color: "#cbd5e1" }}>الدفع المباشر بـ PayPal</div>
                             <div style={{ color: "#60a5fa", fontSize: "0.83rem", marginTop: "2px" }}>دفع في نفس الصفحة (In-Context) • فوري</div>
                           </div>
                         </div>
@@ -538,7 +538,7 @@ export default function WalletPage() {
                             style={{
                               width: "100%", padding: "15px 18px", fontSize: "1.1rem", borderRadius: "14px",
                               background: "rgba(255,255,255,0.05)", border: "2px solid rgba(255,255,255,0.15)",
-                              color: "var(--text-main)", outline: "none", boxSizing: "border-box",
+                              color: "#cbd5e1", outline: "none", boxSizing: "border-box",
                               transition: "border-color 0.2s", marginBottom: "16px"
                             }}
                             onFocus={(e) => e.target.style.borderColor = "#0070ba"}
@@ -568,7 +568,7 @@ export default function WalletPage() {
                   return (
                     <div>
                       <div style={{ marginBottom: "24px" }}>
-                        <p style={{ color: "var(--text-main)", fontSize: "1rem", lineHeight: 1.7, marginBottom: "16px", background: "rgba(139, 92, 246, 0.1)", padding: "16px", borderRadius: "10px", borderRight: "4px solid var(--primary-color)" }}>
+                        <p style={{ color: "#cbd5e1", fontSize: "1rem", lineHeight: 1.7, marginBottom: "16px", background: "rgba(139, 92, 246, 0.1)", padding: "16px", borderRadius: "10px", borderRight: "4px solid var(--primary-color)" }}>
                           {pm.description}
                         </p>
                         
@@ -582,7 +582,7 @@ export default function WalletPage() {
                         <div style={{ padding: "16px", borderRadius: "16px", background: "rgba(59, 130, 246, 0.08)", border: "1px solid rgba(59, 130, 246, 0.2)", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "10px" }}>
                           <div style={{ flex: 1 }}>
                             <div style={{ fontWeight: 800, marginBottom: "6px", color: "var(--text-muted)" }}>رقم أو عنوان التحويل:</div>
-                            <div style={{ fontSize: "1.3rem", fontWeight: 900, color: "var(--text-main)", direction: "ltr", userSelect: "all", wordBreak: "break-all" }}>{pm.value}</div>
+                            <div style={{ fontSize: "1.3rem", fontWeight: 900, color: "#cbd5e1", direction: "ltr", userSelect: "all", wordBreak: "break-all" }}>{pm.value}</div>
                           </div>
                           <button
                             type="button"
@@ -591,7 +591,7 @@ export default function WalletPage() {
                               setCopied(true);
                               setTimeout(() => setCopied(false), 2000);
                             }}
-                            style={{ background: copied ? "#10b981" : "#3b82f6", color: "var(--text-main)", border: "none", borderRadius: "10px", padding: "10px 20px", fontSize: "1rem", cursor: "pointer", fontWeight: "bold", transition: "all 0.2s", display: "flex", alignItems: "center", gap: "6px" }}
+                            style={{ background: copied ? "#10b981" : "#3b82f6", color: "#cbd5e1", border: "none", borderRadius: "10px", padding: "10px 20px", fontSize: "1rem", cursor: "pointer", fontWeight: "bold", transition: "all 0.2s", display: "flex", alignItems: "center", gap: "6px" }}
                           >
                             {copied ? "تم النسخ ✓" : "نسخ العنوان 📋"}
                           </button>
@@ -599,11 +599,11 @@ export default function WalletPage() {
                       </div>
 
                       <div style={{ borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "24px", marginTop: "24px" }}>
-                        <h3 style={{ fontSize: "1.2rem", fontWeight: "bold", marginBottom: "16px", color: "var(--text-main)" }}>تأكيد عملية الدفع وإرسال الوصل</h3>
+                        <h3 style={{ fontSize: "1.2rem", fontWeight: "bold", marginBottom: "16px", color: "#cbd5e1" }}>تأكيد عملية الدفع وإرسال الوصل</h3>
                         <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                           <div className="form-group" style={{ marginBottom: 0 }}>
                             <label>عملة التحويل والدفع:</label>
-                            <select value={selectedCurrency} onChange={(e) => setSelectedCurrency(e.target.value)} style={{ width: "100%", padding: "14px", background: "rgba(255, 255, 255, 0.03)", border: "1px solid rgba(255, 255, 255, 0.08)", borderRadius: "12px", color: "var(--text-main)", outline: "none", fontSize: "1rem" }}>
+                            <select value={selectedCurrency} onChange={(e) => setSelectedCurrency(e.target.value)} style={{ width: "100%", padding: "14px", background: "rgba(255, 255, 255, 0.03)", border: "1px solid rgba(255, 255, 255, 0.08)", borderRadius: "12px", color: "#cbd5e1", outline: "none", fontSize: "1rem" }}>
                               {globalCurrencies.map((curr) => (
                                 <option key={curr} value={curr} style={{ background: "var(--bg-color)" }}>
                                   {curr} {curr === "USD" ? "(الدولار الأمريكي 🇺🇸)" : curr === "EGP" ? "(الجنيه المصري 🇪🇬)" : curr === "SDG" ? "(الجنيه السوداني 🇸🇩)" : curr === "USDT" ? "(تيزر 🟢)" : ""}
@@ -700,7 +700,7 @@ export default function WalletPage() {
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                   {whatsappNumbers.length > 0 ? whatsappNumbers.map((num, i) => (
-                    <button key={i} onClick={() => { openWhatsapp(num); setWhatsappSent(true); }} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", padding: "14px", background: "linear-gradient(135deg, #25d366, #128c7e)", border: "none", borderRadius: "14px", color: "var(--text-main)", fontWeight: 900, fontSize: "1rem", cursor: "pointer", transition: "transform 0.2s" }} onMouseEnter={(e)=>e.currentTarget.style.transform="scale(1.02)"} onMouseLeave={(e)=>e.currentTarget.style.transform="scale(1)"}>
+                    <button key={i} onClick={() => { openWhatsapp(num); setWhatsappSent(true); }} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", padding: "14px", background: "linear-gradient(135deg, #25d366, #128c7e)", border: "none", borderRadius: "14px", color: "#cbd5e1", fontWeight: 900, fontSize: "1rem", cursor: "pointer", transition: "transform 0.2s" }} onMouseEnter={(e)=>e.currentTarget.style.transform="scale(1.02)"} onMouseLeave={(e)=>e.currentTarget.style.transform="scale(1)"}>
                       <span style={{ fontSize: "1.3rem" }}>💬</span> إرسال الوصل عبر واتساب {whatsappNumbers.length > 1 ? `(${i + 1})` : ""}
                     </button>
                   )) : (
@@ -710,7 +710,7 @@ export default function WalletPage() {
                 {whatsappSent && <div style={{ color: "#10b981", fontWeight: "bold", textAlign: "center", fontSize: "0.85rem" }}>✓ تم فتح واتساب — لا تنسَ إرفاق صورة الوصل</div>}
               </>
             )}
-            <button onClick={() => setPendingWhatsapp(null)} style={{ padding: "12px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "14px", color: "var(--text-main)", cursor: "pointer", fontWeight: "bold", fontSize: "1rem", marginTop: "4px" }} onMouseEnter={(e)=>e.currentTarget.style.background="rgba(255,255,255,0.1)"} onMouseLeave={(e)=>e.currentTarget.style.background="rgba(255,255,255,0.05)"}>
+            <button onClick={() => setPendingWhatsapp(null)} style={{ padding: "12px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "14px", color: "#cbd5e1", cursor: "pointer", fontWeight: "bold", fontSize: "1rem", marginTop: "4px" }} onMouseEnter={(e)=>e.currentTarget.style.background="rgba(255,255,255,0.1)"} onMouseLeave={(e)=>e.currentTarget.style.background="rgba(255,255,255,0.05)"}>
               إغلاق
             </button>
           </div>
@@ -756,13 +756,13 @@ export default function WalletPage() {
                   </span>
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", fontSize: "0.9rem", color: "var(--text-muted)" }}>
-                  <div>المبلغ: <strong style={{ color: "var(--text-main)" }}>$ {Number(request.amount).toFixed(2)} USD</strong></div>
-                  <div>العملة: <strong style={{ color: "var(--text-main)" }}>{request.currency || "USD"}</strong></div>
-                  <div>من رقم: <strong style={{ color: "var(--text-main)" }}>{request.sender_phone || "-"}</strong></div>
-                  <div>بتاريخ: <strong style={{ color: "var(--text-main)" }}>{new Date(request.created_at).toLocaleString("ar-EG")}</strong></div>
+                  <div>المبلغ: <strong style={{ color: "#cbd5e1" }}>$ {Number(request.amount).toFixed(2)} USD</strong></div>
+                  <div>العملة: <strong style={{ color: "#cbd5e1" }}>{request.currency || "USD"}</strong></div>
+                  <div>من رقم: <strong style={{ color: "#cbd5e1" }}>{request.sender_phone || "-"}</strong></div>
+                  <div>بتاريخ: <strong style={{ color: "#cbd5e1" }}>{new Date(request.created_at).toLocaleString("ar-EG")}</strong></div>
                   {request.notes && !request.notes.includes("paypal_order") && (
                     <div style={{ gridColumn: "span 2", background: "rgba(0,0,0,0.2)", padding: "10px", borderRadius: "8px", marginTop: "4px" }}>
-                      الملاحظات: <strong style={{ color: "var(--text-main)" }}>{request.notes.replace(/^\[تم تحويل:[^\]]+\]\s*/, "")}</strong>
+                      الملاحظات: <strong style={{ color: "#cbd5e1" }}>{request.notes.replace(/^\[تم تحويل:[^\]]+\]\s*/, "")}</strong>
                     </div>
                   )}
                 </div>
@@ -778,4 +778,5 @@ export default function WalletPage() {
     </div>
   );
 }
+
 

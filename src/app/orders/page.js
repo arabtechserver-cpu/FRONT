@@ -190,7 +190,7 @@ export default function OrdersHistory() {
 
       return (
         <div key={key} style={{ background: "rgba(255, 255, 255, 0.05)", padding: "6px 12px", borderRadius: "8px", border: "1px solid rgba(255, 255, 255, 0.08)", fontSize: "0.82rem" }}>
-          <span style={{ color: "var(--text-muted)" }}>{label}:</span> <span style={{ direction: "ltr", display: "inline-block", fontWeight: "bold", color: "var(--text-main)" }}>{String(value)}</span>
+          <span style={{ color: "var(--text-muted)" }}>{label}:</span> <span style={{ direction: "ltr", display: "inline-block", fontWeight: "bold", color: "#cbd5e1" }}>{String(value)}</span>
         </div>
       );
     });
@@ -295,7 +295,7 @@ export default function OrdersHistory() {
                               fontFamily: "monospace",
                               fontWeight: "bold",
                               fontSize: "1.1rem",
-                              color: "var(--text-main)",
+                              color: "#cbd5e1",
                               whiteSpace: "pre-wrap",
                               wordBreak: "break-all",
                               direction: "ltr",
@@ -466,7 +466,7 @@ export default function OrdersHistory() {
                 <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
                   <div style={{ textAlign: "center" }}>
                     <span style={{ fontSize: "3rem" }}>📦</span>
-                    <h3 style={{ fontWeight: 900, marginTop: "10px", color: "var(--text-main)" }}>تفاصيل الطلب #{singleOrder.id}</h3>
+                    <h3 style={{ fontWeight: 900, marginTop: "10px", color: "#cbd5e1" }}>تفاصيل الطلب #{singleOrder.id}</h3>
 
                     <div style={{ display: "inline-block", marginTop: "10px" }}>
                       <span className={`badge badge-${singleOrder.status}`} style={{ fontSize: "0.9rem", padding: "6px 16px" }}>
@@ -483,11 +483,11 @@ export default function OrdersHistory() {
                   <div style={{ display: "flex", flexDirection: "column", gap: "10px", fontSize: "0.92rem", padding: "16px", borderRadius: "16px", background: "linear-gradient(180deg, rgba(13, 18, 36, 0.95), rgba(13, 18, 36, 0.75))", border: "1px solid rgba(255,255,255,0.08)" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", gap: "12px" }}>
                       <span style={{ color: "#cbd5e1" }}>الخدمة:</span>
-                      <strong style={{ color: "var(--text-main)", textAlign: "left" }}>{singleOrder.service_name} ({singleOrder.category_name})</strong>
+                      <strong style={{ color: "#cbd5e1", textAlign: "left" }}>{singleOrder.service_name} ({singleOrder.category_name})</strong>
                     </div>
                     <div style={{ display: "flex", justifyContent: "space-between", gap: "12px" }}>
                       <span style={{ color: "#cbd5e1" }}>الباقة المطلوبة:</span>
-                      <strong style={{ color: "var(--text-main)", textAlign: "left" }}>{singleOrder.package_name}</strong>
+                      <strong style={{ color: "#cbd5e1", textAlign: "left" }}>{singleOrder.package_name}</strong>
                     </div>
                     {renderGuestOrderFields(singleOrder)}
                     <div style={{ display: "flex", justifyContent: "space-between", gap: "12px" }}>
@@ -496,7 +496,7 @@ export default function OrdersHistory() {
                     </div>
                     <div style={{ display: "flex", justifyContent: "space-between", gap: "12px" }}>
                       <span style={{ color: "#cbd5e1" }}>تاريخ الطلب:</span>
-                      <span style={{ color: "#f8fafc" }}>{new Date(singleOrder.created_at).toLocaleString("ar-EG")}</span>
+                      <span style={{ color: "#cbd5e1" }}>{new Date(singleOrder.created_at).toLocaleString("ar-EG")}</span>
                     </div>
                     {singleOrder.code && (
                       <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginTop: "10px", borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: "12px" }}>
@@ -515,7 +515,7 @@ export default function OrdersHistory() {
                             fontFamily: "monospace",
                             fontWeight: "bold",
                             fontSize: "1.1rem",
-                            color: "var(--text-main)",
+                            color: "#cbd5e1",
                             whiteSpace: "pre-wrap",
                             wordBreak: "break-all",
                             direction: "ltr",
@@ -601,7 +601,7 @@ export default function OrdersHistory() {
                           target="_blank"
                           rel="noopener noreferrer"
                           className="glass-btn"
-                          style={{ flex: "1 1 200px", padding: "12px 14px", borderRadius: "10px", background: "rgba(16, 185, 129, 0.2)", border: "1px solid rgba(16, 185, 129, 0.4)", color: "var(--text-main)", fontWeight: "bold", textAlign: "center", textDecoration: "none", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "8px" }}
+                          style={{ flex: "1 1 200px", padding: "12px 14px", borderRadius: "10px", background: "rgba(16, 185, 129, 0.2)", border: "1px solid rgba(16, 185, 129, 0.4)", color: "#cbd5e1", fontWeight: "bold", textAlign: "center", textDecoration: "none", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "8px" }}
                         >
                           <span>🟢 واتساب الإدارة 1 (+1 672-897-2935)</span>
                         </a>
@@ -610,7 +610,7 @@ export default function OrdersHistory() {
                           target="_blank"
                           rel="noopener noreferrer"
                           className="glass-btn"
-                          style={{ flex: "1 1 200px", padding: "12px 14px", borderRadius: "10px", background: "rgba(34, 197, 94, 0.2)", border: "1px solid rgba(34, 197, 94, 0.4)", color: "var(--text-main)", fontWeight: "bold", textAlign: "center", textDecoration: "none", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "8px" }}
+                          style={{ flex: "1 1 200px", padding: "12px 14px", borderRadius: "10px", background: "rgba(34, 197, 94, 0.2)", border: "1px solid rgba(34, 197, 94, 0.4)", color: "#cbd5e1", fontWeight: "bold", textAlign: "center", textDecoration: "none", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "8px" }}
                         >
                           <span>🟢 واتساب الإدارة 2 (+249 12-366-7227)</span>
                         </a>
@@ -639,4 +639,5 @@ export default function OrdersHistory() {
     </>
   );
 }
+
 
