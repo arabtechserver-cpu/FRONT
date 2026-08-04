@@ -171,9 +171,9 @@ export default function MembershipClient() {
               </div>
               <p style={{ color: "var(--text-muted)", fontSize: "0.85rem", margin: "4px 0" }}>{profile.email}</p>
               <div style={{ display: "flex", gap: "15px", fontSize: "0.82rem", color: "#94a3b8", marginTop: "6px", flexWrap: "wrap" }}>
-                <span>إجمالي الطلبات: <strong style={{ color: "#fff" }}>{total_orders}</strong></span>
+                <span>إجمالي الطلبات: <strong style={{ color: "var(--text-main)" }}>{total_orders}</strong></span>
                 <span>•</span>
-                <span>إجمالي الشحن: <strong style={{ color: "#fff" }}>{Number(total_deposited).toFixed(2)} USD</strong></span>
+                <span>إجمالي الشحن: <strong style={{ color: "var(--text-main)" }}>{Number(total_deposited).toFixed(2)} USD</strong></span>
                 <span>•</span>
                 <span>المحفظة: <strong style={{ color: "var(--primary-color)" }}>{balance.toFixed(2)} USD</strong></span>
               </div>
@@ -233,7 +233,7 @@ export default function MembershipClient() {
                     <ul style={{ paddingRight: "15px", margin: 0, fontSize: "0.82rem", color: "#94a3b8", lineHeight: "1.7" }}>
                       <li>
                         الشرط: {tier.condition_type === 'total_deposited' ? 'شحن رصيد بقيمة' : 'طلبات مكتملة بعدد'}{' '}
-                        <strong style={{ color: "#fff" }}>
+                        <strong style={{ color: "var(--text-main)" }}>
                           {tier.condition_value} {tier.condition_type === 'total_deposited' ? 'USD' : 'طلب'}
                         </strong>
                         {' '}أو إضافة يدوية بواسطة الإدارة.
@@ -281,7 +281,7 @@ export default function MembershipClient() {
                     {customer_level === key && <span style={{ background: `${level.color}20`, color: level.color, padding: "2px 8px", borderRadius: "6px", fontSize: "0.72rem", fontWeight: "bold" }}>نشط حالياً</span>}
                   </div>
                   <ul style={{ paddingRight: "15px", margin: 0, fontSize: "0.82rem", color: "#94a3b8", lineHeight: "1.7" }}>
-                    <li>المستوى: <strong style={{ color: "#fff" }}>{level.label}</strong></li>
+                    <li>المستوى: <strong style={{ color: "var(--text-main)" }}>{level.label}</strong></li>
                     <li>خصومات وميزات خاصة تُطبّق تلقائياً.</li>
                   </ul>
                 </div>
@@ -315,7 +315,7 @@ export default function MembershipClient() {
                   gap: "10px"
                 }}>
                   <div>
-                    <strong style={{ display: "block", color: "#ffffff", fontSize: "0.9rem" }}>{d.description || "خصم مخصص على الخدمات"}</strong>
+                    <strong style={{ display: "block", color: "var(--text-main)", fontSize: "0.9rem" }}>{d.description || "خصم مخصص على الخدمات"}</strong>
                     {d.expires_at && (
                       <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
                         ينتهي بتاريخ: {new Date(d.expires_at).toLocaleDateString("ar-EG")}
@@ -344,3 +344,4 @@ export default function MembershipClient() {
     </div>
   );
 }
+

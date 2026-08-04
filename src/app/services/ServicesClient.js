@@ -430,7 +430,7 @@ export default function ServicesClient() {
                                       boxSizing: "border-box",
                                       minWidth: 0
                                     }}>
-                                      <span style={{ color: "var(--text-main)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", flex: "1 1 auto", minWidth: 0 }} title={pkg.name}>{pkg.name}</span>
+                                      <span style={{ color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", flex: "1 1 auto", minWidth: 0 }} title={pkg.name}>{pkg.name}</span>
                                       <span style={{ color: "var(--primary-color)", fontWeight: "bold", flexShrink: 0 }}>${Number(pkg.price).toFixed(2)}</span>
                                     </div>
                                   ))}
@@ -563,7 +563,7 @@ export default function ServicesClient() {
                                     boxSizing: "border-box",
                                     minWidth: 0
                                   }}>
-                                    <span style={{ color: "var(--text-main)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", flex: "1 1 auto", minWidth: 0 }} title={pkg.name}>{pkg.name}</span>
+                                    <span style={{ color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", flex: "1 1 auto", minWidth: 0 }} title={pkg.name}>{pkg.name}</span>
                                     <span style={{ color: "var(--primary-color)", fontWeight: "bold", flexShrink: 0 }}>${Number(pkg.price).toFixed(2)}</span>
                                   </div>
                                 ))}
@@ -612,3 +612,6 @@ export default function ServicesClient() {
     </>
   );
 }
+
+
+

@@ -114,7 +114,7 @@ export default function ContactFloatingButton() {
 
           {/* Email Support 1 */}
           <a
-            href="mailto:arab.tech.services2@gmail.com"
+            href="mailto:arabtechserver@gmail.com"
             className="glass-btn"
             style={{ padding: "12px 16px", borderRadius: "14px", minWidth: "220px", justifyContent: "center", display: "inline-flex", alignItems: "center", gap: "8px", fontSize: "0.85rem", background: "rgba(239, 68, 68, 0.1)", borderColor: "rgba(239, 68, 68, 0.2)", color: "#f87171" }}
           >

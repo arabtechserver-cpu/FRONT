@@ -480,7 +480,6 @@ button, input, textarea, select { font-family: var(--font-cairo); }
 .glass-btn:hover {
   background: rgba(255,255,255,0.14);
   border-color: rgba(255,255,255,0.18);
-  transform: scale(1.04);
   box-shadow: 0 4px 20px rgba(0,0,0,0.2);
 }
 .glass-btn-primary {
@@ -501,7 +500,6 @@ button, input, textarea, select { font-family: var(--font-cairo); }
 }
 .glass-btn-primary:hover {
   box-shadow: 0 10px 36px rgba(0,198,224,0.50);
-  transform: scale(1.04) translateY(-1px);
 }
 [data-theme="light"] .glass-btn:not(.glass-btn-primary) {
   background: rgba(0,0,0,0.04);
@@ -1006,4 +1004,14 @@ button, input, textarea, select { font-family: var(--font-cairo); }
 @keyframes pulse {
   0%, 100% { opacity: 1; transform: scale(1); }
   50%       { opacity: 0.7; transform: scale(1.08); }
-}
+}@media (max-width: 768px) {
+  .notice-row {
+    background: transparent !important;
+    border: none !important;
+  }
+  .notice-pill {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+}

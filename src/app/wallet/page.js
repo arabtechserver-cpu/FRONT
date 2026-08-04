@@ -370,7 +370,7 @@ export default function WalletPage() {
       {capturingPaypal && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.88)", backdropFilter: "blur(14px)", zIndex: 99999, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "20px" }}>
           <div style={{ fontSize: "4.5rem", animation: "pulse 1.5s ease-in-out infinite" }}>⏳</div>
-          <div style={{ fontSize: "1.4rem", fontWeight: 900, color: "#fff" }}>جاري تأكيد دفعك وشحن الرصيد...</div>
+          <div style={{ fontSize: "1.4rem", fontWeight: 900, color: "var(--text-main)" }}>جاري تأكيد دفعك وشحن الرصيد...</div>
           <div style={{ color: "#94a3b8", fontSize: "0.95rem" }}>يرجى الانتظار، هذا يستغرق ثوان فقط...</div>
         </div>
       )}
@@ -390,7 +390,7 @@ export default function WalletPage() {
             </div>
             <button
               onClick={() => setPaypalSuccess(null)}
-              style={{ width: "100%", padding: "15px", background: "linear-gradient(135deg, #22c55e, #16a34a)", border: "none", borderRadius: "14px", color: "#fff", fontSize: "1.05rem", fontWeight: 900, cursor: "pointer", transition: "transform 0.2s" }}
+              style={{ width: "100%", padding: "15px", background: "linear-gradient(135deg, #22c55e, #16a34a)", border: "none", borderRadius: "14px", color: "var(--text-main)", fontSize: "1.05rem", fontWeight: 900, cursor: "pointer", transition: "transform 0.2s" }}
               onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.02)"}
               onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
             >
@@ -517,7 +517,7 @@ export default function WalletPage() {
                     return (
                       <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: "14px", flexWrap: "wrap" }}>
-                          <div style={{ background: "linear-gradient(135deg, #003087, #009cde)", borderRadius: "12px", padding: "10px 18px", fontWeight: 900, color: "#fff", fontSize: "1rem", letterSpacing: "1px", display: "flex", alignItems: "center", gap: "6px" }}>
+                          <div style={{ background: "linear-gradient(135deg, #003087, #009cde)", borderRadius: "12px", padding: "10px 18px", fontWeight: 900, color: "var(--text-main)", fontSize: "1rem", letterSpacing: "1px", display: "flex", alignItems: "center", gap: "6px" }}>
                             <span style={{ fontSize: "1.3rem" }}>🅿️</span> PayPal
                           </div>
                           <div>
@@ -548,7 +548,7 @@ export default function WalletPage() {
 
                         {paypalAmount && Number(paypalAmount) >= 1 ? (
                           <div style={{ background: "#fff", borderRadius: "8px", padding: "10px 10px 0 10px" }}>
-                            <PayPalScriptProvider options={{ "client-id": process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "AbX4oyjwSWN9g7w83UNF_H1iBxJw6Y_nB-RQyz7jwrwwqTPf4Jj0qvkf0KDhnJiczh6xG3ZNv35zGRLO", currency: "USD" }}>
+                            <PayPalScriptProvider options={{ "client-id": process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "BAA8Rt-IgLlxgkq8MZ8oiOOqDhFqy92HBS9sxJzeYASwt8YU9Lz7GXrMAiACDFotqS5LlCxBsRISofo6n8", currency: "USD" }}>
                               <PayPalButtons 
                                 forceReRender={[paypalAmount]}
                                 style={{ layout: "vertical", shape: "rect", color: "gold", label: "paypal" }}
@@ -591,7 +591,7 @@ export default function WalletPage() {
                               setCopied(true);
                               setTimeout(() => setCopied(false), 2000);
                             }}
-                            style={{ background: copied ? "#10b981" : "#3b82f6", color: "#ffffff", border: "none", borderRadius: "10px", padding: "10px 20px", fontSize: "1rem", cursor: "pointer", fontWeight: "bold", transition: "all 0.2s", display: "flex", alignItems: "center", gap: "6px" }}
+                            style={{ background: copied ? "#10b981" : "#3b82f6", color: "var(--text-main)", border: "none", borderRadius: "10px", padding: "10px 20px", fontSize: "1rem", cursor: "pointer", fontWeight: "bold", transition: "all 0.2s", display: "flex", alignItems: "center", gap: "6px" }}
                           >
                             {copied ? "تم النسخ ✓" : "نسخ العنوان 📋"}
                           </button>
@@ -700,7 +700,7 @@ export default function WalletPage() {
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                   {whatsappNumbers.length > 0 ? whatsappNumbers.map((num, i) => (
-                    <button key={i} onClick={() => { openWhatsapp(num); setWhatsappSent(true); }} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", padding: "14px", background: "linear-gradient(135deg, #25d366, #128c7e)", border: "none", borderRadius: "14px", color: "#fff", fontWeight: 900, fontSize: "1rem", cursor: "pointer", transition: "transform 0.2s" }} onMouseEnter={(e)=>e.currentTarget.style.transform="scale(1.02)"} onMouseLeave={(e)=>e.currentTarget.style.transform="scale(1)"}>
+                    <button key={i} onClick={() => { openWhatsapp(num); setWhatsappSent(true); }} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", padding: "14px", background: "linear-gradient(135deg, #25d366, #128c7e)", border: "none", borderRadius: "14px", color: "var(--text-main)", fontWeight: 900, fontSize: "1rem", cursor: "pointer", transition: "transform 0.2s" }} onMouseEnter={(e)=>e.currentTarget.style.transform="scale(1.02)"} onMouseLeave={(e)=>e.currentTarget.style.transform="scale(1)"}>
                       <span style={{ fontSize: "1.3rem" }}>💬</span> إرسال الوصل عبر واتساب {whatsappNumbers.length > 1 ? `(${i + 1})` : ""}
                     </button>
                   )) : (
@@ -778,3 +778,4 @@ export default function WalletPage() {
     </div>
   );
 }
+

@@ -67,7 +67,7 @@ export default function Footer({ siteName = "Arab Tech Server", siteLogo = "/log
             <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "10px", color: "#94a3b8", fontSize: "0.95rem" }}>
                 <span style={{ background: "rgba(255,255,255,0.05)", padding: "8px", borderRadius: "8px" }}>✉️</span>
-                arab.tech.services2@gmail.com
+                arabtechserver@gmail.com
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: "10px", color: "#94a3b8", fontSize: "0.95rem" }}>
                 <span style={{ background: "rgba(255,255,255,0.05)", padding: "8px", borderRadius: "8px" }}>💬</span>

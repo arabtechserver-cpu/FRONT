@@ -533,7 +533,7 @@ export default function CustomerLogin() {
                       value={otpCode}
                       onChange={(e) => setOtpCode(e.target.value)}
                       maxLength={6}
-                      style={{ width: "100%", padding: "10px", borderRadius: "8px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "white", textAlign: "center", letterSpacing: "5px", fontWeight: "bold" }}
+                      style={{ width: "100%", padding: "10px", borderRadius: "8px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "var(--text-main)", textAlign: "center", letterSpacing: "5px", fontWeight: "bold" }}
                       required
                     />
                   </div>
@@ -546,7 +546,7 @@ export default function CustomerLogin() {
                         placeholder="أدخل كلمة المرور الجديدة"
                         value={changePassNew}
                         onChange={(e) => setChangePassNew(e.target.value)}
-                        style={{ width: "100%", padding: "10px 40px 10px 10px", borderRadius: "8px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "white" }}
+                        style={{ width: "100%", padding: "10px 40px 10px 10px", borderRadius: "8px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "var(--text-main)" }}
                         required
                       />
                       <button type="button" onClick={() => setShowPassword(!showPassword)} style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", background: "none", border: "none", color: "var(--primary-color)", cursor: "pointer", fontSize: "0.8rem", fontWeight: "bold" }}>
@@ -768,7 +768,7 @@ export default function CustomerLogin() {
                   href="https://t.me/ArabTechOTPBot" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  style={{ display: "inline-block", marginTop: "8px", background: "#0088cc", color: "#ffffff", padding: "6px 12px", borderRadius: "8px", textDecoration: "none", fontWeight: "bold", fontSize: "0.75rem" }}
+                  style={{ display: "inline-block", marginTop: "8px", background: "#0088cc", color: "var(--text-main)", padding: "6px 12px", borderRadius: "8px", textDecoration: "none", fontWeight: "bold", fontSize: "0.75rem" }}
                 >
                   ✈️ افتح بوت التيليجرام واضغط Start
                 </a>
@@ -867,7 +867,7 @@ export default function CustomerLogin() {
                     href="https://t.me/ArabTechOTPBot" 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    style={{ display: "inline-block", marginTop: "8px", background: "#0088cc", color: "#ffffff", padding: "6px 12px", borderRadius: "8px", textDecoration: "none", fontWeight: "bold", fontSize: "0.75rem" }}
+                    style={{ display: "inline-block", marginTop: "8px", background: "#0088cc", color: "var(--text-main)", padding: "6px 12px", borderRadius: "8px", textDecoration: "none", fontWeight: "bold", fontSize: "0.75rem" }}
                   >
                     ✈️ افتح بوت التيليجرام
                   </a>
@@ -1151,3 +1151,4 @@ export default function CustomerLogin() {
     </div>
   );
 }
+

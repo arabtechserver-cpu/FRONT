@@ -632,8 +632,8 @@ export default function MainLayout({ children }) {
           {children}
           <PasswordChangeModal />
           <ProtectionModal />
-          <Footer siteName={settings.site_name} siteLogo={settings.site_logo} />
         </main>
+        <Footer siteName={settings.site_name} siteLogo={settings.site_logo} />
       </div>
 
       {/* Mobile Bottom Navigation Bar */}
@@ -913,7 +913,7 @@ export default function MainLayout({ children }) {
 
               {/* Email Support */}
               <a
-                href="mailto:arab.tech.services2@gmail.com"
+                href="mailto:arabtechserver@gmail.com"
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -931,7 +931,7 @@ export default function MainLayout({ children }) {
               >
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                   <span style={{ fontSize: "1.2rem" }}>✉️</span>
-                  <span>البريد الإلكتروني (arab.tech.services2@gmail.com)</span>
+                  <span>البريد الإلكتروني (arabtechserver@gmail.com)</span>
                 </div>
                 <span style={{ color: "#ef4444" }}>←</span>
               </a>
