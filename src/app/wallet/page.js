@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { API_BASE_URL } from "@/config";
@@ -40,6 +40,15 @@ export default function WalletPage() {
   const [paypalSuccess, setPaypalSuccess] = useState(null);
   const [paypalError, setPaypalError] = useState("");
   const [capturingPaypal, setCapturingPaypal] = useState(false);
+  const paymentDetailsRef = useRef(null);
+
+  useEffect(() => {
+    if (selectedMethodId && paymentDetailsRef.current) {
+      setTimeout(() => {
+        paymentDetailsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+  }, [selectedMethodId]);
 
   useEffect(() => {
     setToken(localStorage.getItem("customer_token") || "");
@@ -478,7 +487,9 @@ export default function WalletPage() {
             </div>
 
             {selectedMethodId && allMethods.find(pm => pm.id === selectedMethodId) && (
-              <div style={{
+              <div 
+                ref={paymentDetailsRef}
+                style={{
                 border: "1px solid var(--primary-color)",
                 borderRadius: "16px",
                 background: "rgba(255,255,255,0.02)",
