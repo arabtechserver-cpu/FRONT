@@ -676,12 +676,13 @@ details[open] .faq-question::after { content: "－"; }
 .hp-review-card {
   width: 320px;
   flex-shrink: 0;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 16px;
+  background: var(--bg-glass);
+  border: var(--border-glass);
+  border-radius: 18px;
   padding: 20px;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: var(--shadow-card);
   transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
 }
 .hp-review-card:hover {
