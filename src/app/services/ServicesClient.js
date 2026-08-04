@@ -211,11 +211,11 @@ export default function ServicesClient() {
                 </span>
                 <a href="https://wa.me/249123667227" target="_blank" rel="noopener noreferrer" className="notice-pill" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "6px" }}>
                   <span>💬 واتساب 1:</span>
-                  <span dir="ltr" style={{ direction: "ltr", unicodeBidi: "isolate", fontWeight: "bold" }}>+249 12 366 7227</span>
+                  <bdi dir="ltr" style={{ fontWeight: "bold", display: "inline-block" }}>+249&nbsp;12&nbsp;366&nbsp;7227</bdi>
                 </a>
                 <a href="https://wa.me/16728972935" target="_blank" rel="noopener noreferrer" className="notice-pill" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "6px" }}>
                   <span>💬 واتساب 2:</span>
-                  <span dir="ltr" style={{ direction: "ltr", unicodeBidi: "isolate", fontWeight: "bold" }}>+1 (672) 897-2935</span>
+                  <bdi dir="ltr" style={{ fontWeight: "bold", display: "inline-block" }}>+1&nbsp;(672)&nbsp;897-2935</bdi>
                 </a>
               </div>
               <div className="notice-set" aria-hidden="true" role="presentation">
@@ -224,11 +224,11 @@ export default function ServicesClient() {
                 </span>
                 <a href="https://wa.me/249123667227" target="_blank" rel="noopener noreferrer" className="notice-pill" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "6px" }}>
                   <span>💬 واتساب 1:</span>
-                  <span dir="ltr" style={{ direction: "ltr", unicodeBidi: "isolate", fontWeight: "bold" }}>+249 12 366 7227</span>
+                  <bdi dir="ltr" style={{ fontWeight: "bold", display: "inline-block" }}>+249&nbsp;12&nbsp;366&nbsp;7227</bdi>
                 </a>
                 <a href="https://wa.me/16728972935" target="_blank" rel="noopener noreferrer" className="notice-pill" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "6px" }}>
                   <span>💬 واتساب 2:</span>
-                  <span dir="ltr" style={{ direction: "ltr", unicodeBidi: "isolate", fontWeight: "bold" }}>+1 (672) 897-2935</span>
+                  <bdi dir="ltr" style={{ fontWeight: "bold", display: "inline-block" }}>+1&nbsp;(672)&nbsp;897-2935</bdi>
                 </a>
               </div>
             </div>
