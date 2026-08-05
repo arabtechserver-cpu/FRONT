@@ -54,34 +54,69 @@ function ItemRow({ item, onChange, onRemove, index, availableServices, isFirst, 
       <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 8, minWidth: 200 }}>
         
         {/* Service Selector */}
-        {availableServices && availableServices.length > 0 && (
-          <select
-            value={item.serviceId || ""}
-            onChange={(e) => {
-              const sId = e.target.value;
-              const s = availableServices.find(x => x.id.toString() === sId);
-              if (s) {
-                onChange({
-                  ...item,
-                  serviceId: sId,
-                  title: s.name,
-                  url: `/service/${s.id}`,
+        {(() => {
+          const expandedAvailableServices = [];
+          (availableServices || []).forEach(s => {
+            let parsedPackages = [];
+            try {
+              parsedPackages = typeof s.packages === "string" ? JSON.parse(s.packages) : (s.packages || []);
+            } catch (e) {
+              parsedPackages = [];
+            }
+
+            if (Array.isArray(parsedPackages) && parsedPackages.length > 0) {
+              parsedPackages.forEach(pkg => {
+                const pkgName = (pkg.name === "تفعيل فوري تلقائي" || !pkg.name) ? s.name : pkg.name;
+                expandedAvailableServices.push({
+                  id: `${s.id}-${pkg.id}`,
+                  name: `${s.name} - ${pkgName}`,
+                  title: pkgName,
+                  url: `/service/${s.id}?package=${pkg.id}`,
                   time: s.time || ""
                 });
-              } else {
-                onChange({ ...item, serviceId: "" });
-              }
-            }}
-            style={{
-              width: "100%", background: "rgba(16,185,129,0.05)", border: "1px solid rgba(16,185,129,0.2)",
-              borderRadius: 8, padding: "8px 12px", color: "#34d399", fontSize: "0.85rem",
-              outline: "none", cursor: "pointer"
-            }}
-          >
-            <option value="">-- الجلب التلقائي (اختر خدمة من النظام) --</option>
-            {availableServices.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-          </select>
-        )}
+              });
+            } else {
+              expandedAvailableServices.push({
+                id: s.id.toString(),
+                name: s.name,
+                title: s.name,
+                url: `/service/${s.id}`,
+                time: s.time || ""
+              });
+            }
+          });
+
+          if (expandedAvailableServices.length === 0) return null;
+
+          return (
+            <select
+              value={item.serviceId || ""}
+              onChange={(e) => {
+                const key = e.target.value;
+                const s = expandedAvailableServices.find(x => x.id === key);
+                if (s) {
+                  onChange({
+                    ...item,
+                    serviceId: key,
+                    title: s.title,
+                    url: s.url,
+                    time: s.time
+                  });
+                } else {
+                  onChange({ ...item, serviceId: "" });
+                }
+              }}
+              style={{
+                width: "100%", background: "rgba(16,185,129,0.05)", border: "1px solid rgba(16,185,129,0.2)",
+                borderRadius: 8, padding: "8px 12px", color: "#34d399", fontSize: "0.85rem",
+                outline: "none", cursor: "pointer"
+              }}
+            >
+              <option value="">-- الجلب التلقائي (اختر خدمة أو باقة من النظام) --</option>
+              {expandedAvailableServices.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+            </select>
+          );
+        })()}
 
         <input
           type="text"
@@ -195,6 +230,24 @@ function SectionEditor({ section, onChange, onRemove, index, categories, service
     ? (services || []).filter(s => s.category_id?.toString() === section.categoryId.toString())
     : (services || []);
 
+  const totalExpandedCount = (() => {
+    let count = 0;
+    filteredServices.forEach(s => {
+      let parsed = [];
+      try {
+        parsed = typeof s.packages === "string" ? JSON.parse(s.packages) : (s.packages || []);
+      } catch (e) {
+        parsed = [];
+      }
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        count += parsed.length;
+      } else {
+        count += 1;
+      }
+    });
+    return count;
+  })();
+
   return (
     <div style={{
       background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.08)",
@@ -236,19 +289,43 @@ function SectionEditor({ section, onChange, onRemove, index, categories, service
           {section.categoryId && (
             <button
               onClick={() => {
-                const newItems = filteredServices.map(s => ({
-                  title: s.name,
-                  url: `/service/${s.id}`,
-                  img: "",
-                  time: s.time || "",
-                  serviceId: s.id.toString()
-                }));
+                const newItems = [];
+                filteredServices.forEach(s => {
+                  let parsedPackages = [];
+                  try {
+                    parsedPackages = typeof s.packages === "string" ? JSON.parse(s.packages) : (s.packages || []);
+                  } catch (e) {
+                    parsedPackages = [];
+                  }
+
+                  if (Array.isArray(parsedPackages) && parsedPackages.length > 0) {
+                    parsedPackages.forEach(pkg => {
+                      const title = (pkg.name === "تفعيل فوري تلقائي" || !pkg.name) ? s.name : pkg.name;
+                      newItems.push({
+                        title: title,
+                        url: `/service/${s.id}?package=${pkg.id}`,
+                        img: "",
+                        time: s.time || "",
+                        serviceId: `${s.id}-${pkg.id}`
+                      });
+                    });
+                  } else {
+                    newItems.push({
+                      title: s.name,
+                      url: `/service/${s.id}`,
+                      img: "",
+                      time: s.time || "",
+                      serviceId: s.id.toString()
+                    });
+                  }
+                });
+
                 const existingIds = (section.items || []).map(i => i.serviceId?.toString());
                 const toAdd = newItems.filter(item => !existingIds.includes(item.serviceId));
                 if (toAdd.length > 0) {
                   onChange({ ...section, items: [...(section.items || []), ...toAdd] });
                 } else {
-                  alert("جميع خدمات هذا القسم موجودة بالفعل في القائمة.");
+                  alert("جميع خدمات وباقات هذا القسم موجودة بالفعل في القائمة.");
                 }
               }}
               style={{
@@ -258,7 +335,7 @@ function SectionEditor({ section, onChange, onRemove, index, categories, service
               }}
               title="سحب جميع الخدمات الموجودة في هذا القسم وإضافتها للقائمة بنقرة واحدة"
             >
-              📥 جلب جميع خدمات القسم ({filteredServices.length})
+              📥 جلب جميع خدمات القسم ({totalExpandedCount})
             </button>
           )}
         </div>
