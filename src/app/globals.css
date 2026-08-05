@@ -177,21 +177,21 @@
   --navbar-btn-hover-bg: rgba(255,255,255,0.07);
 }
 
-/* ===== LIGHT THEME (DARK MODE OVERRIDE) ===== */
+/* ===== LIGHT THEME (GOLDEN/BRONZE) ===== */
 [data-theme="light"] {
-  --bg-color:        #0d1117;
-  --bg-secondary:    #161b22;
+  --bg-color:        #fdfbf7;
+  --bg-secondary:    #f5ecd5;
   --bg-gradient:
-    radial-gradient(ellipse at 15% 10%,  rgba(56,189,248,0.05) 0%, transparent 55%),
-    radial-gradient(ellipse at 85% 80%,  rgba(99,102,241,0.04) 0%, transparent 55%);
+    radial-gradient(ellipse at 15% 10%,  rgba(212,175,55,0.08) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 80%,  rgba(184,134,11,0.06) 0%, transparent 55%);
 
-  --bg-glass:        rgba(20, 29, 47, 0.75);
-  --bg-glass-hover:  rgba(30, 41, 59, 0.90);
-  --bg-glass-deep:   rgba(10, 15, 30, 0.80);
-  --border-glass:    1px solid rgba(255,255,255,0.07);
-  --border-glow:     1px solid rgba(56,189,248,0.3);
-  --shadow-glass:    0 4px 24px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.04) inset;
-  --shadow-hover:    0 12px 40px rgba(0,0,0,0.4), 0 4px 16px rgba(0,0,0,0.2);
+  --bg-glass:        rgba(255, 252, 245, 0.85);
+  --bg-glass-hover:  rgba(255, 255, 255, 0.95);
+  --bg-glass-deep:   rgba(245, 236, 213, 0.92);
+  --border-glass:    1px solid rgba(184,134,11,0.15);
+  --border-glow:     1px solid rgba(212,175,55,0.4);
+  --shadow-glass:    0 4px 24px rgba(184,134,11,0.1), 0 0 0 1px rgba(212,175,55,0.1) inset;
+  --shadow-hover:    0 12px 40px rgba(184,134,11,0.2), 0 4px 16px rgba(0,0,0,0.08);
   --shadow-card:     0 4px 20px rgba(139,90,43,0.15), 0 0 0 1px rgba(212,175,55,0.2) inset;
 
   --primary-color:   #b8860b;
