@@ -360,7 +360,7 @@ export default function Home() {
                 <div className="hp-empty">لا توجد أقسام مطابقة 😕</div>
               ) : (
                 <div className="hp-list">
-                  {filteredCats.map(cat => {
+                  {filteredCats.slice(0, 30).map(cat => {
                     const color = cat.color || "#6366f1";
                     return (
                       <Link key={cat.id} href={`/category/${cat.id}`} className="hp-row" style={{ "--rc": color }}>
