@@ -451,6 +451,40 @@ export default function Home() {
               ))}
             </div>
           </div>
+
+          {/* Reviews Marquee directly under Why Us */}
+          {reviews.length > 0 && (
+            <div className="hp-reviews-section" style={{ marginTop: "24px" }}>
+              <div className="hp-section-header">
+                <span className="hp-section-title-icon">⭐</span>
+                <h2 className="hp-section-heading">آراء وتقييمات المستخدمين</h2>
+              </div>
+              <div className="hp-reviews-marquee-wrapper">
+                {[
+                  { data: reviews.slice(0, Math.ceil(reviews.length / 2)), reverse: false },
+                  { data: reviews.slice(Math.ceil(reviews.length / 2)), reverse: true }
+                ].filter(row => row.data.length > 0).map((row, rowIdx) => {
+                  const trackData = [...row.data, ...row.data, ...row.data, ...row.data, ...row.data, ...row.data];
+                  return (
+                    <div key={rowIdx} className={`hp-reviews-marquee-track ${row.reverse ? 'reverse' : ''}`}>
+                      {trackData.map((rev, i) => (
+                        <div key={`${rev.id || i}-${i}`} className="hp-review-card">
+                          <div className="hp-review-header">
+                            <div className="hp-review-avatar">{rev.name.charAt(0)}</div>
+                            <div className="hp-review-meta">
+                              <span className="hp-review-name">{rev.name}</span>
+                              <span className="hp-review-rating">{"⭐".repeat(rev.rating || 5)}</span>
+                            </div>
+                          </div>
+                          <p className="hp-review-text">"{rev.review}"</p>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* ── RIGHT COLUMN: Featured sections + payment methods ── */}
@@ -689,41 +723,7 @@ export default function Home() {
         ))}
       </div>
 
-      {/* ══════════════════════════════════════════════════════
-          REVIEWS MARQUEE
-      ══════════════════════════════════════════════════════ */}
-      {reviews.length > 0 && (
-        <div className="hp-reviews-section">
-          <div className="hp-section-header">
-            <span className="hp-section-title-icon">⭐</span>
-            <h2 className="hp-section-heading">آراء وتقييمات المستخدمين</h2>
-          </div>
-          <div className="hp-reviews-marquee-wrapper">
-            {[
-              { data: reviews.slice(0, Math.ceil(reviews.length / 2)), reverse: false },
-              { data: reviews.slice(Math.ceil(reviews.length / 2)), reverse: true }
-            ].filter(row => row.data.length > 0).map((row, rowIdx) => {
-              const trackData = [...row.data, ...row.data, ...row.data, ...row.data, ...row.data, ...row.data];
-              return (
-                <div key={rowIdx} className={`hp-reviews-marquee-track ${row.reverse ? 'reverse' : ''}`}>
-                  {trackData.map((rev, i) => (
-                    <div key={`${rev.id || i}-${i}`} className="hp-review-card">
-                      <div className="hp-review-header">
-                        <div className="hp-review-avatar">{rev.name.charAt(0)}</div>
-                        <div className="hp-review-meta">
-                          <span className="hp-review-name">{rev.name}</span>
-                          <span className="hp-review-rating">{"⭐".repeat(rev.rating || 5)}</span>
-                        </div>
-                      </div>
-                      <p className="hp-review-text">"{rev.review}"</p>
-                    </div>
-                  ))}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
+
 
       {/* Developer / Programmer Portfolio & Hire Section */}
       <div 
