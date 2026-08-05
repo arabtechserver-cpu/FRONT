@@ -18,12 +18,60 @@ export default function CategoriesTab({
   const [visibilityFilter, setVisibilityFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(24);
+  const [orders, setOrders] = useState({});
+  const [savingOrders, setSavingOrders] = useState(false);
 
   const finalFilteredCats = filteredCategories || [];
 
   useEffect(() => {
     setCurrentPage(1);
   }, [catSearch, visibilityFilter]);
+
+  useEffect(() => {
+    if (categories && Array.isArray(categories)) {
+      const initialMap = {};
+      categories.forEach(c => {
+        initialMap[c.id] = c.sort_order || 0;
+      });
+      setOrders(initialMap);
+    }
+  }, [categories]);
+
+  const handleOrderChange = (id, val) => {
+    const num = val === "" ? 0 : parseInt(val, 10);
+    setOrders(prev => ({ ...prev, [id]: isNaN(num) ? 0 : num }));
+  };
+
+  const handleSaveOrders = async () => {
+    try {
+      setSavingOrders(true);
+      const token = localStorage.getItem("adminToken");
+      const items = Object.entries(orders).map(([id, sort_order]) => ({
+        id: Number(id),
+        sort_order: Number(sort_order)
+      }));
+
+      const res = await fetch(`${API_BASE_URL}/api/categories/reorder`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ items })
+      });
+
+      if (res.ok) {
+        alert("✅ تم حفظ ترتيب الأقسام بنجاح! سيظهر الترتيب الجديد في الصفحة الرئيسية فوراً.");
+      } else {
+        alert("❌ حدث خطأ أثناء حفظ الترتيب.");
+      }
+    } catch (err) {
+      console.error("Save category orders error:", err);
+      alert("❌ حدث خطأ في الاتصال بالخادم.");
+    } finally {
+      setSavingOrders(false);
+    }
+  };
 
   const totalPages = Math.ceil(finalFilteredCats.length / itemsPerPage) || 1;
   const paginatedCats = finalFilteredCats.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
@@ -52,22 +100,43 @@ export default function CategoriesTab({
           <h2 style={{ margin: 0, fontSize: "1.5rem", color: "var(--text-color)" }}>إدارة الأقسام</h2>
           <p style={{ margin: "5px 0 0", color: "var(--text-muted)", fontSize: "0.9rem" }}>أضف أقسام جديدة، عدّل الحالية، أو تحكم في ظهورها في القائمة.</p>
         </div>
-        <button 
-          className="action-btn"
-          onClick={() => catModal?.setShowCatModal(true)}
-          style={{
-            background: "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
-            color: "white",
-            padding: "12px 24px",
-            borderRadius: "12px",
-            fontWeight: "bold",
-            fontSize: "1rem",
-            boxShadow: "0 4px 15px rgba(59, 130, 246, 0.4)",
-            border: "none"
-          }}
-        >
-          ➕ إضافة قسم جديد
-        </button>
+        <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+          <button 
+            className="action-btn"
+            onClick={handleSaveOrders}
+            disabled={savingOrders}
+            style={{
+              background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+              color: "white",
+              padding: "12px 20px",
+              borderRadius: "12px",
+              fontWeight: "bold",
+              fontSize: "0.95rem",
+              boxShadow: "0 4px 15px rgba(16, 185, 129, 0.4)",
+              border: "none",
+              cursor: savingOrders ? "wait" : "pointer"
+            }}
+          >
+            {savingOrders ? "⏳ جاري الحفظ..." : "⚡ حفظ ترتيب الأقسام بالرئيسية"}
+          </button>
+
+          <button 
+            className="action-btn"
+            onClick={() => catModal?.setShowCatModal(true)}
+            style={{
+              background: "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
+              color: "white",
+              padding: "12px 24px",
+              borderRadius: "12px",
+              fontWeight: "bold",
+              fontSize: "1rem",
+              boxShadow: "0 4px 15px rgba(59, 130, 246, 0.4)",
+              border: "none"
+            }}
+          >
+            ➕ إضافة قسم جديد
+          </button>
+        </div>
       </div>
 
       {/* Filters and Delete All */}
@@ -192,7 +261,7 @@ export default function CategoriesTab({
             
             <h3 className="category-title-premium" style={{ marginTop: "15px", marginBottom: "5px", fontSize: "1.1rem", lineHeight: "1.4", minHeight: "45px" }}>{cat.name}</h3>
             
-            <div style={{ display: "flex", flexDirection: "column", gap: "6px", alignItems: "center", marginBottom: "15px" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "8px", alignItems: "center", marginBottom: "15px", width: "100%" }}>
               {cat.parent_id ? (
                 <span style={{ display: "inline-block", padding: "4px 12px", borderRadius: "100px", background: "rgba(99, 102, 241, 0.1)", color: "#818cf8", fontSize: "0.8rem", fontWeight: "600", border: "1px solid rgba(99, 102, 241, 0.2)" }}>
                   🏷️ فرعي
@@ -202,6 +271,41 @@ export default function CategoriesTab({
                   📁 رئيسي
                 </span>
               )}
+
+              {/* Order input control for Homepage */}
+              <div style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: "8px",
+                background: "rgba(14, 165, 233, 0.08)",
+                border: "1px solid rgba(14, 165, 233, 0.2)",
+                padding: "6px 10px",
+                borderRadius: "10px",
+                width: "100%",
+                boxSizing: "border-box"
+              }}>
+                <span style={{ fontSize: "0.8rem", color: "#38bdf8", fontWeight: "700" }}>🔢 ترتيب الرئيسية:</span>
+                <input
+                  type="number"
+                  min="0"
+                  max="999"
+                  placeholder="0"
+                  value={orders[cat.id] !== undefined ? orders[cat.id] : (cat.sort_order || 0)}
+                  onChange={(e) => handleOrderChange(cat.id, e.target.value)}
+                  style={{
+                    width: "55px",
+                    padding: "4px 6px",
+                    borderRadius: "6px",
+                    background: "#0f172a",
+                    border: "1px solid rgba(255, 255, 255, 0.2)",
+                    color: "#ffffff",
+                    textAlign: "center",
+                    fontWeight: "bold",
+                    fontSize: "0.85rem"
+                  }}
+                />
+              </div>
             </div>
 
             <div style={{ marginTop: "auto", display: "flex", gap: "8px", flexDirection: "column", width: "100%" }}>

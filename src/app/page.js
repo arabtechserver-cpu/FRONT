@@ -117,7 +117,16 @@ export default function Home() {
     return () => clearInterval(t);
   }, [slides]);
 
-  const rootCats = categories.filter(c => !c.parent_id);
+  const rootCats = [...categories].filter(c => !c.parent_id).sort((a, b) => {
+    const orderA = a.sort_order || 0;
+    const orderB = b.sort_order || 0;
+    if (orderA !== orderB) {
+      if (orderA === 0) return 1;
+      if (orderB === 0) return -1;
+      return orderA - orderB;
+    }
+    return a.name.localeCompare(b.name, 'ar');
+  });
   const filteredCats = rootCats.filter(c => c.name.toLowerCase().includes(searchTerm.toLowerCase()));
   const displayServices = activeSection === "popular" ? popularServices : filteredCats;
 
@@ -314,7 +323,7 @@ export default function Home() {
                   <div key={i} className="hp-cat-icon-card hp-skeleton" />
                 ))
               ) : (
-                rootCats.slice(0, 6).map(cat => (
+                rootCats.slice(0, 12).map(cat => (
                   <Link key={cat.id} href={`/category/${cat.id}`} className="hp-cat-icon-card">
                     <div className="hp-cat-icon-circle" style={{ background: "transparent", border: "none", width: "64px", height: "64px" }}>
                       {cat.image ? (
