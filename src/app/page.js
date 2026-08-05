@@ -451,76 +451,6 @@ export default function Home() {
               ))}
             </div>
           </div>
-
-          {/* Developer / Programmer Portfolio & Hire Section */}
-          <div 
-            className="hp-dev-banner"
-            style={{
-              marginTop: "24px",
-              background: "var(--bg-glass)",
-              border: "var(--border-glass)",
-              borderRadius: "18px",
-              padding: "20px 24px",
-              display: "flex",
-              flexWrap: "wrap",
-              alignItems: "center",
-              justifyContent: "space-between",
-              gap: "16px",
-              direction: "rtl",
-              boxShadow: "var(--shadow-card)",
-              boxSizing: "border-box"
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", gap: "14px", flexWrap: "wrap" }}>
-              <div style={{
-                width: "48px",
-                height: "48px",
-                borderRadius: "14px",
-                background: "var(--primary-light, rgba(14, 165, 233, 0.15))",
-                border: "1px solid var(--primary-color, rgba(14, 165, 233, 0.3))",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "1.5rem",
-                flexShrink: 0
-              }}>
-                👨‍💻
-              </div>
-              <div style={{ maxWidth: "500px" }}>
-                <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: 900, color: "var(--text-main)", display: "flex", alignItems: "center", gap: "8px" }}>
-                  تصميم وتطوير المبرمج: <span style={{ color: "var(--primary-color, #0ea5e9)" }}>مينا سمير</span> ✨
-                </h3>
-                <p style={{ margin: "4px 0 0", color: "var(--text-muted)", fontSize: "0.88rem", lineHeight: "1.5" }}>
-                  هل تريد سيرفر أو موقع متجر إلكتروني احترافي متكامل مثل هذا المتجر لعملك؟ تواصل معي الآن لتحويل فكرتك إلى واقع بأعلى جودة! 🚀
-                </p>
-              </div>
-            </div>
-
-            <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
-              <a 
-                href="https://portfolio-18f21.web.app/" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                style={{
-                  padding: "9px 20px",
-                  borderRadius: "10px",
-                  background: "linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%)",
-                  border: "none",
-                  color: "#ffffff",
-                  fontWeight: 800,
-                  fontSize: "0.88rem",
-                  textDecoration: "none",
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "6px",
-                  boxShadow: "0 4px 14px rgba(14, 165, 233, 0.3)",
-                  transition: "all 0.2s ease"
-                }}
-              >
-                🌐 معرض أعمالي
-              </a>
-            </div>
-          </div>
         </div>
 
         {/* ── RIGHT COLUMN: Featured sections + payment methods ── */}
@@ -794,6 +724,77 @@ export default function Home() {
           </div>
         </div>
       )}
+
+      {/* Developer / Programmer Portfolio & Hire Section */}
+      <div 
+        className="hp-dev-banner container"
+        style={{
+          marginTop: "30px",
+          marginBottom: "30px",
+          background: "var(--bg-glass)",
+          border: "var(--border-glass)",
+          borderRadius: "20px",
+          padding: "24px 30px",
+          display: "flex",
+          flexWrap: "wrap",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: "20px",
+          direction: "rtl",
+          boxShadow: "var(--shadow-card)",
+          boxSizing: "border-box"
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
+          <div style={{
+            width: "54px",
+            height: "54px",
+            borderRadius: "16px",
+            background: "var(--primary-light, rgba(14, 165, 233, 0.15))",
+            border: "1px solid var(--primary-color, rgba(14, 165, 233, 0.3))",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: "1.6rem",
+            flexShrink: 0
+          }}>
+            👨‍💻
+          </div>
+          <div style={{ maxWidth: "600px" }}>
+            <h3 style={{ margin: 0, fontSize: "1.15rem", fontWeight: 900, color: "var(--text-main)", display: "flex", alignItems: "center", gap: "8px" }}>
+              تصميم وتطوير المبرمج: <span style={{ color: "var(--primary-color, #0ea5e9)" }}>مينا سمير</span> ✨
+            </h3>
+            <p style={{ margin: "6px 0 0", color: "var(--text-muted)", fontSize: "0.92rem", lineHeight: "1.6" }}>
+              هل تريد سيرفر أو موقع متجر إلكتروني احترافي متكامل مثل هذا المتجر لعملك؟ تواصل معي الآن لتحويل فكرتك إلى واقع بأعلى جودة! 🚀
+            </p>
+          </div>
+        </div>
+
+        <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+          <a 
+            href="https://portfolio-18f21.web.app/" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            style={{
+              padding: "10px 24px",
+              borderRadius: "12px",
+              background: "linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%)",
+              border: "none",
+              color: "#ffffff",
+              fontWeight: 800,
+              fontSize: "0.9rem",
+              textDecoration: "none",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
+              boxShadow: "0 4px 16px rgba(14, 165, 233, 0.35)",
+              transition: "all 0.2s ease"
+            }}
+          >
+            🌐 معرض أعمالي
+          </a>
+        </div>
+      </div>
 
       {/* ══════════════════════════════════════════════════════
           FAQ

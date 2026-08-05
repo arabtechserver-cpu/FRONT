@@ -104,7 +104,7 @@ export default function ContactFloatingButton() {
       style={{
         position: "fixed",
         left: "16px",
-        bottom: "24px",
+        bottom: "100px",
         zIndex: 9999,
         display: "flex",
         flexDirection: "column-reverse",
