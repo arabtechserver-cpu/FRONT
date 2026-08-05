@@ -257,30 +257,41 @@
 
 /* ── Hero responsive ── */
 @media (max-width: 992px) {
-  /* On mobile, main-content-inner has 15px padding each side */
+  /* Mobile: main-content-inner has 15px padding each side */
   .hero-banner {
     width: calc(100% + 30px);
     margin-left: -15px;
     margin-right: -15px;
     margin-top: -15px;
-    border-radius: 0 0 18px 18px;
-    min-height: 440px;
+    min-height: 380px;
+    border-radius: 0 0 16px 16px;
+    padding-bottom: 20px;
   }
-  .banner-content { padding: 55px 18px 80px; } /* keep bottom padding for search bar */
-  .banner-info { max-width: 100%; }
-  .banner-title { font-size: 1.5rem; }
-  .banner-desc { font-size: 0.82rem; }
-  .banner-features { gap: 7px; }
+  .hero-search-container {
+    width: 92%;
+    padding: 8px 0 14px;
+  }
+  .banner-content {
+    padding: 55px 18px 70px;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+  .banner-info { max-width: 100%; align-items: center; }
+  .banner-badge { align-self: center; }
+  .banner-title { font-size: 1.45rem; text-align: center; }
+  .banner-desc { font-size: 0.82rem; text-align: center; max-width: 100%; }
+  .banner-features { justify-content: center; gap: 6px; }
   .banner-feat-item { padding: 5px 9px; }
   .banner-feat-title, .banner-feat-sub { font-size: 0.65rem; }
+  .hero-cta-btn { align-self: center; }
   .banner-graphic { display: none; }
-  .hero-search-container { width: 95%; padding: 10px 0 16px; }
 }
 @media (max-width: 480px) {
-  .hero-banner { min-height: 380px; }
-  .banner-content { padding: 48px 14px 70px; }
-  .banner-title { font-size: 1.25rem; }
+  .hero-banner { min-height: 320px; }
+  .banner-content { padding: 50px 14px 65px; }
+  .banner-title { font-size: 1.2rem; }
   .banner-features { display: none; }
+  .hero-dots { bottom: 70px; }
 }
 
 
@@ -1230,32 +1241,100 @@ details[open] .faq-question::after { content: "－"; }
 /* ═══════════════════════════════════════════════
    RESPONSIVE — Hero on mobile
 ═══════════════════════════════════════════════ */
-@media (max-width: 768px) {
-  .hero-banner { min-height: 340px; border-radius: 0 0 18px 18px; }
-  .banner-content {
-    padding: 80px 20px 50px;
-    flex-direction: column;
-    justify-content: flex-end;
-    text-align: center;
-  }
-  .banner-info { max-width: 100%; align-items: center; }
-  .banner-badge { align-self: center; }
-  .banner-title { font-size: 1.6rem; text-align: center; }
-  .banner-desc { text-align: center; font-size: 0.85rem; }
-  .banner-features { justify-content: center; }
-  .banner-feat-item { padding: 6px 10px; }
-  .banner-feat-title, .banner-feat-sub { font-size: 0.68rem; }
-  .hero-cta-btn { align-self: center; }
-  .banner-graphic { display: none; }
-  .coin-icon { font-size: 3rem; }
+/* ═══════════════════════════════════════════════
+   FULL RESPONSIVE OVERRIDES
+═══════════════════════════════════════════════ */
+
+/* Tablet (769px - 992px) */
+@media (max-width: 992px) and (min-width: 769px) {
+  .hp-body-grid { grid-template-columns: 1fr 260px; gap: 16px; }
 }
 
-@media (max-width: 480px) {
+/* Mobile (≤768px) — single column layout */
+@media (max-width: 768px) {
+  /* Body grid → stack vertically */
+  .hp-body-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  /* Stats bar top */
+  .hp-stats-bar {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px 16px;
+    justify-content: center;
+    border-radius: 0;
+    margin-left: -15px;
+    margin-right: -15px;
+    width: calc(100% + 30px);
+  }
+  .hp-stat-item { padding: 0 12px; border-left: none; }
+  .hp-stat-val { font-size: 1.2rem; }
+
+  /* Bottom features → 2 columns */
+  .hp-bottom-features {
+    grid-template-columns: repeat(2, 1fr);
+    border-radius: 14px;
+  }
+  .hp-bottom-feat-item {
+    padding: 14px 12px;
+    gap: 10px;
+    border-left: none;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .hp-bottom-feat-item:nth-child(even) { border-left: 1px solid rgba(255,255,255,0.05); }
+
+  /* Bottom stats → 2×2 */
+  .hp-bottom-stats { grid-template-columns: repeat(2, 1fr); }
+  .hp-bottom-stat { padding: 14px 10px; border-left: none; }
+  .hp-bottom-stat:nth-child(even) { border-left: 1px solid rgba(255,255,255,0.07); }
+
+  /* Tabs row */
   .hp-tabs-row { flex-direction: column; align-items: flex-start; gap: 8px; }
   .hp-section-tabs { width: 100%; justify-content: center; }
-  .hp-bottom-features { border-radius: 14px; }
-  .hp-bottom-feat-item { padding: 14px 12px; gap: 10px; }
-  .hp-bottom-feat-icon { font-size: 1.4rem; }
-  .hp-bottom-feat-title { font-size: 0.8rem; }
-  .hp-cat-grid-section, .hp-services-panel, .hp-why-section { border-radius: 14px; }
+
+  /* Sidebar col no longer sticky */
+  .hp-sidebar-col { position: static; gap: 14px; }
+
+  /* Why section */
+  .hp-why-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+
+  /* Sections border-radius smaller */
+  .hp-cat-grid-section,
+  .hp-services-panel,
+  .hp-why-section,
+  .hp-featured-box,
+  .hp-sidebar-why,
+  .hp-payment-box { border-radius: 14px; }
+
+  /* Rows compact */
+  .hp-row { padding: 11px 12px; gap: 8px; }
+  .hp-row-name { font-size: 0.84rem; }
+  .hp-row-sub { font-size: 0.7rem; }
+  .hp-row-action-btn { padding: 5px 12px; font-size: 0.74rem; }
+
+  /* Payment grid */
+  .hp-payment-grid { grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .hp-payment-method { padding: 8px 4px; font-size: 0.68rem; }
+
+  /* Reviews cards */
+  .hp-review-card { width: 240px; padding: 14px; }
+
+  /* FAQ */
+  .faq-question { font-size: 0.85rem; }
+  .faq-answer { font-size: 0.8rem; }
+}
+
+/* Small mobile (≤480px) */
+@media (max-width: 480px) {
+  .hp-cat-icon-grid { grid-template-columns: repeat(2, 1fr); }
+  .hp-why-grid { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+  .hp-bottom-features { grid-template-columns: repeat(2, 1fr); }
+  .hp-bottom-feat-icon { font-size: 1.3rem; }
+  .hp-bottom-feat-title { font-size: 0.78rem; }
+  .hp-bottom-feat-desc { font-size: 0.68rem; }
+  .hp-bottom-stat-val { font-size: 1.3rem; }
+  .hp-payment-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .hp-payment-method { padding: 10px 8px; font-size: 0.75rem; }
 }
