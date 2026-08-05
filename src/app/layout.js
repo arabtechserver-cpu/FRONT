@@ -1,5 +1,6 @@
 import "./globals.css";
 import ContactFloatingButton from "../components/ContactFloatingButton";
+import SiteLoadingScreen from "../components/SiteLoadingScreen";
 import MainLayout from "../components/MainLayout";
 import { API_BASE_URL, SITE_URL, fetchWithTimeout } from "../config";
 import { cache } from "react";
@@ -288,6 +289,7 @@ export default async function RootLayout({ children }) {
         />
       </head>
       <body suppressHydrationWarning={true}>
+        <SiteLoadingScreen />
         <MainLayout>
           {children}
           <ContactFloatingButton />
