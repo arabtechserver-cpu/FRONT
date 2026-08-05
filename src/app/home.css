@@ -287,11 +287,12 @@
   .banner-graphic { display: none; }
 }
 @media (max-width: 480px) {
-  .hero-banner { min-height: 320px; }
-  .banner-content { padding: 50px 14px 65px; }
+  .hero-banner { min-height: 220px; }
+  .banner-bg-img { object-position: left center; }
+  .banner-content { padding: 25px 14px 50px; }
   .banner-title { font-size: 1.2rem; }
   .banner-features { display: none; }
-  .hero-dots { bottom: 70px; }
+  .hero-dots { bottom: 55px; }
 }
 
 
@@ -410,12 +411,8 @@
 
 .hp-cat-icon-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
   gap: 12px;
-}
-
-@media (max-width: 480px) {
-  .hp-cat-icon-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 .hp-cat-icon-card {
@@ -1339,7 +1336,7 @@ details[open] .faq-question::after { content: "－"; }
 }
 
 @media (max-width: 480px) {
-  .hp-cat-icon-grid { grid-template-columns: repeat(2, 1fr); }
+  /* Removed hardcoded grid-template-columns for hp-cat-icon-grid as it uses auto-fill now */
   .hp-why-grid { grid-template-columns: repeat(2, 1fr); gap: 6px; }
   .hp-bottom-features { grid-template-columns: repeat(2, 1fr); }
   .hp-bottom-feat-icon { font-size: 1.3rem; }
@@ -1349,3 +1346,4 @@ details[open] .faq-question::after { content: "－"; }
   .hp-payment-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
   .hp-payment-method { padding: 10px 8px; font-size: 0.75rem; }
 }
+@media (max-width: 360px) { .hp-why-grid, .hp-bottom-features, .hp-bottom-stats, .hp-payment-grid { grid-template-columns: 1fr !important; gap: 8px !important; } .hp-review-card { width: 80vw !important; padding: 12px !important; } .hp-row { flex-direction: column; align-items: flex-start; gap: 8px; } .hp-row-right { width: 100%; flex-direction: row; justify-content: space-between; align-items: center; } }
