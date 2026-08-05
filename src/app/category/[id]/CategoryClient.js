@@ -426,44 +426,90 @@ export default function CategoryServices({ params }) {
               );
             }
 
+            const allServiceCards = filteredServices.flatMap((service) => {
+              const isCustomImg = service.image && (service.image.startsWith("data:image") || service.image.startsWith("http") || service.image.includes("uploads"));
+              
+              // Premium colors per category
+              const categoryColors = {
+                1: '#6366f1', // games
+                2: '#eab308', // live apps
+                3: '#a855f7', // cards
+                4: '#06b6d4', // balances/currencies
+                5: '#ec4899', // social media
+                6: '#10b981', // server services
+                7: '#d946ef', // subscriptions
+                8: '#eab308', // AI
+                9: '#6366f1', // numbers
+                10: '#6366f1', // programming/design
+                11: '#eab308', // ready accounts
+                12: '#ec4899'  // ads
+              };
+              const catColor = categoryColors[service.category_id] || '#6366f1';
+              
+              const hexToRgb = (hex) => {
+                const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+                return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '99, 102, 241';
+              };
+              const catGlow = `rgba(${hexToRgb(catColor)}, 0.35)`;
+
+              const imgSrc = isCustomImg
+                ? (service.image.startsWith("http") || service.image.startsWith("data:") 
+                    ? service.image 
+                    : (service.image.startsWith("/") ? `${API_BASE_URL}${service.image}` : `${API_BASE_URL}/${service.image}`))
+                : null;
+
+              if (service.packages && service.packages.length > 0) {
+                return service.packages.map((pkg) => ({
+                  type: 'package',
+                  key: `${service.id}-${pkg.id}`,
+                  service,
+                  pkg,
+                  catColor,
+                  catGlow,
+                  imgSrc
+                }));
+              }
+
+              return [{
+                type: 'service',
+                key: service.id,
+                service,
+                catColor,
+                catGlow,
+                imgSrc
+              }];
+            });
+
+            // Pagination calculation (24 items per page)
+            const cardsPerPage = 24;
+            const totalCards = allServiceCards.length;
+            const totalPages = Math.ceil(totalCards / cardsPerPage);
+            const startIndex = (currentPage - 1) * cardsPerPage;
+            const endIndex = startIndex + cardsPerPage;
+            const paginatedCards = allServiceCards.slice(startIndex, endIndex);
+
+            const getPageNumbers = () => {
+              const pages = [];
+              const delta = 1;
+              for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - delta && i <= currentPage + delta)) {
+                  pages.push(i);
+                } else if (pages[pages.length - 1] !== '...') {
+                  pages.push('...');
+                }
+              }
+              return pages;
+            };
+
             return (
-              <div className="scc-grid">
-                {filteredServices.flatMap((service) => {
-                  const isCustomImg = service.image && (service.image.startsWith("data:image") || service.image.startsWith("http") || service.image.includes("uploads"));
-                  
-                  // Premium colors per category
-                  const categoryColors = {
-                    1: '#6366f1', // games
-                    2: '#eab308', // live apps
-                    3: '#a855f7', // cards
-                    4: '#06b6d4', // balances/currencies
-                    5: '#ec4899', // social media
-                    6: '#10b981', // server services
-                    7: '#d946ef', // subscriptions
-                    8: '#eab308', // AI
-                    9: '#6366f1', // numbers
-                    10: '#6366f1', // programming/design
-                    11: '#eab308', // ready accounts
-                    12: '#ec4899'  // ads
-                  };
-                  const catColor = categoryColors[service.category_id] || '#6366f1';
-                  
-                  const hexToRgb = (hex) => {
-                    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-                    return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '99, 102, 241';
-                  };
-                  const catGlow = `rgba(${hexToRgb(catColor)}, 0.35)`;
+              <>
+                <div className="scc-grid">
+                  {paginatedCards.map((card) => {
+                    const { type, key, service, pkg, catColor, catGlow, imgSrc } = card;
 
-                  const imgSrc = isCustomImg
-                    ? (service.image.startsWith("http") || service.image.startsWith("data:") 
-                        ? service.image 
-                        : (service.image.startsWith("/") ? `${API_BASE_URL}${service.image}` : `${API_BASE_URL}/${service.image}`))
-                    : null;
-
-                  if (service.packages && service.packages.length > 0) {
-                    return service.packages.map((pkg, idx) => {
+                    if (type === 'package') {
                       return (
-                        <div className="scc-wrap" key={`${service.id}-${pkg.id}`}>
+                        <div className="scc-wrap" key={key}>
                           <Link 
                             href={`/service/${service.id}?package=${pkg.id}`} 
                             className="scc-card" 
@@ -506,62 +552,151 @@ export default function CategoryServices({ params }) {
                           </Link>
                         </div>
                       );
-                    });
-                  }
+                    }
 
-                  return (
-                    <div className="scc-wrap" key={service.id}>
-                      <Link 
-                        href={`/service/${service.id}`} 
-                        className="scc-card" 
-                        dir="ltr" 
-                        style={{ '--scc-ac': catColor, '--scc-gl': catGlow }}
-                      >
-                        <div className="scc-side-line"></div>
-                        {imgSrc && (
-                          <div className="scc-img-ring">
-                            <div className="scc-img-inner">
-                              <img 
-                                src={imgSrc} 
-                                alt={service.name} 
-                                loading="lazy" 
-                                className="scc-img" 
-                                onError={(e) => {
-                                  e.target.style.display = 'none';
-                                  const ring = e.target.closest('.scc-img-ring');
-                                  if (ring) {
-                                    ring.style.display = 'none';
-                                  }
-                                }}
-                              />
+                    return (
+                      <div className="scc-wrap" key={key}>
+                        <Link 
+                          href={`/service/${service.id}`} 
+                          className="scc-card" 
+                          dir="ltr" 
+                          style={{ '--scc-ac': catColor, '--scc-gl': catGlow }}
+                        >
+                          <div className="scc-side-line"></div>
+                          {imgSrc && (
+                            <div className="scc-img-ring">
+                              <div className="scc-img-inner">
+                                <img 
+                                  src={imgSrc} 
+                                  alt={service.name} 
+                                  loading="lazy" 
+                                  className="scc-img" 
+                                  onError={(e) => {
+                                    e.target.style.display = 'none';
+                                    const ring = e.target.closest('.scc-img-ring');
+                                    if (ring) {
+                                      ring.style.display = 'none';
+                                    }
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          )}
+                          <div className="scc-content">
+                            <span className="scc-name">{service.name}</span>
+                            <div className="scc-meta" style={{ display: "flex", gap: "8px", alignItems: "center", marginTop: "4px" }}>
+                              {service.price > 0 ? (
+                                <span style={{ color: "var(--primary-color)", fontWeight: 900, fontSize: "0.9rem" }}>
+                                  $ {Number(service.price).toFixed(2)}
+                                </span>
+                              ) : (
+                                <>
+                                  <div className="scc-dot"></div>
+                                  <span>اضغط للعرض</span>
+                                </>
+                              )}
                             </div>
                           </div>
-                        )}
-                        <div className="scc-content">
-                          <span className="scc-name">{service.name}</span>
-                          <div className="scc-meta" style={{ display: "flex", gap: "8px", alignItems: "center", marginTop: "4px" }}>
-                            {service.price > 0 ? (
-                              <span style={{ color: "var(--primary-color)", fontWeight: 900, fontSize: "0.9rem" }}>
-                                $ {Number(service.price).toFixed(2)}
-                              </span>
-                            ) : (
-                              <>
-                                <div className="scc-dot"></div>
-                                <span>اضغط للعرض</span>
-                              </>
-                            )}
+                          <div className="scc-arrow">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-left">
+                              <path d="m9 18 6-6-6-6"></path>
+                            </svg>
                           </div>
-                        </div>
-                        <div className="scc-arrow">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-left">
-                            <path d="m9 18 6-6-6-6"></path>
-                          </svg>
-                        </div>
-                      </Link>
-                    </div>
-                  );
-                })}
-              </div>
+                        </Link>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Premium Pagination Bar */}
+                {totalPages > 1 && (
+                  <div style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    gap: "8px",
+                    marginTop: "35px",
+                    flexWrap: "wrap",
+                    direction: "rtl"
+                  }}>
+                    <button
+                      disabled={currentPage === 1}
+                      onClick={() => {
+                        setCurrentPage(prev => Math.max(prev - 1, 1));
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }}
+                      style={{
+                        background: currentPage === 1 ? "rgba(255,255,255,0.03)" : "rgba(255,255,255,0.08)",
+                        border: "1px solid rgba(255,255,255,0.1)",
+                        borderRadius: "10px",
+                        padding: "8px 16px",
+                        color: currentPage === 1 ? "var(--text-muted)" : "var(--text-main)",
+                        cursor: currentPage === 1 ? "not-allowed" : "pointer",
+                        fontWeight: "bold",
+                        fontSize: "0.85rem",
+                        transition: "all 0.2s"
+                      }}
+                    >
+                      السابق
+                    </button>
+
+                    {getPageNumbers().map((pageNum, idx) => {
+                      if (pageNum === '...') {
+                        return (
+                          <span key={`ellipsis-${idx}`} style={{ color: "var(--text-muted)", padding: "0 6px", fontSize: "1rem" }}>
+                            ...
+                          </span>
+                        );
+                      }
+                      const isSelected = currentPage === pageNum;
+                      return (
+                        <button
+                          key={pageNum}
+                          onClick={() => {
+                            setCurrentPage(pageNum);
+                            window.scrollTo({ top: 0, behavior: "smooth" });
+                          }}
+                          style={{
+                            width: "36px",
+                            height: "36px",
+                            borderRadius: "10px",
+                            border: isSelected ? "1px solid var(--primary-color)" : "1px solid rgba(255,255,255,0.1)",
+                            background: isSelected ? "var(--primary-color)" : "rgba(255,255,255,0.05)",
+                            color: isSelected ? "#ffffff" : "var(--text-main)",
+                            cursor: "pointer",
+                            fontWeight: "bold",
+                            fontSize: "0.85rem",
+                            transition: "all 0.2s"
+                          }}
+                        >
+                          {pageNum}
+                        </button>
+                      );
+                    })}
+
+                    <button
+                      disabled={currentPage === totalPages}
+                      onClick={() => {
+                        setCurrentPage(prev => Math.min(prev + 1, totalPages));
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }}
+                      style={{
+                        background: currentPage === totalPages ? "rgba(255,255,255,0.03)" : "rgba(255,255,255,0.08)",
+                        border: "1px solid rgba(255,255,255,0.1)",
+                        borderRadius: "10px",
+                        padding: "8px 16px",
+                        color: currentPage === totalPages ? "var(--text-muted)" : "var(--text-main)",
+                        cursor: currentPage === totalPages ? "not-allowed" : "pointer",
+                        fontWeight: "bold",
+                        fontSize: "0.85rem",
+                        transition: "all 0.2s"
+                      }}
+                    >
+                      التالي
+                    </button>
+                  </div>
+                )}
+              </>
             );
           })()}
         </>
