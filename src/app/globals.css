@@ -851,20 +851,9 @@ button, input, textarea, select { font-family: var(--font-cairo); }
   color: var(--primary-color) !important;
 }
 
-.notice-pill-bdi {
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, 
-    rgba(212, 175, 55, 0.8), rgba(184, 134, 11, 0.8), rgba(139, 90, 43, 0.8), rgba(212, 175, 55, 0.8));
-  background-size: 300% 100%;
-  animation: premiumBorderSpin 6s linear infinite;
-  box-shadow: 0 -2px 15px rgba(212, 175, 55, 0.4);
-  pointer-events: none;
-}
-@keyframes premiumBorderSpin {
-  0% { background-position: 0% 50%; }
-  100% { background-position: 100% 50%; }
+@keyframes marquee-scroll {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
 }
 
 .banner-content {
