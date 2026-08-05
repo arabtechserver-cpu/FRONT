@@ -502,42 +502,22 @@ export default function Home() {
                 target="_blank" 
                 rel="noopener noreferrer"
                 style={{
-                  padding: "9px 18px",
+                  padding: "9px 20px",
                   borderRadius: "10px",
-                  background: "rgba(255, 255, 255, 0.05)",
-                  border: "var(--border-glass)",
-                  color: "var(--text-main)",
-                  fontWeight: 700,
-                  fontSize: "0.85rem",
+                  background: "linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%)",
+                  border: "none",
+                  color: "#ffffff",
+                  fontWeight: 800,
+                  fontSize: "0.88rem",
                   textDecoration: "none",
                   display: "inline-flex",
                   alignItems: "center",
                   gap: "6px",
+                  boxShadow: "0 4px 14px rgba(14, 165, 233, 0.3)",
                   transition: "all 0.2s ease"
                 }}
               >
                 🌐 معرض أعمالي
-              </a>
-              <a 
-                href="https://wa.me/201279301263" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                style={{
-                  padding: "9px 20px",
-                  borderRadius: "10px",
-                  background: "linear-gradient(135deg, #22c55e 0%, #16a34a 100%)",
-                  color: "#ffffff",
-                  fontWeight: 800,
-                  fontSize: "0.85rem",
-                  textDecoration: "none",
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "6px",
-                  boxShadow: "0 4px 14px rgba(34, 197, 94, 0.3)",
-                  transition: "all 0.2s ease"
-                }}
-              >
-                <span>💬</span> 01279301263
               </a>
             </div>
           </div>
