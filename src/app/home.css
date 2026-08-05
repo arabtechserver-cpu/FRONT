@@ -412,18 +412,24 @@
 ═══════════════════════════════════════════════ */
 .hp-body-grid {
   display: grid;
-  grid-template-columns: 1fr 340px;
+  grid-template-columns: minmax(0, 1fr) 340px;
   gap: 24px;
   align-items: start;
   margin-bottom: 32px;
 }
 
+.hp-main-left {
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
 @media (max-width: 1024px) {
-  .hp-body-grid { grid-template-columns: 1fr 280px; gap: 18px; }
+  .hp-body-grid { grid-template-columns: minmax(0, 1fr) 280px; gap: 18px; }
 }
 @media (max-width: 768px) {
   .hp-body-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 20px;
   }
 }
@@ -1642,9 +1648,11 @@
    REVIEWS SECTION
 ═══════════════════════════════════════════════ */
 .hp-reviews-section {
-  margin-bottom: 40px;
+  margin-top: 24px;
+  margin-bottom: 24px;
   width: 100% !important;
   max-width: 100% !important;
+  min-width: 0 !important;
   overflow: hidden !important;
   box-sizing: border-box !important;
 }

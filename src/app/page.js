@@ -731,6 +731,9 @@ export default function Home() {
         style={{
           marginTop: "30px",
           marginBottom: "30px",
+          width: "100%",
+          maxWidth: "100%",
+          minWidth: 0,
           background: "var(--bg-glass)",
           border: "var(--border-glass)",
           borderRadius: "20px",
