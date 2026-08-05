@@ -340,7 +340,7 @@ export default function Home() {
                   <div key={i} className="hp-cat-icon-card hp-skeleton" />
                 ))
               ) : (
-                rootCats.slice(0, 12).map(cat => (
+                rootCats.slice(0, 6).map(cat => (
                   <Link key={cat.id} href={`/category/${cat.id}`} className="hp-cat-icon-card">
                     <div className="hp-cat-icon-circle" style={{ background: "transparent", border: "none", width: "64px", height: "64px" }}>
                       {cat.image ? (
