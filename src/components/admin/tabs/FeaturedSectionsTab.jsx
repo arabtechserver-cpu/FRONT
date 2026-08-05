@@ -12,6 +12,15 @@ function toBase64(file) {
   });
 }
 
+function formatServiceImage(image) {
+  if (!image || image === "default" || image === "null") return "";
+  if (image.startsWith("data:image") || image.startsWith("http")) {
+    return image;
+  }
+  const cleanPath = image.startsWith("/") ? image : `/${image}`;
+  return `${API_BASE_URL}${cleanPath}`;
+}
+
 // ─── Item editor (one service inside a section) ──────────────────────────────
 function ItemRow({ item, onChange, onRemove, index, availableServices, isFirst, isLast, onMoveUp, onMoveDown }) {
   const imgRef = useRef();
@@ -72,7 +81,8 @@ function ItemRow({ item, onChange, onRemove, index, availableServices, isFirst, 
                   name: `${s.name} - ${pkgName}`,
                   title: pkgName,
                   url: `/service/${s.id}?package=${pkg.id}`,
-                  time: s.time || ""
+                  time: s.time || "",
+                  img: formatServiceImage(s.image)
                 });
               });
             } else {
@@ -81,7 +91,8 @@ function ItemRow({ item, onChange, onRemove, index, availableServices, isFirst, 
                 name: s.name,
                 title: s.name,
                 url: `/service/${s.id}`,
-                time: s.time || ""
+                time: s.time || "",
+                img: formatServiceImage(s.image)
               });
             }
           });
@@ -100,7 +111,8 @@ function ItemRow({ item, onChange, onRemove, index, availableServices, isFirst, 
                     serviceId: key,
                     title: s.title,
                     url: s.url,
-                    time: s.time
+                    time: s.time,
+                    img: s.img
                   });
                 } else {
                   onChange({ ...item, serviceId: "" });
@@ -194,6 +206,7 @@ function ItemRow({ item, onChange, onRemove, index, availableServices, isFirst, 
 // ─── Section editor ───────────────────────────────────────────────────────────
 function SectionEditor({ section, onChange, onRemove, index, categories, services }) {
   const coverRef = useRef();
+  const [catSearchQuery, setCatSearchQuery] = useState("");
 
   const handleCoverUpload = async (e) => {
     const f = e.target.files[0];
@@ -248,6 +261,12 @@ function SectionEditor({ section, onChange, onRemove, index, categories, service
     return count;
   })();
 
+  const filteredCategoriesForSelect = (categories || []).filter(c => {
+    const matchesSearch = (c.name || "").toLowerCase().includes(catSearchQuery.toLowerCase());
+    const isSelected = section.categoryId?.toString() === c.id?.toString();
+    return matchesSearch || isSelected;
+  });
+
   return (
     <div style={{
       background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.08)",
@@ -274,6 +293,22 @@ function SectionEditor({ section, onChange, onRemove, index, categories, service
           🔍 <strong style={{ color: "#e2e8f0" }}>فلترة الخدمات (اختياري)</strong>: اختر قسم من نظامك ليسهل عليك جلب الخدمات تلقائياً.
         </p>
         <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+          <input
+            type="text"
+            placeholder="🔍 ابحث عن قسم..."
+            value={catSearchQuery}
+            onChange={(e) => setCatSearchQuery(e.target.value)}
+            style={{
+              flex: "0 1 200px",
+              background: "rgba(255,255,255,0.05)",
+              border: "1px solid rgba(255,255,255,0.15)",
+              borderRadius: 8,
+              padding: "10px 14px",
+              color: "#e2e8f0",
+              fontSize: "0.9rem",
+              outline: "none"
+            }}
+          />
           <select
             value={section.categoryId || ""}
             onChange={(e) => onChange({ ...section, categoryId: e.target.value })}
@@ -283,7 +318,7 @@ function SectionEditor({ section, onChange, onRemove, index, categories, service
             }}
           >
             <option value="">-- عرض كل الخدمات في النظام --</option>
-            {(categories || []).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+            {filteredCategoriesForSelect.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
 
           {section.categoryId && (
