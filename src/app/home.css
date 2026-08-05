@@ -1351,4 +1351,11 @@ details[open] .faq-question::after { content: "－"; }
   .hp-payment-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
   .hp-payment-method { padding: 10px 8px; font-size: 0.75rem; }
 }
-@media (max-width: 360px) { .hp-why-grid, .hp-bottom-features, .hp-bottom-stats, .hp-payment-grid { grid-template-columns: 1fr !important; gap: 8px !important; } .hp-review-card { width: 80vw !important; padding: 12px !important; } .hp-row { flex-direction: column; align-items: flex-start; gap: 8px; } .hp-row-right { width: 100%; flex-direction: row; justify-content: space-between; align-items: center; } }
+@media (max-width: 360px) {
+  .hp-cat-grid-section, .hp-services-panel, .hp-why-section, .hp-featured-box, .hp-sidebar-why, .hp-payment-box { padding: 12px !important; }
+  .hp-why-grid, .hp-bottom-features, .hp-bottom-stats, .hp-payment-grid { grid-template-columns: 1fr !important; gap: 8px !important; }
+  .hp-review-card { width: 80vw !important; padding: 12px !important; }
+  .hp-row { flex-direction: column; align-items: stretch; gap: 8px; overflow: hidden; width: 100%; }
+  .hp-row-info { width: 100%; overflow: hidden; }
+  .hp-row-right { width: 100%; flex-direction: row; justify-content: space-between; align-items: center; }
+}
