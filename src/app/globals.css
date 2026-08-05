@@ -1153,3 +1153,49 @@ button, input, textarea, select { font-family: var(--font-cairo); }
   0%, 100% { filter: drop-shadow(0 0 4px rgba(14, 165, 233, 0.4)); transform: scale(1); }
   50% { filter: drop-shadow(0 0 12px rgba(14, 165, 233, 0.9)); transform: scale(1.12); }
 }
+
+/* ── PAGE ENTRANCE ANIMATIONS ── */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(35px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(45px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes zoomInEntrance {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-fade-in-right {
+  animation: fadeInRight 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-zoom-in {
+  animation: zoomInEntrance 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
