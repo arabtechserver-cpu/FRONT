@@ -38,7 +38,7 @@ function MainContent({ children }) {
 export default function AdminDashboardLayout({ children }) {
   return (
     <DashboardProvider>
-      <div className="admin-dashboard-root" dir="rtl" data-theme="dark">
+      <div className="admin-dashboard-root" dir="rtl">
         <style jsx global>{dashboardStyles}</style>
         <AdminSidebar />
         <MainContent>{children}</MainContent>

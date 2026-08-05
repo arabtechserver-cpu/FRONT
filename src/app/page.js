@@ -46,7 +46,7 @@ export default function Home() {
   const [categories, setCategories]         = useState([]);
   const [loading, setLoading]               = useState(true);
   const [searchTerm, setSearchTerm]         = useState("");
-  const [slides, setSlides]                 = useState([]);
+  const [slides, setSlides]                 = useState(DEFAULT_SLIDES);
   const [currentSlide, setCurrentSlide]     = useState(0);
   const [popularServices, setPopularServices] = useState([]);
   const [popularLoading, setPopularLoading] = useState(true);
@@ -54,7 +54,6 @@ export default function Home() {
   const [activeSection, setActiveSection]   = useState("all"); // all | popular
   const [reviews, setReviews]               = useState([]);
   const [featuredSections, setFeaturedSections] = useState([]);
-  const [recentOrders, setRecentOrders]     = useState([]);
   const [stats, setStats]                   = useState([
     { value: "24/7", label: "دعم مستمر" },
     { value: "+100", label: "خدمة متوفرة" },
@@ -103,11 +102,6 @@ export default function Home() {
       .then(r => r.ok ? r.json() : [])
       .then(data => { setPopularServices(Array.isArray(data) ? data : []); setPopularLoading(false); })
       .catch(() => setPopularLoading(false));
-
-    fetch(`${API_BASE_URL}/api/orders/recent`)
-      .then(r => r.ok ? r.json() : [])
-      .then(data => setRecentOrders(Array.isArray(data) ? data : []))
-      .catch(() => {});
   }, []);
 
   // ── auto-slide ─────────────────────────────────────────────────────────────
@@ -182,9 +176,6 @@ export default function Home() {
           {slides.map((slide, idx) => {
             const isImage = slide.icon && (slide.icon.startsWith("data:") || slide.icon.startsWith("http") || slide.icon.startsWith("/uploads"));
             const imgSrc = isImage ? (slide.icon.startsWith("/uploads") ? `${API_BASE_URL}${slide.icon}` : slide.icon) : null;
-            // If color is white/near-white, use a visible accent instead
-            const isWhiteColor = !slide.color || slide.color === "#ffffff" || slide.color === "#fff" || slide.color.toLowerCase() === "white";
-            const accentColor = isWhiteColor ? "#0ea5e9" : slide.color;
 
             return (
               <div
@@ -204,12 +195,12 @@ export default function Home() {
                 )}
 
                 <div className="banner-info">
-                  <span className="banner-badge" style={{ borderColor: accentColor, color: accentColor, background: `${accentColor}22` }}>{slide.badge}</span>
+                  <span className="banner-badge" style={{ borderColor: slide.color, color: slide.color, background: `${slide.color}22` }}>{slide.badge}</span>
                   <h1 className="banner-title">
                     {slide.title}<br />
-                    <span style={{ backgroundImage: `linear-gradient(135deg,#fff 0%,${accentColor} 100%)`, WebkitBackgroundClip: "text", backgroundClip: "text", WebkitTextFillColor: "transparent" }}>{slide.highlight}</span>
+                    <span style={{ backgroundImage: `linear-gradient(135deg,#fff 0%,${slide.color} 100%)`, WebkitBackgroundClip: "text", backgroundClip: "text", WebkitTextFillColor: "transparent" }}>{slide.highlight}</span>
                   </h1>
-                  <p className="banner-desc" style={{ color: "#fff" }}>{slide.desc}</p>
+                  <p className="banner-desc">{slide.desc}</p>
 
                   {/* Feature badges row */}
                   <div className="banner-features">
@@ -244,7 +235,7 @@ export default function Home() {
                   </div>
 
                   {slide.link && (
-                    <Link href={slide.link} className="hero-cta-btn" style={{ "--cta-color": accentColor }}>
+                    <Link href={slide.link} className="hero-cta-btn" style={{ "--cta-color": slide.color }}>
                       دخول القسم الآن ←
                     </Link>
                   )}
@@ -316,11 +307,11 @@ export default function Home() {
               ) : (
                 rootCats.slice(0, 6).map(cat => (
                   <Link key={cat.id} href={`/category/${cat.id}`} className="hp-cat-icon-card">
-                    <div className="hp-cat-icon-circle" style={{ background: "transparent", border: "none", width: "64px", height: "64px" }}>
+                    <div className="hp-cat-icon-circle" style={{ background: `${cat.color || "#6366f1"}22`, borderColor: `${cat.color || "#6366f1"}44` }}>
                       {cat.image ? (
-                        <img src={resolveImage(cat.image)} alt={cat.name} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+                        <img src={resolveImage(cat.image)} alt={cat.name} style={{ width: 32, height: 32, objectFit: "contain" }} />
                       ) : (
-                        <span style={{ fontSize: "2rem" }}>📁</span>
+                        <span style={{ fontSize: "1.4rem" }}>📁</span>
                       )}
                     </div>
                     <span className="hp-cat-icon-label">{cat.name}</span>
@@ -524,129 +515,11 @@ export default function Home() {
             </div>
             <p className="hp-payment-sub">طرق دفع آمنة ومتعددة &gt;</p>
             <div className="hp-payment-grid">
-              <Link href="/wallet" className="hp-payment-method visa">VISA</Link>
-              <Link href="/wallet" className="hp-payment-method mastercard">MC</Link>
-              <Link href="/wallet" className="hp-payment-method paypal">PayPal</Link>
-              <Link href="/wallet" className="hp-payment-method bitcoin">₿</Link>
+              <div className="hp-payment-method visa">VISA</div>
+              <div className="hp-payment-method mastercard">MC</div>
+              <div className="hp-payment-method paypal">PayPal</div>
+              <div className="hp-payment-method bitcoin">₿</div>
             </div>
-          </div>
-
-          {/* Quick Support Widget */}
-          <div className="hp-support-box">
-            <div className="hp-section-header">
-              <span className="hp-section-title-icon">📞</span>
-              <h2 className="hp-section-heading">مساعدة سريعة</h2>
-            </div>
-            <p className="hp-support-desc">فريق الدعم الفني جاهز للرد على استفساراتك على مدار الساعة عبر الواتساب.</p>
-            <a href="https://wa.me/249123667227" target="_blank" rel="noopener noreferrer" className="hp-support-btn">
-              <span className="hp-support-btn-icon">💬</span>
-              تواصل معنا الآن
-            </a>
-          </div>
-
-          {/* How it works widget */}
-          <div className="hp-steps-box">
-            <div className="hp-section-header">
-              <span className="hp-section-title-icon">⚙️</span>
-              <h2 className="hp-section-heading">كيف تطلب خدمة؟</h2>
-            </div>
-            <div className="hp-step-item">
-              <div className="hp-step-num">1</div>
-              <div className="hp-step-text">اختر الخدمة المناسبة لاحتياجك</div>
-            </div>
-            <div className="hp-step-item">
-              <div className="hp-step-num">2</div>
-              <div className="hp-step-text">أدخل البيانات وأتمم الدفع</div>
-            </div>
-            <div className="hp-step-item">
-              <div className="hp-step-num">3</div>
-              <div className="hp-step-text">استلم طلبك فوراً أو خلال دقائق</div>
-            </div>
-          </div>
-
-          {/* Live Stats widget */}
-          <div className="hp-live-stats-box">
-            <div className="hp-section-header">
-              <span className="hp-section-title-icon">📊</span>
-              <h2 className="hp-section-heading">أداء السيرفر</h2>
-            </div>
-            <div className="hp-live-stat-row">
-              <span className="hp-ls-label">حالة السيرفر</span>
-              <span className="hp-ls-val status-online">متصل (Online)</span>
-            </div>
-            <div className="hp-live-stat-row">
-              <span className="hp-ls-label">سرعة التنفيذ</span>
-              <span className="hp-ls-val">فوري لمعظم الخدمات</span>
-            </div>
-            <div className="hp-live-stat-row">
-              <span className="hp-ls-label">وقت التشغيل</span>
-              <span className="hp-ls-val">99.9% (Uptime)</span>
-            </div>
-          </div>
-
-          {/* Live Orders (Social Proof) */}
-          {recentOrders.length > 0 && (
-            <div className="hp-recent-orders-box">
-              <div className="hp-section-header">
-                <span className="hp-section-title-icon">🛍️</span>
-                <h2 className="hp-section-heading">أحدث الطلبات</h2>
-              </div>
-              <div className="hp-recent-orders-list">
-                {recentOrders.map((order, i) => {
-                  const initial = order.customer_name ? order.customer_name.charAt(0).toUpperCase() : 'ز';
-                  const name = order.customer_name ? order.customer_name.split(' ')[0] : 'زائر';
-                  const timeStr = order.created_at ? new Date(order.created_at).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }) : 'الآن';
-                  const colors = ['#3b82f6', '#a855f7', '#ef4444'];
-                  
-                  return (
-                    <div key={i} className="hp-ro-item">
-                      <div className="hp-ro-avatar" style={{ background: colors[i % colors.length] }}>{initial}</div>
-                      <div className="hp-ro-info">
-                        <div className="hp-ro-text"><span>{name}</span> طلب خدمة <b>{order.service_name}</b></div>
-                        <div className="hp-ro-time">{timeStr}</div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* Trust Guarantee Widget */}
-          <div className="hp-trust-box">
-            <div className="hp-trust-icon">🛡️</div>
-            <h3>ضمان الخدمة الذهبي</h3>
-            <p>نحن نضمن لك تنفيذ جميع طلباتك بأعلى جودة وفي أسرع وقت. في حال وجود أي مشكلة، نضمن لك استرداد كامل أموالك إلى محفظتك.</p>
-          </div>
-
-          {/* Telegram Channel Widget */}
-          <div className="hp-telegram-box">
-            <div className="hp-tg-icon">
-              <svg viewBox="0 0 24 24" fill="currentColor" width="40" height="40"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.21-1.12-.33-1.08-.7.02-.19.27-.39.75-.59 2.95-1.28 4.91-2.13 5.89-2.53 2.79-1.16 3.37-1.37 3.76-1.37.08 0 .26.02.35.1.08.06.12.15.14.24.01.1-.01.21-.03.34z"/></svg>
-            </div>
-            <h3>قناتنا على تيليجرام</h3>
-            <p>انضم إلينا لمعرفة آخر التحديثات والخدمات المضافة يومياً.</p>
-            <a href="https://t.me/arabtechserveronline" target="_blank" rel="noopener noreferrer" className="glass-btn" style={{ padding: '12px 16px', borderRadius: '14px', minWidth: '220px', justifyContent: 'center', display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', background: 'rgba(0, 136, 204, 0.1)', borderColor: 'rgba(0, 136, 204, 0.2)', color: '#fff' }}>✈️ قناة تيليجرام عرب تك</a>
-          </div>
-
-          {/* Working Hours Widget */}
-          <div className="hp-working-hours-box">
-            <div className="hp-wh-icon">⏱️</div>
-            <h3>أوقات العمل والتنفيذ</h3>
-            <p>نعمل لخدمتكم على مدار 24 ساعة طوال أيام الأسبوع.</p>
-            <ul className="hp-wh-list">
-              <li>الخدمات التلقائية: <b>فوري ⚡</b></li>
-              <li>الخدمات اليدوية: <b>1 - 15 دقيقة</b></li>
-              <li>الدعم الفني: <b>متاح 24/7</b></li>
-            </ul>
-          </div>
-
-          {/* Reseller Program Widget */}
-          <div className="hp-reseller-box">
-            <div className="hp-reseller-icon">🤝</div>
-            <h3>نظام الوكلاء (API)</h3>
-            <p>اربط موقعك بسيرفرنا مجاناً واحصل على أسعار مخفضة حصرياً للوكلاء.</p>
-            <a href="/api-docs" className="hp-reseller-btn">تصفح الـ API</a>
           </div>
 
         </div>

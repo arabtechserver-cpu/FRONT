@@ -581,10 +581,10 @@ export default function MainLayout({ children }) {
 
           {/* Left Section (Auth & Theme & Home link) */}
           <div className="flex items-center gap-3" style={{ position: 'relative' }}>
-            <Link href="/" className={`desktop-link hidden lg-block ${pathname === '/' ? 'active' : ''}`} style={{ fontWeight: 'bold' }}>الرئيسية</Link>
-            <Link href="/services" className={`desktop-link hidden lg-block ${pathname.startsWith('/services') ? 'active' : ''}`} style={{ fontWeight: 'bold' }}>الخدمات</Link>
-            <Link href="/orders" className={`desktop-link hidden lg-block ${pathname.startsWith('/orders') ? 'active' : ''}`} style={{ fontWeight: 'bold' }}>الطلبات</Link>
-            <button onClick={toggleTheme} className="theme-toggle-btn header-btn hidden lg-block" aria-label="تبديل المظهر" style={{ padding: '6px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', cursor: 'pointer' }}>
+            <Link href="/" className={`desktop-link hidden lg:block ${pathname === '/' ? 'active' : ''}`} style={{ fontWeight: 'bold' }}>الرئيسية</Link>
+            <Link href="/services" className={`desktop-link hidden lg:block ${pathname.startsWith('/services') ? 'active' : ''}`} style={{ fontWeight: 'bold' }}>الخدمات</Link>
+            <Link href="/orders" className={`desktop-link hidden lg:block ${pathname.startsWith('/orders') ? 'active' : ''}`} style={{ fontWeight: 'bold' }}>الطلبات</Link>
+            <button onClick={toggleTheme} className="theme-toggle-btn header-btn hidden lg:block" aria-label="تبديل المظهر" style={{ padding: '6px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', cursor: 'pointer' }}>
               {theme === 'dark' ? '🌙' : '☀️'}
             </button>
             

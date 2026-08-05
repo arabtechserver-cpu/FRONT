@@ -405,7 +405,37 @@ export default function CustomerLogin() {
   if (isLoggedIn) {
     return (
       <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "80vh", padding: "20px", position: "relative" }}>
-        {/* Removed Background Video and Overlay */}
+        {/* Background Video */}
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            zIndex: -2,
+            opacity: 0.45
+          }}
+        >
+          <source src="https://c.top4top.io/m_38509r2tv1.mp4" type="video/mp4" />
+        </video>
+        {/* Dark overlay for readability */}
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0, 0, 0, 0.55)",
+            zIndex: -1
+          }}
+        />
 
         <div className="glass-panel" style={{ width: "100%", maxWidth: "440px", display: "flex", flexDirection: "column", gap: "20px" }}>
           
@@ -563,7 +593,37 @@ export default function CustomerLogin() {
 
   return (
     <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "80vh", padding: "20px", position: "relative" }}>
-      {/* Removed Background Video and Overlay */}
+      {/* Background Video */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          zIndex: -2,
+          opacity: 0.45
+        }}
+      >
+        <source src="https://c.top4top.io/m_38509r2tv1.mp4" type="video/mp4" />
+      </video>
+      {/* Dark overlay for readability */}
+      <div
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          backgroundColor: "rgba(0, 0, 0, 0.55)",
+          zIndex: -1
+        }}
+      />
 
       <style dangerouslySetInnerHTML={{ __html: `
         @keyframes revealFromHeart {
@@ -602,38 +662,37 @@ export default function CustomerLogin() {
           display: flex;
           flex-direction: column;
           gap: 24px;
-          background: var(--bg-glass) !important;
-          border: var(--border-glass) !important;
-          box-shadow: var(--shadow-card) !important;
-          border-radius: 24px;
-          padding: 30px !important;
+          background: transparent !important;
+          border: none !important;
+          box-shadow: none !important;
+          backdrop-filter: none !important;
+          -webkit-backdrop-filter: none !important;
+          padding: 20px !important;
         }
 
         .custom-login-panel .form-group label {
-          color: var(--text-main) !important;
+          color: #ffffff !important;
           font-weight: 700 !important;
+          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
           font-size: 0.9rem !important;
           margin-bottom: 6px !important;
         }
 
         .custom-login-panel .form-group input {
-          background: #000000 !important;
-          border: 1px solid rgba(255, 255, 255, 0.15) !important;
+          background: rgba(0, 0, 0, 0.45) !important;
+          border: 1px solid rgba(255, 255, 255, 0.1) !important;
           color: #ffffff !important;
           border-radius: 14px !important;
           padding: 14px 18px !important;
           font-size: 0.95rem !important;
           transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
-        }
-        
-        .custom-login-panel .form-group input::placeholder {
-          color: rgba(255, 255, 255, 0.5) !important;
+          box-shadow: inset 0 2px 4px rgba(0,0,0,0.2) !important;
         }
 
         .custom-login-panel .form-group input:focus {
           border-color: var(--primary-color) !important;
-          background: #000000 !important;
-          box-shadow: 0 0 15px rgba(0, 180, 216, 0.35) !important;
+          background: rgba(0, 0, 0, 0.6) !important;
+          box-shadow: 0 0 15px rgba(0, 180, 216, 0.35), inset 0 2px 4px rgba(0,0,0,0.2) !important;
           transform: translateY(-2px);
         }
 
@@ -1032,48 +1091,17 @@ export default function CustomerLogin() {
               </div>
             )}
 
-            {activeTab === "login" ? (
-              <div className="animate-line line-6" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", width: "100%" }}>
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="glass-btn glass-btn-primary"
-                  style={{ padding: "12px", borderRadius: "12px", width: "100%" }}
-                >
-                  {submitting ? "جاري..." : "تسجيل الدخول"}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => { setActiveTab("register"); setError(""); setSuccess(""); }}
-                  className="glass-btn"
-                  style={{ padding: "12px", borderRadius: "12px", width: "100%", background: "rgba(0, 180, 216, 0.1)", color: "var(--primary-color)", border: "1px solid rgba(0, 180, 216, 0.25)", fontWeight: "800", fontSize: "0.95rem" }}
-                >
-                  إنشاء حساب
-                </button>
-              </div>
-            ) : (
-              <div className="animate-line line-8" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", width: "100%" }}>
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="glass-btn glass-btn-primary"
-                  style={{ padding: "12px", borderRadius: "12px", width: "100%" }}
-                >
-                  {submitting ? "جاري..." : "إنشاء الحساب"}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => { setActiveTab("login"); setError(""); setSuccess(""); }}
-                  className="glass-btn"
-                  style={{ padding: "12px", borderRadius: "12px", width: "100%", background: "rgba(0, 180, 216, 0.1)", color: "var(--primary-color)", border: "1px solid rgba(0, 180, 216, 0.25)", fontWeight: "800", fontSize: "0.95rem" }}
-                >
-                  تسجيل الدخول
-                </button>
-              </div>
-            )}
+            <button
+              type="submit"
+              disabled={submitting}
+              className={`glass-btn glass-btn-primary animate-line ${activeTab === "login" ? "line-6" : "line-8"}`}
+              style={{ padding: "12px", width: "100%", borderRadius: "12px" }}
+            >
+              {submitting ? "جاري المعالجة..." : activeTab === "login" ? "تسجيل الدخول" : "إنشاء الحساب الجديد"}
+            </button>
 
             {activeTab === "login" && (
-              <div className="animate-line line-7" style={{ display: "flex", justifyContent: "center", marginTop: "12px" }}>
+              <div className="animate-line line-7" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "10px", marginTop: "8px" }}>
                 <button
                   type="button"
                   onClick={() => { setForgotStep(1); setError(""); setSuccess(""); }}
@@ -1082,6 +1110,29 @@ export default function CustomerLogin() {
                   onMouseLeave={(e) => e.target.style.color = "var(--text-muted)"}
                 >
                   هل نسيت كلمة المرور؟
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setActiveTab("register"); setError(""); setSuccess(""); }}
+                  style={{ background: "none", border: "none", color: "var(--primary-color)", fontSize: "0.95rem", fontWeight: "700", cursor: "pointer", display: "flex", alignItems: "center", gap: "6px", transition: "transform 0.2s" }}
+                  onMouseEnter={(e) => e.target.style.transform = "scale(1.05)"}
+                  onMouseLeave={(e) => e.target.style.transform = "scale(1)"}
+                >
+                  ✨ ليس لديك حساب؟ إنشاء حساب جديد
+                </button>
+              </div>
+            )}
+
+            {activeTab === "register" && (
+              <div className="animate-line line-9" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", marginTop: "10px" }}>
+                <button
+                  type="button"
+                  onClick={() => { setActiveTab("login"); setError(""); setSuccess(""); }}
+                  style={{ background: "none", border: "none", color: "var(--primary-color)", fontSize: "0.95rem", fontWeight: "700", cursor: "pointer", display: "flex", alignItems: "center", gap: "6px", transition: "transform 0.2s" }}
+                  onMouseEnter={(e) => e.target.style.transform = "scale(1.05)"}
+                  onMouseLeave={(e) => e.target.style.transform = "scale(1)"}
+                >
+                  💬 لديك حساب بالفعل؟ تسجيل الدخول
                 </button>
               </div>
             )}
