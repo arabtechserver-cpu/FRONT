@@ -206,41 +206,41 @@ export default function ServicesClient() {
           <div className="notice-row" aria-label="Announcements">
             <div className="notice-track" role="presentation">
               <div className="notice-set" role="presentation">
-                {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-                  <div key={i} style={{ display: "inline-flex", gap: "30px", alignItems: "center" }}>
-                    <span className="notice-pill" style={{ color: "#d4af37", fontWeight: "bold", background: "rgba(255,255,255,0.06)", backdropFilter: "blur(10px)", border: "1px solid rgba(255,255,255,0.12)", boxShadow: "0 4px 15px rgba(0,0,0,0.15)" }}>
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="notice-set-item">
+                    <span className="notice-pill notice-pill-gold">
                       ✨ مرحبا بكم هنا سيرفر عرب تك متاح جميع الخدمات بفضل الله واسعار مناسبه للجميع
                     </span>
-                    <span className="notice-pill" style={{ color: "#d4af37", fontWeight: "bold", background: "rgba(255,255,255,0.06)", backdropFilter: "blur(10px)", border: "1px solid rgba(255,255,255,0.12)", boxShadow: "0 4px 15px rgba(0,0,0,0.15)" }}>
+                    <span className="notice-pill notice-pill-gold">
                       ✨ Welcome to Arab Tech Server, all services are available and prices are suitable for everyone
                     </span>
-                    <a href="https://wa.me/249123667227" target="_blank" rel="noopener noreferrer" className="notice-pill" style={{ color: "#fff", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "6px", background: "rgba(255,255,255,0.06)", backdropFilter: "blur(10px)", border: "1px solid rgba(255,255,255,0.12)", boxShadow: "0 4px 15px rgba(0,0,0,0.15)" }}>
-                      <span style={{ color: "#d4af37" }}>💬 واتساب 1:</span>
-                      <bdi dir="ltr" style={{ fontWeight: "bold", display: "inline-block", letterSpacing: "1px" }}>+249&nbsp;12&nbsp;366&nbsp;7227</bdi>
+                    <a href="https://wa.me/249123667227" target="_blank" rel="noopener noreferrer" className="notice-pill notice-pill-link">
+                      <span className="notice-pill-label">💬 واتساب 1:</span>
+                      <bdi dir="ltr" className="notice-pill-bdi">+249&nbsp;12&nbsp;366&nbsp;7227</bdi>
                     </a>
-                    <a href="https://wa.me/16728972935" target="_blank" rel="noopener noreferrer" className="notice-pill" style={{ color: "#fff", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "6px", background: "rgba(255,255,255,0.06)", backdropFilter: "blur(10px)", border: "1px solid rgba(255,255,255,0.12)", boxShadow: "0 4px 15px rgba(0,0,0,0.15)" }}>
-                      <span style={{ color: "#d4af37" }}>💬 واتساب 2:</span>
-                      <bdi dir="ltr" style={{ fontWeight: "bold", display: "inline-block", letterSpacing: "1px" }}>+1&nbsp;(672)&nbsp;897-2935</bdi>
+                    <a href="https://wa.me/16728972935" target="_blank" rel="noopener noreferrer" className="notice-pill notice-pill-link">
+                      <span className="notice-pill-label">💬 واتساب 2:</span>
+                      <bdi dir="ltr" className="notice-pill-bdi">+1&nbsp;(672)&nbsp;897-2935</bdi>
                     </a>
                   </div>
                 ))}
               </div>
               <div className="notice-set" aria-hidden="true" role="presentation">
-                {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-                  <div key={i} style={{ display: "inline-flex", gap: "30px", alignItems: "center" }}>
-                    <span className="notice-pill" style={{ color: "#d4af37", fontWeight: "bold", background: "rgba(255,255,255,0.06)", backdropFilter: "blur(10px)", border: "1px solid rgba(255,255,255,0.12)", boxShadow: "0 4px 15px rgba(0,0,0,0.15)" }}>
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="notice-set-item">
+                    <span className="notice-pill notice-pill-gold">
                       ✨ مرحبا بكم هنا سيرفر عرب تك متاح جميع الخدمات بفضل الله واسعار مناسبه للجميع
                     </span>
-                    <span className="notice-pill" style={{ color: "#d4af37", fontWeight: "bold", background: "rgba(255,255,255,0.06)", backdropFilter: "blur(10px)", border: "1px solid rgba(255,255,255,0.12)", boxShadow: "0 4px 15px rgba(0,0,0,0.15)" }}>
+                    <span className="notice-pill notice-pill-gold">
                       ✨ Welcome to Arab Tech Server, all services are available and prices are suitable for everyone
                     </span>
-                    <a href="https://wa.me/249123667227" target="_blank" rel="noopener noreferrer" className="notice-pill" style={{ color: "#fff", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "6px", background: "rgba(255,255,255,0.06)", backdropFilter: "blur(10px)", border: "1px solid rgba(255,255,255,0.12)", boxShadow: "0 4px 15px rgba(0,0,0,0.15)" }}>
-                      <span style={{ color: "#d4af37" }}>💬 واتساب 1:</span>
-                      <bdi dir="ltr" style={{ fontWeight: "bold", display: "inline-block", letterSpacing: "1px" }}>+249&nbsp;12&nbsp;366&nbsp;7227</bdi>
+                    <a href="https://wa.me/249123667227" target="_blank" rel="noopener noreferrer" className="notice-pill notice-pill-link">
+                      <span className="notice-pill-label">💬 واتساب 1:</span>
+                      <bdi dir="ltr" className="notice-pill-bdi">+249&nbsp;12&nbsp;366&nbsp;7227</bdi>
                     </a>
-                    <a href="https://wa.me/16728972935" target="_blank" rel="noopener noreferrer" className="notice-pill" style={{ color: "#fff", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "6px", background: "rgba(255,255,255,0.06)", backdropFilter: "blur(10px)", border: "1px solid rgba(255,255,255,0.12)", boxShadow: "0 4px 15px rgba(0,0,0,0.15)" }}>
-                      <span style={{ color: "#d4af37" }}>💬 واتساب 2:</span>
-                      <bdi dir="ltr" style={{ fontWeight: "bold", display: "inline-block", letterSpacing: "1px" }}>+1&nbsp;(672)&nbsp;897-2935</bdi>
+                    <a href="https://wa.me/16728972935" target="_blank" rel="noopener noreferrer" className="notice-pill notice-pill-link">
+                      <span className="notice-pill-label">💬 واتساب 2:</span>
+                      <bdi dir="ltr" className="notice-pill-bdi">+1&nbsp;(672)&nbsp;897-2935</bdi>
                     </a>
                   </div>
                 ))}

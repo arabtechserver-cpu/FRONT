@@ -328,15 +328,25 @@
 }
 
 [data-theme="light"] .hp-row {
-  background: color-mix(in srgb, var(--rc, #0284c7) 9%, #ffffff);
-  border: 1.5px solid color-mix(in srgb, var(--rc, #0284c7) 35%, rgba(0, 0, 0, 0.1));
-  box-shadow: 0 4px 15px color-mix(in srgb, var(--rc, #0284c7) 12%, rgba(0, 0, 0, 0.04));
+  background: color-mix(in srgb, var(--primary-color) 6%, #ffffff);
+  border: 1.5px solid color-mix(in srgb, var(--primary-color) 25%, rgba(0, 0, 0, 0.08));
+  box-shadow: 0 4px 15px color-mix(in srgb, var(--primary-color) 8%, rgba(0, 0, 0, 0.03));
   color: #0f172a;
 }
 [data-theme="light"] .hp-row:hover {
-  background: color-mix(in srgb, var(--rc, #0284c7) 18%, #ffffff);
-  border-color: var(--rc, #0284c7);
-  box-shadow: 0 8px 24px color-mix(in srgb, var(--rc, #0284c7) 25%, transparent);
+  background: color-mix(in srgb, var(--primary-color) 12%, #ffffff);
+  border-color: var(--primary-color);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--primary-color) 20%, transparent);
+}
+[data-theme="light"] .hp-row .hp-row-btn {
+  background: color-mix(in srgb, var(--primary-color) 12%, transparent) !important;
+  border: 1px solid color-mix(in srgb, var(--primary-color) 35%, transparent) !important;
+  color: var(--primary-color) !important;
+}
+[data-theme="light"] .hp-row:hover .hp-row-btn {
+  background: var(--primary-color) !important;
+  color: #ffffff !important;
+  border-color: var(--primary-color) !important;
 }
 
 /* rank badge (top 3) */
