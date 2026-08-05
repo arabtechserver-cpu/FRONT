@@ -45,7 +45,7 @@ export default function CategoriesTab({
   const handleSaveOrders = async () => {
     try {
       setSavingOrders(true);
-      const token = localStorage.getItem("adminToken");
+      const token = localStorage.getItem("admin_token") || localStorage.getItem("adminToken") || sessionStorage.getItem("admin_token") || "";
       const items = Object.entries(orders).map(([id, sort_order]) => ({
         id: Number(id),
         sort_order: Number(sort_order)
