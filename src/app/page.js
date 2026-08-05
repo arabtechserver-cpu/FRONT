@@ -457,65 +457,63 @@ export default function Home() {
             className="hp-dev-banner"
             style={{
               marginTop: "24px",
-              background: "linear-gradient(135deg, rgba(14, 165, 233, 0.12) 0%, rgba(99, 102, 241, 0.12) 50%, rgba(168, 85, 247, 0.12) 100%)",
-              border: "1px solid rgba(14, 165, 233, 0.25)",
-              borderRadius: "20px",
-              padding: "24px 28px",
+              background: "var(--bg-glass)",
+              border: "var(--border-glass)",
+              borderRadius: "18px",
+              padding: "20px 24px",
               display: "flex",
               flexWrap: "wrap",
               alignItems: "center",
               justifyContent: "space-between",
-              gap: "20px",
+              gap: "16px",
               direction: "rtl",
-              boxShadow: "0 10px 30px rgba(0, 0, 0, 0.2)",
-              backdropFilter: "blur(12px)",
-              position: "relative",
-              overflow: "hidden"
+              boxShadow: "var(--shadow-card)",
+              boxSizing: "border-box"
             }}
           >
-            <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap", zIndex: 1 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "14px", flexWrap: "wrap" }}>
               <div style={{
-                width: "56px",
-                height: "56px",
-                borderRadius: "16px",
-                background: "linear-gradient(135deg, #0ea5e9, #6366f1)",
+                width: "48px",
+                height: "48px",
+                borderRadius: "14px",
+                background: "var(--primary-light, rgba(14, 165, 233, 0.15))",
+                border: "1px solid var(--primary-color, rgba(14, 165, 233, 0.3))",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                fontSize: "1.8rem",
-                boxShadow: "0 0 24px rgba(14, 165, 233, 0.4)",
+                fontSize: "1.5rem",
                 flexShrink: 0
               }}>
                 👨‍💻
               </div>
               <div style={{ maxWidth: "500px" }}>
-                <h3 style={{ margin: 0, fontSize: "1.2rem", fontWeight: 900, color: "var(--text-main, #ffffff)", display: "flex", alignItems: "center", gap: "8px" }}>
-                  تصميم وتطوير المبرمج: <span style={{ color: "#38bdf8" }}>مينا سمير</span> ✨
+                <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: 900, color: "var(--text-main)", display: "flex", alignItems: "center", gap: "8px" }}>
+                  تصميم وتطوير المبرمج: <span style={{ color: "var(--primary-color, #0ea5e9)" }}>مينا سمير</span> ✨
                 </h3>
-                <p style={{ margin: "6px 0 0", color: "var(--text-muted, #cbd5e1)", fontSize: "0.92rem", lineHeight: "1.6" }}>
+                <p style={{ margin: "4px 0 0", color: "var(--text-muted)", fontSize: "0.88rem", lineHeight: "1.5" }}>
                   هل تريد سيرفر أو موقع متجر إلكتروني احترافي متكامل مثل هذا المتجر لعملك؟ تواصل معي الآن لتحويل فكرتك إلى واقع بأعلى جودة! 🚀
                 </p>
               </div>
             </div>
 
-            <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap", zIndex: 1 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
               <a 
                 href="https://portfolio-18f21.web.app/" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 style={{
-                  padding: "11px 22px",
-                  borderRadius: "12px",
-                  background: "rgba(255, 255, 255, 0.08)",
-                  border: "1px solid rgba(255, 255, 255, 0.2)",
-                  color: "#ffffff",
+                  padding: "9px 18px",
+                  borderRadius: "10px",
+                  background: "rgba(255, 255, 255, 0.05)",
+                  border: "var(--border-glass)",
+                  color: "var(--text-main)",
                   fontWeight: 700,
-                  fontSize: "0.9rem",
+                  fontSize: "0.85rem",
                   textDecoration: "none",
                   display: "inline-flex",
                   alignItems: "center",
-                  gap: "8px",
-                  transition: "all 0.3s ease"
+                  gap: "6px",
+                  transition: "all 0.2s ease"
                 }}
               >
                 🌐 معرض أعمالي
@@ -525,18 +523,18 @@ export default function Home() {
                 target="_blank" 
                 rel="noopener noreferrer"
                 style={{
-                  padding: "11px 24px",
-                  borderRadius: "12px",
+                  padding: "9px 20px",
+                  borderRadius: "10px",
                   background: "linear-gradient(135deg, #22c55e 0%, #16a34a 100%)",
                   color: "#ffffff",
                   fontWeight: 800,
-                  fontSize: "0.9rem",
+                  fontSize: "0.85rem",
                   textDecoration: "none",
                   display: "inline-flex",
                   alignItems: "center",
-                  gap: "8px",
-                  boxShadow: "0 4px 18px rgba(34, 197, 94, 0.4)",
-                  transition: "all 0.3s ease"
+                  gap: "6px",
+                  boxShadow: "0 4px 14px rgba(34, 197, 94, 0.3)",
+                  transition: "all 0.2s ease"
                 }}
               >
                 <span>💬</span> 01279301263
