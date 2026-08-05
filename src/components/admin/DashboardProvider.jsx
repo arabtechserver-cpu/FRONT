@@ -143,6 +143,7 @@ export default function DashboardProvider({ children }) {
   const [newBannerBadge, setNewBannerBadge] = useState("");
   const [newBannerColor, setNewBannerColor] = useState("#8b5cf6");
   const [newBannerIcon, setNewBannerIcon] = useState("⚡");
+  const [newBannerLink, setNewBannerLink] = useState("");
   const [bannerUploadedFile, setBannerUploadedFile] = useState(null);
 
   const [showEditBannerModal, setShowEditBannerModal] = useState(false);
@@ -153,6 +154,7 @@ export default function DashboardProvider({ children }) {
   const [editBannerBadge, setEditBannerBadge] = useState("");
   const [editBannerColor, setEditBannerColor] = useState("#8b5cf6");
   const [editBannerIcon, setEditBannerIcon] = useState("⚡");
+  const [editBannerLink, setEditBannerLink] = useState("");
   const [editBannerUploadedFile, setEditBannerUploadedFile] = useState(null);
 
   const [siteName, setSiteName] = useState("");
@@ -1666,7 +1668,8 @@ export default function DashboardProvider({ children }) {
           desc: newBannerDesc,
           badge: newBannerBadge,
           color: newBannerColor,
-          icon: bannerUploadedFile || newBannerIcon
+          icon: bannerUploadedFile || newBannerIcon,
+          link: newBannerLink
         })
       });
 
@@ -1683,6 +1686,7 @@ export default function DashboardProvider({ children }) {
       setNewBannerBadge("");
       setNewBannerColor("#8b5cf6");
       setNewBannerIcon("⚡");
+      setNewBannerLink("");
       setBannerUploadedFile(null);
       setShowBannerModal(false);
     } catch (err) {
@@ -1699,6 +1703,7 @@ export default function DashboardProvider({ children }) {
     setEditBannerDesc(banner.desc || "");
     setEditBannerBadge(banner.badge || "");
     setEditBannerColor(banner.color || "#8b5cf6");
+    setEditBannerLink(banner.link || "");
 
     const isCustom = banner.icon && (banner.icon.startsWith("data:image") || banner.icon.startsWith("http") || banner.icon.startsWith("/uploads"));
     if (isCustom) {
@@ -1734,7 +1739,8 @@ export default function DashboardProvider({ children }) {
           desc: editBannerDesc,
           badge: editBannerBadge,
           color: editBannerColor,
-          icon: editBannerUploadedFile || editBannerIcon
+          icon: editBannerUploadedFile || editBannerIcon,
+          link: editBannerLink
         })
       });
 
@@ -1745,6 +1751,7 @@ export default function DashboardProvider({ children }) {
       }
 
       setBanners(prev => prev.map(b => b.id === editBannerId ? data : b));
+      setEditBannerLink("");
       setEditBannerUploadedFile(null);
       setShowEditBannerModal(false);
     } catch (err) {
@@ -2175,6 +2182,8 @@ export default function DashboardProvider({ children }) {
       setNewBannerColor,
       newBannerIcon,
       setNewBannerIcon,
+      newBannerLink,
+      setNewBannerLink,
       bannerUploadedFile,
       setBannerUploadedFile
     },
@@ -2194,6 +2203,8 @@ export default function DashboardProvider({ children }) {
       setEditBannerColor,
       editBannerIcon,
       setEditBannerIcon,
+      editBannerLink,
+      setEditBannerLink,
       editBannerUploadedFile,
       setEditBannerUploadedFile
     },

@@ -3,7 +3,7 @@ import { AdminDashboardContext } from "../../AdminDashboardContext";
 
 export default function BannerModal() {
   const { bannerModal, errorMsg } = useContext(AdminDashboardContext);
-  const { showBannerModal, setShowBannerModal, handleAddBanner, newBannerTitle, setNewBannerTitle, newBannerHighlight, setNewBannerHighlight, newBannerDesc, setNewBannerDesc, newBannerBadge, setNewBannerBadge, newBannerColor, setNewBannerColor, newBannerIcon, setNewBannerIcon, bannerUploadedFile, setBannerUploadedFile } = bannerModal;
+  const { showBannerModal, setShowBannerModal, handleAddBanner, newBannerTitle, setNewBannerTitle, newBannerHighlight, setNewBannerHighlight, newBannerDesc, setNewBannerDesc, newBannerBadge, setNewBannerBadge, newBannerColor, setNewBannerColor, newBannerIcon, setNewBannerIcon, newBannerLink, setNewBannerLink, bannerUploadedFile, setBannerUploadedFile } = bannerModal;
 
   if (!(showBannerModal)) return null;
 
@@ -59,6 +59,18 @@ export default function BannerModal() {
                     fontSize: "0.95rem",
                     outline: "none"
                   }}
+                />
+              </div>
+
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label>رابط التوجيه (اختياري - مثال: /category/3134):</label>
+                <input
+                  type="text"
+                  placeholder="مثال: /category/3134 أو رابط خارجي كامل"
+                  value={newBannerLink}
+                  onChange={(e) => setNewBannerLink(e.target.value)}
+                  className="search-input-premium"
+                  style={{ padding: "10px 14px !important" }}
                 />
               </div>
 

@@ -4,7 +4,7 @@ import { API_BASE_URL } from "@/config";
 
 export default function EditBannerModal() {
   const { editBannerModal, errorMsg } = useContext(AdminDashboardContext);
-  const { showEditBannerModal, setShowEditBannerModal, handleEditBanner, editBannerTitle, setEditBannerTitle, editBannerHighlight, setEditBannerHighlight, editBannerDesc, setEditBannerDesc, editBannerBadge, setEditBannerBadge, editBannerColor, setEditBannerColor, editBannerIcon, setEditBannerIcon, editBannerUploadedFile, setEditBannerUploadedFile } = editBannerModal;
+  const { showEditBannerModal, setShowEditBannerModal, handleEditBanner, editBannerTitle, setEditBannerTitle, editBannerHighlight, setEditBannerHighlight, editBannerDesc, setEditBannerDesc, editBannerBadge, setEditBannerBadge, editBannerColor, setEditBannerColor, editBannerIcon, setEditBannerIcon, editBannerLink, setEditBannerLink, editBannerUploadedFile, setEditBannerUploadedFile } = editBannerModal;
 
   if (!(showEditBannerModal)) return null;
 
@@ -60,6 +60,18 @@ export default function EditBannerModal() {
                     fontSize: "0.95rem",
                     outline: "none"
                   }}
+                />
+              </div>
+
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label>رابط التوجيه (اختياري - مثال: /category/3134):</label>
+                <input
+                  type="text"
+                  placeholder="مثال: /category/3134 أو رابط خارجي كامل"
+                  value={editBannerLink}
+                  onChange={(e) => setEditBannerLink(e.target.value)}
+                  className="search-input-premium"
+                  style={{ padding: "10px 14px !important" }}
                 />
               </div>
 

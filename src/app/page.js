@@ -101,7 +101,13 @@ export default function Home() {
     // banners
     fetch(`${API_BASE_URL}/api/banners`)
       .then(r => r.ok ? r.json() : [])
-      .then(data => Array.isArray(data) && data.length > 0 && setSlides([...DEFAULT_SLIDES, ...data]))
+      .then(data => {
+        if (Array.isArray(data) && data.length > 0) {
+          setSlides(data);
+        } else {
+          setSlides(DEFAULT_SLIDES);
+        }
+      })
       .catch(() => {});
 
     // popular
