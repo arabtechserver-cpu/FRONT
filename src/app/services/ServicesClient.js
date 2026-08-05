@@ -206,7 +206,7 @@ export default function ServicesClient() {
           <div className="notice-row" aria-label="Announcements">
             <div className="notice-track" role="presentation">
               <div className="notice-set" role="presentation">
-                {[1, 2, 3, 4, 5].map((i) => (
+                {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
                   <div key={i} style={{ display: "inline-flex", gap: "30px", alignItems: "center" }}>
                     <span className="notice-pill" style={{ color: "#d4af37", fontWeight: "bold", background: "rgba(255,255,255,0.06)", backdropFilter: "blur(10px)", border: "1px solid rgba(255,255,255,0.12)", boxShadow: "0 4px 15px rgba(0,0,0,0.15)" }}>
                       ✨ مرحبا بكم هنا سيرفر عرب تك متاح جميع الخدمات بفضل الله واسعار مناسبه للجميع
@@ -226,7 +226,7 @@ export default function ServicesClient() {
                 ))}
               </div>
               <div className="notice-set" aria-hidden="true" role="presentation">
-                {[1, 2, 3, 4, 5].map((i) => (
+                {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
                   <div key={i} style={{ display: "inline-flex", gap: "30px", alignItems: "center" }}>
                     <span className="notice-pill" style={{ color: "#d4af37", fontWeight: "bold", background: "rgba(255,255,255,0.06)", backdropFilter: "blur(10px)", border: "1px solid rgba(255,255,255,0.12)", boxShadow: "0 4px 15px rgba(0,0,0,0.15)" }}>
                       ✨ مرحبا بكم هنا سيرفر عرب تك متاح جميع الخدمات بفضل الله واسعار مناسبه للجميع
