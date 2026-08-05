@@ -796,9 +796,8 @@ button, input, textarea, select { font-family: var(--font-cairo); }
   right: 15px;
   border-radius: 8px;
   height: 45px;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.55);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   align-items: center;
   overflow: hidden;
