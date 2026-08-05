@@ -849,7 +849,6 @@
   top: 100px;
   width: 100%;
   box-sizing: border-box;
-  overflow: hidden;
 }
 
 @media (max-width: 768px) {
@@ -1121,8 +1120,6 @@
   width: 100%;
   box-sizing: border-box;
   text-align: center;
-  position: sticky;
-  top: 100px;
 }
 
 .hp-support-desc {
