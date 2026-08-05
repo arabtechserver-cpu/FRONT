@@ -113,7 +113,7 @@
 .banner-title {
   font-size: clamp(1.8rem, 4vw, 3rem);
   font-weight: 900;
-  color: #fff;
+  color: #ffffff !important;
   line-height: 1.15;
   text-align: right;
   letter-spacing: -0.02em;
@@ -121,7 +121,7 @@
 
 .banner-desc {
   font-size: 0.9rem;
-  color: rgba(255,255,255,0.75);
+  color: rgba(255,255,255,0.9) !important;
   font-weight: 400;
   line-height: 1.6;
   text-align: right;
@@ -157,13 +157,13 @@
 .banner-feat-title {
   font-size: 0.72rem;
   font-weight: 700;
-  color: #fff;
+  color: #ffffff !important;
   white-space: nowrap;
 }
 
 .banner-feat-sub {
   font-size: 0.68rem;
-  color: rgba(255,255,255,0.55);
+  color: rgba(255,255,255,0.8) !important;
   font-weight: 400;
   white-space: nowrap;
 }
@@ -246,7 +246,19 @@
   text-align: right;
   transition: all 0.3s ease;
 }
-.search-input-center::placeholder { color: rgba(255,255,255,0.5); }
+.search-input-center::placeholder { color: rgba(255,255,255,0.6) !important; }
+
+/* ── Force White text inside Hero in Light Theme ── */
+[data-theme="light"] .hero-banner .banner-title,
+[data-theme="light"] .hero-banner .banner-desc,
+[data-theme="light"] .hero-banner .banner-feat-title,
+[data-theme="light"] .hero-banner .banner-feat-sub,
+[data-theme="light"] .hero-banner .search-input-center {
+  color: #ffffff !important;
+}
+[data-theme="light"] .hero-banner .search-input-center::placeholder {
+  color: rgba(255,255,255,0.6) !important;
+}
 .search-input-center:focus {
   border-color: var(--primary-color);
   background: rgba(255,255,255,0.12);
