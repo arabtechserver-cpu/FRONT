@@ -749,6 +749,7 @@ button, input, textarea, select { font-family: var(--font-cairo); }
   display: flex;
   width: 100%;
   overflow: hidden;
+  direction: ltr !important;
 }
 
 .notice-track {
