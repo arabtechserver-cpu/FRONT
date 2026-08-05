@@ -5,8 +5,9 @@
 ═══════════════════════════════════════════════ */
 .hero-banner {
   position: relative;
-  width: 100%;
-  max-width: 100%;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
   margin-top: -20px;
   min-height: 480px;
   background: linear-gradient(135deg, #0a0e1a 0%, #0d1527 40%, #0f1e38 100%);

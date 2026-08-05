@@ -452,7 +452,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Reviews Marquee directly under Why Us */}
+          {/* Reviews Marquee directly under Why Us (3 Rows) */}
           {reviews.length > 0 && (
             <div className="hp-reviews-section" style={{ marginTop: "24px" }}>
               <div className="hp-section-header">
@@ -460,28 +460,35 @@ export default function Home() {
                 <h2 className="hp-section-heading">آراء وتقييمات المستخدمين</h2>
               </div>
               <div className="hp-reviews-marquee-wrapper">
-                {[
-                  { data: reviews.slice(0, Math.ceil(reviews.length / 2)), reverse: false },
-                  { data: reviews.slice(Math.ceil(reviews.length / 2)), reverse: true }
-                ].filter(row => row.data.length > 0).map((row, rowIdx) => {
-                  const trackData = [...row.data, ...row.data, ...row.data, ...row.data, ...row.data, ...row.data];
-                  return (
-                    <div key={rowIdx} className={`hp-reviews-marquee-track ${row.reverse ? 'reverse' : ''}`}>
-                      {trackData.map((rev, i) => (
-                        <div key={`${rev.id || i}-${i}`} className="hp-review-card">
-                          <div className="hp-review-header">
-                            <div className="hp-review-avatar">{rev.name.charAt(0)}</div>
-                            <div className="hp-review-meta">
-                              <span className="hp-review-name">{rev.name}</span>
-                              <span className="hp-review-rating">{"⭐".repeat(rev.rating || 5)}</span>
+                {(() => {
+                  const r1 = reviews.filter((_, i) => i % 3 === 0);
+                  const r2 = reviews.filter((_, i) => i % 3 === 1);
+                  const r3 = reviews.filter((_, i) => i % 3 === 2);
+                  const rows = [
+                    { data: r1.length > 0 ? r1 : reviews, reverse: false },
+                    { data: r2.length > 0 ? r2 : reviews, reverse: true },
+                    { data: r3.length > 0 ? r3 : reviews, reverse: false }
+                  ];
+                  return rows.map((row, rowIdx) => {
+                    const trackData = [...row.data, ...row.data, ...row.data, ...row.data, ...row.data, ...row.data];
+                    return (
+                      <div key={rowIdx} className={`hp-reviews-marquee-track ${row.reverse ? 'reverse' : ''}`}>
+                        {trackData.map((rev, i) => (
+                          <div key={`${rev.id || i}-${i}`} className="hp-review-card">
+                            <div className="hp-review-header">
+                              <div className="hp-review-avatar">{rev.name ? rev.name.charAt(0) : "★"}</div>
+                              <div className="hp-review-meta">
+                                <span className="hp-review-name">{rev.name}</span>
+                                <span className="hp-review-rating">{"⭐".repeat(rev.rating || 5)}</span>
+                              </div>
                             </div>
+                            <p className="hp-review-text">"{rev.review}"</p>
                           </div>
-                          <p className="hp-review-text">"{rev.review}"</p>
-                        </div>
-                      ))}
-                    </div>
-                  );
-                })}
+                        ))}
+                      </div>
+                    );
+                  });
+                })()}
               </div>
             </div>
           )}
