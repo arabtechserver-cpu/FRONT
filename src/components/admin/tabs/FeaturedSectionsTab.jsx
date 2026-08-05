@@ -24,6 +24,7 @@ function formatServiceImage(image) {
 // ─── Item editor (one service inside a section) ──────────────────────────────
 function ItemRow({ item, onChange, onRemove, index, availableServices, isFirst, isLast, onMoveUp, onMoveDown }) {
   const imgRef = useRef();
+  const [serviceSearchQuery, setServiceSearchQuery] = useState("");
 
   const handleImgUpload = async (e) => {
     const f = e.target.files[0];
@@ -99,34 +100,58 @@ function ItemRow({ item, onChange, onRemove, index, availableServices, isFirst, 
 
           if (expandedAvailableServices.length === 0) return null;
 
+          const filteredAvailableServices = expandedAvailableServices.filter(s => {
+            const matchesSearch = (s.name || "").toLowerCase().includes(serviceSearchQuery.toLowerCase());
+            const isSelected = item.serviceId?.toString() === s.id?.toString();
+            return matchesSearch || isSelected;
+          });
+
           return (
-            <select
-              value={item.serviceId || ""}
-              onChange={(e) => {
-                const key = e.target.value;
-                const s = expandedAvailableServices.find(x => x.id === key);
-                if (s) {
-                  onChange({
-                    ...item,
-                    serviceId: key,
-                    title: s.title,
-                    url: s.url,
-                    time: s.time,
-                    img: s.img
-                  });
-                } else {
-                  onChange({ ...item, serviceId: "" });
-                }
-              }}
-              style={{
-                width: "100%", background: "rgba(16,185,129,0.05)", border: "1px solid rgba(16,185,129,0.2)",
-                borderRadius: 8, padding: "8px 12px", color: "#34d399", fontSize: "0.85rem",
-                outline: "none", cursor: "pointer"
-              }}
-            >
-              <option value="">-- الجلب التلقائي (اختر خدمة أو باقة من النظام) --</option>
-              {expandedAvailableServices.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-            </select>
+            <div style={{ display: "flex", gap: "8px", width: "100%", flexWrap: "wrap", alignItems: "center" }}>
+              <input
+                type="text"
+                placeholder="🔍 ابحث عن خدمة/باقة..."
+                value={serviceSearchQuery}
+                onChange={(e) => setServiceSearchQuery(e.target.value)}
+                style={{
+                  flex: "0 1 180px",
+                  background: "rgba(255,255,255,0.05)",
+                  border: "1px solid rgba(255,255,255,0.15)",
+                  borderRadius: 8,
+                  padding: "8px 12px",
+                  color: "#e2e8f0",
+                  fontSize: "0.85rem",
+                  outline: "none"
+                }}
+              />
+              <select
+                value={item.serviceId || ""}
+                onChange={(e) => {
+                  const key = e.target.value;
+                  const s = filteredAvailableServices.find(x => x.id === key);
+                  if (s) {
+                    onChange({
+                      ...item,
+                      serviceId: key,
+                      title: s.title,
+                      url: s.url,
+                      time: s.time,
+                      img: s.img
+                    });
+                  } else {
+                    onChange({ ...item, serviceId: "" });
+                  }
+                }}
+                style={{
+                  flex: "1 1 200px", background: "rgba(16,185,129,0.05)", border: "1px solid rgba(16,185,129,0.2)",
+                  borderRadius: 8, padding: "8px 12px", color: "#34d399", fontSize: "0.85rem",
+                  outline: "none", cursor: "pointer"
+                }}
+              >
+                <option value="">-- الجلب التلقائي (اختر خدمة أو باقة من النظام) --</option>
+                {filteredAvailableServices.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+              </select>
+            </div>
           );
         })()}
 
