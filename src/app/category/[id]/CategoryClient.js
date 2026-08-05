@@ -163,6 +163,11 @@ export default function CategoryServices({ params }) {
   const [customerUser, setCustomerUser] = useState(null);
   const [theme, setTheme] = useState("dark");
   const [serviceSearchTerm, setServiceSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [serviceSearchTerm, categoryId]);
 
   const handleSearchSubmit = (e) => {
     if (e) e.preventDefault();

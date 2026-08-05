@@ -722,6 +722,73 @@ button, input, textarea, select { font-family: var(--font-cairo); }
   }
 }
 
+/* Banner Text Content Styling */
+.banner-info {
+  position: relative;
+  z-index: 2; /* Render on top of overlay */
+  max-width: 650px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  text-align: right; /* RTL alignment */
+}
+
+.banner-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: 100px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  border: 1px solid;
+  text-transform: uppercase;
+}
+
+.banner-title {
+  font-size: 2.8rem;
+  font-weight: 900;
+  line-height: 1.2;
+  margin: 0;
+  color: #ffffff;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+[data-theme="light"] .banner-title {
+  color: #0f172a;
+  text-shadow: none;
+}
+
+.banner-desc {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.8) !important;
+  max-width: 100%;
+  white-space: pre-wrap; /* Preserve line breaks! */
+  text-shadow: 0 1px 5px rgba(0,0,0,0.2);
+}
+
+[data-theme="light"] .banner-desc {
+  color: #475569 !important;
+  text-shadow: none;
+}
+
+@media (max-width: 992px) {
+  .banner-info {
+    max-width: 100%;
+    gap: 12px;
+  }
+  .banner-title {
+    font-size: 1.8rem;
+  }
+  .banner-desc {
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+}
+
 .notice-bar-container {
   position: absolute;
   top: 15px;
