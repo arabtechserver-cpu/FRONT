@@ -5,10 +5,9 @@
 ═══════════════════════════════════════════════ */
 .hero-banner {
   position: relative;
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
-  margin-right: calc(50% - 50vw);
-  margin-top: -20px; /* pull up if there is top padding in main */
+  width: 100%;
+  max-width: 100%;
+  margin-top: -20px;
   min-height: 480px;
   background: linear-gradient(135deg, #0a0e1a 0%, #0d1527 40%, #0f1e38 100%);
   overflow: hidden;
@@ -1655,16 +1654,19 @@
   min-width: 0 !important;
   overflow: hidden !important;
   box-sizing: border-box !important;
+  contain: paint;
 }
 
 .hp-reviews-marquee-wrapper {
-  overflow: hidden;
+  overflow: hidden !important;
   position: relative;
-  width: 100%;
+  width: 100% !important;
+  max-width: 100% !important;
   display: flex;
   flex-direction: column;
   gap: 18px;
   margin-top: 20px;
+  contain: paint;
   -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
   mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
 }
@@ -1879,6 +1881,33 @@ details[open] .faq-question::after { content: "－"; }
 
   /* Reviews cards */
   .hp-review-card { width: 240px; padding: 14px; }
+
+  /* Mobile safeguards */
+  .hp-body-grid {
+    grid-template-columns: 100% !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+  }
+  .hp-main-left {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+  }
+  .hp-dev-banner {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    padding: 16px !important;
+    gap: 14px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .hp-dev-banner a {
+    width: 100% !important;
+    justify-content: center !important;
+  }
 
   /* FAQ */
   .faq-question { font-size: 0.85rem; }
