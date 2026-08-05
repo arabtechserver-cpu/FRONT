@@ -87,7 +87,7 @@ export default function Footer({ siteName = "Arab Tech Server", siteLogo = "/log
           display: "flex",
           flexWrap: "wrap",
           alignItems: "center",
-          justify-content: "space-between",
+          justifyContent: "space-between",
           gap: "20px",
           direction: "rtl",
           boxShadow: "0 10px 30px rgba(0, 0, 0, 0.2)",
@@ -101,7 +101,7 @@ export default function Footer({ siteName = "Arab Tech Server", siteLogo = "/log
               background: "linear-gradient(135deg, #0ea5e9, #6366f1)",
               display: "flex",
               alignItems: "center",
-              justify-content: "center",
+              justifyContent: "center",
               fontSize: "1.8rem",
               boxShadow: "0 0 20px rgba(14, 165, 233, 0.4)",
               flexShrink: 0
