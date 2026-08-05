@@ -110,9 +110,19 @@ export default function Home() {
       .catch(() => {});
   }, []);
 
-  // ── auto-slide ─────────────────────────────────────────────────────────────
+  // ── auto-slide & instant image preloading ───────────────────────────────────
   useEffect(() => {
     if (!slides.length) return;
+
+    // Instant image preloading in GPU memory
+    slides.forEach(slide => {
+      if (slide.icon && (slide.icon.startsWith("data:") || slide.icon.startsWith("http") || slide.icon.startsWith("/uploads"))) {
+        const url = slide.icon.startsWith("/uploads") ? `${API_BASE_URL}${slide.icon}` : slide.icon;
+        const img = new Image();
+        img.src = url;
+      }
+    });
+
     const t = setInterval(() => setCurrentSlide(p => (p + 1) % slides.length), 5000);
     return () => clearInterval(t);
   }, [slides]);
@@ -207,7 +217,14 @@ export default function Home() {
               >
                 {isImage && (
                   <>
-                    <img src={imgSrc} alt={slide.title} className="banner-bg-img" />
+                    <img 
+                      src={imgSrc} 
+                      alt={slide.title} 
+                      className="banner-bg-img" 
+                      loading="eager"
+                      fetchPriority="high"
+                      decoding="async"
+                    />
                     <div className="banner-bg-overlay" />
                   </>
                 )}
