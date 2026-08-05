@@ -64,14 +64,18 @@ export default function Footer({ siteName = "Arab Tech Server", siteLogo = "/log
               تواصل معنا
               <div style={{ position: "absolute", bottom: "-8px", right: 0, width: "40%", height: "2px", background: "var(--primary-color, #3b82f6)", borderRadius: "2px" }}></div>
             </h4>
-            <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "10px", color: "#94a3b8", fontSize: "0.95rem" }}>
-                <span style={{ background: "rgba(255,255,255,0.05)", padding: "8px", borderRadius: "8px" }}>✉️</span>
+            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+              <a href="https://wa.me/249123667227" target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center", gap: "10px", color: "#34d399", fontSize: "0.95rem", textDecoration: "none", transition: "opacity 0.2s" }}>
+                <span style={{ background: "rgba(34, 197, 94, 0.15)", padding: "6px 10px", borderRadius: "8px" }}>💬</span>
+                <bdi dir="ltr" style={{ fontWeight: "bold" }}>+249 12 366 7227</bdi>
+              </a>
+              <a href="https://wa.me/16728972935" target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center", gap: "10px", color: "#94a3b8", fontSize: "0.95rem", textDecoration: "none", transition: "opacity 0.2s" }}>
+                <span style={{ background: "rgba(255,255,255,0.05)", padding: "6px 10px", borderRadius: "8px" }}>💬</span>
+                <bdi dir="ltr" style={{ fontWeight: "bold" }}>+1 (672) 897-2935</bdi>
+              </a>
+              <div style={{ display: "flex", alignItems: "center", gap: "10px", color: "#94a3b8", fontSize: "0.95rem", marginTop: "4px" }}>
+                <span style={{ background: "rgba(255,255,255,0.05)", padding: "6px 10px", borderRadius: "8px" }}>✉️</span>
                 arabtechserver@gmail.com
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "10px", color: "#94a3b8", fontSize: "0.95rem" }}>
-                <span style={{ background: "rgba(255,255,255,0.05)", padding: "8px", borderRadius: "8px" }}>💬</span>
-                الدعم الفني عبر واتساب
               </div>
             </div>
           </div>
