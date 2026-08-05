@@ -136,7 +136,7 @@ export default function ContactFloatingButton() {
                 color: "#ffffff",
                 display: "flex",
                 alignItems: "center",
-                justify-content: "center",
+                justifyContent: "center",
                 boxShadow: isHovered
                   ? `0 6px 20px ${item.color}88, 0 0 0 3px rgba(255,255,255,0.2)`
                   : "0 4px 12px rgba(0, 0, 0, 0.25)",
