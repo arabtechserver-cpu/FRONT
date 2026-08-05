@@ -14,7 +14,7 @@ export default function BannersTab({
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
       {/* Header and Add Button */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "15px", background: "var(--bg-glass)", padding: "20px", borderRadius: "16px", border: "var(--border-glass)", boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "15px", background: "#0f172a", padding: "20px", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.07)", boxShadow: "0 4px 30px rgba(0, 0, 0, 0.4)" }}>
         <div>
           <h2 style={{ margin: 0, fontSize: "1.5rem", color: "var(--text-color)" }}>🖼️ إدارة البانر الإعلاني</h2>
           <p style={{ margin: "5px 0 0", color: "var(--text-muted)", fontSize: "0.9rem" }}>أضف شرائح جديدة للمعاينة في الصفحة الرئيسية، عدّل الحالية، أو احذفها.</p>
