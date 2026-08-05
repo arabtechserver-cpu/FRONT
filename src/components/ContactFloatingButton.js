@@ -91,6 +91,7 @@ const SOCIAL_LINKS = [
 ];
 
 export default function ContactFloatingButton() {
+  const [open, setOpen] = useState(false);
   const [hoveredId, setHoveredId] = useState(null);
   const pathname = usePathname();
 
@@ -102,80 +103,121 @@ export default function ContactFloatingButton() {
     <div
       style={{
         position: "fixed",
-        left: "14px",
-        top: "50%",
-        transform: "translateY(-50%)",
+        left: "16px",
+        bottom: "24px",
         zIndex: 9999,
         display: "flex",
-        flexDirection: "column",
-        gap: "10px",
+        flexDirection: "column-reverse",
+        gap: "12px",
         alignItems: "center"
       }}
     >
-      {SOCIAL_LINKS.map((item) => {
-        const isHovered = hoveredId === item.id;
+      {/* Main Toggle Button */}
+      <button
+        type="button"
+        onClick={() => setOpen((prev) => !prev)}
+        aria-label="التواصل معنا"
+        style={{
+          width: "56px",
+          height: "56px",
+          borderRadius: "50%",
+          background: open 
+            ? "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)" 
+            : "linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%)",
+          color: "#ffffff",
+          border: "2px solid rgba(255, 255, 255, 0.3)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: "1.4rem",
+          boxShadow: open 
+            ? "0 8px 25px rgba(239, 68, 68, 0.5)" 
+            : "0 8px 25px rgba(14, 165, 233, 0.5)",
+          transform: open ? "rotate(90deg) scale(1.05)" : "rotate(0deg) scale(1)",
+          transition: "all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
+          cursor: "pointer",
+          outline: "none"
+        }}
+      >
+        {open ? "✕" : "💬"}
+      </button>
 
-        return (
-          <div
-            key={item.id}
-            style={{ position: "relative", display: "flex", alignItems: "center" }}
-            onMouseEnter={() => setHoveredId(item.id)}
-            onMouseLeave={() => setHoveredId(null)}
-          >
-            {/* Circular Icon Button */}
-            <a
-              href={item.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={item.title}
-              style={{
-                width: "44px",
-                height: "44px",
-                borderRadius: "50%",
-                background: item.bg,
-                color: "#ffffff",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                boxShadow: isHovered
-                  ? `0 6px 20px ${item.color}88, 0 0 0 3px rgba(255,255,255,0.2)`
-                  : "0 4px 12px rgba(0, 0, 0, 0.25)",
-                transform: isHovered ? "scale(1.14)" : "scale(1)",
-                transition: "all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
-                textDecoration: "none",
-                cursor: "pointer"
-              }}
-            >
-              {item.icon}
-            </a>
+      {/* Pop-up List of Circular Social Icons */}
+      {open && (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column-reverse",
+            gap: "10px",
+            alignItems: "center",
+            animation: "fadeInUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)"
+          }}
+        >
+          {SOCIAL_LINKS.map((item) => {
+            const isHovered = hoveredId === item.id;
 
-            {/* Tooltip on Hover */}
-            {isHovered && (
+            return (
               <div
-                style={{
-                  position: "absolute",
-                  left: "56px",
-                  whiteSpace: "nowrap",
-                  background: "rgba(15, 23, 42, 0.92)",
-                  color: "#ffffff",
-                  padding: "6px 12px",
-                  borderRadius: "8px",
-                  fontSize: "0.8rem",
-                  fontWeight: "bold",
-                  boxShadow: "0 4px 15px rgba(0,0,0,0.3)",
-                  backdropFilter: "blur(8px)",
-                  border: "1px solid rgba(255,255,255,0.1)",
-                  animation: "fadeInLeft 0.2s ease",
-                  pointerEvents: "none",
-                  zIndex: 10000
-                }}
+                key={item.id}
+                style={{ position: "relative", display: "flex", alignItems: "center" }}
+                onMouseEnter={() => setHoveredId(item.id)}
+                onMouseLeave={() => setHoveredId(null)}
               >
-                {item.title}
+                {/* Circular Icon Button */}
+                <a
+                  href={item.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={item.title}
+                  style={{
+                    width: "44px",
+                    height: "44px",
+                    borderRadius: "50%",
+                    background: item.bg,
+                    color: "#ffffff",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    boxShadow: isHovered
+                      ? `0 6px 20px ${item.color}88, 0 0 0 3px rgba(255,255,255,0.2)`
+                      : "0 4px 12px rgba(0, 0, 0, 0.25)",
+                    transform: isHovered ? "scale(1.14)" : "scale(1)",
+                    transition: "all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                    textDecoration: "none",
+                    cursor: "pointer"
+                  }}
+                >
+                  {item.icon}
+                </a>
+
+                {/* Tooltip on Hover */}
+                {isHovered && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      left: "56px",
+                      whiteSpace: "nowrap",
+                      background: "rgba(15, 23, 42, 0.92)",
+                      color: "#ffffff",
+                      padding: "6px 12px",
+                      borderRadius: "8px",
+                      fontSize: "0.8rem",
+                      fontWeight: "bold",
+                      boxShadow: "0 4px 15px rgba(0,0,0,0.3)",
+                      backdropFilter: "blur(8px)",
+                      border: "1px solid rgba(255,255,255,0.1)",
+                      pointerEvents: "none",
+                      zIndex: 10000
+                    }}
+                  >
+                    {item.title}
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-        );
-      })}
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
