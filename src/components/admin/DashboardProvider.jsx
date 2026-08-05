@@ -2457,6 +2457,7 @@ export default function DashboardProvider({ children }) {
     setSelectedUnlockerServices: typeof setSelectedUnlockerServices !== 'undefined' ? setSelectedUnlockerServices : undefined,
     setServiceSearch: typeof setServiceSearch !== 'undefined' ? setServiceSearch : undefined,
     setServices: typeof setServices !== 'undefined' ? setServices : undefined,
+    services: typeof services !== 'undefined' ? services : undefined,
     setShowAdminPassword: typeof setShowAdminPassword !== 'undefined' ? setShowAdminPassword : undefined,
     setShowOrderDetailsModal: typeof setShowOrderDetailsModal !== 'undefined' ? setShowOrderDetailsModal : undefined,
     setSiteFavicon: typeof setSiteFavicon !== 'undefined' ? setSiteFavicon : undefined,
