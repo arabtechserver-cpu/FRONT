@@ -755,7 +755,7 @@ button, input, textarea, select { font-family: var(--font-cairo); }
 .notice-track {
   display: flex;
   width: max-content;
-  animation: marquee-scroll 35s linear infinite;
+  animation: marquee-scroll 85s linear infinite;
   will-change: transform;
 }
 .notice-track:hover {
