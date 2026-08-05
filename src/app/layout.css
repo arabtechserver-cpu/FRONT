@@ -1084,7 +1084,7 @@
 @media (max-width: 600px) {
 
   /* ── Layout container ── */
-  .main-content,
+  .main-content-inner,
   .page-container,
   .container,
   [class*="content-wrap"],
