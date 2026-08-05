@@ -209,7 +209,7 @@ export default function Home() {
                     {slide.title}<br />
                     <span style={{ backgroundImage: `linear-gradient(135deg,#fff 0%,${accentColor} 100%)`, WebkitBackgroundClip: "text", backgroundClip: "text", WebkitTextFillColor: "transparent" }}>{slide.highlight}</span>
                   </h1>
-                  <p className="banner-desc" style={{ color: "#fff" }}>{slide.desc}</p>
+                  <p className="banner-desc">{slide.desc}</p>
 
                   {/* Feature badges row */}
                   <div className="banner-features">
