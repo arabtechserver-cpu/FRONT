@@ -244,7 +244,8 @@
   font-size: 0.95rem;
   font-family: var(--font-cairo);
   outline: none;
-  text-align: right;
+  text-align: right !important;
+  direction: rtl !important;
   transition: all 0.3s ease;
 }
 .search-input-center::placeholder { color: rgba(255,255,255,0.6) !important; }

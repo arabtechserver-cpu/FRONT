@@ -302,6 +302,8 @@ export default function Home() {
             placeholder="ابحث عن الخدمة التي تحتاجها..."
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
+            dir="rtl"
+            style={{ direction: "rtl", textAlign: "right" }}
           />
           <span className="search-icon-center">🔍</span>
         </div>
