@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { AdminDashboardContext } from "../../AdminDashboardContext";
 
 export default function EditCustomerModal() {
-  const { customerModal, errorMsg } = useContext(AdminDashboardContext);
+  const { customerModal, errorMsg, baseCurrency } = useContext(AdminDashboardContext);
   const { showEditCustomerModal, setShowEditCustomerModal, handleUpdateCustomer, editCustomerUsername, setEditCustomerUsername, editCustomerEmail, setEditCustomerEmail, editCustomerPhone, setEditCustomerPhone, editCustomerBalance, setEditCustomerBalance, globalCurrencies, editCustomerBalances, setEditCustomerBalances, editCustomerNewPassword, setEditCustomerNewPassword } = customerModal;
 
   if (!(showEditCustomerModal)) return null;
