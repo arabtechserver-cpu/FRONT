@@ -41,11 +41,137 @@ export default function CustomerLogin() {
   const [changePassStep, setChangePassStep] = useState(0); // 0=none, 1=otp sent, enter new pass
   const [changePassNew, setChangePassNew] = useState("");
 
+  // Live Gmail Validation State
+  const [emailValidState, setEmailValidState] = useState({ checking: false, valid: null, message: "" });
+
   const router = useRouter();
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  // Live anti-fake Gmail check on registration email change
+  useEffect(() => {
+    if (activeTab !== "register" || !email.trim()) {
+      setEmailValidState({ checking: false, valid: null, message: "" });
+      return;
+    }
+
+    const clean = email.trim().toLowerCase();
+    if (!clean.endsWith("@gmail.com") && !clean.endsWith("@googlemail.com")) {
+      setEmailValidState({ checking: false, valid: false, message: "يجب إدخال بريد إلكتروني ينتهي بـ @gmail.com" });
+      return;
+    }
+
+    setEmailValidState({ checking: true, valid: null, message: "جاري الفحص الحي للبريد الإلكتروني..." });
+
+    const timer = setTimeout(() => {
+      fetch(`${API_BASE_URL}/api/customer/check-email`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: clean })
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.valid) {
+            setEmailValidState({ checking: false, valid: true, message: data.message });
+          } else {
+            setEmailValidState({ checking: false, valid: false, message: data.message });
+          }
+        })
+        .catch(() => {
+          setEmailValidState({ checking: false, valid: null, message: "" });
+        });
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [email, activeTab]);
+
+  // Google OAuth 2.0 Direct Sign-In Handler
+  useEffect(() => {
+    if (otpStep || forgotStep > 0) return;
+
+    const initGoogleSignIn = () => {
+      if (typeof window === "undefined" || !window.google?.accounts?.id) return;
+      const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "540676912586-68bp39ompaobro5p8g1o4t2f6nd8htr8.apps.googleusercontent.com";
+
+      window.handleGoogleCallback = async (response) => {
+        if (!response || !response.credential) return;
+        setSubmitting(true);
+        setError("");
+        setSuccess("");
+
+        try {
+          const res = await fetch(`${API_BASE_URL}/api/customer/google-auth`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ credential: response.credential })
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.message || "فشل تسجيل الدخول عبر Google.");
+
+          localStorage.setItem("customer_token", data.token);
+          localStorage.setItem("customer_user", JSON.stringify(data.customer));
+
+          setSuccess(data.message || "تم تسجيل الدخول المباشر عبر Google بنجاح 🚀");
+          setTimeout(() => {
+            if (typeof window !== "undefined") {
+              const urlParams = new URLSearchParams(window.location.search);
+              const redirectTo = urlParams.get("redirectTo");
+              if (redirectTo) {
+                router.push(redirectTo);
+                router.refresh();
+                return;
+              }
+            }
+            router.push("/");
+            router.refresh();
+          }, 1000);
+        } catch (err) {
+          setError(err.message || "حدث خطأ أثناء الاتصال بخدمة Google.");
+        } finally {
+          setSubmitting(false);
+        }
+      };
+
+      try {
+        window.google.accounts.id.initialize({
+          client_id: clientId,
+          callback: window.handleGoogleCallback
+        });
+
+        const btnContainer = document.getElementById("googleSignInContainer");
+        if (btnContainer) {
+          btnContainer.innerHTML = "";
+          window.google.accounts.id.renderButton(btnContainer, {
+            theme: "filled_blue",
+            size: "large",
+            width: 340,
+            text: "continue_with",
+            shape: "pill",
+            locale: "ar"
+          });
+        }
+      } catch (err) {
+        console.warn("Google Sign-In initialization failed:", err);
+      }
+    };
+
+    const scriptId = "google-gsi-client";
+    if (!document.getElementById(scriptId)) {
+      const script = document.createElement("script");
+      script.id = scriptId;
+      script.src = "https://accounts.google.com/gsi/client";
+      script.async = true;
+      script.defer = true;
+      script.onload = () => {
+        initGoogleSignIn();
+      };
+      document.body.appendChild(script);
+    } else {
+      setTimeout(initGoogleSignIn, 100);
+    }
+  }, [activeTab, otpStep, forgotStep, router]);
 
   // Fetch settings on mount
   useEffect(() => {
@@ -890,6 +1016,16 @@ export default function CustomerLogin() {
           </>
         ) : (
           <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
+            {/* Google Direct 1-Click Sign-In Section */}
+            <div className="animate-line line-4" style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", gap: "8px" }}>
+              <div id="googleSignInContainer" style={{ display: "flex", justifyContent: "center", width: "100%", minHeight: "44px" }}></div>
+              <div style={{ display: "flex", alignItems: "center", width: "100%", margin: "6px 0 2px 0" }}>
+                <div style={{ flex: 1, height: "1px", background: "rgba(255,255,255,0.12)" }}></div>
+                <span style={{ padding: "0 10px", fontSize: "0.76rem", color: "var(--text-muted)", fontWeight: "700" }}>أو بالبيانات التقليدية</span>
+                <div style={{ flex: 1, height: "1px", background: "rgba(255,255,255,0.12)" }}></div>
+              </div>
+            </div>
+
             {activeTab === "login" ? (
               <>
                 <div className="form-group animate-line line-4" style={{ marginBottom: 0 }}>
@@ -949,6 +1085,29 @@ export default function CustomerLogin() {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                   />
+                  {emailValidState.message && (
+                    <div style={{
+                      fontSize: "0.78rem",
+                      marginTop: "6px",
+                      fontWeight: "700",
+                      padding: "4px 8px",
+                      borderRadius: "6px",
+                      display: "inline-block",
+                      background: emailValidState.checking
+                        ? "rgba(56, 189, 248, 0.1)"
+                        : emailValidState.valid
+                        ? "rgba(16, 185, 129, 0.1)"
+                        : "rgba(244, 63, 94, 0.1)",
+                      color: emailValidState.checking
+                        ? "#38bdf8"
+                        : emailValidState.valid
+                        ? "#10b981"
+                        : "#f43f5e"
+                    }}>
+                      {emailValidState.checking ? "⏳ " : emailValidState.valid ? "✓ " : "⚠️ "}
+                      {emailValidState.message}
+                    </div>
+                  )}
                 </div>
                 <div className="register-password-grid animate-line line-6" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px", width: "100%", margin: "0 auto" }}>
                   <div className="form-group" style={{ marginBottom: 0 }}>

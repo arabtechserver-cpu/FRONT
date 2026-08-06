@@ -507,6 +507,48 @@ button, input, textarea, select { font-family: var(--font-cairo); }
   background: rgba(0,0,0,0.08);
 }
 
+/* ===== Vibrant Gold "Show More" (عرض المزيد) Button ===== */
+.btn-show-more-gold {
+  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%) !important;
+  border: 2px solid #f59e0b !important;
+  color: #fbbf24 !important; /* Gold text */
+  font-weight: 900 !important;
+  font-size: 1.05rem !important;
+  padding: 14px 34px !important;
+  border-radius: 100px !important;
+  box-shadow: 0 8px 25px rgba(245, 158, 11, 0.45), 0 0 15px rgba(124, 58, 237, 0.3) !important;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8) !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  text-decoration: none !important;
+}
+
+.btn-show-more-gold:hover {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+  color: #000000 !important; /* Gold background with dark text on hover */
+  text-shadow: none !important;
+  border-color: #ffd700 !important;
+  box-shadow: 0 12px 35px rgba(245, 158, 11, 0.7), 0 0 25px rgba(255, 215, 0, 0.5) !important;
+  transform: translateY(-3px) scale(1.03) !important;
+}
+
+[data-theme="light"] .btn-show-more-gold {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
+  border: 2px solid #d97706 !important;
+  color: #fbbf24 !important;
+  box-shadow: 0 8px 25px rgba(217, 119, 6, 0.45) !important;
+}
+
+[data-theme="light"] .btn-show-more-gold:hover {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+  color: #000000 !important;
+}
+
+
 /* ===== NAVBAR (legacy) ===== */
 .navbar {
   display: flex;

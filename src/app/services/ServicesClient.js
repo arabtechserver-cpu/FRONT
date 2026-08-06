@@ -427,7 +427,7 @@ export default function ServicesClient() {
                                     </div>
                                   ))}
                                   {service.packages.length > 3 && (
-                                    <span style={{ fontSize: "0.75rem", color: "var(--primary-color)", marginTop: "2px" }}>+ عرض المزيد ({service.packages.length - 3})</span>
+                                    <span style={{ fontSize: "0.78rem", color: "#fbbf24", background: "rgba(245, 158, 11, 0.14)", border: "1px solid rgba(245, 158, 11, 0.35)", padding: "3px 9px", borderRadius: "8px", fontWeight: "900", marginTop: "4px", display: "inline-block" }}>+ عرض المزيد ({service.packages.length - 3})</span>
                                   )}
                                 </div>
                               ) : service.price > 0 ? (
@@ -560,7 +560,7 @@ export default function ServicesClient() {
                                   </div>
                                 ))}
                                 {service.packages.length > 3 && (
-                                  <span style={{ fontSize: "0.75rem", color: "var(--primary-color)", marginTop: "2px" }}>+ عرض المزيد ({service.packages.length - 3})</span>
+                                  <span style={{ fontSize: "0.78rem", color: "#fbbf24", background: "rgba(245, 158, 11, 0.14)", border: "1px solid rgba(245, 158, 11, 0.35)", padding: "3px 9px", borderRadius: "8px", fontWeight: "900", marginTop: "4px", display: "inline-block" }}>+ عرض المزيد ({service.packages.length - 3})</span>
                                 )}
                               </div>
                             ) : service.price > 0 ? (
@@ -589,11 +589,10 @@ export default function ServicesClient() {
           )}
 
           {searchTerm.trim().length === 0 && visibleCategories < categories.length && (
-            <div style={{ display: "flex", justifyContent: "center", marginTop: "10px" }}>
+            <div style={{ display: "flex", justifyContent: "center", marginTop: "20px", marginBottom: "10px" }}>
               <button
                 onClick={() => setVisibleCategories(prev => prev + 5)}
-                className="glass-btn glass-btn-primary"
-                style={{ padding: "12px 30px", borderRadius: "100px", fontSize: "1.05rem", fontWeight: "bold" }}
+                className="btn-show-more-gold"
               >
                 عرض المزيد من الأقسام ⬇️
               </button>
