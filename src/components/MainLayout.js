@@ -96,6 +96,65 @@ export default function MainLayout({ children }) {
     document.documentElement.style.setProperty('--font-scale', fontScale);
   }, [fontScale]);
 
+  // Smart Inactivity Lock (30 minutes) & Silent Token Refresh
+  useEffect(() => {
+    if (!isCustomerLoggedIn) return;
+
+    let lastActivityTime = Date.now();
+
+    const handleUserActivity = () => {
+      lastActivityTime = Date.now();
+    };
+
+    const activityEvents = ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'];
+    activityEvents.forEach(evt => window.addEventListener(evt, handleUserActivity, { passive: true }));
+
+    // Check inactivity every 1 minute
+    const inactivityInterval = setInterval(() => {
+      const inactiveMinutes = (Date.now() - lastActivityTime) / (1000 * 60);
+      if (inactiveMinutes >= 30) {
+        // Auto-lock session due to inactivity for security
+        localStorage.removeItem("customer_token");
+        localStorage.removeItem("customer_user");
+        setIsCustomerLoggedIn(false);
+        setCustomerUser(null);
+        alert("🔒 تم إقفال الجلسة وتأمين حسابك تلقائياً بسبب عدم النشاط لمدة 30 دقيقة.");
+        router.push("/login");
+      }
+    }, 60000);
+
+    // Silent token refresh every 15 minutes if active
+    const refreshInterval = setInterval(() => {
+      const token = localStorage.getItem("customer_token");
+      if (!token) return;
+
+      fetch(`${API_BASE_URL}/api/customer/refresh-token`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        }
+      })
+        .then(res => res.ok ? res.json() : null)
+        .then(data => {
+          if (data && data.token) {
+            localStorage.setItem("customer_token", data.token);
+            if (data.customer) {
+              localStorage.setItem("customer_user", JSON.stringify(data.customer));
+              setCustomerUser(data.customer);
+            }
+          }
+        })
+        .catch(err => console.warn("Silent token refresh skipped:", err.message));
+    }, 15 * 60 * 1000);
+
+    return () => {
+      activityEvents.forEach(evt => window.removeEventListener(evt, handleUserActivity));
+      clearInterval(inactivityInterval);
+      clearInterval(refreshInterval);
+    };
+  }, [isCustomerLoggedIn, router]);
+
   const adjustFontScale = (delta) => {
     let nextScale = parseFloat((fontScale + delta).toFixed(2));
     if (nextScale < 0.75) nextScale = 0.75;
