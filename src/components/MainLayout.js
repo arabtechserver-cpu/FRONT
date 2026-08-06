@@ -54,6 +54,21 @@ export default function MainLayout({ children }) {
   const [isMounted, setIsMounted] = useState(false);
   const [fontScale, setFontScale] = useState(1);
   const [passwordModalOpen, setPasswordModalOpen] = useState(false);
+  const [showTxPassSuggestion, setShowTxPassSuggestion] = useState(false);
+
+  // 5-Minute Security Suggestion Prompt for setting Transaction Password
+  useEffect(() => {
+    if (!isCustomerLoggedIn) return;
+
+    const isPromptDismissed = localStorage.getItem("tx_pass_prompt_dismissed") === "true";
+    if (isPromptDismissed) return;
+
+    const timer = setTimeout(() => {
+      setShowTxPassSuggestion(true);
+    }, 5 * 60 * 1000); // 5 minutes
+
+    return () => clearTimeout(timer);
+  }, [isCustomerLoggedIn]);
 
   useEffect(() => {
     setIsMounted(true);
