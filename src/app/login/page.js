@@ -146,7 +146,7 @@ export default function CustomerLogin() {
           window.google.accounts.id.renderButton(btnContainer, {
             theme: "filled_blue",
             size: "large",
-            width: 340,
+            width: 250,
             text: "continue_with",
             shape: "pill",
             locale: "ar"
@@ -841,6 +841,13 @@ export default function CustomerLogin() {
           transform: translateY(-2px) scale(1.02);
         }
 
+        #googleSignInContainer iframe,
+        #googleSignInContainer div,
+        .L5Fo6c-bF1uUb {
+          max-width: 250px !important;
+          margin: 0 auto !important;
+        }
+
         @media (max-width: 640px) {
           .register-password-grid {
             grid-template-columns: 1fr !important;
@@ -1068,7 +1075,7 @@ export default function CustomerLogin() {
           <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
             {/* Google Direct 1-Click Sign-In Section */}
             <div className="animate-line line-4" style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", gap: "8px" }}>
-              <div id="googleSignInContainer" style={{ display: "flex", justifyContent: "center", width: "100%", minHeight: "44px" }}></div>
+              <div id="googleSignInContainer" style={{ display: "flex", justifyContent: "center", width: "100%", maxWidth: "260px", margin: "0 auto", minHeight: "44px" }}></div>
               <div style={{ display: "flex", alignItems: "center", width: "100%", margin: "6px 0 2px 0" }}>
                 <div style={{ flex: 1, height: "1px", background: "rgba(255,255,255,0.12)" }}></div>
                 <span style={{ padding: "0 10px", fontSize: "0.76rem", color: "var(--text-muted)", fontWeight: "700" }}>أو بالبيانات التقليدية</span>
