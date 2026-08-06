@@ -962,6 +962,7 @@ export default function CustomerLogin() {
                 </div>
                 <div style={{ marginTop: "15px", marginBottom: "15px", display: "flex", justifyContent: "center" }}>
                   <Turnstile 
+                    key="turnstile-forgot"
                     ref={turnstileRef}
                     siteKey="0x4AAAAAAEGa8uvGDLwzrReL"
                     options={{ theme: 'auto', action: 'turnstile-spin-v2' }}
@@ -1056,6 +1057,7 @@ export default function CustomerLogin() {
 
                 <div style={{ marginTop: "15px", display: "flex", justifyContent: "center" }}>
                   <Turnstile 
+                    key="turnstile-reset"
                     ref={turnstileRef}
                     siteKey="0x4AAAAAAEGa8uvGDLwzrReL"
                     options={{ theme: 'auto', action: 'turnstile-spin-v2' }}
@@ -1229,6 +1231,7 @@ export default function CustomerLogin() {
 
             <div style={{ marginTop: "15px", marginBottom: "15px", display: "flex", justifyContent: "center" }}>
               <Turnstile 
+                key="turnstile-main"
                 ref={turnstileRef}
                 siteKey="0x4AAAAAAEGa8uvGDLwzrReL"
                 options={{ theme: 'auto', action: 'turnstile-spin-v2' }}
