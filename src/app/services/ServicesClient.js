@@ -269,8 +269,8 @@ export default function ServicesClient() {
           placeholder="ابحث عن خدمة سوفت وير، تفعيلات، أدوات..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          dir="rtl"
-          style={{ direction: "rtl", textAlign: "right" }}
+          dir="ltr"
+          style={{ direction: "ltr", textAlign: "left" }}
         />
         <span className="search-icon-center">🔍</span>
       </div>

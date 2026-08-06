@@ -283,7 +283,7 @@ export default function CategoryServices({ params }) {
       )}
 
       {/* Page Title */}
-      <div dir="ltr" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "25px", gap: "12px", flexWrap: "wrap" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "25px", gap: "12px", flexWrap: "wrap" }}>
         <h2 className="section-title" style={{ fontSize: "calc(1.5rem * var(--font-scale, 1))", margin: 0 }}>قسم {categoryName}</h2>
         <span style={{ fontSize: "0.85rem", color: "var(--text-muted)", fontWeight: "600" }}>
           {services.length} خدمة متوفرة
@@ -293,7 +293,7 @@ export default function CategoryServices({ params }) {
       {/* Subcategories Grid if any */}
       {subCategories.length > 0 && (
         <div style={{ marginBottom: "40px" }}>
-          <h3 dir="ltr" className="section-title" style={{ fontSize: "calc(1.25rem * var(--font-scale, 1))", marginBottom: "18px" }}>الأقسام الفرعية</h3>
+          <h3 className="section-title" style={{ fontSize: "calc(1.25rem * var(--font-scale, 1))", marginBottom: "18px" }}>الأقسام الفرعية</h3>
           <div className="scc-grid">
             {subCategories.map((cat) => {
               const color = cat.color || "#6366f1";
@@ -317,7 +317,6 @@ export default function CategoryServices({ params }) {
                 <div className="scc-wrap" key={cat.id}>
                   <Link
                     className="scc-card"
-                    dir="ltr"
                     href={`/category/${cat.id}`}
                     style={{ "--scc-ac": color, "--scc-gl": glow }}
                   >
@@ -518,7 +517,6 @@ export default function CategoryServices({ params }) {
                           <Link 
                             href={`/service/${service.id}?package=${pkg.id}`} 
                             className="scc-card" 
-                            dir="ltr" 
                             style={{ '--scc-ac': catColor, '--scc-gl': catGlow }}
                           >
                             <div className="scc-side-line"></div>
@@ -564,7 +562,6 @@ export default function CategoryServices({ params }) {
                         <Link 
                           href={`/service/${service.id}`} 
                           className="scc-card" 
-                          dir="ltr" 
                           style={{ '--scc-ac': catColor, '--scc-gl': catGlow }}
                         >
                           <div className="scc-side-line"></div>
