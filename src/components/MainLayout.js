@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { API_BASE_URL } from "@/config";
 import PasswordChangeModal from "./PasswordChangeModal";
+import TransactionPasswordModal from "./TransactionPasswordModal";
 import ProtectionModal from "./ProtectionModal";
 import Footer from "./Footer";
 import { FEATURES } from "@/features";
@@ -20,6 +21,7 @@ export default function MainLayout({ children }) {
   const [categoriesExpanded, setCategoriesExpanded] = useState(false);
   const [settings, setSettings] = useState({ site_name: "عرب تك سيرفر", site_logo: "/logo.jpg" });
   const [logoFailed, setLogoFailed] = useState(false);
+  const [txPasswordModalOpen, setTxPasswordModalOpen] = useState(false);
 
   useEffect(() => {
     fetch(`${API_BASE_URL}/api/settings?t=${Date.now()}`)
@@ -690,6 +692,7 @@ export default function MainLayout({ children }) {
         <main className="main-content-inner">
           {children}
           <PasswordChangeModal />
+          <TransactionPasswordModal isOpen={txPasswordModalOpen} onClose={() => setTxPasswordModalOpen(false)} />
           <ProtectionModal />
         </main>
         <Footer siteName={settings.site_name} siteLogo={settings.site_logo} />

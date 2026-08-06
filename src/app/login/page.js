@@ -594,12 +594,62 @@ export default function CustomerLogin() {
                       💳 شحن رصيد المحفظة
                     </Link>
                     <button
+                      onClick={async () => {
+                        if (!window.PublicKeyCredential) {
+                          setError("متصفحك لا يدعم تقنية البصمة الرقمية (WebAuthn).");
+                          return;
+                        }
+                        setSubmitting(true); setError(""); setSuccess("");
+                        try {
+                          const token = localStorage.getItem("customer_token");
+                          const res1 = await fetch(`${API_BASE_URL}/api/customer/passkey/register-challenge`, {
+                            method: "POST", headers: { Authorization: `Bearer ${token}` }
+                          });
+                          const data1 = await res1.json();
+                          if (!res1.ok) throw new Error(data1.message);
+
+                          const challengeBuf = Uint8Array.from(atob(data1.challenge.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0));
+                          const userBuf = Uint8Array.from(atob(data1.options.user.id.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0));
+
+                          const credential = await navigator.credentials.create({
+                            publicKey: {
+                              challenge: challengeBuf,
+                              rp: data1.options.rp,
+                              user: { id: userBuf, name: data1.options.user.name, displayName: data1.options.user.displayName },
+                              pubKeyCredParams: data1.options.pubKeyCredParams,
+                              authenticatorSelection: data1.options.authenticatorSelection,
+                              timeout: 60000
+                            }
+                          });
+
+                          const res2 = await fetch(`${API_BASE_URL}/api/customer/passkey/register-verify`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                            body: JSON.stringify({ credential: { id: credential.id, rawId: credential.id } })
+                          });
+                          const data2 = await res2.json();
+                          if (!res2.ok) throw new Error(data2.message);
+                          setSuccess("تم تفعيل وحفظ البصمة الرقمية (Face ID / Touch ID) بنجاح 👆🎉");
+                        } catch (err) {
+                          setError(err.message || "فشلت قراءة البصمة أو تم إلغاء العملية.");
+                        } finally {
+                          setSubmitting(false);
+                        }
+                      }}
+                      className="btn-show-more-gold"
+                      style={{ padding: "12px", width: "100%", borderRadius: "12px", fontSize: "0.95rem" }}
+                      disabled={submitting}
+                    >
+                      👆 تفعيل الدخول ببصمة الأصبع / الوجه (Face ID)
+                    </button>
+
+                    <button
                       onClick={() => handleChangePasswordRequest("email")}
                       className="glass-btn"
                       style={{ padding: "12px", width: "100%", borderRadius: "12px", fontWeight: "bold", background: "rgba(255,255,255,0.05)" }}
                       disabled={submitting}
                     >
-                      {submitting ? "جاري الإرسال..." : "🔒 تغيير كلمة المرور"}
+                      {submitting ? "جاري الإرسال..." : "🔒 تعيين / تغيير كلمة مرور المعاملات والقفل"}
                     </button>
                   </div>
 
