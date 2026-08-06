@@ -222,13 +222,16 @@ export default function MainLayout({ children }) {
         || document.referrer.includes('android-app://');
 
       const isDismissed = localStorage.getItem("pwa_dismissed") === "true";
-
+      setShowInstallBanner(!isStandalone && !isDismissed);
     }
 
     const handleBeforeInstallPrompt = (e) => {
       e.preventDefault();
       setDeferredPrompt(e);
-      setShowInstallBanner(true);
+      const isDismissed = localStorage.getItem("pwa_dismissed") === "true";
+      if (!isDismissed) {
+        setShowInstallBanner(true);
+      }
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
@@ -694,6 +697,71 @@ export default function MainLayout({ children }) {
           <PasswordChangeModal />
           <TransactionPasswordModal isOpen={txPasswordModalOpen} onClose={() => setTxPasswordModalOpen(false)} />
           <ProtectionModal />
+
+          {/* 5-Minute Transaction Password Security Suggestion Modal */}
+          {showTxPassSuggestion && (
+            <div style={{
+              position: "fixed",
+              inset: 0,
+              zIndex: 99999,
+              background: "rgba(15, 23, 42, 0.8)",
+              backdropFilter: "blur(10px)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "20px"
+            }}>
+              <div style={{
+                background: "linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%)",
+                border: "2px solid #f59e0b",
+                borderRadius: "24px",
+                padding: "28px",
+                maxWidth: "420px",
+                width: "100%",
+                textAlign: "center",
+                color: "#ffffff",
+                boxShadow: "0 20px 40px rgba(245, 158, 11, 0.3)"
+              }}>
+                <div style={{ fontSize: "2.8rem", marginBottom: "10px" }}>🛡️</div>
+                <h3 style={{ fontSize: "1.3rem", fontWeight: "900", color: "#fbbf24", marginBottom: "10px" }}>
+                  نصيحة أمان لحسابك 🔒
+                </h3>
+                <p style={{ fontSize: "0.92rem", color: "#cbd5e1", lineHeight: "1.6", marginBottom: "22px" }}>
+                  لحماية محفظتك وحسابك تلقائياً عند الخمول، يُنصح بتعيين <strong>كلمة مرور المعاملات والقفل</strong> الآن.
+                </p>
+                <div style={{ display: "flex", gap: "12px" }}>
+                  <button
+                    onClick={() => {
+                      setShowTxPassSuggestion(false);
+                      localStorage.setItem("tx_pass_prompt_dismissed", "true");
+                      router.push("/login");
+                    }}
+                    className="btn-show-more-gold"
+                    style={{ flex: 1, padding: "10px", borderRadius: "12px", fontSize: "0.95rem" }}
+                  >
+                    تعيين الآن 🔒
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowTxPassSuggestion(false);
+                      localStorage.setItem("tx_pass_prompt_dismissed", "true");
+                    }}
+                    style={{
+                      padding: "10px 18px",
+                      borderRadius: "12px",
+                      background: "rgba(255, 255, 255, 0.1)",
+                      color: "#cbd5e1",
+                      border: "none",
+                      cursor: "pointer",
+                      fontWeight: "bold"
+                    }}
+                  >
+                    لاحقاً ✕
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </main>
         <Footer siteName={settings.site_name} siteLogo={settings.site_logo} />
       </div>
