@@ -1,5 +1,5 @@
 let apiBaseUrl = process.env.NEXT_PUBLIC_API_URL ||
-  (process.env.NODE_ENV === "production" ? "https://api.arab-tech1.online" : "http://localhost:5000");
+  (process.env.NODE_ENV === "production" ? "https://arab-tech-back-hakgwd.onrender.com" : "http://localhost:5000");
 
 if (typeof window !== "undefined") {
   if (process.env.NEXT_PUBLIC_API_URL) {
@@ -9,10 +9,10 @@ if (typeof window !== "undefined") {
     if (host.includes("localhost") || host.includes("127.0.0.1")) {
       apiBaseUrl = "http://localhost:5000";
     } else if (host.includes("spider-store.vercel.app")) {
-      apiBaseUrl = "https://api.arab-tech1.online";
+      apiBaseUrl = "https://arab-tech-back-hakgwd.onrender.com";
     } else {
       // If deployed elsewhere or custom domain, default to the production backend
-      apiBaseUrl = "https://api.arab-tech1.online";
+      apiBaseUrl = "https://arab-tech-back-hakgwd.onrender.com";
     }
   }
 }

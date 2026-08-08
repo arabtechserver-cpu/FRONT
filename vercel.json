@@ -1,7 +1,7 @@
 {
   "buildCommand": "npm run build",
   "env": {
-    "NEXT_PUBLIC_API_URL": "https://api.arab-tech1.online",
+    "NEXT_PUBLIC_API_URL": "https://arab-tech-back-hakgwd.onrender.com",
     "NEXT_PUBLIC_SITE_URL": "https://arab-tech1.online"
   }
 }
