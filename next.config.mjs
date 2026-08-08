@@ -1,4 +1,4 @@
-const defaultApiUrl = 'https://arab-tech-back-hakgwd.onrender.com';
+const defaultApiUrl = 'https://api.arab-tech1.online';
 const apiUrl = process.env.NEXT_PUBLIC_API_URL || defaultApiUrl;
 
 function buildRemotePattern(value) {
