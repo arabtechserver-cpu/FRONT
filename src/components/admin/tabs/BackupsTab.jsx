@@ -13,6 +13,7 @@ export default function BackupsTab({ token, API_BASE_URL }) {
   const [backupOtpCode, setBackupOtpCode] = useState("");
   const [backupOtpLoading, setBackupOtpLoading] = useState(false);
   const [backupOtpError, setBackupOtpError] = useState("");
+  const [previewBackup, setPreviewBackup] = useState(null);
 
   const fetchBackups = useCallback(async () => {
     setLoading(true);
@@ -170,19 +171,6 @@ export default function BackupsTab({ token, API_BASE_URL }) {
     const file = e.target.files[0];
     if (!file) return;
 
-    if (
-      !confirm(
-        `⚠️ تنبيه هام جداً:\n\nسيتم مسح كافة بيانات الموقع واسترجاعها بالكامل من ملف النسخة الاحتياطية المختار (${file.name})!\n\nهل أنت متأكد تماماً من المتابعة؟`
-      )
-    ) {
-      e.target.value = "";
-      return;
-    }
-
-    setActionLoading("restore-upload");
-    setErrorMsg("");
-    setSuccessMsg("");
-
     const reader = new FileReader();
     reader.onload = async (event) => {
       try {
@@ -191,29 +179,49 @@ export default function BackupsTab({ token, API_BASE_URL }) {
           throw new Error("ملف النسخة الاحتياطية غير صالح (لا يحتوي على جداول).");
         }
 
-        const response = await fetch(`${API_BASE_URL}/api/backups/restore/upload`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ backupData }),
-        });
+        const summary = Object.keys(backupData.tables).map(t => ({
+          name: t,
+          count: backupData.tables[t].length
+        }));
 
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.message || "فشل استعادة البيانات.");
-
-        setSuccessMsg("🎉 تم استرجاع النسخة الاحتياطية المرفوعة بنجاح تام!");
-        alert("تمت استعادة النسخة الاحتياطية بنجاح! 🔄 سيتم إعادة تحميل الصفحة لتطبيق التغييرات.");
-        window.location.reload();
+        setPreviewBackup({ data: backupData, summary, filename: file.name });
       } catch (err) {
-        setErrorMsg(err.message || "حدث خطأ أثناء فك وقراءة الملف أو استرجاعه.");
+        setErrorMsg(err.message || "حدث خطأ أثناء فك وقراءة الملف.");
       } finally {
-        setActionLoading(null);
         e.target.value = "";
       }
     };
     reader.readAsText(file);
+  };
+
+  const executeRestoreUpload = async () => {
+    if (!previewBackup || !previewBackup.data) return;
+    
+    setActionLoading("restore-upload");
+    setErrorMsg("");
+    setSuccessMsg("");
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/backups/restore/upload`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ backupData: previewBackup.data }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || "فشل استعادة البيانات.");
+
+      setSuccessMsg("🎉 تم استرجاع النسخة الاحتياطية المرفوعة بنجاح تام!");
+      alert("تمت استعادة النسخة الاحتياطية بنجاح! 🔄 سيتم إعادة تحميل الصفحة لتطبيق التغييرات.");
+      window.location.reload();
+    } catch (err) {
+      setErrorMsg(err.message || "حدث خطأ أثناء استرجاع الملف.");
+    } finally {
+      setActionLoading(null);
+      setPreviewBackup(null);
+    }
   };
 
   const formatBytes = (bytes, decimals = 2) => {
@@ -452,6 +460,39 @@ export default function BackupsTab({ token, API_BASE_URL }) {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* PREVIEW MODAL */}
+      {previewBackup && (
+        <div style={{ position: "fixed", inset: 0, zIndex: 99999, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.85)", backdropFilter: "blur(8px)" }}>
+          <div style={{ background: "var(--bg-secondary)", border: "1px solid var(--border-glass)", borderRadius: "16px", padding: "30px", width: "90%", maxWidth: "600px", boxShadow: "0 20px 50px rgba(0,0,0,0.5)", overflowY: "auto", maxHeight: "85vh" }}>
+            <h2 style={{ color: "var(--primary-color)", marginBottom: "15px", textAlign: "center" }}>📊 تحليل ملف النسخة الاحتياطية</h2>
+            <p style={{ textAlign: "center", marginBottom: "20px", color: "var(--text-muted)" }}>الملف المختار: <strong dir="ltr">{previewBackup.filename}</strong></p>
+            
+            <div style={{ background: "rgba(0,0,0,0.2)", borderRadius: "12px", padding: "15px", marginBottom: "20px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+              {previewBackup.summary.map(item => (
+                <div key={item.name} style={{ display: "flex", justifyContent: "space-between", padding: "8px 12px", background: "rgba(255,255,255,0.05)", borderRadius: "8px" }}>
+                  <span style={{ fontWeight: "700", color: "var(--text-muted)", fontSize: "0.85rem" }}>{item.name}</span>
+                  <span style={{ fontWeight: "900", color: "var(--accent-green)", fontSize: "0.95rem" }}>{item.count}</span>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ background: "rgba(239, 68, 68, 0.15)", padding: "15px", borderRadius: "12px", border: "1px solid #ef4444", marginBottom: "20px", textAlign: "center" }}>
+              <strong style={{ color: "#ef4444", display: "block", marginBottom: "5px" }}>⚠️ تحذير خطير</strong>
+              هل أنت متأكد من مسح كافة بيانات الموقع الحالية واستبدالها بهذه البيانات؟
+            </div>
+
+            <div style={{ display: "flex", gap: "15px" }}>
+              <button onClick={executeRestoreUpload} disabled={actionLoading === "restore-upload"} className="glass-btn" style={{ flex: 1, padding: "15px", background: "#10b981", color: "#fff", fontWeight: "800", borderRadius: "12px", fontSize: "1rem" }}>
+                {actionLoading === "restore-upload" ? "جاري الاسترجاع..." : "🚀 تأكيد الاسترجاع الآن"}
+              </button>
+              <button onClick={() => setPreviewBackup(null)} disabled={actionLoading === "restore-upload"} className="glass-btn" style={{ padding: "15px 25px", background: "rgba(255,255,255,0.1)", color: "#fff", fontWeight: "700", borderRadius: "12px" }}>
+                إلغاء
+              </button>
+            </div>
           </div>
         </div>
       )}
