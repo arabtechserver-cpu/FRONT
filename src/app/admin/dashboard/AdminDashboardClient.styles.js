@@ -219,6 +219,8 @@ const dashboardStyles = `
           padding: 40px;
           z-index: 1;
           position: relative;
+          min-width: 0; /* Prevents CSS Grid blowout when tables are wide */
+          width: 100%;
         }
 
         /* Top Header */
@@ -420,6 +422,8 @@ const dashboardStyles = `
 
         /* Glass Table Design */
         .premium-table-wrapper {
+          width: 100%;
+          max-width: 100%;
           background: rgba(255, 255, 255, 0.01);
           backdrop-filter: blur(25px);
           -webkit-backdrop-filter: blur(25px);
@@ -1087,6 +1091,8 @@ const dashboardStyles = `
             align-items: center !important;
             text-align: left !important;
             white-space: normal !important;
+            word-break: break-word !important;
+            overflow-wrap: break-word !important;
           }
           .premium-table td:last-child {
             border-bottom: none !important;
