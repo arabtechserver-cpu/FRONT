@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 export default function CustomersTab({
   customers,
@@ -13,6 +13,25 @@ export default function CustomersTab({
   handleOpenEditCustomer,
   handleDeleteCustomer
 }) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(25);
+  const [txPage, setTxPage] = useState(1);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [customerSearch]);
+
+  useEffect(() => {
+    setTxPage(1);
+  }, [selectedCustomerId]);
+
+  const totalPages = Math.ceil(filteredCustomers.length / itemsPerPage) || 1;
+  const paginatedCustomers = filteredCustomers.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  const txItemsPerPage = 15;
+  const totalTxPages = Math.ceil(selectedCustomerTransactions.length / txItemsPerPage) || 1;
+  const paginatedTx = selectedCustomerTransactions.slice((txPage - 1) * txItemsPerPage, txPage * txItemsPerPage);
+
   return (
     <>
       <div className="premium-stats-grid">
@@ -103,7 +122,7 @@ export default function CustomersTab({
                 </td>
               </tr>
             ) : (
-              filteredCustomers.map((customer) => (
+              paginatedCustomers.map((customer) => (
                 <tr key={customer.id}>
                   <td data-label="رقم العميل" style={{ fontWeight: 800, color: "#38bdf8" }}>#{customer.id}</td>
                   <td data-label="اسم المستخدم" style={{ fontWeight: 700 }}>{customer.username}</td>
@@ -141,6 +160,31 @@ export default function CustomersTab({
         </table>
       </div>
 
+      {/* Customers Pagination Controls */}
+      {filteredCustomers.length > 0 && (
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "15px", background: "rgba(255, 255, 255, 0.03)", padding: "16px 20px", borderRadius: "16px", border: "1px solid rgba(255, 255, 255, 0.05)", marginTop: "16px" }}>
+          <div style={{ color: "#94a3b8", fontSize: "0.9rem", fontWeight: 600 }}>
+            عرض من <span style={{ color: "#38bdf8", fontWeight: 800 }}>{(currentPage - 1) * itemsPerPage + 1}</span> إلى <span style={{ color: "#38bdf8", fontWeight: 800 }}>{Math.min(currentPage * itemsPerPage, filteredCustomers.length)}</span> من إجمالي <span style={{ color: "#fbbf24", fontWeight: 800 }}>{filteredCustomers.length}</span> عميل
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: "14px", flexWrap: "wrap" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <span style={{ fontSize: "0.85rem", color: "#64748b" }}>العملاء بالصفحة:</span>
+              <select value={itemsPerPage} onChange={(e) => { setItemsPerPage(Number(e.target.value)); setCurrentPage(1); }} style={{ background: "rgba(0, 0, 0, 0.4)", border: "1px solid rgba(255, 255, 255, 0.1)", borderRadius: "8px", color: "#fff", padding: "6px 10px", fontSize: "0.85rem", cursor: "pointer", outline: "none" }}>
+                <option value={15}>15</option>
+                <option value={25}>25</option>
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+              </select>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1} type="button" style={{ padding: "8px 16px", background: currentPage === 1 ? "rgba(255, 255, 255, 0.02)" : "rgba(59, 130, 246, 0.2)", border: `1px solid ${currentPage === 1 ? "rgba(255, 255, 255, 0.05)" : "rgba(59, 130, 246, 0.4)"}`, borderRadius: "10px", color: currentPage === 1 ? "#64748b" : "#3b82f6", fontWeight: "bold", fontSize: "0.85rem", cursor: currentPage === 1 ? "not-allowed" : "pointer" }}>◀ السابق</button>
+              <span style={{ fontSize: "0.9rem", fontWeight: 700, color: "#cbd5e1", padding: "0 6px" }}>صفحة <span style={{ color: "#38bdf8" }}>{currentPage}</span> من <span style={{ color: "#38bdf8" }}>{totalPages}</span></span>
+              <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} type="button" style={{ padding: "8px 16px", background: currentPage === totalPages ? "rgba(255, 255, 255, 0.02)" : "rgba(59, 130, 246, 0.2)", border: `1px solid ${currentPage === totalPages ? "rgba(255, 255, 255, 0.05)" : "rgba(59, 130, 246, 0.4)"}`, borderRadius: "10px", color: currentPage === totalPages ? "#64748b" : "#3b82f6", fontWeight: "bold", fontSize: "0.85rem", cursor: currentPage === totalPages ? "not-allowed" : "pointer" }}>التالي ▶</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div style={{ marginTop: "28px", border: "1px solid rgba(255,255,255,0.05)", borderRadius: "18px", padding: "18px", background: "rgba(255,255,255,0.02)" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px", gap: "12px", flexWrap: "wrap" }}>
           <div>
@@ -172,7 +216,7 @@ export default function CustomersTab({
                   </td>
                 </tr>
               ) : (
-                selectedCustomerTransactions.map((tx) => (
+                paginatedTx.map((tx) => (
                   <tr key={tx.id}>
                     <td data-label="النوع">
                       <span className={`premium-badge ${tx.type === "credit" ? "premium-badge-approved" : "premium-badge-rejected"}`}>
@@ -200,6 +244,15 @@ export default function CustomersTab({
             </tbody>
           </table>
         </div>
+
+        {/* Transactions Pagination */}
+        {selectedCustomerTransactions.length > 0 && (
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "10px", marginTop: "16px", padding: "12px", background: "rgba(0,0,0,0.2)", borderRadius: "12px" }}>
+            <button onClick={() => setTxPage(p => Math.max(1, p - 1))} disabled={txPage === 1} type="button" style={{ padding: "6px 12px", background: txPage === 1 ? "rgba(255, 255, 255, 0.05)" : "rgba(139, 92, 246, 0.2)", borderRadius: "8px", color: txPage === 1 ? "#64748b" : "#c084fc", border: "none", cursor: txPage === 1 ? "not-allowed" : "pointer" }}>السابق</button>
+            <span style={{ fontSize: "0.85rem", color: "#cbd5e1" }}>صفحة {txPage} / {totalTxPages}</span>
+            <button onClick={() => setTxPage(p => Math.min(totalTxPages, p + 1))} disabled={txPage === totalTxPages} type="button" style={{ padding: "6px 12px", background: txPage === totalTxPages ? "rgba(255, 255, 255, 0.05)" : "rgba(139, 92, 246, 0.2)", borderRadius: "8px", color: txPage === totalTxPages ? "#64748b" : "#c084fc", border: "none", cursor: txPage === totalTxPages ? "not-allowed" : "pointer" }}>التالي</button>
+          </div>
+        )}
       </div>
     </>
   );

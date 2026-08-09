@@ -24,13 +24,20 @@ export default function OrdersTab({
 }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(25);
+  const [txPage, setTxPage] = useState(1);
 
   useEffect(() => {
     setCurrentPage(1);
+    setTxPage(1);
   }, [orderSearch, orderFilter]);
 
   const totalPages = Math.ceil(filteredOrders.length / itemsPerPage) || 1;
   const paginatedOrders = filteredOrders.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  
+  const txItemsPerPage = 15;
+  const totalTxPages = Math.ceil(filteredWalletTransactions.length / txItemsPerPage) || 1;
+  const paginatedTx = filteredWalletTransactions.slice((txPage - 1) * txItemsPerPage, txPage * txItemsPerPage);
+
   return (
     <>
       <div className="premium-stats-grid">
@@ -404,7 +411,7 @@ export default function OrdersTab({
                   </td>
                 </tr>
               ) : (
-                filteredWalletTransactions.map((tx) => (
+                paginatedTx.map((tx) => (
                   <tr key={tx.id}>
                     <td data-label="ID" style={{ fontWeight: 800, color: tx.type === "credit" ? "#34d399" : "#f87171" }}>#{tx.id}</td>
                     <td data-label="العميل">
@@ -435,6 +442,15 @@ export default function OrdersTab({
             </tbody>
           </table>
         </div>
+
+        {/* Transactions Pagination Controls */}
+        {filteredWalletTransactions.length > 0 && (
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "10px", marginTop: "16px", padding: "12px", background: "rgba(0,0,0,0.2)", borderRadius: "12px" }}>
+            <button onClick={() => setTxPage(p => Math.max(1, p - 1))} disabled={txPage === 1} type="button" style={{ padding: "6px 12px", background: txPage === 1 ? "rgba(255, 255, 255, 0.05)" : "rgba(139, 92, 246, 0.2)", borderRadius: "8px", color: txPage === 1 ? "#64748b" : "#c084fc", border: "none", cursor: txPage === 1 ? "not-allowed" : "pointer" }}>السابق</button>
+            <span style={{ fontSize: "0.85rem", color: "#cbd5e1" }}>صفحة {txPage} / {totalTxPages}</span>
+            <button onClick={() => setTxPage(p => Math.min(totalTxPages, p + 1))} disabled={txPage === totalTxPages} type="button" style={{ padding: "6px 12px", background: txPage === totalTxPages ? "rgba(255, 255, 255, 0.05)" : "rgba(139, 92, 246, 0.2)", borderRadius: "8px", color: txPage === totalTxPages ? "#64748b" : "#c084fc", border: "none", cursor: txPage === totalTxPages ? "not-allowed" : "pointer" }}>التالي</button>
+          </div>
+        )}
       </div>
     </>
   );
