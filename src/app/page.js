@@ -222,7 +222,7 @@ export default function Home() {
             return (
               <div
                 key={idx}
-                className="banner-content"
+                className={`banner-content ${isImage ? "has-bg-img" : "no-bg-img"}`}
                 style={{
                   opacity: currentSlide === idx ? 1 : 0,
                   visibility: currentSlide === idx ? "visible" : "hidden",

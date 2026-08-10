@@ -291,8 +291,10 @@
     margin-left: -15px !important;
     margin-right: -15px !important;
     margin-top: -15px !important;
-    min-height: 400px !important;
-    height: 400px !important;
+    min-height: unset !important;
+    height: auto !important;
+    aspect-ratio: 16 / 7 !important;
+    max-height: 260px !important;
     border-radius: 0 0 16px 16px;
     padding-bottom: 0 !important;
     overflow: hidden;
@@ -308,18 +310,23 @@
     padding: 0 15px !important;
   }
   .banner-content {
-    padding: 20px 16px !important;
-    flex-direction: column;
-    justify-content: flex-end;
+    padding: 0 !important;
+    display: flex;
     align-items: center;
+    justify-content: center;
   }
   .banner-bg-img {
+    position: absolute;
+    inset: 0;
     width: 100% !important;
     height: 100% !important;
-    object-fit: contain !important; /* Full width 100% visible */
+    object-fit: fill !important; /* Completely fills top and bottom without empty space */
     object-position: center center !important;
   }
-  .banner-info {
+  .banner-content.has-bg-img .banner-info {
+    display: none !important; /* Hide overlapping text when slide has custom graphic */
+  }
+  .banner-content.no-bg-img .banner-info {
     max-width: 90%;
     width: auto;
     align-items: center;
@@ -330,8 +337,6 @@
     padding: 12px 18px;
     border-radius: 16px;
     border: 1px solid rgba(255, 255, 255, 0.12);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.45);
-    margin-bottom: 8px;
   }
   .banner-badge { align-self: center; font-size: 0.75rem; padding: 3px 12px; }
   .banner-title { font-size: 1.3rem; text-align: center; }
@@ -348,10 +353,6 @@
   .banner-features { 
     display: none !important; 
   }
-  .banner-feat-item { padding: 8px; justify-content: center; }
-  .banner-feat-title { font-size: 0.7rem; }
-  .banner-feat-sub { font-size: 0.65rem; }
-  
   .hero-cta-btn { align-self: center; }
   .banner-graphic { display: none; }
 }
@@ -359,25 +360,25 @@
 @media (max-width: 480px) {
   /* Mobile Screens */
   .hero-banner { 
-    min-height: 310px !important;
-    height: 310px !important;
+    aspect-ratio: 16 / 7.5 !important;
+    min-height: unset !important;
+    height: auto !important;
+    max-height: 220px !important;
   }
   .banner-bg-img {
+    position: absolute;
+    inset: 0;
     width: 100% !important;
     height: 100% !important;
-    object-fit: contain !important; /* Full width 100% visible */
+    object-fit: fill !important; /* 100% Full fill without top or bottom gaps */
     object-position: center center !important;
   }
-  .banner-content { padding: 14px 10px !important; }
-  .banner-info {
-    padding: 8px 14px;
-    border-radius: 12px;
-    max-width: 95%;
-    margin-bottom: 6px;
+  .banner-content.has-bg-img .banner-info {
+    display: none !important; /* Clean display of graphic */
   }
-  .banner-title { font-size: 1.1rem; }
-  .banner-desc { font-size: 0.74rem; }
-  .hero-dots { bottom: 10px; }
+  .hero-dots { 
+    bottom: 8px !important; 
+  }
 }
 
 
