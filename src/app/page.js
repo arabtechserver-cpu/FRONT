@@ -308,7 +308,20 @@ export default function Home() {
                   <Link key={cat.id} href={`/category/${cat.id}`} className="hp-cat-icon-card">
                     <div className="hp-cat-icon-circle" style={{ background: "transparent", border: "none", width: "64px", height: "64px" }}>
                       {cat.image ? (
-                        <img src={resolveImage(cat.image)} alt={cat.name} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+                        <img 
+                          src={resolveImage(cat.image)} 
+                          alt={cat.name} 
+                          style={{ width: "100%", height: "100%", objectFit: "contain" }} 
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            if (e.target.parentElement) {
+                              const fb = document.createElement('span');
+                              fb.style.fontSize = '2rem';
+                              fb.innerText = '📁';
+                              e.target.parentElement.appendChild(fb);
+                            }
+                          }}
+                        />
                       ) : (
                         <span style={{ fontSize: "2rem" }}>📁</span>
                       )}
