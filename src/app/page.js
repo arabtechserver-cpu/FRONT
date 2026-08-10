@@ -202,8 +202,16 @@ export default function Home() {
   const filteredCats = rootCats.filter(c => c.name.toLowerCase().includes(searchTerm.toLowerCase()));
   const displayServices = activeSection === "popular" ? popularServices : filteredCats;
 
+  const firstSlide = slides[0];
+  const firstSlideImg = firstSlide?.icon && (firstSlide.icon.startsWith("data:") || firstSlide.icon.startsWith("http") || firstSlide.icon.startsWith("/uploads"))
+    ? (firstSlide.icon.startsWith("/uploads") ? `${API_BASE_URL}${firstSlide.icon}` : firstSlide.icon)
+    : null;
+
   return (
     <>
+      {firstSlideImg && (
+        <link rel="preload" as="image" href={firstSlideImg} fetchPriority="high" />
+      )}
       {/* ══════════════════════════════════════════════════════
           HERO BANNER
       ══════════════════════════════════════════════════════ */}
@@ -237,7 +245,7 @@ export default function Home() {
                       className="banner-bg-img" 
                       loading="eager"
                       fetchPriority="high"
-                      decoding="async"
+                      decoding="sync"
                     />
                     <div className="banner-bg-overlay" />
                   </>
