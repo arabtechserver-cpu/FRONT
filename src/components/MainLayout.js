@@ -15,7 +15,7 @@ export default function MainLayout({ children }) {
   const router = useRouter();
   const pathname = usePathname();
 
-  const [theme, setTheme] = useState("dark");
+  const [theme, setTheme] = useState(typeof window !== "undefined" ? (document.documentElement.getAttribute("data-theme") || localStorage.getItem("theme") || "dark") : "dark");
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const [categoriesExpanded, setCategoriesExpanded] = useState(false);
@@ -410,7 +410,7 @@ export default function MainLayout({ children }) {
         <div className="mobile-drawer-header" style={{ borderBottom: '1px solid rgba(255,255,255,0.07)', paddingBottom: '16px', marginBottom: '4px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             {settings.site_logo && settings.site_logo !== 'default' && !logoFailed ? (
-              <img src={settings.site_logo.startsWith('http') || settings.site_logo.startsWith('/') || settings.site_logo.startsWith('data:') ? settings.site_logo : `${API_BASE_URL}${settings.site_logo}`} alt={settings.site_name} onError={() => setLogoFailed(true)} style={{ width: '40px', height: '40px', borderRadius: '8px', objectFit: 'contain', flexShrink: 0, filter: 'drop-shadow(0 2px 5px rgba(234,179,8,0.2))' }} />
+              <img src={settings.site_logo.startsWith('http') || settings.site_logo.startsWith('data:') ? settings.site_logo : (settings.site_logo.includes('uploads') ? `${API_BASE_URL}${settings.site_logo.startsWith('/') ? '' : '/'}${settings.site_logo}` : settings.site_logo)} alt={settings.site_name} onError={() => setLogoFailed(true)} style={{ width: '40px', height: '40px', borderRadius: '8px', objectFit: 'contain', flexShrink: 0, filter: 'drop-shadow(0 2px 5px rgba(234,179,8,0.2))' }} />
             ) : (
               <img src="/logo.jpg" alt={settings.site_name || "Logo"} style={{ width: '40px', height: '40px', borderRadius: '8px', objectFit: 'contain', flexShrink: 0, filter: 'drop-shadow(0 2px 5px rgba(234,179,8,0.2))' }} />
             )}
@@ -642,7 +642,7 @@ export default function MainLayout({ children }) {
             </button>
             <Link className="flex items-center gap-2" style={{ textDecoration: 'none', minWidth: 0 }} href="/">
               {settings.site_logo && settings.site_logo !== 'default' && !logoFailed ? (
-                <img src={settings.site_logo.startsWith('http') || settings.site_logo.startsWith('/') || settings.site_logo.startsWith('data:') ? settings.site_logo : `${API_BASE_URL}${settings.site_logo}`} alt={settings.site_name} onError={() => setLogoFailed(true)} style={{ width: '40px', height: '40px', borderRadius: '8px', objectFit: 'contain', flexShrink: 0, filter: 'drop-shadow(0 2px 5px rgba(234,179,8,0.2))' }} />
+                <img src={settings.site_logo.startsWith('http') || settings.site_logo.startsWith('data:') ? settings.site_logo : (settings.site_logo.includes('uploads') ? `${API_BASE_URL}${settings.site_logo.startsWith('/') ? '' : '/'}${settings.site_logo}` : settings.site_logo)} alt={settings.site_name} onError={() => setLogoFailed(true)} style={{ width: '40px', height: '40px', borderRadius: '8px', objectFit: 'contain', flexShrink: 0, filter: 'drop-shadow(0 2px 5px rgba(234,179,8,0.2))' }} />
               ) : (
                 <img src="/logo.jpg" alt={settings.site_name || "Logo"} style={{ width: '40px', height: '40px', borderRadius: '8px', objectFit: 'contain', flexShrink: 0, filter: 'drop-shadow(0 2px 5px rgba(234,179,8,0.2))' }} />
               )}
@@ -705,6 +705,92 @@ export default function MainLayout({ children }) {
             </div>
           </div>
         </header>
+
+        {/* Global Notice Bar (Sticky) */}
+        <div className="notice-bar-container notice-slim" style={{ position: 'sticky', top: '70px', zIndex: 998, padding: '0', background: 'transparent' }}>
+          <div className="container">
+            <div className="notice-row" aria-label="Announcements">
+              <div className="notice-track" role="presentation">
+                <div className="notice-set" role="presentation">
+                  <div className="notice-set-item">
+                    <span className="notice-pill notice-pill-gold">✨ مرحبا بكم هنا سيرفر عرب تك متاح جميع الخدمات بفضل الله واسعار مناسبه للجميع</span>
+                    <span className="notice-pill notice-pill-gold">✨ Welcome to Arab Tech Server, all services are available and prices are suitable for everyone</span>
+                    <a href="https://wa.me/249123667227" target="_blank" rel="noopener noreferrer" className="notice-pill notice-pill-link">
+                      <span className="notice-pill-label">💬 واتساب 1:</span>
+                      <bdi dir="ltr" className="notice-pill-bdi">+249&nbsp;12&nbsp;366&nbsp;7227</bdi>
+                    </a>
+                    <a href="https://wa.me/16728972935" target="_blank" rel="noopener noreferrer" className="notice-pill notice-pill-link">
+                      <span className="notice-pill-label">💬 واتساب 2:</span>
+                      <bdi dir="ltr" className="notice-pill-bdi">+1&nbsp;(672)&nbsp;897-2935</bdi>
+                    </a>
+                  </div>
+                  <div className="notice-set-item">
+                    <span className="notice-pill notice-pill-gold">✨ مرحبا بكم هنا سيرفر عرب تك متاح جميع الخدمات بفضل الله واسعار مناسبه للجميع</span>
+                    <span className="notice-pill notice-pill-gold">✨ Welcome to Arab Tech Server, all services are available and prices are suitable for everyone</span>
+                    <a href="https://wa.me/249123667227" target="_blank" rel="noopener noreferrer" className="notice-pill notice-pill-link">
+                      <span className="notice-pill-label">💬 واتساب 1:</span>
+                      <bdi dir="ltr" className="notice-pill-bdi">+249&nbsp;12&nbsp;366&nbsp;7227</bdi>
+                    </a>
+                    <a href="https://wa.me/16728972935" target="_blank" rel="noopener noreferrer" className="notice-pill notice-pill-link">
+                      <span className="notice-pill-label">💬 واتساب 2:</span>
+                      <bdi dir="ltr" className="notice-pill-bdi">+1&nbsp;(672)&nbsp;897-2935</bdi>
+                    </a>
+                  </div>
+                  <div className="notice-set-item">
+                    <span className="notice-pill notice-pill-gold">✨ مرحبا بكم هنا سيرفر عرب تك متاح جميع الخدمات بفضل الله واسعار مناسبه للجميع</span>
+                    <span className="notice-pill notice-pill-gold">✨ Welcome to Arab Tech Server, all services are available and prices are suitable for everyone</span>
+                    <a href="https://wa.me/249123667227" target="_blank" rel="noopener noreferrer" className="notice-pill notice-pill-link">
+                      <span className="notice-pill-label">💬 واتساب 1:</span>
+                      <bdi dir="ltr" className="notice-pill-bdi">+249&nbsp;12&nbsp;366&nbsp;7227</bdi>
+                    </a>
+                    <a href="https://wa.me/16728972935" target="_blank" rel="noopener noreferrer" className="notice-pill notice-pill-link">
+                      <span className="notice-pill-label">💬 واتساب 2:</span>
+                      <bdi dir="ltr" className="notice-pill-bdi">+1&nbsp;(672)&nbsp;897-2935</bdi>
+                    </a>
+                  </div>
+                </div>
+                <div className="notice-set" aria-hidden="true" role="presentation">
+                  <div className="notice-set-item">
+                    <span className="notice-pill notice-pill-gold">✨ مرحبا بكم هنا سيرفر عرب تك متاح جميع الخدمات بفضل الله واسعار مناسبه للجميع</span>
+                    <span className="notice-pill notice-pill-gold">✨ Welcome to Arab Tech Server, all services are available and prices are suitable for everyone</span>
+                    <a href="https://wa.me/249123667227" target="_blank" rel="noopener noreferrer" className="notice-pill notice-pill-link">
+                      <span className="notice-pill-label">💬 واتساب 1:</span>
+                      <bdi dir="ltr" className="notice-pill-bdi">+249&nbsp;12&nbsp;366&nbsp;7227</bdi>
+                    </a>
+                    <a href="https://wa.me/16728972935" target="_blank" rel="noopener noreferrer" className="notice-pill notice-pill-link">
+                      <span className="notice-pill-label">💬 واتساب 2:</span>
+                      <bdi dir="ltr" className="notice-pill-bdi">+1&nbsp;(672)&nbsp;897-2935</bdi>
+                    </a>
+                  </div>
+                  <div className="notice-set-item">
+                    <span className="notice-pill notice-pill-gold">✨ مرحبا بكم هنا سيرفر عرب تك متاح جميع الخدمات بفضل الله واسعار مناسبه للجميع</span>
+                    <span className="notice-pill notice-pill-gold">✨ Welcome to Arab Tech Server, all services are available and prices are suitable for everyone</span>
+                    <a href="https://wa.me/249123667227" target="_blank" rel="noopener noreferrer" className="notice-pill notice-pill-link">
+                      <span className="notice-pill-label">💬 واتساب 1:</span>
+                      <bdi dir="ltr" className="notice-pill-bdi">+249&nbsp;12&nbsp;366&nbsp;7227</bdi>
+                    </a>
+                    <a href="https://wa.me/16728972935" target="_blank" rel="noopener noreferrer" className="notice-pill notice-pill-link">
+                      <span className="notice-pill-label">💬 واتساب 2:</span>
+                      <bdi dir="ltr" className="notice-pill-bdi">+1&nbsp;(672)&nbsp;897-2935</bdi>
+                    </a>
+                  </div>
+                  <div className="notice-set-item">
+                    <span className="notice-pill notice-pill-gold">✨ مرحبا بكم هنا سيرفر عرب تك متاح جميع الخدمات بفضل الله واسعار مناسبه للجميع</span>
+                    <span className="notice-pill notice-pill-gold">✨ Welcome to Arab Tech Server, all services are available and prices are suitable for everyone</span>
+                    <a href="https://wa.me/249123667227" target="_blank" rel="noopener noreferrer" className="notice-pill notice-pill-link">
+                      <span className="notice-pill-label">💬 واتساب 1:</span>
+                      <bdi dir="ltr" className="notice-pill-bdi">+249&nbsp;12&nbsp;366&nbsp;7227</bdi>
+                    </a>
+                    <a href="https://wa.me/16728972935" target="_blank" rel="noopener noreferrer" className="notice-pill notice-pill-link">
+                      <span className="notice-pill-label">💬 واتساب 2:</span>
+                      <bdi dir="ltr" className="notice-pill-bdi">+1&nbsp;(672)&nbsp;897-2935</bdi>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/* Child Pages Content */}
         <main className="main-content-inner">

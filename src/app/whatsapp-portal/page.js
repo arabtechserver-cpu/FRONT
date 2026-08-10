@@ -41,8 +41,9 @@ export default function WhatsAppPortalPage() {
 
     const fetchStatusAndSettings = async () => {
       try {
+        const headers = { "Authorization": `Bearer ${portalToken}` };
         // Fetch WA status
-        const resStatus = await fetch(`${API_BASE_URL}/api/whatsapp/status`);
+        const resStatus = await fetch(`${API_BASE_URL}/api/whatsapp/status`, { headers });
         if (resStatus.ok) {
           const data = await resStatus.json();
           setWaStatus(data.status || "disconnected");
@@ -50,11 +51,11 @@ export default function WhatsAppPortalPage() {
         }
 
         // Fetch settings (to load numbers and portal password)
-        const resSettings = await fetch(`${API_BASE_URL}/api/settings`);
+        const resSettings = await fetch(`${API_BASE_URL}/api/settings/admin`, { headers });
         if (resSettings.ok) {
           const dataSettings = await resSettings.json();
           setNumbers(Array.isArray(dataSettings.whatsapp_numbers) ? dataSettings.whatsapp_numbers : []);
-          setPortalPasswordSetting(dataSettings.whatsapp_portal_password || "");
+          setPortalPasswordSetting("");
         }
       } catch (err) {
         console.error("Failed to fetch WhatsApp portal status/settings:", err);
@@ -64,7 +65,7 @@ export default function WhatsAppPortalPage() {
     fetchStatusAndSettings();
     const interval = setInterval(fetchStatusAndSettings, 5000);
     return () => clearInterval(interval);
-  }, [step]);
+  }, [step, portalToken]);
 
   // Step 1: Submit Password
   const handlePasswordSubmit = async (e) => {
@@ -74,9 +75,11 @@ export default function WhatsAppPortalPage() {
     setLoading(true);
 
     try {
+      const adminToken = localStorage.getItem("admin_token") || sessionStorage.getItem("admin_token");
+      if (!adminToken) throw new Error("سجّل الدخول كمدير أولاً.");
       const res = await fetch(`${API_BASE_URL}/api/whatsapp-portal/request-access`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${adminToken}` },
         body: JSON.stringify({ password })
       });
       const data = await res.json();
@@ -90,8 +93,8 @@ export default function WhatsAppPortalPage() {
         setStep(2);
       } else {
         // Direct access granted (e.g. if OTP is not enforced yet because no numbers connected)
-        setPortalToken(data.token);
-        sessionStorage.setItem("wa_portal_token", data.token);
+        setPortalToken(data.portalToken);
+        sessionStorage.setItem("wa_portal_token", data.portalToken);
         setStep(3);
       }
     } catch (err) {
@@ -108,10 +111,12 @@ export default function WhatsAppPortalPage() {
     setLoading(true);
 
     try {
+      const adminToken = localStorage.getItem("admin_token") || sessionStorage.getItem("admin_token");
+      if (!adminToken) throw new Error("سجّل الدخول كمدير أولاً.");
       const res = await fetch(`${API_BASE_URL}/api/whatsapp-portal/verify-access`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password, otp_code: otpCode })
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${adminToken}` },
+        body: JSON.stringify({ code: otpCode })
       });
       const data = await res.json();
 
@@ -119,8 +124,8 @@ export default function WhatsAppPortalPage() {
         throw new Error(data.message || "كود التحقق غير صحيح أو منتهي الصلاحية.");
       }
 
-      setPortalToken(data.token);
-      sessionStorage.setItem("wa_portal_token", data.token);
+      setPortalToken(data.portalToken);
+      sessionStorage.setItem("wa_portal_token", data.portalToken);
       setStep(3);
     } catch (err) {
       setError(err.message || "فشل التحقق من الكود.");
@@ -134,7 +139,10 @@ export default function WhatsAppPortalPage() {
     if (!confirm("هل أنت متأكد من إعادة تشغيل خدمة الواتساب؟ سيتم توليد كود QR جديد للمسح.")) return;
     setLoading(true);
     try {
-      await fetch(`${API_BASE_URL}/api/whatsapp/restart`, { method: "POST" });
+      await fetch(`${API_BASE_URL}/api/whatsapp/start`, {
+        method: "POST",
+        headers: { "Authorization": `Bearer ${portalToken}` }
+      });
       setWaStatus("disconnected");
       setQrCode(null);
       alert("تم طلب إعادة التشغيل بنجاح. انتظر ثوانٍ لظهور الكيو آر كود الجديد.");

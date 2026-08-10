@@ -37,7 +37,7 @@ export default function ServiceDetail({ params }) {
 
   const [isCustomerLoggedIn, setIsCustomerLoggedIn] = useState(false);
   const [customerUser, setCustomerUser] = useState(null);
-  const [theme, setTheme] = useState("dark");
+  const [theme, setTheme] = useState(typeof window !== "undefined" ? (document.documentElement.getAttribute("data-theme") || localStorage.getItem("theme") || "dark") : "dark");
   const [imageError, setImageError] = useState(false);
 
   /* eslint-disable react-hooks/set-state-in-effect */
@@ -298,15 +298,6 @@ export default function ServiceDetail({ params }) {
       // as the user wants to cancel the default system fields.
     }
 
-    // Fallback to category fields
-    let catFields = [];
-    if (Array.isArray(activeService.category_fields)) catFields = activeService.category_fields;
-    else if (typeof activeService.category_fields === 'string') {
-      try { catFields = JSON.parse(activeService.category_fields); } catch { }
-    }
-
-    if (catFields && catFields.length > 0) return catFields;
-
     return [];
   }, [service]);
 
@@ -397,9 +388,6 @@ export default function ServiceDetail({ params }) {
     if (!activeService) return "بيانات الخدمة";
     if (activeService.fields_title && activeService.fields_title.trim()) {
       return activeService.fields_title.trim();
-    }
-    if (activeService.category_fields_title && activeService.category_fields_title.trim()) {
-      return activeService.category_fields_title.trim();
     }
     return "بيانات الخدمة";
   }, [activeService]);

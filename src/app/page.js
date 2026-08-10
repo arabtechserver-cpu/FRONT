@@ -42,6 +42,15 @@ const PAYMENT_METHODS = [
   { name: "Bitcoin", icon: "₿", color: "#f7931a" },
 ];
 
+const FALLBACK_CATEGORIES = [
+  { id: 14, name: "قسم خدمات سيرفر والأدوات", description: "تفعيل الأدوات والبوكسات الرقمية والدعم الفني.", color: "#10b981" },
+  { id: 13, name: "خدمات APPLE", description: "أكواد واشتراكات وخدمات آبل.", color: "#a855f7" },
+  { id: 4, name: "الأرصدة والعملات", description: "USDT وطرق دفع متعددة.", color: "#06b6d4" },
+  { id: 7, name: "اشتراكات", description: "اشتراكات رقمية وتنفيذ سريع.", color: "#d946ef" },
+  { id: 5, name: "سوشال ميديا", description: "خدمات حسابات ومنصات اجتماعية.", color: "#ec4899" },
+  { id: 10, name: "البرمجة والتصميم", description: "حلول برمجية وتصميمات احترافية.", color: "#6366f1" },
+];
+
 export default function Home() {
   const [categories, setCategories]         = useState([]);
   const [loading, setLoading]               = useState(true);
@@ -127,7 +136,8 @@ export default function Home() {
     return () => clearInterval(t);
   }, [slides]);
 
-  const rootCats = [...categories].filter(c => !c.parent_id).sort((a, b) => {
+  const categorySource = categories.length > 0 ? categories : FALLBACK_CATEGORIES;
+  const rootCats = [...categorySource].filter(c => !c.parent_id).sort((a, b) => {
     const orderA = a.sort_order || 0;
     const orderB = b.sort_order || 0;
     if (orderA !== orderB) {
@@ -337,7 +347,7 @@ export default function Home() {
               <h2 className="hp-section-heading">الأقسام الرئيسية</h2>
             </div>
             <div className="hp-cat-icon-grid">
-              {loading ? (
+              {loading && categories.length === 0 ? (
                 Array.from({ length: 6 }).map((_, i) => (
                   <div key={i} className="hp-cat-icon-card hp-skeleton" />
                 ))
@@ -365,7 +375,9 @@ export default function Home() {
               <span className="hp-section-title-icon">📋</span>
               <h2 className="hp-section-heading">جميع الخدمات</h2>
               <span className="hp-count-badge">
-                {activeSection === "popular" ? popularServices.length : filteredCats.length} {activeSection === "popular" ? "خدمة" : "قسم"}
+                {activeSection === "popular"
+                  ? (popularLoading ? "الأكثر طلباً" : `${popularServices.length} خدمة`)
+                  : `${filteredCats.length} قسم`}
               </span>
             </div>
             <div className="hp-section-tabs">
@@ -387,7 +399,7 @@ export default function Home() {
           {/* Services list */}
           <div className="hp-services-panel">
             {activeSection === "all" ? (
-              loading ? (
+              loading && categories.length === 0 ? (
                 <div className="hp-list">
                   {Array.from({ length: 8 }).map((_, i) => (
                     <div key={i} className="hp-row hp-skeleton" />

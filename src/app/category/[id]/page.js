@@ -49,7 +49,7 @@ const getCategoryServices = cache(async function getCategoryServices(catId) {
 
 const getSiteName = cache(async function getSiteName() {
   try {
-    const res = await fetch(`${API_BASE_URL}/api/settings`, { next: { revalidate: 3600 } });
+    const res = await fetch(`${API_BASE_URL}/api/settings/metadata`, { next: { revalidate: 300 } });
     if (res.ok) {
       const settings = await res.json();
       if (settings.site_name) return settings.site_name;

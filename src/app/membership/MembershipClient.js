@@ -12,19 +12,7 @@ export default function MembershipClient() {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    setHydrated(true);
-    const storedToken = localStorage.getItem("customer_token");
-    setToken(storedToken || "");
-
-    if (storedToken) {
-      fetchProfile(storedToken);
-    } else {
-      setLoading(false);
-    }
-  }, []);
-
-  const fetchProfile = async (currentToken) => {
+  async function fetchProfile(currentToken) {
     setLoading(true);
     try {
       const response = await fetch(`${API_BASE_URL}/api/customer/me`, {
@@ -47,7 +35,19 @@ export default function MembershipClient() {
     } finally {
       setLoading(false);
     }
-  };
+  }
+
+  useEffect(() => {
+    setHydrated(true);
+    const storedToken = localStorage.getItem("customer_token");
+    setToken(storedToken || "");
+
+    if (storedToken) {
+      fetchProfile(storedToken);
+    } else {
+      setLoading(false);
+    }
+  }, []);
 
   if (!hydrated) return null;
 

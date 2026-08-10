@@ -540,7 +540,7 @@ export default function CustomerLogin() {
             <div style={{ display: "inline-flex", justifyContent: "center", marginBottom: "10px" }}>
               {settings.site_logo && settings.site_logo !== "default" ? (
                 <img 
-                  src={settings.site_logo.startsWith("http") || settings.site_logo.startsWith("/") || settings.site_logo.startsWith("data:") ? settings.site_logo : `${API_BASE_URL}${settings.site_logo}`} 
+                  src={settings.site_logo.startsWith("http") || settings.site_logo.startsWith("data:") ? settings.site_logo : (settings.site_logo.includes("uploads") ? `${API_BASE_URL}${settings.site_logo.startsWith("/") ? "" : "/"}${settings.site_logo}` : settings.site_logo)} 
                   alt={settings.site_name} 
                   style={{ width: "64px", height: "64px", borderRadius: "16px", objectFit: "cover" }} 
                 />

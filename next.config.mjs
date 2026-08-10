@@ -1,6 +1,38 @@
 const defaultApiUrl = 'https://api.arab-tech1.online';
 const apiUrl = process.env.NEXT_PUBLIC_API_URL || defaultApiUrl;
 
+const securityHeaders = [
+  { key: 'Strict-Transport-Security', value: 'max-age=31536000; includeSubDomains; preload' },
+  { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+  { key: 'X-Content-Type-Options', value: 'nosniff' },
+  { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+  { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+  {
+    key: 'Content-Security-Policy',
+    value: [
+      "default-src 'self'",
+      "base-uri 'self'",
+      "object-src 'none'",
+      "frame-ancestors 'self'",
+      "form-action 'self'",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.paypal.com https://*.paypal.com https://challenges.cloudflare.com",
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+      "font-src 'self' https://fonts.gstatic.com data:",
+      `img-src 'self' data: blob: ${apiUrl}`,
+      `media-src 'self' data: blob: ${apiUrl}`,
+      `connect-src 'self' ${apiUrl} https://www.paypal.com https://*.paypal.com https://challenges.cloudflare.com`,
+      "frame-src https://www.paypal.com https://*.paypal.com https://challenges.cloudflare.com",
+      "upgrade-insecure-requests",
+    ].join('; '),
+  },
+];
+
+const privatePageHeaders = [
+  ...securityHeaders,
+  { key: 'Cache-Control', value: 'no-store, max-age=0' },
+  { key: 'X-Robots-Tag', value: 'noindex, nofollow, noarchive' },
+];
+
 function buildRemotePattern(value) {
   try {
     const url = new URL(value);
@@ -32,32 +64,24 @@ const nextConfig = {
   async headers() {
     return [
       {
+        source: '/:path*',
+        headers: securityHeaders,
+      },
+      {
         source: '/admin/:path*',
-        headers: [
-          { key: 'Cache-Control', value: 'no-store, max-age=0' },
-          { key: 'X-Robots-Tag', value: 'noindex, nofollow, noarchive' },
-        ],
+        headers: privatePageHeaders,
       },
       {
         source: '/login',
-        headers: [
-          { key: 'Cache-Control', value: 'no-store, max-age=0' },
-          { key: 'X-Robots-Tag', value: 'noindex, nofollow, noarchive' },
-        ],
+        headers: privatePageHeaders,
       },
       {
         source: '/wallet/:path*',
-        headers: [
-          { key: 'Cache-Control', value: 'no-store, max-age=0' },
-          { key: 'X-Robots-Tag', value: 'noindex, nofollow, noarchive' },
-        ],
+        headers: privatePageHeaders,
       },
       {
         source: '/orders/:path*',
-        headers: [
-          { key: 'Cache-Control', value: 'no-store, max-age=0' },
-          { key: 'X-Robots-Tag', value: 'noindex, nofollow, noarchive' },
-        ],
+        headers: privatePageHeaders,
       },
       {
         source: '/favicon.ico',

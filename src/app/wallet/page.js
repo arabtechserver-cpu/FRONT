@@ -32,7 +32,7 @@ export default function WalletPage() {
   const [whatsappSent, setWhatsappSent] = useState(false);
   const [pendingWhatsapp, setPendingWhatsapp] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [theme, setTheme] = useState("dark");
+  const [theme, setTheme] = useState(typeof window !== "undefined" ? (document.documentElement.getAttribute("data-theme") || localStorage.getItem("theme") || "dark") : "dark");
   const [hydrated, setHydrated] = useState(false);
   // ── PayPal states ──
   const [paypalAmount, setPaypalAmount] = useState("");

@@ -9,6 +9,7 @@ export default function robots() {
         "/admin/",
         "/admin/login",
         "/api/",
+        "/login",
         "/orders/",
         "/wallet/"
       ],

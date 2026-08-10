@@ -189,13 +189,18 @@ export default function ServicesClient() {
     return "⚡";
   };
 
-  const filteredServices = services.filter((s) =>
+  const catalogCategories = categories.length > 0
+    ? categories
+    : [...staticCategories].sort((a, b) => a.name.localeCompare(b.name, 'en'));
+  const catalogServices = services.length > 0 ? services : staticServices;
+
+  const filteredServices = catalogServices.filter((s) =>
     s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     s.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const uncategorizedServices = filteredServices
-    .filter((s) => !categories.some((c) => c.id === s.category_id))
+    .filter((s) => !catalogCategories.some((c) => c.id === s.category_id))
     .sort((a, b) => a.name.localeCompare(b.name, 'en'));
 
   return (
@@ -276,7 +281,7 @@ export default function ServicesClient() {
       </div>
 
       {/* Services List (scc-grid) */}
-      {loading ? (
+      {loading && services.length === 0 ? (
         <div style={{ textAlign: "center", padding: "40px", fontSize: "1.2rem", fontWeight: 700 }}>
           جاري تحميل الخدمات...
         </div>
@@ -289,10 +294,10 @@ export default function ServicesClient() {
         </div>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
-          {categories.filter(cat => {
+          {catalogCategories.filter(cat => {
             if (searchTerm.trim().length > 0) return true;
             return true;
-          }).slice(0, searchTerm.trim().length > 0 ? categories.length : visibleCategories).map((cat) => {
+          }).slice(0, searchTerm.trim().length > 0 ? catalogCategories.length : visibleCategories).map((cat) => {
             const catServices = filteredServices.filter(s => s.category_id === cat.id).sort((a, b) => a.name.localeCompare(b.name, 'en'));
             if (catServices.length === 0) return null;
 
@@ -590,7 +595,7 @@ export default function ServicesClient() {
             </div>
           )}
 
-          {searchTerm.trim().length === 0 && visibleCategories < categories.length && (
+          {searchTerm.trim().length === 0 && visibleCategories < catalogCategories.length && (
             <div style={{ display: "flex", justifyContent: "center", marginTop: "20px", marginBottom: "10px" }}>
               <button
                 onClick={() => setVisibleCategories(prev => prev + 5)}

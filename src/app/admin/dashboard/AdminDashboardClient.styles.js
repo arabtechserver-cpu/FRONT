@@ -777,8 +777,8 @@ const dashboardStyles = `
         /* Burger Button */
         .admin-burger-btn {
           display: none;
-          width: 42px;
-          height: 42px;
+          width: 52px;
+          height: 52px;
           border-radius: 12px;
           border: 1px solid rgba(255, 255, 255, 0.08);
           background: rgba(255, 255, 255, 0.03);

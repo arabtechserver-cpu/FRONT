@@ -30,15 +30,15 @@ const getSiteSettings = cache(async () => {
 
   if (!isBuildTime) {
     try {
-      const res = await fetchWithTimeout(`${API_BASE_URL}/api/settings`, { next: { revalidate: 10 } });
+      const res = await fetchWithTimeout(`${API_BASE_URL}/api/settings/metadata`, { next: { revalidate: 300 } });
       if (res.ok) {
         const settings = await res.json();
         if (settings.site_name) siteName = settings.site_name;
         if (settings.site_logo && settings.site_logo !== "default") siteLogo = settings.site_logo;
         if (settings.site_favicon && settings.site_favicon !== "default") siteFavicon = settings.site_favicon;
       }
-    } catch (error) {
-      console.error("Failed to fetch settings for metadata:", error);
+    } catch {
+      // Keep metadata rendering resilient during build or temporary API downtime.
     }
   }
 
@@ -258,8 +258,8 @@ export default async function RootLayout({ children }) {
             __html: `
               (function() {
                 try {
-                  document.documentElement.setAttribute('data-theme', 'light');
-                  localStorage.setItem('theme', 'light');
+                  var savedTheme = localStorage.getItem('theme') || 'dark';
+                  document.documentElement.setAttribute('data-theme', savedTheme);
                 } catch (e) {
                   console.error('Failed to set theme early:', e);
                 }

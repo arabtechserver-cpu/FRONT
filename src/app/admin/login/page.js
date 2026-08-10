@@ -121,7 +121,7 @@ export default function AdminLogin() {
           <div style={{ display: "inline-flex", justifyContent: "center", marginBottom: "15px" }}>
             {settings.site_logo && settings.site_logo !== "default" ? (
               <img 
-                src={settings.site_logo.startsWith("http") || settings.site_logo.startsWith("/") || settings.site_logo.startsWith("data:") ? settings.site_logo : `${API_BASE_URL}${settings.site_logo}`} 
+                src={settings.site_logo.startsWith("http") || settings.site_logo.startsWith("data:") ? settings.site_logo : (settings.site_logo.includes("uploads") ? `${API_BASE_URL}${settings.site_logo.startsWith("/") ? "" : "/"}${settings.site_logo}` : settings.site_logo)} 
                 alt={settings.site_name} 
                 style={{ width: "60px", height: "60px", borderRadius: "12px", objectFit: "cover" }} 
               />

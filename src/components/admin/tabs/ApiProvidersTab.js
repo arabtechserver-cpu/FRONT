@@ -24,7 +24,7 @@ export default function ApiProvidersTab() {
   const [activeProvider, setActiveProvider] = useState(null); // Used for fetch modal
   
   // Form states
-  const [formData, setFormData] = useState({ name: "", api_url: "", username: "", api_key: "", is_active: true });
+  const [formData, setFormData] = useState({ name: "", api_url: "", username: "", api_key: "", is_active: true, provider_type: "dhru", mapping_rules: "{}" });
   
   // Sync states
   const [syncConfig, setSyncConfig] = useState({ exchange_rate: 50, markup_percent: 10, group_as_packages: true });
@@ -232,11 +232,13 @@ export default function ApiProvidersTab() {
         api_url: provider.api_url,
         username: provider.username,
         api_key: provider.api_key,
-        is_active: provider.is_active
+        is_active: provider.is_active,
+        provider_type: provider.provider_type || "dhru",
+        mapping_rules: provider.mapping_rules || "{\n  \"sync_endpoint\": \"\",\n  \"sync_method\": \"GET\",\n  \"map_array_path\": \"\",\n  \"map_service_id\": \"\",\n  \"map_service_name\": \"\"\n}"
       });
     } else {
       setEditingProvider(null);
-      setFormData({ name: "", api_url: "", username: "", api_key: "", is_active: true });
+      setFormData({ name: "", api_url: "", username: "", api_key: "", is_active: true, provider_type: "dhru", mapping_rules: "{\n  \"sync_endpoint\": \"\",\n  \"sync_method\": \"GET\",\n  \"map_array_path\": \"\",\n  \"map_service_id\": \"\",\n  \"map_service_name\": \"\"\n}" });
     }
     setShowModal(true);
   };
@@ -326,6 +328,12 @@ export default function ApiProvidersTab() {
                       }}>
                         {provider.is_active ? "نشط" : "معطل"}
                       </span>
+                      {provider.provider_type === 'dynamic' && (
+                        <span style={{ 
+                          fontSize: "0.75rem", padding: "4px 8px", borderRadius: "6px", 
+                          background: "rgba(56, 189, 248, 0.1)", color: "#38bdf8", border: "1px solid rgba(56, 189, 248, 0.2)"
+                        }}>مخصص (Dynamic)</span>
+                      )}
                     </h3>
                     <p style={{ color: "#94a3b8", fontSize: "0.85rem", margin: "5px 0 0 0", fontFamily: "monospace", direction: "ltr", textAlign: "left" }}>
                       {provider.api_url}
@@ -713,6 +721,38 @@ export default function ApiProvidersTab() {
                   />
                 </div>
               </div>
+
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label style={{ display: "block", marginBottom: "8px", fontWeight: "bold", color: "#cbd5e1", fontSize: "0.9rem" }}>نوع المزود:</label>
+                <select
+                  value={formData.provider_type || "dhru"}
+                  onChange={(e) => setFormData({...formData, provider_type: e.target.value})}
+                  className="search-input-premium"
+                  style={{ padding: "12px 16px !important", width: "100%", cursor: "pointer", background: "#11162d" }}
+                >
+                  <option value="dhru">قياسي (Dhru / PerfectPanel / GSM)</option>
+                  <option value="dynamic">مخصص (Dynamic Mapper - ربط ديناميكي)</option>
+                </select>
+              </div>
+
+              {formData.provider_type === "dynamic" && (
+                <div className="form-group" style={{ marginBottom: 0 }}>
+                  <label style={{ display: "block", marginBottom: "8px", fontWeight: "bold", color: "#38bdf8", fontSize: "0.9rem" }}>
+                    إعدادات الربط الديناميكي (JSON Mapping Rules):
+                  </label>
+                  <textarea
+                    value={formData.mapping_rules}
+                    onChange={(e) => setFormData({...formData, mapping_rules: e.target.value})}
+                    className="search-input-premium"
+                    style={{ padding: "12px 16px !important", width: "100%", minHeight: "200px", fontFamily: "monospace", direction: "ltr" }}
+                    placeholder='{"sync_endpoint": "https://api.com/services", "map_array_path": "data.services"}'
+                  />
+                  <p style={{ color: "#94a3b8", fontSize: "0.8rem", marginTop: "5px" }}>
+                    قم بكتابة خريطة الـ JSON. مثال: 
+                    <code>map_array_path</code> هو مسار المصفوفة، و <code>map_service_name</code> و <code>map_service_id</code> وغيرها.
+                  </p>
+                </div>
+              )}
 
               <div style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: "10px", background: "rgba(16, 185, 129, 0.05)", padding: "12px", borderRadius: "10px", border: "1px solid rgba(16, 185, 129, 0.2)" }}>
                 <input

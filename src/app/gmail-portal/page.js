@@ -25,12 +25,13 @@ export default function GmailPortalPage() {
       return;
     }
 
-    fetch(`${API_BASE_URL}/api/settings`)
+    fetch(`${API_BASE_URL}/api/settings/admin`, {
+      headers: { "Authorization": `Bearer ${token}` }
+    })
       .then(res => res.ok ? res.json() : null)
       .then(data => {
         if (data) {
           setEmailUser(data.email_user || "");
-          setEmailPass(data.email_pass || "");
           if (data.email_user) {
             setTestEmailInput(data.email_user);
           }

@@ -460,7 +460,7 @@ export default function DashboardProvider({ children }) {
 
       // Fetch site settings
       if (!isSilent) {
-        const settingsRes = await fetch(`${API_BASE_URL}/api/settings?t=${Date.now()}`);
+        const settingsRes = await fetch(`${API_BASE_URL}/api/settings/admin`, { headers });
         if (settingsRes.ok) {
           const settingsData = await settingsRes.json();
           setSiteName(settingsData.site_name || "عرب تك سيرفر");
