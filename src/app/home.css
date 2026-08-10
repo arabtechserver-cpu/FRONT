@@ -316,7 +316,7 @@
   .banner-bg-img {
     width: 100% !important;
     height: 100% !important;
-    object-fit: cover !important;
+    object-fit: contain !important; /* Full width 100% visible */
     object-position: center center !important;
   }
   .banner-info {
@@ -365,7 +365,7 @@
   .banner-bg-img {
     width: 100% !important;
     height: 100% !important;
-    object-fit: cover !important;
+    object-fit: contain !important; /* Full width 100% visible */
     object-position: center center !important;
   }
   .banner-content { padding: 14px 10px !important; }
