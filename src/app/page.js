@@ -73,14 +73,35 @@ export default function Home() {
 
   // ── bootstrap ─────────────────────────────────────────────────────────────
   useEffect(() => {
-    // 1. Instantly load cached banners from localStorage (0ms rendering)
+    // 1. Instantly load cached data from localStorage (0ms rendering)
     try {
       const cachedBanners = localStorage.getItem("arabtech_cached_banners");
+      const cachedCats = localStorage.getItem("arabtech_cached_categories");
+      const cachedSettings = localStorage.getItem("arabtech_cached_settings");
+      const cachedPopular = localStorage.getItem("arabtech_cached_popular");
+
+      if (cachedCats) {
+        setCategories(JSON.parse(cachedCats));
+        setLoading(false);
+      }
+      if (cachedPopular) {
+        setPopularServices(JSON.parse(cachedPopular));
+        setPopularLoading(false);
+      }
+      if (cachedSettings) {
+        const parsed = JSON.parse(cachedSettings);
+        setSettings(parsed);
+        if (parsed.home_stats) {
+          try { setStats(typeof parsed.home_stats === 'string' ? JSON.parse(parsed.home_stats) : parsed.home_stats); } catch(e) {}
+        }
+        if (parsed.featured_sections && Array.isArray(parsed.featured_sections)) {
+          setFeaturedSections(parsed.featured_sections);
+        }
+      }
       if (cachedBanners) {
         const parsed = JSON.parse(cachedBanners);
         if (Array.isArray(parsed) && parsed.length > 0) {
           setSlides(parsed);
-          // Instant preloading
           parsed.forEach(s => {
             if (s.icon && (s.icon.startsWith("data:") || s.icon.startsWith("http") || s.icon.startsWith("/uploads"))) {
               const url = s.icon.startsWith("/uploads") ? `${API_BASE_URL}${s.icon}` : s.icon;
@@ -95,6 +116,7 @@ export default function Home() {
     fetch(`${API_BASE_URL}/api/settings`).then(r => r.ok ? r.json() : null).then(d => {
       if (d) {
         setSettings(d);
+        try { localStorage.setItem("arabtech_cached_settings", JSON.stringify(d)); } catch(e) {}
         if (d.home_stats) {
           try {
             setStats(typeof d.home_stats === 'string' ? JSON.parse(d.home_stats) : d.home_stats);
@@ -108,7 +130,13 @@ export default function Home() {
 
     fetch(`${API_BASE_URL}/api/categories`)
       .then(r => r.ok ? r.json() : [])
-      .then(data => { setCategories(Array.isArray(data) ? data : []); setLoading(false); })
+      .then(data => {
+        if (Array.isArray(data) && data.length > 0) {
+          setCategories(data);
+          try { localStorage.setItem("arabtech_cached_categories", JSON.stringify(data)); } catch(e) {}
+        }
+        setLoading(false);
+      })
       .catch(() => setLoading(false));
 
     fetch(`${API_BASE_URL}/api/reviews`)
@@ -138,7 +166,13 @@ export default function Home() {
 
     fetch(`${API_BASE_URL}/api/orders/popular-services`)
       .then(r => r.ok ? r.json() : [])
-      .then(data => { setPopularServices(Array.isArray(data) ? data : []); setPopularLoading(false); })
+      .then(data => {
+        if (Array.isArray(data) && data.length > 0) {
+          setPopularServices(data);
+          try { localStorage.setItem("arabtech_cached_popular", JSON.stringify(data)); } catch(e) {}
+        }
+        setPopularLoading(false);
+      })
       .catch(() => setPopularLoading(false));
 
     fetch(`${API_BASE_URL}/api/orders/recent`)

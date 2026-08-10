@@ -98,12 +98,27 @@ export default function ServicesClient() {
   ];
 
   useEffect(() => {
-    setLoading(true);
+    // 1. Instant 0ms load from localStorage cache
+    try {
+      const cachedCats = localStorage.getItem("arabtech_cached_categories");
+      const cachedSvcs = localStorage.getItem("arabtech_cached_services");
+      const cachedSettings = localStorage.getItem("arabtech_cached_settings");
+      if (cachedCats) setCategories(JSON.parse(cachedCats));
+      if (cachedSettings) setSettings(JSON.parse(cachedSettings));
+      if (cachedSvcs) {
+        setServices(JSON.parse(cachedSvcs));
+        setLoading(false);
+      }
+    } catch(e) {}
 
+    // 2. Fetch fresh data in background (Stale-While-Revalidate)
     fetch(`${API_BASE_URL}/api/settings`)
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
-        if (data) setSettings(data);
+        if (data) {
+          setSettings(data);
+          try { localStorage.setItem("arabtech_cached_settings", JSON.stringify(data)); } catch(e) {}
+        }
       })
       .catch(() => { });
 
@@ -116,6 +131,7 @@ export default function ServicesClient() {
       .then((data) => {
         const sorted = [...data].sort((a, b) => a.name.localeCompare(b.name, 'en'));
         setCategories(sorted);
+        try { localStorage.setItem("arabtech_cached_categories", JSON.stringify(sorted)); } catch(e) {}
       })
       .catch(() => {
         const sortedStatic = [...staticCategories].sort((a, b) => a.name.localeCompare(b.name, 'en'));
@@ -137,6 +153,7 @@ export default function ServicesClient() {
       .then((data) => {
         setServices(data);
         setLoading(false);
+        try { localStorage.setItem("arabtech_cached_services", JSON.stringify(data)); } catch(e) {}
       })
       .catch(() => {
         setServices(staticServices);

@@ -91,9 +91,19 @@ export default function CustomerLogin() {
   useEffect(() => {
     if (otpStep || forgotStep > 0) return;
 
+    let retryCount = 0;
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "540676912586-68bp39ompaobro5p8g1o4t2f6nd8htr8.apps.googleusercontent.com";
+
     const initGoogleSignIn = () => {
-      if (typeof window === "undefined" || !window.google?.accounts?.id) return;
-      const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "540676912586-68bp39ompaobro5p8g1o4t2f6nd8htr8.apps.googleusercontent.com";
+      if (typeof window === "undefined") return;
+
+      if (!window.google?.accounts?.id) {
+        if (retryCount < 20) {
+          retryCount++;
+          setTimeout(initGoogleSignIn, 250);
+        }
+        return;
+      }
 
       window.handleGoogleCallback = async (response) => {
         if (!response || !response.credential) return;
@@ -137,7 +147,9 @@ export default function CustomerLogin() {
       try {
         window.google.accounts.id.initialize({
           client_id: clientId,
-          callback: window.handleGoogleCallback
+          callback: window.handleGoogleCallback,
+          auto_select: false,
+          cancel_on_tap_outside: true
         });
 
         const btnContainer = document.getElementById("googleSignInContainer");
@@ -146,7 +158,7 @@ export default function CustomerLogin() {
           window.google.accounts.id.renderButton(btnContainer, {
             theme: "filled_blue",
             size: "large",
-            width: 250,
+            width: 260,
             text: "continue_with",
             shape: "pill",
             locale: "ar"
@@ -158,8 +170,9 @@ export default function CustomerLogin() {
     };
 
     const scriptId = "google-gsi-client";
-    if (!document.getElementById(scriptId)) {
-      const script = document.createElement("script");
+    let script = document.getElementById(scriptId);
+    if (!script) {
+      script = document.createElement("script");
       script.id = scriptId;
       script.src = "https://accounts.google.com/gsi/client";
       script.async = true;
@@ -167,9 +180,9 @@ export default function CustomerLogin() {
       script.onload = () => {
         initGoogleSignIn();
       };
-      document.body.appendChild(script);
+      document.head.appendChild(script);
     } else {
-      setTimeout(initGoogleSignIn, 100);
+      initGoogleSignIn();
     }
   }, [activeTab, otpStep, forgotStep, router]);
 
