@@ -55,7 +55,7 @@ export default function Home() {
   const [categories, setCategories]         = useState([]);
   const [loading, setLoading]               = useState(true);
   const [searchTerm, setSearchTerm]         = useState("");
-  const [slides, setSlides]                 = useState([]);
+  const [slides, setSlides]                 = useState(DEFAULT_SLIDES);
   const [currentSlide, setCurrentSlide]     = useState(0);
   const [popularServices, setPopularServices] = useState([]);
   const [popularLoading, setPopularLoading] = useState(true);
@@ -73,6 +73,25 @@ export default function Home() {
 
   // ── bootstrap ─────────────────────────────────────────────────────────────
   useEffect(() => {
+    // 1. Instantly load cached banners from localStorage (0ms rendering)
+    try {
+      const cachedBanners = localStorage.getItem("arabtech_cached_banners");
+      if (cachedBanners) {
+        const parsed = JSON.parse(cachedBanners);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setSlides(parsed);
+          // Instant preloading
+          parsed.forEach(s => {
+            if (s.icon && (s.icon.startsWith("data:") || s.icon.startsWith("http") || s.icon.startsWith("/uploads"))) {
+              const url = s.icon.startsWith("/uploads") ? `${API_BASE_URL}${s.icon}` : s.icon;
+              const img = new Image();
+              img.src = url;
+            }
+          });
+        }
+      }
+    } catch (e) {}
+
     fetch(`${API_BASE_URL}/api/settings`).then(r => r.ok ? r.json() : null).then(d => {
       if (d) {
         setSettings(d);
@@ -102,8 +121,17 @@ export default function Home() {
       .then(data => {
         if (Array.isArray(data) && data.length > 0) {
           setSlides(data);
-        } else {
-          setSlides(DEFAULT_SLIDES);
+          try {
+            localStorage.setItem("arabtech_cached_banners", JSON.stringify(data));
+          } catch (e) {}
+          // Preload images immediately
+          data.forEach(s => {
+            if (s.icon && (s.icon.startsWith("data:") || s.icon.startsWith("http") || s.icon.startsWith("/uploads"))) {
+              const url = s.icon.startsWith("/uploads") ? `${API_BASE_URL}${s.icon}` : s.icon;
+              const img = new Image();
+              img.src = url;
+            }
+          });
         }
       })
       .catch(() => {});
@@ -119,19 +147,9 @@ export default function Home() {
       .catch(() => {});
   }, []);
 
-  // ── auto-slide & instant image preloading ───────────────────────────────────
+  // ── auto-slide ───────────────────────────────────
   useEffect(() => {
     if (!slides.length) return;
-
-    // Instant image preloading in GPU memory
-    slides.forEach(slide => {
-      if (slide.icon && (slide.icon.startsWith("data:") || slide.icon.startsWith("http") || slide.icon.startsWith("/uploads"))) {
-        const url = slide.icon.startsWith("/uploads") ? `${API_BASE_URL}${slide.icon}` : slide.icon;
-        const img = new Image();
-        img.src = url;
-      }
-    });
-
     const t = setInterval(() => setCurrentSlide(p => (p + 1) % slides.length), 5000);
     return () => clearInterval(t);
   }, [slides]);
