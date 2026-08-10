@@ -861,17 +861,11 @@ export default function CustomerLogin() {
         {/* Header */}
         <div style={{ textAlign: "center" }}>
           <div className="animate-line line-1" style={{ display: "inline-flex", justifyContent: "center", marginBottom: "10px" }}>
-            {settings.site_logo && settings.site_logo !== "default" ? (
-              <img 
-                src={settings.site_logo.startsWith("http") || settings.site_logo.startsWith("/") || settings.site_logo.startsWith("data:") ? settings.site_logo : `${API_BASE_URL}${settings.site_logo}`} 
-                alt={settings.site_name} 
-                style={{ width: "54px", height: "54px", borderRadius: "12px", objectFit: "cover" }} 
-              />
-            ) : (
-              <div className="logo-circle" style={{ width: "54px", height: "54px", fontSize: "1.6rem", borderRadius: "12px" }}>
-                {settings.site_name ? settings.site_name.charAt(0) : "ع"}
-              </div>
-            )}
+            <img 
+              src="/logo.jpg" 
+              alt={settings.site_name || "عرب تك سيرفر online"} 
+              style={{ width: "54px", height: "54px", borderRadius: "12px", objectFit: "contain", flexShrink: 0, filter: "drop-shadow(0 2px 5px rgba(234,179,8,0.2))" }} 
+            />
           </div>
           <h2 className="animate-line line-2" style={{ fontWeight: 900, margin: 0 }}>حساب {settings.site_name}</h2>
           <p className="animate-line line-3" style={{ color: "var(--text-muted)", fontSize: "0.82rem", marginTop: "4px" }}>تابع مشترياتك واحصل على خدماتك بسرعة فائقة</p>
