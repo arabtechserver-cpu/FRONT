@@ -205,55 +205,7 @@ export default function ServicesClient() {
 
   return (
     <>
-      {/* Announcement Banner */}
-      <div className="notice-bar-container notice-slim" style={{ position: "relative", top: 0, left: 0, right: 0, marginTop: "20px", marginBottom: "20px", borderRadius: "12px" }}>
-        <div className="container">
-          <div className="notice-row" aria-label="Announcements">
-            <div className="notice-track" role="presentation">
-              <div className="notice-set" role="presentation">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="notice-set-item">
-                    <span className="notice-pill notice-pill-gold">
-                      ✨ مرحبا بكم هنا سيرفر عرب تك متاح جميع الخدمات بفضل الله واسعار مناسبه للجميع
-                    </span>
-                    <span className="notice-pill notice-pill-gold">
-                      ✨ Welcome to Arab Tech Server, all services are available and prices are suitable for everyone
-                    </span>
-                    <a href="https://wa.me/249123667227" target="_blank" rel="noopener noreferrer" className="notice-pill notice-pill-link">
-                      <span className="notice-pill-label">💬 واتساب 1:</span>
-                      <bdi dir="ltr" className="notice-pill-bdi">+249&nbsp;12&nbsp;366&nbsp;7227</bdi>
-                    </a>
-                    <a href="https://wa.me/16728972935" target="_blank" rel="noopener noreferrer" className="notice-pill notice-pill-link">
-                      <span className="notice-pill-label">💬 واتساب 2:</span>
-                      <bdi dir="ltr" className="notice-pill-bdi">+1&nbsp;(672)&nbsp;897-2935</bdi>
-                    </a>
-                  </div>
-                ))}
-              </div>
-              <div className="notice-set" aria-hidden="true" role="presentation">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="notice-set-item">
-                    <span className="notice-pill notice-pill-gold">
-                      ✨ مرحبا بكم هنا سيرفر عرب تك متاح جميع الخدمات بفضل الله واسعار مناسبه للجميع
-                    </span>
-                    <span className="notice-pill notice-pill-gold">
-                      ✨ Welcome to Arab Tech Server, all services are available and prices are suitable for everyone
-                    </span>
-                    <a href="https://wa.me/249123667227" target="_blank" rel="noopener noreferrer" className="notice-pill notice-pill-link">
-                      <span className="notice-pill-label">💬 واتساب 1:</span>
-                      <bdi dir="ltr" className="notice-pill-bdi">+249&nbsp;12&nbsp;366&nbsp;7227</bdi>
-                    </a>
-                    <a href="https://wa.me/16728972935" target="_blank" rel="noopener noreferrer" className="notice-pill notice-pill-link">
-                      <span className="notice-pill-label">💬 واتساب 2:</span>
-                      <bdi dir="ltr" className="notice-pill-bdi">+1&nbsp;(672)&nbsp;897-2935</bdi>
-                    </a>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+
 
       {/* Page Title */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "20px", marginBottom: "10px", gap: "12px", flexWrap: "wrap" }}>
