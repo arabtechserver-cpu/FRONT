@@ -18,7 +18,7 @@ const securityHeaders = [
       "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.paypal.com https://*.paypal.com https://challenges.cloudflare.com",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com data:",
-      `img-src 'self' data: blob: ${apiUrl}`,
+      `img-src 'self' data: blob: ${apiUrl} https://* http://*`,
       `media-src 'self' data: blob: ${apiUrl}`,
       `connect-src 'self' ${apiUrl} https://www.paypal.com https://*.paypal.com https://challenges.cloudflare.com`,
       "frame-src https://www.paypal.com https://*.paypal.com https://challenges.cloudflare.com",
@@ -55,11 +55,17 @@ function buildRemotePattern(value) {
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
-  // /api/services response is ~2.5MB, above the default 2MB limit.
-  // Increase the in-memory data cache to 5MB so SSR pages can cache it properly.
   cacheMaxMemorySize: 5 * 1024 * 1024, // 5 MB
   images: {
     remotePatterns: [buildRemotePattern(apiUrl)],
+  },
+  async rewrites() {
+    return [
+      {
+        source: '/uploads/:path*',
+        destination: `${apiUrl}/uploads/:path*`,
+      },
+    ];
   },
   async headers() {
     return [
