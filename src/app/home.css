@@ -50,6 +50,7 @@
   position: absolute;
   inset: 0;
   z-index: 1;
+  overflow: hidden;
 }
 
 /* Each slide fills the slides area */
@@ -57,12 +58,15 @@
   position: absolute;
   inset: 0;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: flex-start;
   gap: 0;
-  padding: 55px 32px 100px; /* increased bottom padding so text doesn't overlap search bar */
+  padding: 45px 32px 90px;
   z-index: 1;
   direction: rtl;
+  transform: translateZ(0);
+  will-change: opacity, visibility;
+  backface-visibility: hidden;
 }
 
 .banner-bg-img {
@@ -70,13 +74,15 @@
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;      /* fills hero without distortion */
-  object-position: center;
+  object-fit: cover;
+  object-position: center center;
   z-index: 0;
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 .banner-bg-overlay {
-  display: none; /* Removed per user request */
+  display: none;
 }
 
 .banner-info {
@@ -89,13 +95,13 @@
   align-items: flex-start;
   gap: 8px;
   text-align: right;
-  background: rgba(255, 255, 255, 0.02);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  background: rgba(10, 15, 30, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   padding: 24px 32px;
   border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
   animation: fadeInRight 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
 }
 
@@ -288,26 +294,43 @@
     min-height: 380px;
     border-radius: 0 0 16px 16px;
     padding-bottom: 20px;
-    overflow-x: hidden;
+    overflow: hidden;
   }
   .hero-search-container {
     position: absolute !important;
-    bottom: 20px !important;
+    bottom: 16px !important;
     left: 0 !important;
     right: 0 !important;
     margin: 0 auto !important;
-    width: calc(100% - 30px) !important;
+    width: calc(100% - 24px) !important;
     transform: none !important;
     padding: 0 !important;
   }
   .banner-content {
-    padding: 55px 15px 80px;
+    padding: 25px 16px 70px;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
   }
-  .banner-info { max-width: 100%; align-items: center; }
+  .banner-bg-img {
+    object-fit: cover !important;
+    object-position: center center !important;
+  }
+  .banner-info {
+    max-width: 100%;
+    width: 100%;
+    align-items: center;
+    text-align: center;
+    background: rgba(10, 15, 30, 0.72);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 16px 18px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+  }
   .banner-badge { align-self: center; }
-  .banner-title { font-size: 1.45rem; text-align: center; }
+  .banner-title { font-size: 1.4rem; text-align: center; }
   .banner-desc { font-size: 0.82rem; text-align: center; max-width: 100%; }
   
   .banner-features { 
@@ -320,12 +343,21 @@
   .hero-cta-btn { align-self: center; }
   .banner-graphic { display: none; }
 }
+
 @media (max-width: 480px) {
-  .hero-banner { min-height: 440px; }
-  .banner-bg-img { object-position: left center; }
-  .banner-content { padding: 45px 12px 65px; }
-  .banner-title { font-size: 1.35rem; }
-  .hero-dots { bottom: 70px; }
+  .hero-banner { min-height: 360px; }
+  .banner-bg-img {
+    object-fit: cover !important;
+    object-position: center center !important;
+  }
+  .banner-content { padding: 20px 10px 65px; }
+  .banner-info {
+    padding: 12px 14px;
+    border-radius: 14px;
+  }
+  .banner-title { font-size: 1.22rem; }
+  .banner-desc { font-size: 0.76rem; }
+  .hero-dots { bottom: 60px; }
 }
 
 
