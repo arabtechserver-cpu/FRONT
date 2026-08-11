@@ -37,7 +37,7 @@ export default function ServiceDetail({ params }) {
 
   const [isCustomerLoggedIn, setIsCustomerLoggedIn] = useState(false);
   const [customerUser, setCustomerUser] = useState(null);
-  const [theme, setTheme] = useState(typeof window !== "undefined" ? (document.documentElement.getAttribute("data-theme") || localStorage.getItem("theme") || "dark") : "dark");
+  const [theme, setTheme] = useState("dark");
   const [imageError, setImageError] = useState(false);
 
   /* eslint-disable react-hooks/set-state-in-effect */

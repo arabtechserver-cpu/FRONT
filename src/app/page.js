@@ -371,6 +371,7 @@ export default function Home() {
                         <img 
                           src={resolveImage(cat.image)} 
                           alt={cat.name} 
+                          loading="lazy"
                           style={{ width: "100%", height: "100%", objectFit: "contain" }} 
                           onError={(e) => {
                             e.target.style.display = 'none';
@@ -572,14 +573,14 @@ export default function Home() {
               {featuredSections.map((cat, idx) => (
                 <div key={idx} className="hp-featured-card">
                   {cat.image && (
-                    <img src={resolveImage(cat.image)} alt="Featured Category" className="hp-featured-cover" />
+                    <img src={resolveImage(cat.image)} alt="Featured Category" className="hp-featured-cover" loading="lazy" />
                   )}
                   <ul className="hp-featured-list">
                     {(cat.items || []).map((item, i) => (
                       <li key={i} className={`hp-featured-item${i < (cat.items || []).length - 1 ? ' has-border' : ''}`}>
                         <Link href={item.url || '#'} className="hp-featured-link">
                           {item.img && (
-                            <img src={resolveImage(item.img)} alt={item.title} className="hp-featured-item-img" />
+                            <img src={resolveImage(item.img)} alt={item.title} className="hp-featured-item-img" loading="lazy" />
                           )}
                           <div className="hp-featured-item-info">
                             <p className="hp-featured-item-title">{item.title}</p>

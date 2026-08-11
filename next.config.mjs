@@ -20,7 +20,7 @@ const securityHeaders = [
       "font-src 'self' https://fonts.gstatic.com data:",
       `img-src 'self' data: blob: ${apiUrl} https://* http://* https://lh3.googleusercontent.com https://ssl.gstatic.com https://*.googleusercontent.com`,
       `media-src 'self' data: blob: ${apiUrl}`,
-      `connect-src 'self' ${apiUrl} https://www.paypal.com https://*.paypal.com https://challenges.cloudflare.com https://accounts.google.com https://*.google.com https://identitytoolkit.googleapis.com`,
+      `connect-src 'self' ${apiUrl} https://www.paypal.com https://*.paypal.com https://challenges.cloudflare.com https://accounts.google.com https://*.google.com https://identitytoolkit.googleapis.com https://v6.exchangerate-api.com`,
       "frame-src https://www.paypal.com https://*.paypal.com https://challenges.cloudflare.com https://accounts.google.com https://*.google.com",
       "upgrade-insecure-requests",
     ].join('; '),

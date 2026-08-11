@@ -459,6 +459,45 @@ button, input, textarea, select { font-family: var(--font-cairo); }
   pointer-events: none;
 }
 
+/* ===== GLOBAL GLASS INPUTS ===== */
+.glass-panel input, .glass-panel select, .glass-panel textarea,
+.glass-card input, .glass-card select, .glass-card textarea {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  color: var(--text-main) !important;
+  border-radius: 12px !important;
+  padding: 12px 16px !important;
+  font-size: 0.95rem !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+[data-theme="light"] .glass-panel input, [data-theme="light"] .glass-panel select, [data-theme="light"] .glass-panel textarea,
+[data-theme="light"] .glass-card input, [data-theme="light"] .glass-card select, [data-theme="light"] .glass-card textarea {
+  background: rgba(0, 0, 0, 0.03) !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+.glass-panel input::placeholder, .glass-panel textarea::placeholder,
+.glass-card input::placeholder, .glass-card textarea::placeholder {
+  color: var(--text-faint) !important;
+}
+
+.glass-panel input:focus, .glass-panel select:focus, .glass-panel textarea:focus,
+.glass-card input:focus, .glass-card select:focus, .glass-card textarea:focus {
+  border-color: var(--primary-color) !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 0 15px rgba(0, 180, 216, 0.25) !important;
+  transform: translateY(-2px);
+  outline: none !important;
+}
+
+[data-theme="light"] .glass-panel input:focus, [data-theme="light"] .glass-panel select:focus, [data-theme="light"] .glass-panel textarea:focus,
+[data-theme="light"] .glass-card input:focus, [data-theme="light"] .glass-card select:focus, [data-theme="light"] .glass-card textarea:focus {
+  background: rgba(0, 0, 0, 0.06) !important;
+}
+
 /* ===== BUTTONS ===== */
 .glass-btn {
   background: rgba(255,255,255,0.06);

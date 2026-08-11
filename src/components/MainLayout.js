@@ -15,7 +15,7 @@ export default function MainLayout({ children }) {
   const router = useRouter();
   const pathname = usePathname();
 
-  const [theme, setTheme] = useState(typeof window !== "undefined" ? (document.documentElement.getAttribute("data-theme") || localStorage.getItem("theme") || "dark") : "dark");
+  const [theme, setTheme] = useState("dark");
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const [categoriesExpanded, setCategoriesExpanded] = useState(false);
@@ -410,9 +410,9 @@ export default function MainLayout({ children }) {
         <div className="mobile-drawer-header" style={{ borderBottom: '1px solid rgba(255,255,255,0.07)', paddingBottom: '16px', marginBottom: '4px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             {settings.site_logo && settings.site_logo !== 'default' && !logoFailed ? (
-              <img src={settings.site_logo.startsWith('http') || settings.site_logo.startsWith('data:') ? settings.site_logo : (settings.site_logo.includes('uploads') ? `${API_BASE_URL}${settings.site_logo.startsWith('/') ? '' : '/'}${settings.site_logo}` : settings.site_logo)} alt={settings.site_name} onError={() => setLogoFailed(true)} style={{ width: '40px', height: '40px', borderRadius: '8px', objectFit: 'contain', flexShrink: 0, filter: 'drop-shadow(0 2px 5px rgba(234,179,8,0.2))' }} />
+              <img src={settings.site_logo.startsWith('http') || settings.site_logo.startsWith('data:') ? settings.site_logo : (settings.site_logo.includes('uploads') ? `${API_BASE_URL}${settings.site_logo.startsWith('/') ? '' : '/'}${settings.site_logo}` : settings.site_logo)} alt={settings.site_name} onError={() => setLogoFailed(true)} loading="lazy" style={{ width: '40px', height: '40px', borderRadius: '8px', objectFit: 'contain', flexShrink: 0, filter: 'drop-shadow(0 2px 5px rgba(234,179,8,0.2))' }} />
             ) : (
-              <img src="/logo.jpg" alt={settings.site_name || "Logo"} style={{ width: '40px', height: '40px', borderRadius: '8px', objectFit: 'contain', flexShrink: 0, filter: 'drop-shadow(0 2px 5px rgba(234,179,8,0.2))' }} />
+              <img src="/logo.jpg" alt={settings.site_name || "Logo"} loading="lazy" style={{ width: '40px', height: '40px', borderRadius: '8px', objectFit: 'contain', flexShrink: 0, filter: 'drop-shadow(0 2px 5px rgba(234,179,8,0.2))' }} />
             )}
             <div>
               <div style={{ fontWeight: 900, fontSize: '1rem', color: 'var(--text-main)', letterSpacing: '-0.01em' }}>{settings.site_name}</div>
@@ -642,9 +642,9 @@ export default function MainLayout({ children }) {
             </button>
             <Link className="flex items-center gap-2" style={{ textDecoration: 'none', minWidth: 0 }} href="/">
               {settings.site_logo && settings.site_logo !== 'default' && !logoFailed ? (
-                <img src={settings.site_logo.startsWith('http') || settings.site_logo.startsWith('data:') ? settings.site_logo : (settings.site_logo.includes('uploads') ? `${API_BASE_URL}${settings.site_logo.startsWith('/') ? '' : '/'}${settings.site_logo}` : settings.site_logo)} alt={settings.site_name} onError={() => setLogoFailed(true)} style={{ width: '40px', height: '40px', borderRadius: '8px', objectFit: 'contain', flexShrink: 0, filter: 'drop-shadow(0 2px 5px rgba(234,179,8,0.2))' }} />
+                <img src={settings.site_logo.startsWith('http') || settings.site_logo.startsWith('data:') ? settings.site_logo : (settings.site_logo.includes('uploads') ? `${API_BASE_URL}${settings.site_logo.startsWith('/') ? '' : '/'}${settings.site_logo}` : settings.site_logo)} alt={settings.site_name} onError={() => setLogoFailed(true)} fetchpriority="high" style={{ width: '40px', height: '40px', borderRadius: '8px', objectFit: 'contain', flexShrink: 0, filter: 'drop-shadow(0 2px 5px rgba(234,179,8,0.2))' }} />
               ) : (
-                <img src="/logo.jpg" alt={settings.site_name || "Logo"} style={{ width: '40px', height: '40px', borderRadius: '8px', objectFit: 'contain', flexShrink: 0, filter: 'drop-shadow(0 2px 5px rgba(234,179,8,0.2))' }} />
+                <img src="/logo.jpg" alt={settings.site_name || "Logo"} fetchpriority="high" style={{ width: '40px', height: '40px', borderRadius: '8px', objectFit: 'contain', flexShrink: 0, filter: 'drop-shadow(0 2px 5px rgba(234,179,8,0.2))' }} />
               )}
               <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', height: '24px', overflowY: 'hidden', minWidth: '180px' }}>
                 <span className={`font-black absolute transition-all duration-700 ease-in-out ${logoLang === 'ar' ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full'}`} style={{ color: '#eab308', whiteSpace: 'nowrap', fontSize: 'clamp(0.9rem, 3vw, 1.15rem)', letterSpacing: '0.5px', textShadow: '0 2px 10px rgba(234, 179, 8, 0.4)' }}>

@@ -134,7 +134,7 @@ export default function OrdersHistory() {
   };
 
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [theme, setTheme] = useState(typeof window !== "undefined" ? (document.documentElement.getAttribute("data-theme") || localStorage.getItem("theme") || "dark") : "dark");
+  const [theme, setTheme] = useState("dark");
 
   const toggleTheme = () => {
     const nextTheme = theme === "dark" ? "light" : "dark";

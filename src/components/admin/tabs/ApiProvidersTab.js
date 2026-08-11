@@ -575,9 +575,9 @@ export default function ApiProvidersTab() {
                                       value={service.category}
                                       onChange={(e) => updateFetchedService(service.id, 'category', e.target.value)}
                                       onClick={(e) => e.preventDefault()}
+                                      className="search-input-premium"
                                       style={{ 
-                                        width: "140px", background: "rgba(0,0,0,0.3)", border: "1px solid transparent", 
-                                        color: "#94a3b8", fontSize: "0.8rem", padding: "4px 8px", borderRadius: "6px",
+                                        width: "140px", fontSize: "0.8rem", padding: "4px 8px", 
                                         outline: "none", transition: "border 0.3s"
                                       }}
                                       onFocus={(e) => e.target.style.border = "1px solid #38bdf8"}

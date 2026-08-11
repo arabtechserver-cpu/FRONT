@@ -806,24 +806,35 @@ export default function CustomerLogin() {
         }
 
         .custom-login-panel .form-group input {
-          background: #000000 !important;
-          border: 1px solid rgba(255, 255, 255, 0.15) !important;
-          color: #ffffff !important;
+          background: rgba(255, 255, 255, 0.05) !important;
+          border: 1px solid rgba(255, 255, 255, 0.1) !important;
+          backdrop-filter: blur(10px) !important;
+          -webkit-backdrop-filter: blur(10px) !important;
+          color: var(--text-main) !important;
           border-radius: 14px !important;
           padding: 14px 18px !important;
           font-size: 0.95rem !important;
           transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
         }
+
+        [data-theme="light"] .custom-login-panel .form-group input {
+          background: rgba(0, 0, 0, 0.03) !important;
+          border: 1px solid rgba(0, 0, 0, 0.1) !important;
+        }
         
         .custom-login-panel .form-group input::placeholder {
-          color: rgba(255, 255, 255, 0.5) !important;
+          color: var(--text-faint) !important;
         }
 
         .custom-login-panel .form-group input:focus {
           border-color: var(--primary-color) !important;
-          background: #000000 !important;
-          box-shadow: 0 0 15px rgba(0, 180, 216, 0.35) !important;
+          background: rgba(255, 255, 255, 0.1) !important;
+          box-shadow: 0 0 15px rgba(0, 180, 216, 0.25) !important;
           transform: translateY(-2px);
+        }
+
+        [data-theme="light"] .custom-login-panel .form-group input:focus {
+          background: rgba(0, 0, 0, 0.06) !important;
         }
 
         .custom-login-panel .glass-btn-primary {

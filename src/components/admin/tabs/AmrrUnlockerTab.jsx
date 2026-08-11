@@ -398,7 +398,8 @@ export default function AmrrUnlockerTab({
                                   setSelectedUnlockerServices(prev => [...prev, s.id]);
                                 }
                               }}
-                              style={{ width: "100px", padding: "6px 8px", fontSize: "0.8rem", background: "rgba(0,0,0,0.3)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "6px", color: "#fff", textAlign: "center" }}
+                              className="search-input-premium"
+                              style={{ width: "100px", padding: "6px 8px", fontSize: "0.8rem", textAlign: "center" }}
                             />
                           </td>
                           <td data-label="الخصم (%)">
@@ -415,7 +416,8 @@ export default function AmrrUnlockerTab({
                                   setSelectedUnlockerServices(prev => [...prev, s.id]);
                                 }
                               }}
-                              style={{ width: "70px", padding: "6px 8px", fontSize: "0.8rem", background: "rgba(0,0,0,0.3)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "6px", color: "#fff", textAlign: "center" }}
+                              className="search-input-premium"
+                              style={{ width: "70px", padding: "6px 8px", fontSize: "0.8rem", textAlign: "center" }}
                             />
                           </td>
                           <td data-label="حالة الاستيراد">
