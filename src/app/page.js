@@ -297,7 +297,6 @@ export default function Home() {
             />
             <span className="search-icon-center">🔍</span>
           </div>
-        </div>
         {/* ── end slides area */}
 
       </section>
