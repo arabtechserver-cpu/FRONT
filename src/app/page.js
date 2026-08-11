@@ -259,37 +259,7 @@ export default function Home() {
                   </h1>
                   <p className="banner-desc">{slide.desc}</p>
 
-                  {/* Feature badges row */}
-                  <div className="banner-features">
-                    <div className="banner-feat-item">
-                      <span className="banner-feat-icon">⚡</span>
-                      <div>
-                        <div className="banner-feat-title">سرعة التنفيذ</div>
-                        <div className="banner-feat-sub">دقائق معدودة</div>
-                      </div>
-                    </div>
-                    <div className="banner-feat-item">
-                      <span className="banner-feat-icon">⭐</span>
-                      <div>
-                        <div className="banner-feat-title">نسبة نجاح عالية</div>
-                        <div className="banner-feat-sub" style={{ color: "#22c55e" }}>99.9%</div>
-                      </div>
-                    </div>
-                    <div className="banner-feat-item">
-                      <span className="banner-feat-icon">🎧</span>
-                      <div>
-                        <div className="banner-feat-title">دعم فني 24/7</div>
-                        <div className="banner-feat-sub">على مدار الساعة</div>
-                      </div>
-                    </div>
-                    <div className="banner-feat-item">
-                      <span className="banner-feat-icon">🔄</span>
-                      <div>
-                        <div className="banner-feat-title">تحديث يومي</div>
-                        <div className="banner-feat-sub">جميع الخدمات</div>
-                      </div>
-                    </div>
-                  </div>
+
 
                   {slide.link && (
                     <Link href={slide.link} className="hero-cta-btn" style={{ "--cta-color": accentColor }}>
@@ -314,26 +284,23 @@ export default function Home() {
             ))}
           </div>
         </div>
+          {/* search — absolute in the middle of the hero banner */}
+          <div className="hero-search-wrapper">
+            <input
+              type="text"
+              className="search-input-center"
+              placeholder="ابحث عن الخدمات، الأقسام، والباقات..."
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              dir="ltr"
+              style={{ direction: "ltr", textAlign: "left" }}
+            />
+            <span className="search-icon-center">🔍</span>
+          </div>
+        </div>
         {/* ── end slides area */}
 
       </section>
-      
-      {/* search — normal flow, sits below slides within hero-banner */}
-      <div className="container" style={{ marginTop: "20px" }}>
-        <div className="hero-search-container">
-          <input
-            type="text"
-            className="search-input-center"
-            placeholder="ابحث عن الخدمات، الأقسام، والباقات..."
-            value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-            dir="ltr"
-            style={{ direction: "ltr", textAlign: "left" }}
-          />
-          <span className="search-icon-center">🔍</span>
-        </div>
-      </div>
-
 
       {/* ══════════════════════════════════════════════════════
           STATS BAR
