@@ -6,6 +6,10 @@ import { useRouter } from "next/navigation";
 import { API_BASE_URL } from "@/config";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 
+// Global cache for Wallet Settings to provide instant navigation (Prefetch & Cache)
+let globalSettingsCache = null;
+let fetchSettingsPromise = null;
+
 export default function WalletPage() {
   const router = useRouter();
   const [token, setToken] = useState("");
@@ -20,6 +24,7 @@ export default function WalletPage() {
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
   const [paymentMethods, setPaymentMethods] = useState([]);
+  const [loadingSettings, setLoadingSettings] = useState(true);
   const [selectedMethodId, setSelectedMethodId] = useState("");
   const [globalCurrencies, setGlobalCurrencies] = useState(["USD"]);
   const [selectedCurrency, setSelectedCurrency] = useState("USD");
@@ -53,35 +58,57 @@ export default function WalletPage() {
   useEffect(() => {
     setToken(localStorage.getItem("customer_token") || "");
     setTheme(document.documentElement.getAttribute("data-theme") || localStorage.getItem("theme") || "dark");
-    
-    fetch(`${API_BASE_URL}/api/settings?t=${Date.now()}`)
-      .then(res => res.ok ? res.json() : null)
-      .then(data => {
-        if (data) {
-          if (data.payment_methods) {
-            setPaymentMethods(data.payment_methods);
-            if (data.payment_methods.length > 0) {
-              setSelectedMethodId("");
+    // Check if we have cached settings for instant render
+    if (globalSettingsCache) {
+      setPaymentMethods(globalSettingsCache.payment_methods || []);
+      setWhatsappNumbers(globalSettingsCache.whatsapp_numbers || []);
+      setGlobalCurrencies(globalSettingsCache.supported_currencies || ["USD"]);
+      if (globalSettingsCache.supported_currencies?.length > 0) setSelectedCurrency(globalSettingsCache.supported_currencies[0]);
+      if (globalSettingsCache.exchange_rates) setExchangeRates(prev => ({ ...prev, ...globalSettingsCache.exchange_rates }));
+      if (globalSettingsCache.base_currency) setBaseCurrency(globalSettingsCache.base_currency);
+      setLoadingSettings(false);
+    }
+
+    // Start background revalidation or initial fetch
+    if (!fetchSettingsPromise) {
+      fetchSettingsPromise = fetch(`${API_BASE_URL}/api/settings?t=${Date.now()}`)
+        .then(res => res.ok ? res.json() : null)
+        .then(data => {
+          if (data) {
+            globalSettingsCache = data; // Save to global cache
+            if (data.payment_methods) {
+              setPaymentMethods(data.payment_methods);
+              if (data.payment_methods.length > 0 && !selectedMethodId) {
+                setSelectedMethodId("");
+              }
+            }
+            if (data.whatsapp_numbers && Array.isArray(data.whatsapp_numbers)) {
+              setWhatsappNumbers(data.whatsapp_numbers);
+            }
+            if (data.supported_currencies && Array.isArray(data.supported_currencies)) {
+              setGlobalCurrencies(data.supported_currencies);
+              // Only set if not already set, to prevent overriding user choice during revalidation
+              if (data.supported_currencies.length > 0 && !globalSettingsCache) {
+                setSelectedCurrency(data.supported_currencies[0]);
+              }
+            }
+            if (data.exchange_rates) {
+              setExchangeRates(prev => ({ ...prev, ...data.exchange_rates }));
+            }
+            if (data.base_currency) {
+              setBaseCurrency(data.base_currency);
             }
           }
-          if (data.whatsapp_numbers && Array.isArray(data.whatsapp_numbers)) {
-            setWhatsappNumbers(data.whatsapp_numbers);
-          }
-          if (data.supported_currencies && Array.isArray(data.supported_currencies)) {
-            setGlobalCurrencies(data.supported_currencies);
-            if (data.supported_currencies.length > 0) {
-              setSelectedCurrency(data.supported_currencies[0]);
-            }
-          }
-          if (data.exchange_rates) {
-            setExchangeRates(prev => ({ ...prev, ...data.exchange_rates }));
-          }
-          if (data.base_currency) {
-            setBaseCurrency(data.base_currency);
-          }
-        }
-      })
-      .catch(err => console.error("Error loading settings in wallet page:", err));
+        })
+        .catch(err => console.error("Error loading settings in wallet page:", err))
+        .finally(() => {
+          setLoadingSettings(false);
+          fetchSettingsPromise = null; // Reset promise to allow future refetches if needed
+        });
+    } else {
+       // If a fetch is already in progress, wait for it
+       fetchSettingsPromise.finally(() => setLoadingSettings(false));
+    }
 
     // Fetch live exchange rates from ExchangeRate-API
     fetch("https://v6.exchangerate-api.com/v6/182089caed1406b0fb1aa9e6/latest/USD")
@@ -441,15 +468,23 @@ export default function WalletPage() {
           <p style={{ color: "var(--text-muted)", fontSize: "0.95rem" }}>اختر طريقة الدفع المناسبة لشحن رصيدك.</p>
         </div>
 
-        {(() => {
-          const hasBackendPaypal = paymentMethods.some(pm => pm.name.toLowerCase().includes("paypal") || pm.name.includes("باي بال"));
-          const allMethods = hasBackendPaypal ? paymentMethods : [
-            { id: "paypal_direct", name: "الدفع بـ PayPal", isDirectPaypal: true },
-            ...paymentMethods
-          ];
+        {loadingSettings ? (
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "16px", marginBottom: "24px" }}>
+            {[1, 2, 3].map(i => (
+              <div key={i} style={{ 
+                height: "170px", 
+                background: "rgba(255,255,255,0.03)", 
+                borderRadius: "20px", 
+                border: "1px solid rgba(255,255,255,0.05)",
+                animation: "pulse 1.5s ease-in-out infinite" 
+              }}></div>
+            ))}
+          </div>
+        ) : (() => {
+          const allMethods = paymentMethods;
 
           if (allMethods.length === 0) {
-            return <div style={{ color: "var(--text-muted)" }}>يرجى تهيئة طرق الدفع من لوحة التحكم.</div>;
+            return <div style={{ color: "var(--text-muted)", textAlign: "center", padding: "40px" }}>لا توجد خدمات شحن متاحة حالياً. يرجى تهيئة طرق الدفع من لوحة التحكم.</div>;
           }
 
           return (

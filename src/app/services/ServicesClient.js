@@ -21,82 +21,6 @@ export default function ServicesClient() {
     return "https://wa.me/16728972935";
   };
 
-  const staticCategories = [
-    { id: 1, name: "قسم الالعاب", image: "/uploads/games-section.png", color: "#6366f1", icon: "gamepad2" },
-    { id: 2, name: "تطبيقات اللايف", image: "/uploads/live-apps.png", color: "#eab308", icon: "credit-card" },
-    { id: 3, name: "بطاقات الكترونية", image: "/uploads/electronic-cards.png", color: "#6366f1", icon: "credit-card" },
-    { id: 4, name: "الأرصدة والعملات", image: "/uploads/balances-currencies.png", color: "#eab308", icon: "credit-card" },
-    { id: 5, name: "سوشال ميديا", image: "/uploads/social-media.png", color: "#eab308", icon: "credit-card" },
-    { id: 6, name: "خدمات السيرفر", image: "/uploads/server-services.png", color: "#6366f1", icon: "gamepad2" },
-    { id: 7, name: "اشتراكات", image: "/uploads/subscriptions.png", color: "#d946ef", icon: "credit-card" },
-    { id: 8, name: "الذكاء الاصطناعي", image: "/uploads/ai-section.png", color: "#eab308", icon: "credit-card" },
-    { id: 9, name: "قسم الارقام", image: "/uploads/numbers-section.png", color: "#6366f1", icon: "credit-card" },
-    { id: 10, name: "البرمجة والتصميم", image: "/uploads/programming-design.png", color: "#6366f1", icon: "gamepad2" },
-    { id: 11, name: "حسابات جاهزة", image: "/uploads/ready-accounts.png", color: "#eab308", icon: "credit-card" },
-    { id: 12, name: "إعلانات ممولة", image: "/uploads/ads-section.png", color: "#ec4899", icon: "share2" },
-    { id: 13, name: "خدمات APPLE", image: null, color: "#a855f7", icon: "credit-card" },
-    { id: 14, name: "قسم خدمات سيرفر والأدوات", image: null, color: "#10b981", icon: "credit-card" },
-  ];
-
-  const staticServices = [
-    {
-      id: 1,
-      category_id: 1,
-      name: "ببجي موبايل (PUBG Mobile)",
-      description: "اشحن شدات ببجي موبايل فوراً ومباشرة في حسابك عن طريق الآيدي ID بأفضل الأسعار.",
-      price: 0.99,
-      image: "pubg"
-    },
-    {
-      id: 2,
-      category_id: 1,
-      name: "فري فاير (Free Fire)",
-      description: "اشحن جواهر فري فاير فوراً لتفعيل الفاير باس والحصول على أحدث سكنات اللعبة عبر الآيدي.",
-      price: 1.10,
-      image: "freefire"
-    },
-    {
-      id: 3,
-      category_id: 2,
-      name: "بيجو لايف (Bigo Live)",
-      description: "اشحن فاصوليا ومجوهرات تطبيق بيجو لايف لدعم البث المباشر المفضل لديك.",
-      price: 1.25,
-      image: "bigo"
-    },
-    {
-      id: 4,
-      category_id: 3,
-      name: "فودافون كاش مصر (Vodafone Cash)",
-      description: "شحن رصيد وتحويل أموال عبر محفظة فودافون كاش مباشرة بسعر الصرف الممتاز.",
-      price: 1.00,
-      image: "vodafone"
-    },
-    {
-      id: 5,
-      category_id: 4,
-      name: "شحن رصيد USDT (TRC20)",
-      description: "شراء وسحب عملة USDT الرقمية بأفضل أسعار الصرف وبسرعة تنفيذ خيالية.",
-      price: 1.00,
-      image: "usdt"
-    },
-    {
-      id: 6,
-      category_id: 5,
-      name: "اشتراك كانفا برو (Canva Pro)",
-      description: "تفعيل اشتراك كانفا برو الحساب الشخصي بكافة ميزات التصميم والذكاء الاصطناعي.",
-      price: 1.99,
-      image: "canva"
-    },
-    {
-      id: 7,
-      category_id: 6,
-      name: "اشتراك نتفليكس (Netflix Premium)",
-      description: "شاشة خاصة بك بجودة 4K UHD على حساب نتفليكس مشترك أو حساب مستقل بالكامل.",
-      price: 2.50,
-      image: "netflix"
-    }
-  ];
-
   useEffect(() => {
     // 1. Instant 0ms load from localStorage cache
     try {
@@ -134,8 +58,7 @@ export default function ServicesClient() {
         try { localStorage.setItem("arabtech_cached_categories", JSON.stringify(sorted)); } catch(e) {}
       })
       .catch(() => {
-        const sortedStatic = [...staticCategories].sort((a, b) => a.name.localeCompare(b.name, 'en'));
-        setCategories(sortedStatic);
+        // Handled silently to avoid overriding the cache with errors
       });
 
     // Fetch services with optional customer token for discounts
@@ -156,7 +79,6 @@ export default function ServicesClient() {
         try { localStorage.setItem("arabtech_cached_services", JSON.stringify(data)); } catch(e) {}
       })
       .catch(() => {
-        setServices(staticServices);
         setLoading(false);
       });
   }, []);
@@ -206,10 +128,8 @@ export default function ServicesClient() {
     return "⚡";
   };
 
-  const catalogCategories = categories.length > 0
-    ? categories
-    : [...staticCategories].sort((a, b) => a.name.localeCompare(b.name, 'en'));
-  const catalogServices = services.length > 0 ? services : staticServices;
+  const catalogCategories = categories;
+  const catalogServices = services;
 
   const filteredServices = catalogServices.filter((s) =>
     s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
