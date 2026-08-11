@@ -288,6 +288,18 @@ export default function Home() {
 
       </section>
 
+      {/* ══════════════════════════════════════════════════════
+          STATS BAR
+      ══════════════════════════════════════════════════════ */}
+      <div className="hp-stats-bar">
+        {stats.map((s, i) => (
+          <div key={i} className="hp-stat-item">
+            <div className="hp-stat-val">{s.value}</div>
+            <div className="hp-stat-label">{s.label}</div>
+          </div>
+        ))}
+      </div>
+
       {/* search — below the hero banner */}
       <div className="hero-search-wrapper">
         <input
@@ -300,18 +312,6 @@ export default function Home() {
           style={{ direction: "ltr", textAlign: "left" }}
         />
         <span className="search-icon-center">🔍</span>
-      </div>
-
-      {/* ══════════════════════════════════════════════════════
-          STATS BAR
-      ══════════════════════════════════════════════════════ */}
-      <div className="hp-stats-bar">
-        {stats.map((s, i) => (
-          <div key={i} className="hp-stat-item">
-            <div className="hp-stat-val">{s.value}</div>
-            <div className="hp-stat-label">{s.label}</div>
-          </div>
-        ))}
       </div>
 
       {/* ══════════════════════════════════════════════════════
