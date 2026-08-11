@@ -332,14 +332,27 @@ export default function ServiceDetail({ params }) {
         const fid = (f.name || f.id || "").toLowerCase().trim();
         // Hide standalone phone/tel fields (they are collected separately in payment section)
         // Also hide provider quantity fields because they are collected via customQuantity
-        return fid !== "phone" && fid !== "tel" && fid !== "quantity" && fid !== "qty" && fid !== "qnt";
+        if (fid === "phone" || fid === "tel" || fid === "quantity" || fid === "qty" || fid === "qnt") {
+          return false;
+        }
+
+        // SMART FILTER: Hide IMEI field if the selected package name doesn't contain IMEI keywords
+        if (fid === "imei" && selectedPackage) {
+          const nameLower = (selectedPackage.name || "").toLowerCase();
+          const imeiKeywords = ['frp', 'icloud', 'bypass', 'remove', 'unlock', 'passcode', 'ramdisk', 'clean', 'lost', 'check', 'mac', 'network', 'imei', 'sn', 'ecid', 'serial'];
+          const likelyNeedsImei = imeiKeywords.some(kw => nameLower.includes(kw));
+          if (!likelyNeedsImei) {
+             return false;
+          }
+        }
+        return true;
       })
       .map(f => ({
         ...f,
         // Normalize: always use 'name' as the key for formData, falling back to 'id'
         name: (f.name || f.id || "").trim()
       }));
-  }, [serviceFields, defaultFields]);
+  }, [serviceFields, defaultFields, selectedPackage]);
 
   const fieldsSectionTitle = useMemo(() => {
     if (!activeService) return "بيانات الخدمة";
