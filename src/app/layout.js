@@ -1,4 +1,5 @@
 import "./globals.css";
+import NextTopLoader from 'nextjs-toploader';
 import ContactFloatingButton from "../components/ContactFloatingButton";
 import SiteLoadingScreen from "../components/SiteLoadingScreen";
 import MainLayout from "../components/MainLayout";
@@ -289,6 +290,7 @@ export default async function RootLayout({ children }) {
         />
       </head>
       <body suppressHydrationWarning={true}>
+        <NextTopLoader color="#00b4d8" showSpinner={false} />
         <SiteLoadingScreen />
         <MainLayout>
           {children}

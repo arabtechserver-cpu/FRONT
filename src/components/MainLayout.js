@@ -119,8 +119,13 @@ export default function MainLayout({ children }) {
 
     let lastActivityTime = Date.now();
 
+    let throttleTimer;
     const handleUserActivity = () => {
-      lastActivityTime = Date.now();
+      if (throttleTimer) return;
+      throttleTimer = setTimeout(() => {
+        lastActivityTime = Date.now();
+        throttleTimer = null;
+      }, 5000); // only register activity every 5 seconds
     };
 
     const activityEvents = ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'];
@@ -169,6 +174,7 @@ export default function MainLayout({ children }) {
       activityEvents.forEach(evt => window.removeEventListener(evt, handleUserActivity));
       clearInterval(inactivityInterval);
       clearInterval(refreshInterval);
+      if (throttleTimer) clearTimeout(throttleTimer);
     };
   }, [isCustomerLoggedIn, router]);
 

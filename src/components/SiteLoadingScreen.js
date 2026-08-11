@@ -24,14 +24,14 @@ export default function SiteLoadingScreen() {
       setProgress(100);
     }, 50);
 
-    // Fade out after ~6.4s, remove from DOM after 7.2s
+    // Fade out after ~2.0s, remove from DOM after 2.5s
     const fadeTimer = setTimeout(() => {
       setFadingOut(true);
-    }, 6400);
+    }, 2000);
 
     const hideTimer = setTimeout(() => {
       setVisible(false);
-    }, 7200);
+    }, 2500);
 
     return () => {
       clearTimeout(timer);
@@ -44,8 +44,8 @@ export default function SiteLoadingScreen() {
     if (videoRef.current) {
       const duration = videoRef.current.duration;
       if (duration && duration > 0) {
-        // Dynamically adjust playbackRate so video finishes right around 6.5s - 7s
-        const targetRate = duration / 6.5;
+        // Dynamically adjust playbackRate so video finishes right around 2s
+        const targetRate = duration / 2.0;
         videoRef.current.playbackRate = Math.min(Math.max(targetRate, 1.0), 3.0);
       } else {
         videoRef.current.playbackRate = 1.5;
