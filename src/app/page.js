@@ -324,7 +324,7 @@ export default function Home() {
           <input
             type="text"
             className="search-input-center"
-            placeholder="ابحث عن الخدمة التي تحتاجها..."
+            placeholder="ابحث عن الخدمات، الأقسام، والباقات..."
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
             dir="ltr"

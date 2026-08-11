@@ -2009,3 +2009,11 @@ details[open] .faq-question::after { content: "－"; }
   .banner-features { grid-template-columns: 1fr !important; }
   .hp-review-card { width: 80vw !important; padding: 12px !important; }
 }
+
+
+/* Stretch hp-stats-bar */
+.hp-stats-bar {
+  margin: 0 -20px 28px -20px !important;
+  border-left: none !important;
+  border-right: none !important;
+}

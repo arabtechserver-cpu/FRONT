@@ -1284,3 +1284,12 @@ button, input, textarea, select { font-family: var(--font-cairo); }
 .animate-zoom-in {
   animation: zoomInEntrance 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
+
+
+.notice-slim {
+  width: 100% !important;
+  max-width: 100% !important;
+  border-radius: 0 !important;
+  left: 0 !important;
+  transform: none !important;
+}
