@@ -227,9 +227,11 @@
   z-index: 10;
 }
 
-.hero-search-container {
-  position: relative;
-  margin: 0 auto 10px auto;
+.hero-search-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   z-index: 20;
   width: calc(100% - 32px);
   max-width: 600px;
