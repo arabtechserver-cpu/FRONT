@@ -301,17 +301,19 @@ export default function Home() {
       </div>
 
       {/* search — below the hero banner */}
-      <div className="hero-search-wrapper">
-        <input
-          type="text"
-          className="search-input-center"
-          placeholder="ابحث عن الخدمات، الأقسام، والباقات..."
-          value={searchTerm}
-          onChange={e => setSearchTerm(e.target.value)}
-          dir="ltr"
-          style={{ direction: "ltr", textAlign: "left" }}
-        />
-        <span className="search-icon-center">🔍</span>
+      <div style={{ display: "flex", justifyContent: "center", width: "100%", padding: "10px 16px" }}>
+        <div className="hero-search-wrapper" style={{ margin: "0", width: "100%", maxWidth: "600px", position: "relative" }}>
+          <input
+            type="text"
+            className="search-input-center"
+            placeholder="ابحث عن الخدمات، الأقسام، والباقات..."
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            dir="ltr"
+            style={{ direction: "ltr", textAlign: "left" }}
+          />
+          <span className="search-icon-center">🔍</span>
+        </div>
       </div>
 
       {/* ══════════════════════════════════════════════════════
