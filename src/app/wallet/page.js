@@ -526,7 +526,7 @@ export default function WalletPage() {
                         {pm.name.toLowerCase().includes("paypal") || pm.name.includes("باي بال") ? "🅿️" : pm.name.toLowerCase().includes("bnb") || pm.name.toLowerCase().includes("crypto") ? "🟡" : "🏦"}
                       </div>
                     )}
-                    <span style={{ fontSize: "1.2rem", fontWeight: 900, color: isSelected ? "#3b82f6" : "#f1f5f9" }}>
+                    <span style={{ fontSize: "1.2rem", fontWeight: 900, color: isSelected ? "#3b82f6" : "var(--text-main)" }}>
                       {pm.name}
                     </span>
                   </div>
