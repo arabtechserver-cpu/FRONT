@@ -870,10 +870,12 @@ button, input, textarea, select { font-family: var(--font-cairo); }
 .notice-bar-container {
   position: absolute;
   top: 15px;
-  left: 15px;
-  right: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 30px);
+  max-width: 800px;
   border-radius: 8px;
-  height: 45px;
+  height: 35px;
   background: rgba(0, 0, 0, 0.55);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
@@ -881,7 +883,7 @@ button, input, textarea, select { font-family: var(--font-cairo); }
   overflow: hidden;
   z-index: 10;
   font-weight: 700;
-  font-size: 0.88rem;
+  font-size: 0.85rem;
 }
 
 [data-theme="light"] .notice-bar-container {
@@ -1053,10 +1055,12 @@ button, input, textarea, select { font-family: var(--font-cairo); }
 .notice-bar-container {
   position: absolute;
   top: 15px;
-  left: 15px;
-  right: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 30px);
+  max-width: 800px;
   border-radius: 8px;
-  height: 45px;
+  height: 35px;
   background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
@@ -1065,7 +1069,7 @@ button, input, textarea, select { font-family: var(--font-cairo); }
   overflow: hidden;
   z-index: 10;
   font-weight: 700;
-  font-size: 0.88rem;
+  font-size: 0.85rem;
 }
 
 [data-theme="light"] .notice-bar-container {

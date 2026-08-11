@@ -797,7 +797,7 @@ export default function ServiceDetail({ params }) {
                           ? `$ ${usdPrice.toFixed(2)}`
                           : `${Number(pkg.price).toFixed(2)} ${baseCurrency}`}
                       </span>
-                      {(!pkg.requires_quantity && parseInt(pkg.min_quantity) > 1) && (<span style={{ color: 'var(--accent-color)', fontWeight: '600', fontSize: '0.85rem', background: 'rgba(255,255,255,0.05)', padding: '2px 6px', borderRadius: '4px', marginLeft: '8px' }}>الكمية: {pkg.min_quantity}</span>)}
+                      {!pkg.requires_quantity ? (parseInt(pkg.min_quantity) > 1 && <span style={{ color: 'var(--accent-color)', fontWeight: '600', fontSize: '0.85rem', background: 'rgba(255,255,255,0.05)', padding: '2px 6px', borderRadius: '4px', marginLeft: '8px' }}>الكمية: {pkg.min_quantity}</span>) : (<span style={{ color: '#10b981', fontWeight: '600', fontSize: '0.85rem', background: 'rgba(16,185,129,0.1)', padding: '2px 6px', borderRadius: '4px', marginLeft: '8px' }}>الكمية: {pkg.min_quantity} - {pkg.max_quantity > 0 ? pkg.max_quantity : '∞'}</span>)}
                     </div>
                   </div>
 

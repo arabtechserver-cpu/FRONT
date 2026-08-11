@@ -316,7 +316,10 @@ export default function Home() {
         </div>
         {/* ── end slides area */}
 
-        {/* search — normal flow, sits below slides within hero-banner */}
+      </section>
+      
+      {/* search — normal flow, sits below slides within hero-banner */}
+      <div className="container" style={{ marginTop: "20px" }}>
         <div className="hero-search-container">
           <input
             type="text"
@@ -329,7 +332,7 @@ export default function Home() {
           />
           <span className="search-icon-center">🔍</span>
         </div>
-      </section>
+      </div>
 
 
       {/* ══════════════════════════════════════════════════════
