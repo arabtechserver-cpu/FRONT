@@ -228,10 +228,8 @@
 }
 
 .hero-search-container {
-  position: absolute;
-  bottom: 30px;
-  left: 50%;
-  transform: translateX(-50%);
+  position: relative;
+  margin: 0 auto 10px auto;
   z-index: 20;
   width: calc(100% - 32px);
   max-width: 600px;
@@ -261,11 +259,13 @@
 [data-theme="light"] .hero-banner .banner-desc,
 [data-theme="light"] .hero-banner .banner-feat-title,
 [data-theme="light"] .hero-banner .banner-feat-sub,
-[data-theme="light"] .hero-banner .search-input-center {
-  color: #ffffff !important;
+[data-theme="light"] .search-input-center {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  color: #333;
 }
-[data-theme="light"] .hero-banner .search-input-center::placeholder {
-  color: rgba(255,255,255,0.6) !important;
+[data-theme="light"] .search-input-center::placeholder {
+  color: rgba(0, 0, 0, 0.5) !important;
 }
 .search-input-center:focus {
   border-color: var(--primary-color);
