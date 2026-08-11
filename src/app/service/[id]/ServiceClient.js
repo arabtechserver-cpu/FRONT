@@ -282,7 +282,6 @@ export default function ServiceDetail({ params }) {
   const serviceFields = useMemo(() => {
     if (!activeService) return [];
 
-    // Check activeService fields first
     let sFields = [];
     if (Array.isArray(activeService.fields)) sFields = activeService.fields;
     else if (typeof activeService.fields === 'string') {
@@ -290,63 +289,21 @@ export default function ServiceDetail({ params }) {
     }
 
     if (sFields && sFields.length > 0) return sFields;
-
-    // For synced API services with empty fields, add IMEI field if service type is imei
-    if (sFields !== null && Array.isArray(sFields) && activeService?.api_service_id) {
-      // If it's an IMEI service type but has no fields, inject IMEI fallback
-      // Removed the forced injection of imei or player_id when no fields are present,
-      // as the user wants to cancel the default system fields.
-    }
-
     return [];
-  }, [service]);
+  }, [activeService]);
 
   const defaultFields = useMemo(() => ([]), []);
 
   const activeFields = useMemo(() => {
     let rawFields = [];
 
-    // serviceFields (from Dashboard) represents the ADMIN's approved list of fields.
-    // If a field is NOT in serviceFields, the admin deleted it, so we must hide it.
-    const adminApprovedFields = new Map();
-    if (Array.isArray(serviceFields)) {
-      for (const sf of serviceFields) {
-        const id = (sf.name || sf.id || "").toLowerCase().trim();
-        if (id) adminApprovedFields.set(id, sf);
-      }
-    }
-
-    if (selectedPackage && Array.isArray(selectedPackage.fields)) {
-      // 1. Intersection: Package fields that are ALSO approved by admin
-      const packageFieldNames = new Set();
-      for (const pf of selectedPackage.fields) {
-        const id = (pf.name || pf.id || "").toLowerCase().trim();
-        if (id && adminApprovedFields.has(id)) {
-          rawFields.push({ ...pf, ...adminApprovedFields.get(id) });
-          packageFieldNames.add(id);
-        }
-      }
-
-      // 2. Add any admin fields that were not in this package (global custom fields added by admin)
-      // Only do this if it's NOT a grouped API service (where serviceFields contains combined fields from other packages)
-      if (activeService?.api_service_id !== 'grouped' && Array.isArray(serviceFields)) {
-        for (const sf of serviceFields) {
-          const id = (sf.name || sf.id || "").toLowerCase().trim();
-          if (id && !packageFieldNames.has(id)) {
-            rawFields.push(sf);
-          }
-        }
-      }
-
-      // 3. If still empty (package had no fields, or none matched admin list), use serviceFields as fallback
-      if (rawFields.length === 0 && Array.isArray(serviceFields) && serviceFields.length > 0) {
-        rawFields = [...serviceFields];
-      }
+    if (selectedPackage && Array.isArray(selectedPackage.fields) && selectedPackage.fields.length > 0) {
+      // 1. As requested: Provider fields only and nothing else
+      rawFields = [...selectedPackage.fields];
     } else if (Array.isArray(serviceFields)) {
+      // 2. Local services fallback
       rawFields = [...serviceFields];
     }
-
-
 
     const seen = new Set();
     const uniqueFields = [];
