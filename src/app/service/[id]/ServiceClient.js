@@ -310,11 +310,11 @@ export default function ServiceDetail({ params, initialService = null }) {
   const activeFields = useMemo(() => {
     let rawFields = [];
 
-    if (selectedPackage && Array.isArray(selectedPackage.fields) && selectedPackage.fields.length > 0) {
-      // 1. As requested: Provider fields only and nothing else
+    if (selectedPackage && Array.isArray(selectedPackage.fields)) {
+      // A package with an explicit empty fields list must not inherit fields from the group.
       rawFields = [...selectedPackage.fields];
     } else if (Array.isArray(serviceFields)) {
-      // 2. Local services fallback
+      // Services without package metadata still use their service-level fields.
       rawFields = [...serviceFields];
     }
 
