@@ -431,7 +431,7 @@ export default function MainLayout({ children }) {
               <div style={{ fontSize: '0.72rem', color: 'var(--primary-color)', fontWeight: 700, marginTop: '1px' }}>{t("secureFast")}</div>
             </div>
           </div>
-          <button className="mobile-drawer-close" onClick={() => setMenuOpen(false)} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)', width: '36px', height: '36px', borderRadius: '10px', fontSize: '1rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', transition: 'all 0.2s' }}>âœ•</button>
+          <button className="mobile-drawer-close" onClick={() => setMenuOpen(false)} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)', width: '36px', height: '36px', borderRadius: '10px', fontSize: '1rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', transition: 'all 0.2s' }}>×</button>
         </div>
 
         {isCustomerLoggedIn && customerUser ? (
@@ -627,7 +627,7 @@ export default function MainLayout({ children }) {
                 }}
                 style={{ background: "transparent", border: "none", color: "var(--text-muted)", cursor: "pointer", padding: "0 5px", fontSize: "1.1rem" }}
               >
-                âœ•
+                ×
               </button>
             </div>
           </div>
@@ -924,7 +924,7 @@ export default function MainLayout({ children }) {
                   fontSize: "0.9rem"
                 }}
               >
-                âœ•
+                ×
               </button>
             </div>
 
@@ -954,13 +954,13 @@ export default function MainLayout({ children }) {
                 }}
               >
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  <span style={{ fontSize: "1.2rem" }}>ðŸŸ¢</span>
+                  <span style={{ fontSize: "1.2rem" }}>🟢</span>
                   <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                     <span>{t("whatsappAdmin1")}</span>
                     <span dir="ltr" style={{ direction: "ltr", unicodeBidi: "isolate" }}>(+249 12 366 7227)</span>
                   </div>
                 </div>
-                <span style={{ color: "#10b981" }}>â†</span>
+                <span style={{ color: "#10b981" }}>{meta.dir === "rtl" ? "←" : "→"}</span>
               </a>
 
               {/* WhatsApp Support 2 */}
@@ -984,13 +984,13 @@ export default function MainLayout({ children }) {
                 }}
               >
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  <span style={{ fontSize: "1.2rem" }}>ðŸŸ¢</span>
+                  <span style={{ fontSize: "1.2rem" }}>🟢</span>
                   <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                     <span>{t("whatsappAdmin2")}</span>
                     <span dir="ltr" style={{ direction: "ltr", unicodeBidi: "isolate" }}>(+1 672-897-2935)</span>
                   </div>
                 </div>
-                <span style={{ color: "#22d3ee" }}>â†</span>
+                <span style={{ color: "#22d3ee" }}>{meta.dir === "rtl" ? "←" : "→"}</span>
               </a>
 
               {/* WhatsApp Community */}
@@ -1017,7 +1017,7 @@ export default function MainLayout({ children }) {
                   <span style={{ fontSize: "1.2rem" }}>💬</span>
                   <span>{t("whatsappCommunity")}</span>
                 </div>
-                <span style={{ color: "#34d399" }}>â†</span>
+                <span style={{ color: "#34d399" }}>{meta.dir === "rtl" ? "←" : "→"}</span>
               </a>
 
               {/* Facebook Page */}
@@ -1044,7 +1044,7 @@ export default function MainLayout({ children }) {
                   <span style={{ fontSize: "1.2rem" }}>📘</span>
                   <span>{t("facebookPage")}</span>
                 </div>
-                <span style={{ color: "#478bfb" }}>â†</span>
+                <span style={{ color: "#478bfb" }}>{meta.dir === "rtl" ? "←" : "→"}</span>
               </a>
 
               {/* TikTok Account */}
@@ -1071,7 +1071,7 @@ export default function MainLayout({ children }) {
                   <span style={{ fontSize: "1.2rem" }}>🎵</span>
                   <span>{t("tiktokAccount")}</span>
                 </div>
-                <span style={{ color: "#fe2c55" }}>â†</span>
+                <span style={{ color: "#fe2c55" }}>{meta.dir === "rtl" ? "←" : "→"}</span>
               </a>
 
               {/* Telegram Channel */}
@@ -1098,7 +1098,7 @@ export default function MainLayout({ children }) {
                   <span style={{ fontSize: "1.2rem" }}>✈️</span>
                   <span>{t("telegramChannel")}</span>
                 </div>
-                <span style={{ color: "#0088cc" }}>â†</span>
+                <span style={{ color: "#0088cc" }}>{meta.dir === "rtl" ? "←" : "→"}</span>
               </a>
 
               {/* YouTube Channel */}
@@ -1125,7 +1125,7 @@ export default function MainLayout({ children }) {
                   <span style={{ fontSize: "1.2rem" }}>🔴</span>
                   <span>{t("youtubeChannel")}</span>
                 </div>
-                <span style={{ color: "#ff4d4d" }}>â†</span>
+                <span style={{ color: "#ff4d4d" }}>{meta.dir === "rtl" ? "←" : "→"}</span>
               </a>
 
               {/* Email Support */}
@@ -1150,7 +1150,7 @@ export default function MainLayout({ children }) {
                   <span style={{ fontSize: "1.2rem" }}>✉️</span>
                   <span>{t("emailSupport")} (arabtechserver@gmail.com)</span>
                 </div>
-                <span style={{ color: "#ef4444" }}>â†</span>
+                <span style={{ color: "#ef4444" }}>{meta.dir === "rtl" ? "←" : "→"}</span>
               </a>
             </div>
           </div>

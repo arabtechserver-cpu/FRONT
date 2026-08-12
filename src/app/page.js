@@ -4,6 +4,7 @@ import "./home.css";
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { API_BASE_URL } from "@/config";
+import { useI18n } from "@/lib/i18n";
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 function resolveImage(path) {
@@ -52,6 +53,7 @@ const FALLBACK_CATEGORIES = [
 ];
 
 export default function Home() {
+  const { t, meta } = useI18n();
   const [categories, setCategories]         = useState([]);
   const [loading, setLoading]               = useState(true);
   const [searchTerm, setSearchTerm]         = useState("");
@@ -206,6 +208,14 @@ export default function Home() {
   const firstSlideImg = firstSlide?.icon && (firstSlide.icon.startsWith("data:") || firstSlide.icon.startsWith("http") || firstSlide.icon.startsWith("/uploads"))
     ? (firstSlide.icon.startsWith("/uploads") ? `${API_BASE_URL}${firstSlide.icon}` : firstSlide.icon)
     : null;
+
+  const faqItems = [
+    { q: t("faqWhatIs", { site: settings.site_name }), a: t("faqWhatIsAnswer", { site: settings.site_name }) },
+    { q: t("faqHowOrderQuestion"), a: t("faqHowOrderAnswer") },
+    { q: t("faqPaymentQuestion"), a: t("faqPaymentAnswer") },
+    { q: t("faqSafeQuestion"), a: t("faqSafeAnswer") },
+    { q: t("faqWholesaleQuestion"), a: t("faqWholesaleAnswer") }
+  ];
 
   return (
     <>
@@ -771,7 +781,7 @@ export default function Home() {
 
 
       {/* Developer / Programmer Portfolio & Hire Section */}
-      <div 
+      <div
         className="hp-dev-banner container"
         style={{
           marginTop: "30px",
@@ -788,7 +798,7 @@ export default function Home() {
           alignItems: "center",
           justifyContent: "space-between",
           gap: "20px",
-          direction: "rtl",
+          direction: meta.dir,
           boxShadow: "var(--shadow-card)",
           boxSizing: "border-box"
         }}
@@ -806,22 +816,22 @@ export default function Home() {
             fontSize: "1.6rem",
             flexShrink: 0
           }}>
-            👨‍💻
+            <span aria-hidden="true">&#128104;&#8205;&#128187;</span>
           </div>
           <div style={{ maxWidth: "600px" }}>
-            <h3 style={{ margin: 0, fontSize: "1.15rem", fontWeight: 900, color: "var(--text-main)", display: "flex", alignItems: "center", gap: "8px" }}>
-              تصميم وتطوير المبرمج: <span style={{ color: "var(--primary-color, #0ea5e9)" }}>مينا سمير</span> ✨
+            <h3 style={{ margin: 0, fontSize: "1.15rem", fontWeight: 900, color: "var(--text-main)", display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+              {t("developerCredit", { name: t("developerName") })} <span aria-hidden="true">&#10024;</span>
             </h3>
             <p style={{ margin: "6px 0 0", color: "var(--text-muted)", fontSize: "0.92rem", lineHeight: "1.6" }}>
-              هل تريد سيرفر أو موقع متجر إلكتروني احترافي متكامل مثل هذا المتجر لعملك؟ تواصل معي الآن لتحويل فكرتك إلى واقع بأعلى جودة! 🚀
+              {t("developerPitch")}
             </p>
           </div>
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
-          <a 
-            href="https://portfolio-18f21.web.app/" 
-            target="_blank" 
+          <a
+            href="https://portfolio-18f21.web.app/"
+            target="_blank"
             rel="noopener noreferrer"
             style={{
               padding: "10px 24px",
@@ -839,7 +849,7 @@ export default function Home() {
               transition: "all 0.2s ease"
             }}
           >
-            🌐 معرض أعمالي
+            <span aria-hidden="true">&#127760;</span> {t("portfolio")}
           </a>
         </div>
       </div>
@@ -849,17 +859,11 @@ export default function Home() {
       ══════════════════════════════════════════════════════ */}
       <section className="faq-section">
         <div className="hp-section-header">
-          <span className="hp-section-title-icon">❓</span>
-          <h2 className="hp-section-heading">الأسئلة الشائعة</h2>
+          <span className="hp-section-title-icon" aria-hidden="true">&#10067;</span>
+          <h2 className="hp-section-heading">{t("faq")}</h2>
         </div>
         <div className="faq-container">
-          {[
-            { q: `ما هو ${settings.site_name}؟`, a: `${settings.site_name} منصة متكاملة لخدمات وبرامج السوفت وير بأسرع تنفيذ تلقائي وأفضل الأسعار.` },
-            { q: "كيف أطلب خدمة؟", a: "اختر الخدمة ← حدد الباقة ← أدخل بياناتك ← ادفع. سيُنفَّذ طلبك فوراً." },
-            { q: "ما طرق الدفع المتاحة؟", a: "رصيد المحفظة الرقمية، تحويل فودافون كاش، أو شحن بـ USDT." },
-            { q: "هل الموقع آمن؟", a: "نعم، نستخدم بوابات دفع مشفرة وخدمات تفعيل رسمية 100%." },
-            { q: "كيف أحصل على أسعار الجملة؟", a: "تواصل معنا عبر واتساب للحصول على تسعيرة الجملة والخصومات الخاصة." },
-          ].map((item, i) => (
+          {faqItems.map((item, i) => (
             <details key={i} className="faq-item">
               <summary className="faq-question">{item.q}</summary>
               <p className="faq-answer">{item.a}</p>
