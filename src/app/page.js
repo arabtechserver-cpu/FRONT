@@ -502,10 +502,10 @@ export default function Home() {
 
           {/* Reviews Marquee directly under Why Us (3 Rows) */}
           {reviews.length > 0 && (
-            <div className="hp-reviews-section" style={{ marginTop: "24px" }}>
+            <div className="hp-reviews-section" dir={meta.dir} data-i18n-skip style={{ marginTop: "24px", textAlign: meta.dir === "rtl" ? "right" : "left" }}>
               <div className="hp-section-header">
                 <span className="hp-section-title-icon">⭐</span>
-                <h2 className="hp-section-heading">آراء وتقييمات المستخدمين</h2>
+                <h2 className="hp-section-heading">{t("userReviews")}</h2>
               </div>
               <div className="hp-reviews-marquee-wrapper">
                 {(() => {
@@ -522,7 +522,7 @@ export default function Home() {
                     return (
                       <div key={rowIdx} className={`hp-reviews-marquee-track ${row.reverse ? 'reverse' : ''}`}>
                         {trackData.map((rev, i) => (
-                          <div key={`${rev.id || i}-${i}`} className="hp-review-card">
+                          <div key={`${rev.id || i}-${i}`} className="hp-review-card" dir="auto">
                             <div className="hp-review-header">
                               <div className="hp-review-avatar">{rev.name ? rev.name.charAt(0) : "★"}</div>
                               <div className="hp-review-meta">
@@ -783,6 +783,8 @@ export default function Home() {
       {/* Developer / Programmer Portfolio & Hire Section */}
       <div
         className="hp-dev-banner container"
+        dir={meta.dir}
+        data-i18n-skip
         style={{
           marginTop: "30px",
           marginBottom: "30px",
@@ -799,6 +801,7 @@ export default function Home() {
           justifyContent: "space-between",
           gap: "20px",
           direction: meta.dir,
+          textAlign: meta.dir === "rtl" ? "right" : "left",
           boxShadow: "var(--shadow-card)",
           boxSizing: "border-box"
         }}
@@ -857,7 +860,7 @@ export default function Home() {
       {/* ══════════════════════════════════════════════════════
           FAQ
       ══════════════════════════════════════════════════════ */}
-      <section className="faq-section">
+      <section className="faq-section" dir={meta.dir} data-i18n-skip style={{ textAlign: meta.dir === "rtl" ? "right" : "left" }}>
         <div className="hp-section-header">
           <span className="hp-section-title-icon" aria-hidden="true">&#10067;</span>
           <h2 className="hp-section-heading">{t("faq")}</h2>

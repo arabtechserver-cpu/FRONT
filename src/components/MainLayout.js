@@ -11,6 +11,7 @@ import Footer from "./Footer";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { FEATURES } from "@/features";
 import { useI18n } from "@/lib/i18n";
+import { Moon, Sun, X } from "lucide-react";
 
 
 export default function MainLayout({ children }) {
@@ -409,16 +410,11 @@ export default function MainLayout({ children }) {
       <div className="animated-shape shape-4"></div>
 
 
-      {/* Mobile Drawer Overlay */}
-      {menuOpen && (
-        <div className="mobile-drawer-overlay" onClick={() => setMenuOpen(false)} />
-      )}
-
       {/* Mobile Drawer Menu */}
       {menuOpen && (
         <div className="mobile-drawer-overlay" onClick={() => setMenuOpen(false)} />
       )}
-      <div className={`mobile-drawer ${menuOpen ? "open" : "closed"}`}>
+      <div className={`mobile-drawer ${menuOpen ? "open" : "closed"}`} dir={meta.dir} data-i18n-skip>
         <div className="mobile-drawer-header" style={{ borderBottom: '1px solid rgba(255,255,255,0.07)', paddingBottom: '16px', marginBottom: '4px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             {settings.site_logo && settings.site_logo !== 'default' && !logoFailed ? (
@@ -431,7 +427,7 @@ export default function MainLayout({ children }) {
               <div style={{ fontSize: '0.72rem', color: 'var(--primary-color)', fontWeight: 700, marginTop: '1px' }}>{t("secureFast")}</div>
             </div>
           </div>
-          <button className="mobile-drawer-close" onClick={() => setMenuOpen(false)} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)', width: '36px', height: '36px', borderRadius: '10px', fontSize: '1rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', transition: 'all 0.2s' }}>×</button>
+          <button type="button" aria-label={t("close")} className="mobile-drawer-close" onClick={() => setMenuOpen(false)} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)', width: '36px', height: '36px', borderRadius: '10px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', transition: 'all 0.2s' }}><X size={18} aria-hidden="true" /></button>
         </div>
 
         {isCustomerLoggedIn && customerUser ? (
@@ -557,7 +553,7 @@ export default function MainLayout({ children }) {
         {/* Premium Theme Toggle */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 16px", background: "rgba(255,255,255,0.03)", borderRadius: "14px", border: "1px solid rgba(255,255,255,0.05)", margin: "4px 0" }}>
           <span style={{ fontSize: "0.95rem", fontWeight: "800", color: "var(--text-main)", display: "flex", alignItems: "center", gap: "10px" }}>
-            <span style={{ fontSize: "1.2rem" }}>{theme === 'dark' ? '🌙' : '☀️'}</span>
+            <span style={{ display: "inline-flex" }}>{theme === 'dark' ? <Moon size={20} aria-hidden="true" /> : <Sun size={20} aria-hidden="true" />}</span>
             {t("darkMode")}
           </span>
           <button
@@ -634,7 +630,7 @@ export default function MainLayout({ children }) {
         )}
 
         {/* Top Navbar */}
-        <header className="custom-navbar" style={{
+        <header className="custom-navbar" dir={meta.dir} data-i18n-skip style={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
@@ -700,7 +696,7 @@ export default function MainLayout({ children }) {
             </div>
             <Link href="/orders" className={`desktop-link hidden lg-block ${pathname.startsWith('/orders') ? 'active' : ''}`} style={{ fontWeight: 'bold' }}>{t("orders")}</Link>
             <button onClick={toggleTheme} className="theme-toggle-btn header-btn hidden lg-block" aria-label={t("toggleTheme")} style={{ padding: '6px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', cursor: 'pointer' }}>
-              {theme === 'dark' ? '🌙' : '☀️'}
+              {theme === 'dark' ? <Moon size={18} aria-hidden="true" /> : <Sun size={18} aria-hidden="true" />}
             </button>
             
             <div className="hidden lg:block">
@@ -745,7 +741,7 @@ export default function MainLayout({ children }) {
         {/* Global Notice Bar (Sticky Marquee) */}
         <div className="notice-bar-container notice-slim" style={{ position: 'sticky', top: '70px', zIndex: 998, padding: '0', background: 'transparent' }}>
           <div className="container">
-            <div className="notice-row" aria-label="Announcements">
+            <div className="notice-row" dir={meta.dir} data-i18n-skip aria-label={t("announcement")}>
               <div className="notice-track" role="presentation">
                 <div className="notice-set" role="presentation">
                   <div className="notice-set-item">

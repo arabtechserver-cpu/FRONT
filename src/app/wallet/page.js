@@ -2,9 +2,15 @@
 
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { API_BASE_URL } from "@/config";
-import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
+import { useI18n } from "@/lib/i18n";
+
+const WalletPayPalButtons = dynamic(() => import("@/components/WalletPayPalButtons"), {
+  ssr: false,
+  loading: () => <div style={{ height: "42px", opacity: 0.7 }}>Loading PayPal...</div>
+});
 
 // Global cache for Wallet Settings to provide instant navigation (Prefetch & Cache)
 let globalSettingsCache = null;
@@ -31,6 +37,7 @@ function normalizeWalletSettings(settings) {
 
 export default function WalletPage() {
   const router = useRouter();
+  const { t, meta } = useI18n();
   const [token, setToken] = useState("");
   const [customer, setCustomer] = useState(null);
   const [requests, setRequests] = useState([]);
@@ -49,7 +56,6 @@ export default function WalletPage() {
   const [selectedCurrency, setSelectedCurrency] = useState("USD");
   const [exchangeRates, setExchangeRates] = useState({ "EGP": 50, "SDG": 600 });
   const [baseCurrency, setBaseCurrency] = useState("USD");
-  const [loadingRates, setLoadingRates] = useState(true);
   const [whatsappNumbers, setWhatsappNumbers] = useState([]);
   const [receiptImageFile, setReceiptImageFile] = useState(null);
   const [receiptImagePreview, setReceiptImagePreview] = useState("");
@@ -78,9 +84,19 @@ export default function WalletPage() {
     setToken(localStorage.getItem("customer_token") || "");
     setTheme(document.documentElement.getAttribute("data-theme") || localStorage.getItem("theme") || "dark");
     setHydrated(true);
-    // Check if we have cached settings for instant render
-    if (globalSettingsCache) {
-      const cachedSettings = normalizeWalletSettings(globalSettingsCache);
+    let cachedSettings = globalSettingsCache;
+    if (!cachedSettings) {
+      try {
+        cachedSettings = JSON.parse(localStorage.getItem("arabtech_cached_settings") || "null");
+      } catch {
+        cachedSettings = null;
+      }
+    }
+
+    // Reuse the home-page settings cache so payment methods render immediately.
+    if (cachedSettings) {
+      cachedSettings = normalizeWalletSettings(cachedSettings);
+      globalSettingsCache = cachedSettings;
       setPaymentMethods(cachedSettings.payment_methods || []);
       setWhatsappNumbers(cachedSettings.whatsapp_numbers || []);
       setGlobalCurrencies(cachedSettings.supported_currencies || ["USD"]);
@@ -92,25 +108,22 @@ export default function WalletPage() {
 
     // Start background revalidation or initial fetch
     if (!fetchSettingsPromise) {
-      fetchSettingsPromise = fetch(`${API_BASE_URL}/api/settings?t=${Date.now()}`)
+      fetchSettingsPromise = fetch(`${API_BASE_URL}/api/settings`)
         .then(res => res.ok ? res.json() : null)
         .then(data => {
           if (data) {
             data = normalizeWalletSettings(data);
-            globalSettingsCache = data; // Save to global cache
+            globalSettingsCache = data;
+            try { localStorage.setItem("arabtech_cached_settings", JSON.stringify(data)); } catch {}
             if (data.payment_methods) {
               setPaymentMethods(data.payment_methods);
-              if (data.payment_methods.length > 0 && !selectedMethodId) {
-                setSelectedMethodId("");
-              }
             }
             if (data.whatsapp_numbers && Array.isArray(data.whatsapp_numbers)) {
               setWhatsappNumbers(data.whatsapp_numbers);
             }
             if (data.supported_currencies && Array.isArray(data.supported_currencies)) {
               setGlobalCurrencies(data.supported_currencies);
-              // Only set if not already set, to prevent overriding user choice during revalidation
-              if (data.supported_currencies.length > 0 && !globalSettingsCache) {
+              if (data.supported_currencies.length > 0 && !cachedSettings) {
                 setSelectedCurrency(data.supported_currencies[0]);
               }
             }
@@ -132,22 +145,6 @@ export default function WalletPage() {
        fetchSettingsPromise.finally(() => setLoadingSettings(false));
     }
 
-    // Fetch live exchange rates from ExchangeRate-API
-    fetch("https://v6.exchangerate-api.com/v6/182089caed1406b0fb1aa9e6/latest/USD")
-      .then(res => res.ok ? res.json() : null)
-      .then(data => {
-        if (data && data.result === "success" && data.conversion_rates) {
-          setExchangeRates({
-            EGP: data.conversion_rates.EGP || 50,
-            SDG: data.conversion_rates.SDG || 600
-          });
-        }
-        setLoadingRates(false);
-      })
-      .catch(err => {
-        console.error("Error fetching live rates:", err);
-        setLoadingRates(false);
-      });
   }, []);
 
   // ── Handle PayPal return redirect (capture after PayPal approval) ──────────
@@ -220,14 +217,14 @@ export default function WalletPage() {
       try {
         const headers = { Authorization: `Bearer ${token}` };
 
-        const meRes = await fetch(`${API_BASE_URL}/api/customer/me`, { headers });
+        const [meRes, requestsRes] = await Promise.all([
+          fetch(`${API_BASE_URL}/api/customer/me`, { headers }),
+          fetch(`${API_BASE_URL}/api/customer/wallet-requests`, { headers })
+        ]);
         if (!meRes.ok) throw new Error("فشل تحميل بيانات المحفظة.");
-        const meData = await meRes.json();
-        setCustomer(meData);
-
-        const requestsRes = await fetch(`${API_BASE_URL}/api/customer/wallet-requests`, { headers });
         if (!requestsRes.ok) throw new Error("فشل تحميل الطلبات.");
-        const requestsData = await requestsRes.json();
+        const [meData, requestsData] = await Promise.all([meRes.json(), requestsRes.json()]);
+        setCustomer(meData);
         setRequests(requestsData);
       } catch (err) {
         setError(err.message || "تعذر تحميل بيانات المحفظة.");
@@ -411,7 +408,7 @@ export default function WalletPage() {
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "24px", maxWidth: "800px", margin: "0 auto" }}>
+    <div dir={meta.dir} style={{ display: "flex", flexDirection: "column", gap: "24px", maxWidth: "800px", margin: "0 auto", textAlign: meta.dir === "rtl" ? "right" : "left" }}>
 
       {/* ── PayPal Capturing Overlay ── */}
       {capturingPaypal && (
@@ -483,7 +480,7 @@ export default function WalletPage() {
       <section className="glass-panel" style={{ display: "flex", flexDirection: "column", gap: "20px", padding: "24px", borderRadius: "24px" }}>
         <div>
           <h2 style={{ fontWeight: 900, fontSize: "1.4rem", marginBottom: "8px", display: "flex", alignItems: "center", gap: "8px" }}>
-            <span style={{ fontSize: "1.6rem" }}>⚡</span> شحن المحفظة
+            <span style={{ fontSize: "1.6rem" }}>⚡</span> {t("chargeWallet")}
           </h2>
           <p style={{ color: "var(--text-muted)", fontSize: "0.95rem" }}>اختر طريقة الدفع المناسبة لشحن رصيدك.</p>
         </div>
@@ -603,15 +600,12 @@ export default function WalletPage() {
 
                         {paypalAmount && Number(paypalAmount) >= 1 ? (
                           <div style={{ background: "#fff", borderRadius: "8px", padding: "10px 10px 0 10px" }}>
-                            <PayPalScriptProvider options={{ "client-id": process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "BAA8Rt-IgLlxgkq8MZ8oiOOqDhFqy92HBS9sxJzeYASwt8YU9Lz7GXrMAiACDFotqS5LlCxBsRISofo6n8", currency: "USD" }}>
-                              <PayPalButtons 
-                                forceReRender={[paypalAmount]}
-                                style={{ layout: "vertical", shape: "rect", color: "gold", label: "paypal" }}
-                                createOrder={createPaypalOrder}
-                                onApprove={onPaypalApprove}
-                                onError={(err) => setPaypalError("تعذر إكمال عملية الدفع عبر PayPal.")}
-                              />
-                            </PayPalScriptProvider>
+                            <WalletPayPalButtons
+                              amount={paypalAmount}
+                              createOrder={createPaypalOrder}
+                              onApprove={onPaypalApprove}
+                              onError={() => setPaypalError("تعذر إكمال عملية الدفع عبر PayPal.")}
+                            />
                           </div>
                         ) : (
                           <div style={{ color: "var(--text-muted)", fontSize: "0.95rem" }}>يرجى إدخال مبلغ 1 دولار أو أكثر لإظهار أزرار الدفع.</div>

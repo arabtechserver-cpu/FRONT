@@ -40,6 +40,7 @@ export default function Footer({ siteName = "Arab Tech Server" }) {
   return (
     <footer
       dir={meta.dir}
+      data-i18n-skip
       style={{
         background: "rgba(10, 15, 30, 0.95)",
         borderTop: "1px solid rgba(255, 255, 255, 0.05)",

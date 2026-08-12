@@ -2094,31 +2094,47 @@ export function I18nProvider({ children }) {
     const nextLanguage = normalizeLanguage(languageCode);
     localStorage.setItem(LANGUAGE_STORAGE_KEY, nextLanguage);
     setLanguageState(nextLanguage);
-    applyStaticTranslations(getRuntimeLanguage(nextLanguage));
   };
 
   useEffect(() => {
     const savedLanguage = getSavedLanguage();
     setLanguageState(savedLanguage);
-    applyStaticTranslations(getRuntimeLanguage(savedLanguage));
   }, []);
 
   useEffect(() => {
+    const runtimeLanguage = getRuntimeLanguage(language);
+    let animationFrame = 0;
+
+    const observerOptions = {
+      childList: true,
+      subtree: true,
+      characterData: true,
+      attributes: true,
+      attributeFilter: ["placeholder", "title", "aria-label", "alt"]
+    };
+
+    const applyAndResume = () => {
+      observer.disconnect();
+      applyStaticTranslations(runtimeLanguage);
+      if (document.body) observer.observe(document.body, observerOptions);
+    };
+
     const observer = new MutationObserver(() => {
-      applyStaticTranslations(getRuntimeLanguage(language));
+      if (animationFrame) return;
+      animationFrame = window.requestAnimationFrame(() => {
+        animationFrame = 0;
+        applyAndResume();
+      });
     });
 
     if (document.body) {
-      observer.observe(document.body, {
-        childList: true,
-        subtree: true,
-        characterData: true,
-        attributes: true,
-        attributeFilter: ["placeholder", "title", "aria-label", "alt"]
-      });
+      applyAndResume();
     }
 
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      if (animationFrame) window.cancelAnimationFrame(animationFrame);
+    };
   }, [language]);
 
   useEffect(() => {

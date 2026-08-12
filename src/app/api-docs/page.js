@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import MainLayout from "@/components/MainLayout";
 import { API_BASE_URL } from "@/config";
+import { useI18n } from "@/lib/i18n";
 
 export default function ApiDocsPage() {
+  const { t, meta } = useI18n();
   const [customer, setCustomer] = useState(null);
   const [apiData, setApiData] = useState(null);
   const [allowedIpsText, setAllowedIpsText] = useState("");
@@ -109,14 +110,14 @@ export default function ApiDocsPage() {
   };
 
   return (
-      <div className="container" style={{ padding: "40px 20px" }}>
+      <div className="container" dir={meta.dir} style={{ padding: "40px 20px", textAlign: meta.dir === "rtl" ? "right" : "left" }}>
         <h1 style={{ fontSize: "2.5rem", fontWeight: 800, textAlign: "center", marginBottom: "20px", color: "var(--primary-color)" }}>
-          إعدادات وشرح ربط الـ API
+          {t("apiPageTitle")}
         </h1>
         
         <div className="glass-panel" style={{ maxWidth: "800px", margin: "0 auto", padding: "30px", display: "flex", flexDirection: "column", gap: "25px" }}>
           
-          <div style={{ background: "rgba(59, 130, 246, 0.1)", padding: "15px", borderRadius: "8px", borderRight: "4px solid var(--primary-color)" }}>
+          <div style={{ background: "rgba(59, 130, 246, 0.1)", padding: "15px", borderRadius: "8px", borderInlineStart: "4px solid var(--primary-color)" }}>
             <h3 style={{ margin: "0 0 10px", color: "var(--primary-color)" }}>مرحباً بك في نظام الـ API</h3>
             <p style={{ margin: 0, lineHeight: 1.6, color: "var(--text-muted)" }}>
               نظامنا متوافق بالكامل مع نظام (Dhru Fusion). يمكنك ربط سيرفرك الشخصي بنا بسهولة لجلب الخدمات وتقديم الطلبات تلقائياً، أو استخدام الربط البرمجي المباشر.
@@ -124,7 +125,7 @@ export default function ApiDocsPage() {
           </div>
 
           <h2 style={{ color: "var(--text-main)", margin: 0, borderBottom: "1px solid rgba(128,128,128,0.1)", paddingBottom: "10px" }}>
-            بيانات الربط الخاصة بك (API Credentials)
+            {t("apiCredentials")}
           </h2>
           
           <div style={{ background: "var(--bg-secondary, rgba(0,0,0,0.05))", padding: "20px", borderRadius: "8px", fontSize: "1.1rem" }}>
@@ -237,7 +238,7 @@ export default function ApiDocsPage() {
           <div style={{ color: "var(--text-muted)", fontSize: "0.95rem", lineHeight: 1.8 }}>
             <p>للمبرمجين الذين يرغبون بالاتصال بالـ API باستخدام كود برمجي (PHP, Python, JS..)، نستخدم معيار (Dhru Fusion). يجب إرسال طلب <strong>POST</strong> إلى <code>https://arab-tech1.online/api/v1</code>.</p>
             <p><strong>يجب إرسال الـ Parameters التالية إما كـ JSON Body أو كـ Form URL Encoded:</strong></p>
-            <ul style={{ paddingRight: "20px" }}>
+            <ul style={{ paddingInlineStart: "20px" }}>
               <li><code>username</code>: اسم المستخدم الخاص بك المذكور أعلاه.</li>
               <li><code>api_key</code>: مفتاح الـ API الخاص بك المذكور أعلاه.</li>
               <li><code>action</code>: نوع العملية المراد تنفيذها.</li>
@@ -263,7 +264,7 @@ export default function ApiDocsPage() {
 
           <div style={{ padding: "20px", background: "rgba(245, 158, 11, 0.1)", borderRadius: "8px", border: "1px solid rgba(245, 158, 11, 0.3)" }}>
             <h3 style={{ margin: "0 0 10px", color: "var(--accent-color)" }}>⚠️ ملاحظات هامة</h3>
-            <ul style={{ margin: 0, paddingRight: "20px", color: "var(--text-main)", lineHeight: 1.6 }}>
+            <ul style={{ margin: 0, paddingInlineStart: "20px", color: "var(--text-main)", lineHeight: 1.6 }}>
               <li>لن تعمل الطلبات إذا لم تقم بإضافة الـ IP الخاص بسيرفرك في القائمة البيضاء (IP Whitelist) بالأعلى.</li>
               <li>جميع الطلبات القادمة من الـ API سيتم تسعيرها بناءً على نسبة المكسب (Markup) المحددة لحسابك بواسطة الإدارة.</li>
               <li>تأكد من وجود رصيد كافٍ في محفظتك لدينا، وإلا فسيتم رفض طلباتك تلقائياً.</li>

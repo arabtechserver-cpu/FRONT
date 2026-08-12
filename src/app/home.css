@@ -1799,7 +1799,7 @@
   line-height: 1.6;
   font-style: italic;
   margin: 0;
-  direction: rtl;
+  text-align: start;
 }
 
 /* ═══════════════════════════════════════════════
