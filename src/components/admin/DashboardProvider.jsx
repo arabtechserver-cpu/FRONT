@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { API_BASE_URL } from "@/config";
 import Link from "next/link";
 // import dashboardStyles removed
@@ -9,7 +10,6 @@ import { AdminDashboardContext } from "@/components/admin/AdminDashboardContext"
 import AdminDashboardModals from "@/components/admin/modals/AdminDashboardModals";
 import SettingsTab from "@/components/admin/tabs/SettingsTab";
 import GmailTab from "@/components/admin/tabs/GmailTab";
-import ExcelPricesTab from "@/components/admin/tabs/ExcelPricesTab";
 import AmrrUnlockerTab from "@/components/admin/tabs/AmrrUnlockerTab";
 import OrdersTab from "@/components/admin/tabs/OrdersTab";
 import WalletsTab from "@/components/admin/tabs/WalletsTab";
@@ -22,6 +22,7 @@ import MembershipsTab from "@/components/admin/tabs/MembershipsTab";
 import AdminReviewsTab from "@/components/admin/tabs/AdminReviewsTab";
 export default function DashboardProvider({ children }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [hydrated, setHydrated] = useState(false);
   const [token, setToken] = useState("");
   const [adminUser, setAdminUser] = useState(null);
@@ -429,6 +430,19 @@ export default function DashboardProvider({ children }) {
     };
   }, [orders]);
 
+  const currentDashboardTab = useMemo(() => {
+    const match = pathname?.match(/\/admin\/dashboard\/([^/?#]+)/);
+    return match?.[1] || "orders";
+  }, [pathname]);
+
+  const authedHeaders = useCallback(() => ({ "Authorization": `Bearer ${token}` }), [token]);
+
+  const handleAuthFailure = useCallback(() => {
+    localStorage.removeItem("admin_token");
+    localStorage.removeItem("admin_user");
+    router.push("/admin/login");
+  }, [router]);
+
   // Security Check
   useEffect(() => {
     if (!hydrated) return;
@@ -437,139 +451,172 @@ export default function DashboardProvider({ children }) {
     }
   }, [hydrated, token, router]);
 
-  const fetchData = useCallback(async (isSilent = false) => {
+  const loadCategories = useCallback(async () => {
+    const catRes = await fetch(`${API_BASE_URL}/api/categories`);
+    if (!catRes.ok) return;
+    const catData = await catRes.json();
+    const sortedCats = [...(catData || [])].sort((a, b) => a.name.localeCompare(b.name, 'en'));
+    setCategories(sortedCats);
+    if (sortedCats.length > 0 && !newServiceCatId) {
+      setNewServiceCatId(sortedCats[0].id.toString());
+    }
+  }, [newServiceCatId]);
+
+  const loadServices = useCallback(async () => {
+    const serviceRes = await fetch(`${API_BASE_URL}/api/services`);
+    if (!serviceRes.ok) return;
+    const serviceData = await serviceRes.json();
+    const sortedServices = [...(serviceData || [])].sort((a, b) => a.name.localeCompare(b.name, 'en'));
+    setServices(sortedServices);
+  }, []);
+
+  const loadSettings = useCallback(async () => {
+    const settingsRes = await fetch(`${API_BASE_URL}/api/settings/admin`, { headers: authedHeaders() });
+    if (!settingsRes.ok) return;
+
+    const settingsData = await settingsRes.json();
+    setSiteName(settingsData.site_name || "Arab Tech Server");
+    setSiteLogo(settingsData.site_logo || "default");
+    setSiteFavicon(settingsData.site_favicon || "default");
+    setPaymentMethodsList(settingsData.payment_methods || []);
+    if (settingsData.supported_currencies) {
+      setGlobalCurrencies(settingsData.supported_currencies);
+      setSupportedCurrenciesText(settingsData.supported_currencies.join(", "));
+    }
+    if (settingsData.exchange_rates) {
+      setExchangeRates(settingsData.exchange_rates);
+    }
+    setBaseCurrency("USD");
+    setHideWalletPayment(settingsData.hide_wallet_payment || false);
+    if (settingsData.api_auto_submit !== undefined) {
+      setApiAutoSubmit(settingsData.api_auto_submit);
+    }
+    if (settingsData.whatsapp_numbers && Array.isArray(settingsData.whatsapp_numbers)) {
+      setWhatsappNumbers(settingsData.whatsapp_numbers);
+    }
+    if (settingsData.email_user !== undefined) setEmailUser(settingsData.email_user);
+    if (settingsData.email_pass !== undefined) setEmailPass(settingsData.email_pass);
+    if (settingsData.global_markup_percent !== undefined) {
+      setGlobalMarkupPercent(settingsData.global_markup_percent);
+    }
+    if (settingsData.announcement_text !== undefined) {
+      setAnnouncementText(settingsData.announcement_text);
+    }
+    if (settingsData.featured_sections !== undefined) {
+      setFeaturedSections(Array.isArray(settingsData.featured_sections) ? settingsData.featured_sections : []);
+    }
+  }, [authedHeaders]);
+
+  const loadOrders = useCallback(async () => {
+    const orderRes = await fetch(`${API_BASE_URL}/api/orders`, { headers: authedHeaders() });
+    if (orderRes.status === 401 || orderRes.status === 403) {
+      handleAuthFailure();
+      return;
+    }
+    if (orderRes.ok) {
+      setOrders(await orderRes.json());
+    }
+  }, [authedHeaders, handleAuthFailure]);
+
+  const loadBanners = useCallback(async () => {
+    const bannerRes = await fetch(`${API_BASE_URL}/api/banners`);
+    if (bannerRes.ok) setBanners(await bannerRes.json());
+  }, []);
+
+  const loadWallets = useCallback(async () => {
+    const headers = authedHeaders();
+    const [walletRes, walletTxRes] = await Promise.all([
+      fetch(`${API_BASE_URL}/api/wallet`, { headers }),
+      fetch(`${API_BASE_URL}/api/wallet/transactions`, { headers })
+    ]);
+    if (walletRes.ok) setWalletRequests(await walletRes.json());
+    if (walletTxRes.ok) setWalletTransactions(await walletTxRes.json());
+  }, [authedHeaders]);
+
+  const loadWalletTransactions = useCallback(async () => {
+    const walletTxRes = await fetch(`${API_BASE_URL}/api/wallet/transactions`, { headers: authedHeaders() });
+    if (walletTxRes.ok) setWalletTransactions(await walletTxRes.json());
+  }, [authedHeaders]);
+
+  const loadCustomers = useCallback(async () => {
+    const customersRes = await fetch(`${API_BASE_URL}/api/customer/admin/customers`, { headers: authedHeaders() });
+    if (!customersRes.ok) return;
+    const customersData = await customersRes.json();
+    setCustomers(customersData);
+    if (!selectedCustomerId && customersData.length > 0) {
+      setSelectedCustomerId(customersData[0].id);
+    }
+  }, [authedHeaders, selectedCustomerId]);
+
+  const loadApiProviders = useCallback(async () => {
+    const apiProvidersRes = await fetch(`${API_BASE_URL}/api/api-providers`, { headers: authedHeaders() });
+    if (apiProvidersRes.ok) setApiProviders(await apiProvidersRes.json());
+  }, [authedHeaders]);
+
+  const loadUnlockerSettings = useCallback(async () => {
+    const unlockerSettingsRes = await fetch(`${API_BASE_URL}/api/unlocker/settings`, { headers: authedHeaders() });
+    if (!unlockerSettingsRes.ok) return;
+    const unlockerSettingsData = await unlockerSettingsRes.json();
+    setUnlockerApiKey(unlockerSettingsData.api_key || "");
+    setUnlockerApiUrl(unlockerSettingsData.api_url || "");
+    setUnlockerUsername(unlockerSettingsData.username || "");
+  }, [authedHeaders]);
+
+  const fetchData = useCallback(async (isSilent = false, tabOverride = null) => {
     if (!isSilent) setLoading(true);
     setErrorMsg("");
     try {
-      const headers = { "Authorization": `Bearer ${token}` };
+      const tab = tabOverride || currentDashboardTab;
 
-      // Fetch categories
-      const catRes = await fetch(`${API_BASE_URL}/api/categories`);
-      const catData = await catRes.json();
-      const sortedCats = [...(catData || [])].sort((a, b) => a.name.localeCompare(b.name, 'en'));
-      setCategories(sortedCats);
-      if (sortedCats.length > 0) {
-        setNewServiceCatId(sortedCats[0].id.toString());
-      }
-
-      // Fetch services
-      const serviceRes = await fetch(`${API_BASE_URL}/api/services`);
-      const serviceData = await serviceRes.json();
-      const sortedServices = [...(serviceData || [])].sort((a, b) => a.name.localeCompare(b.name, 'en'));
-      setServices(sortedServices);
-
-      // Fetch site settings
       if (!isSilent) {
-        const settingsRes = await fetch(`${API_BASE_URL}/api/settings/admin`, { headers });
-        if (settingsRes.ok) {
-          const settingsData = await settingsRes.json();
-          setSiteName(settingsData.site_name || "عرب تك سيرفر");
-          setSiteLogo(settingsData.site_logo || "default");
-          setSiteFavicon(settingsData.site_favicon || "default");
-          setPaymentMethodsList(settingsData.payment_methods || []);
-          if (settingsData.supported_currencies) {
-            setGlobalCurrencies(settingsData.supported_currencies);
-            setSupportedCurrenciesText(settingsData.supported_currencies.join(", "));
-          }
-          if (settingsData.exchange_rates) {
-            setExchangeRates(settingsData.exchange_rates);
-          }
-          setBaseCurrency("USD");
-          setHideWalletPayment(settingsData.hide_wallet_payment || false);
-          if (settingsData.api_auto_submit !== undefined) {
-            setApiAutoSubmit(settingsData.api_auto_submit);
-          }
-          if (settingsData.whatsapp_numbers && Array.isArray(settingsData.whatsapp_numbers)) {
-            setWhatsappNumbers(settingsData.whatsapp_numbers);
-          }
-          if (settingsData.email_user !== undefined) setEmailUser(settingsData.email_user);
-          if (settingsData.email_pass !== undefined) setEmailPass(settingsData.email_pass);
-          if (settingsData.global_markup_percent !== undefined) {
-            setGlobalMarkupPercent(settingsData.global_markup_percent);
-          }
-          if (settingsData.announcement_text !== undefined) {
-            setAnnouncementText(settingsData.announcement_text);
-          }
-          if (settingsData.featured_sections !== undefined) {
-            setFeaturedSections(Array.isArray(settingsData.featured_sections) ? settingsData.featured_sections : []);
-          }
-        }
+        await loadSettings();
       }
 
-      // Fetch orders
-      const orderRes = await fetch(`${API_BASE_URL}/api/orders`, { headers });
-      if (orderRes.status === 401 || orderRes.status === 403) {
-        localStorage.removeItem("admin_token");
-        localStorage.removeItem("admin_user");
-        router.push("/admin/login");
-        return;
-      }
-      if (orderRes.ok) {
-        const orderData = await orderRes.json();
-        setOrders(orderData);
-      }
-
-      // Fetch banners
-      const bannerRes = await fetch(`${API_BASE_URL}/api/banners`);
-      if (bannerRes.ok) {
-        const bannerData = await bannerRes.json();
-        setBanners(bannerData);
-      }
-
-      // Fetch wallet requests
-      const walletRes = await fetch(`${API_BASE_URL}/api/wallet`, { headers });
-      if (walletRes.ok) {
-        const walletData = await walletRes.json();
-        setWalletRequests(walletData);
-      }
-
-      const walletTxRes = await fetch(`${API_BASE_URL}/api/wallet/transactions`, { headers });
-      if (walletTxRes.ok) {
-        const walletTxData = await walletTxRes.json();
-        setWalletTransactions(walletTxData);
-      }
-
-      const customersRes = await fetch(`${API_BASE_URL}/api/customer/admin/customers`, { headers });
-      if (customersRes.ok) {
-        const customersData = await customersRes.json();
-        setCustomers(customersData);
-        if (!selectedCustomerId && customersData.length > 0) {
-          setSelectedCustomerId(customersData[0].id);
-        }
-      }
-
-      // Fetch Excel settings
-      const excelSettingsRes = await fetch(`${API_BASE_URL}/api/excel/settings`, { headers });
-      if (excelSettingsRes.ok) {
-        const excelSettingsData = await excelSettingsRes.ok ? await excelSettingsRes.json() : null;
-        if (excelSettingsData) {
-          setExcelAppleUsdRate(excelSettingsData.apple_usd_rate);
-          setExcelAppleMarkup(excelSettingsData.apple_markup);
-          setExcelFrpUsdRate(excelSettingsData.frp_usd_rate);
-          setExcelFrpMarkup(excelSettingsData.frp_markup);
-        }
-      }
-      
-      const apiProvidersRes = await fetch(`${API_BASE_URL}/api/api-providers`, { headers });
-      if (apiProvidersRes.ok) {
-        setApiProviders(await apiProvidersRes.json());
-      }
-      // Fetch Unlocker settings
-      const unlockerSettingsRes = await fetch(`${API_BASE_URL}/api/unlocker/settings`, { headers });
-      if (unlockerSettingsRes.ok) {
-        const unlockerSettingsData = await unlockerSettingsRes.json();
-        setUnlockerApiKey(unlockerSettingsData.api_key || "");
-        setUnlockerApiUrl(unlockerSettingsData.api_url || "");
-        setUnlockerUsername(unlockerSettingsData.username || "");
+      if (tab === "orders") {
+        await Promise.all([loadOrders(), loadWalletTransactions()]);
+      } else if (tab === "categories" || tab === "menu-drawer" || tab === "featured-sections") {
+        await loadCategories();
+        if (tab === "featured-sections") await loadSettings();
+      } else if (tab === "services") {
+        await Promise.all([loadCategories(), loadServices(), loadApiProviders()]);
+      } else if (tab === "api-providers") {
+        await loadApiProviders();
+      } else if (tab === "amrr_unlocker") {
+        await Promise.all([loadCategories(), loadUnlockerSettings()]);
+      } else if (tab === "banners") {
+        await loadBanners();
+      } else if (tab === "wallets") {
+        await loadWallets();
+      } else if (tab === "customers" || tab === "api_resellers") {
+        await loadCustomers();
+      } else if (tab === "memberships") {
+        await Promise.all([loadCustomers(), loadCategories(), loadServices()]);
+      } else if (tab === "settings" || tab === "gmail") {
+        await loadSettings();
+      } else if (tab === "backups") {
+        // BackupsTab loads its own list on demand.
+      } else {
+        await loadOrders();
       }
     } catch (err) {
       console.error("Error fetching admin data:", err);
-      setErrorMsg("حدث خطأ أثناء تحميل البيانات من الخادم.");
+      setErrorMsg("Failed to load admin data from the server.");
     } finally {
       if (!isSilent) setLoading(false);
     }
-  }, [router, token, selectedCustomerId]);
-
+  }, [
+    currentDashboardTab,
+    loadApiProviders,
+    loadBanners,
+    loadCategories,
+    loadCustomers,
+    loadOrders,
+    loadServices,
+    loadSettings,
+    loadUnlockerSettings,
+    loadWalletTransactions,
+    loadWallets,
+  ]);
   // Load dashboard data when token is available
   useEffect(() => {
     if (!token) return;
@@ -579,14 +626,15 @@ export default function DashboardProvider({ children }) {
     return () => clearTimeout(timer);
   }, [fetchData, token]);
 
-  // Auto-refresh data silently in the background every 8 seconds
+  // Auto-refresh only live queues; heavy management tabs should not refetch in a loop.
   useEffect(() => {
     if (!token) return;
+    if (!["orders", "wallets"].includes(currentDashboardTab)) return;
     const interval = setInterval(() => {
       void fetchData(true);
-    }, 8000);
+    }, 30000);
     return () => clearInterval(interval);
-  }, [fetchData, token]);
+  }, [currentDashboardTab, fetchData, token]);
 
   useEffect(() => {
     if (!token || !selectedCustomerId) return;

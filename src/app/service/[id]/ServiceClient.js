@@ -5,13 +5,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { API_BASE_URL } from "@/config";
 
-export default function ServiceDetail({ params }) {
+export default function ServiceDetail({ params, initialService = null }) {
   const unwrappedParams = use(params);
   const serviceId = unwrappedParams.id;
   const router = useRouter();
 
-  const [service, setService] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [service, setService] = useState(initialService);
+  const [loading, setLoading] = useState(!initialService);
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [selectedSubServiceId, setSelectedSubServiceId] = useState(null);
   const [customQuantity, setCustomQuantity] = useState(1);
@@ -53,8 +53,6 @@ export default function ServiceDetail({ params }) {
     if (token && userStr) {
       setIsCustomerLoggedIn(true);
       setCustomerUser(JSON.parse(userStr));
-    } else {
-      router.push(`/login?redirectTo=/service/${serviceId}`);
     }
   }, [serviceId, router]);
 
@@ -98,6 +96,13 @@ export default function ServiceDetail({ params }) {
     localStorage.removeItem("customer_user");
     setIsCustomerLoggedIn(false);
     setCustomerUser(null);
+  };
+
+  const goToLoginForOrder = () => {
+    const redirectTo = typeof window !== "undefined"
+      ? `${window.location.pathname}${window.location.search || ""}`
+      : `/service/${serviceId}`;
+    router.push(`/login?redirectTo=${encodeURIComponent(redirectTo)}`);
   };
 
   // Backup static services if backend is unreachable
@@ -191,7 +196,7 @@ export default function ServiceDetail({ params }) {
 
   /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
-    setLoading(true);
+    setLoading(!initialService);
     setImageError(false);
     const token = typeof window !== 'undefined' ? localStorage.getItem("customer_token") : null;
     const headers = {};
@@ -215,7 +220,6 @@ export default function ServiceDetail({ params }) {
                 const preselectedPkg = subService.packages.find(p => String(p.id) === String(pkgId));
                 if (preselectedPkg) {
                   setSelectedPackage(preselectedPkg);
-                  setTimeout(() => setStep(2), 300);
                 } else {
                   setSelectedPackage(subService.packages[0]);
                 }
@@ -224,7 +228,6 @@ export default function ServiceDetail({ params }) {
             const preselectedPkg = data.packages.find(p => String(p.id) === String(pkgId));
             if (preselectedPkg) {
               setSelectedPackage(preselectedPkg);
-              setTimeout(() => setStep(2), 300);
             } else {
               setSelectedPackage(data.packages[0]);
             }
@@ -247,7 +250,6 @@ export default function ServiceDetail({ params }) {
             const preselectedPkg = fallback.packages.find(p => String(p.id) === String(pkgId));
             if (preselectedPkg) {
               setSelectedPackage(preselectedPkg);
-              setTimeout(() => setStep(2), 300);
             } else {
               setSelectedPackage(fallback.packages[0]);
             }
@@ -260,7 +262,7 @@ export default function ServiceDetail({ params }) {
         }
         setLoading(false);
       });
-  }, [serviceId]);
+  }, [serviceId, initialService]);
   /* eslint-enable react-hooks/set-state-in-effect */
 
   const activeService = useMemo(() => {
@@ -336,15 +338,6 @@ export default function ServiceDetail({ params }) {
           return false;
         }
 
-        // SMART FILTER: Hide IMEI field if the selected package name doesn't contain IMEI keywords
-        if (fid === "imei" && selectedPackage) {
-          const nameLower = (selectedPackage.name || "").toLowerCase();
-          const imeiKeywords = ['frp', 'icloud', 'bypass', 'remove', 'unlock', 'passcode', 'ramdisk', 'clean', 'lost', 'check', 'mac', 'network', 'imei', 'sn', 'ecid', 'serial'];
-          const likelyNeedsImei = imeiKeywords.some(kw => nameLower.includes(kw));
-          if (!likelyNeedsImei) {
-             return false;
-          }
-        }
         return true;
       })
       .map(f => ({
@@ -396,6 +389,11 @@ export default function ServiceDetail({ params }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage("");
+
+    if (!isCustomerLoggedIn) {
+      goToLoginForOrder();
+      return;
+    }
 
     if (service.is_bundle && !selectedSubServiceId) {
       setErrorMessage("من فضلك اختر الخدمة المطلوبة من الباقة أولاً.");
@@ -723,14 +721,6 @@ export default function ServiceDetail({ params }) {
                       setCustomerPricingMode("packages");
                     }
                     setSelectedPackage(pkg);
-
-                    // Directly transition to checkout step 2
-                    setTimeout(() => {
-                      setStep(2);
-
-                      // Smooth scroll to top of checkout container
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }, 200);
                   }}
                   style={{
                     cursor: "pointer",
@@ -750,7 +740,9 @@ export default function ServiceDetail({ params }) {
                         <img
                           alt={(pkg.name === "تفعيل فوري تلقائي" || !pkg.name) ? service.name : pkg.name}
                           className="scc-img"
-                          src={service.image.startsWith("http") || service.image.startsWith("/") || service.image.startsWith("data:") ? service.image : `${API_BASE_URL}/${service.image}`}
+                          src={service.image.startsWith("http") || service.image.startsWith("data:")
+                            ? service.image
+                            : (service.image.startsWith("/") ? `${API_BASE_URL}${service.image}` : `${API_BASE_URL}/${service.image}`)}
                           onError={() => {
                             setImageError(true);
                           }}
@@ -1503,7 +1495,7 @@ export default function ServiceDetail({ params }) {
             </div>
 
             <div style={{ marginTop: "6px", fontSize: "0.75rem", color: "var(--text-muted)", lineHeight: "1.6", background: "rgba(255, 255, 255, 0.02)", padding: "10px 14px", borderRadius: "10px", border: "1px solid rgba(255, 255, 255, 0.05)" }}>
-              📢 {(activeService?.api_delivery_time || service?.api_delivery_time) ? `مدة التنفيذ المتوقعة: ${activeService?.api_delivery_time || service?.api_delivery_time}` : 'بمجرد إتمام الطلب، سيتم مراجعة الدفع وتنفيذ الخدمة في غضون وقت قصير.'}
+              📢 {(selectedPackage?.api_delivery_time || activeService?.api_delivery_time || service?.api_delivery_time) ? `مدة التنفيذ المتوقعة: ${selectedPackage?.api_delivery_time || activeService?.api_delivery_time || service?.api_delivery_time}` : 'بمجرد إتمام الطلب، سيتم مراجعة الدفع وتنفيذ الخدمة في غضون وقت قصير.'}
             </div>
           </div>
 
@@ -1625,6 +1617,33 @@ export default function ServiceDetail({ params }) {
 
             <p style={{ fontSize: "0.95rem", color: "var(--text-muted)", lineHeight: "1.7" }}>{service.description}</p>
 
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+              gap: "12px"
+            }}>
+              <div style={{ padding: "14px", borderRadius: "14px", background: "rgba(34, 197, 94, 0.06)", border: "1px solid rgba(34, 197, 94, 0.16)" }}>
+                <strong style={{ display: "block", color: "#4ade80", marginBottom: "6px", fontSize: "0.9rem" }}>مدة التنفيذ</strong>
+                <span style={{ color: "var(--text-muted)", fontSize: "0.84rem", lineHeight: 1.6 }}>
+                  {selectedPackage?.api_delivery_time || activeService?.api_delivery_time || service?.api_delivery_time || "تبدأ معالجة الطلب بعد الدفع مباشرة."}
+                </span>
+              </div>
+              <div style={{ padding: "14px", borderRadius: "14px", background: "rgba(59, 130, 246, 0.06)", border: "1px solid rgba(59, 130, 246, 0.16)" }}>
+                <strong style={{ display: "block", color: "#60a5fa", marginBottom: "6px", fontSize: "0.9rem" }}>الضمان</strong>
+                <span style={{ color: "var(--text-muted)", fontSize: "0.84rem", lineHeight: 1.6 }}>
+                  يتم مراجعة الطلب قبل التنفيذ، وأي مشكلة في البيانات أو الدفع يتم التواصل معك لحلها.
+                </span>
+              </div>
+              <div style={{ padding: "14px", borderRadius: "14px", background: "rgba(245, 158, 11, 0.06)", border: "1px solid rgba(245, 158, 11, 0.16)" }}>
+                <strong style={{ display: "block", color: "#fbbf24", marginBottom: "6px", fontSize: "0.9rem" }}>البيانات المطلوبة</strong>
+                <span style={{ color: "var(--text-muted)", fontSize: "0.84rem", lineHeight: 1.6 }}>
+                  {activeFields.length > 0
+                    ? activeFields.map((field) => field.label || field.name).join("، ")
+                    : "سيتم عرض البيانات المطلوبة بعد اختيار الباقة المناسبة."}
+                </span>
+              </div>
+            </div>
+
             {service.download_link && (
               <div style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: "8px", flexWrap: "wrap" }}>
                 <span style={{ color: "var(--text-muted)", fontSize: "0.88rem", fontWeight: "bold" }}>📥 رابط تحميل الأداة:</span>
@@ -1742,6 +1761,10 @@ export default function ServiceDetail({ params }) {
                 type="button"
                 disabled={!isContinueEnabled}
                 onClick={() => {
+                  if (!isCustomerLoggedIn) {
+                    goToLoginForOrder();
+                    return;
+                  }
                   setStep(2);
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}

@@ -62,7 +62,7 @@ export async function generateMetadata() {
 
 export default async function Page() {
   const siteName = await getSiteName();
-  const { categories } = await getCategoriesAndServices();
+  const { categories, services } = await getCategoriesAndServices();
 
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",
@@ -115,7 +115,7 @@ export default async function Page() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionJsonLd) }}
       />
-      <ServicesClient />
+      <ServicesClient initialCategories={categories} initialServices={services} />
     </>
   );
 }

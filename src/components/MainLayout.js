@@ -8,6 +8,7 @@ import PasswordChangeModal from "./PasswordChangeModal";
 import TransactionPasswordModal from "./TransactionPasswordModal";
 import ProtectionModal from "./ProtectionModal";
 import Footer from "./Footer";
+import LanguageSwitcher from "./LanguageSwitcher";
 import { FEATURES } from "@/features";
 
 
@@ -381,6 +382,9 @@ export default function MainLayout({ children }) {
     return <>{children}</>;
   }
 
+  const isFocusedConversionPage = pathname
+    && (pathname.startsWith("/login") || pathname.startsWith("/wallet") || pathname.startsWith("/service"));
+
   return (
     <div className="app-layout">
       {/* Background (Video removed for performance) */}
@@ -460,7 +464,7 @@ export default function MainLayout({ children }) {
               </div>
               <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", transform: categoriesExpanded ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.3s" }}>▼</span>
             </div>
-            <div 
+                        <div 
               className="mobile-drawer-dropdown-list" 
               style={{ 
                 display: categoriesExpanded ? "flex" : "none", 
@@ -468,17 +472,21 @@ export default function MainLayout({ children }) {
                 background: "rgba(0,0,0,0.1)", 
                 borderRadius: "8px", 
                 margin: "4px 10px", 
-                padding: "4px 0" 
+                padding: "4px 0"
               }}
             >
               <Link href="/services" className="mobile-drawer-link" style={{ padding: "8px 16px", fontSize: "0.95rem" }} onClick={() => setMenuOpen(false)}>
                 ⭐ كل الخدمات
               </Link>
-              {menuCategories.map(cat => (
-                <Link key={cat.id} href={`/category/${cat.id}`} className="mobile-drawer-link" style={{ padding: "8px 16px", fontSize: "0.95rem" }} onClick={() => setMenuOpen(false)}>
-                  🔹 {cat.name}
-                </Link>
-              ))}
+              <Link href="/services?type=imei" className="mobile-drawer-link" style={{ padding: "8px 16px", fontSize: "0.95rem" }} onClick={() => setMenuOpen(false)}>
+                📱 IMEI Services
+              </Link>
+              <Link href="/services?type=server" className="mobile-drawer-link" style={{ padding: "8px 16px", fontSize: "0.95rem" }} onClick={() => setMenuOpen(false)}>
+                💻 Server Services
+              </Link>
+              <Link href="/services?type=remote" className="mobile-drawer-link" style={{ padding: "8px 16px", fontSize: "0.95rem" }} onClick={() => setMenuOpen(false)}>
+                🌐 Remote Services
+              </Link>
             </div>
           </div>
 
@@ -511,6 +519,8 @@ export default function MainLayout({ children }) {
         </div>
 
         <div className="mobile-drawer-divider" style={{ margin: "16px 0" }} />
+
+        <LanguageSwitcher compact />
 
         {/* Premium Font Scale Toggle */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 16px", background: "rgba(255,255,255,0.03)", borderRadius: "14px", border: "1px solid rgba(255,255,255,0.05)", margin: "4px 0" }}>
@@ -591,7 +601,7 @@ export default function MainLayout({ children }) {
       {/* Main Content Area (LHS on Desktop) */}
       <div className="main-content">
         {/* PWA Install Banner */}
-        {showInstallBanner && (
+        {showInstallBanner && !isFocusedConversionPage && (
           <div className="pwa-install-banner">
             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
               <span style={{ fontSize: "1.5rem" }}>📱</span>
@@ -666,8 +676,26 @@ export default function MainLayout({ children }) {
 
           {/* Left Section (Auth & Theme & Home link) */}
           <div className="flex items-center gap-3" style={{ position: 'relative' }}>
+            <LanguageSwitcher />
             <Link href="/" className={`desktop-link hidden lg-block ${pathname === '/' ? 'active' : ''}`} style={{ fontWeight: 'bold' }}>الرئيسية</Link>
-            <Link href="/services" className={`desktop-link hidden lg-block ${pathname.startsWith('/services') ? 'active' : ''}`} style={{ fontWeight: 'bold' }}>الخدمات</Link>
+                        <div 
+              className="hidden lg:block" 
+              style={{ position: 'relative' }} 
+              onMouseEnter={(e) => { e.currentTarget.querySelector('.services-dropdown').style.display = 'flex'; }}
+              onMouseLeave={(e) => { e.currentTarget.querySelector('.services-dropdown').style.display = 'none'; }}
+            >
+              <Link href="/services" className={`desktop-link ${pathname.startsWith('/services') ? 'active' : ''}`} style={{ fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                الخدمات <span style={{fontSize: '0.7rem'}}>▼</span>
+              </Link>
+              <div className="services-dropdown" style={{ 
+                position: 'absolute', top: '100%', right: 0, background: 'rgba(15, 23, 42, 0.98)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '8px', minWidth: '200px', display: 'none', flexDirection: 'column', gap: '4px', zIndex: 100, boxShadow: '0 10px 25px rgba(0,0,0,0.5)', marginTop: '5px'
+              }}>
+                <Link href="/services" className="header-dropdown-item" style={{ padding: '8px 12px', fontSize: '0.9rem' }}>⭐ كل الخدمات</Link>
+                <Link href="/services?type=imei" className="header-dropdown-item" style={{ padding: '8px 12px', fontSize: '0.9rem' }}>📱 IMEI Services</Link>
+                <Link href="/services?type=server" className="header-dropdown-item" style={{ padding: '8px 12px', fontSize: '0.9rem' }}>💻 Server Services</Link>
+                <Link href="/services?type=remote" className="header-dropdown-item" style={{ padding: '8px 12px', fontSize: '0.9rem' }}>🌐 Remote Services</Link>
+              </div>
+            </div>
             <Link href="/orders" className={`desktop-link hidden lg-block ${pathname.startsWith('/orders') ? 'active' : ''}`} style={{ fontWeight: 'bold' }}>الطلبات</Link>
             <button onClick={toggleTheme} className="theme-toggle-btn header-btn hidden lg-block" aria-label="تبديل المظهر" style={{ padding: '6px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', cursor: 'pointer' }}>
               {theme === 'dark' ? '🌙' : '☀️'}
@@ -826,7 +854,7 @@ export default function MainLayout({ children }) {
       </div>
 
       {/* Mobile Bottom Navigation Bar */}
-      <nav className="bottom-nav">
+      {!isFocusedConversionPage && <nav className="bottom-nav">
         <Link href="/" className={`bottom-nav-item ${pathname === "/" ? "active" : ""}`}>
           <span className="bottom-nav-icon">🏠</span>
           <span className="bottom-nav-label">الرئيسية</span>
@@ -843,7 +871,7 @@ export default function MainLayout({ children }) {
           <span className="bottom-nav-icon">👤</span>
           <span className="bottom-nav-label">حسابي</span>
         </Link>
-      </nav>
+      </nav>}
 
       {/* Support Channels Modal */}
       {supportModalOpen && (

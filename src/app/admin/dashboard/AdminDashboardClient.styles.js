@@ -14,6 +14,18 @@ const dashboardStyles = `
           overflow-x: hidden;
         }
 
+        .admin-main-content {
+          min-width: 0;
+          width: 100%;
+          position: relative;
+          z-index: 1;
+        }
+
+        .admin-scrollable-area {
+          min-width: 0;
+          width: 100%;
+        }
+
         .admin-mobile-topbar {
           display: none;
           align-items: center;
@@ -21,6 +33,10 @@ const dashboardStyles = `
           padding: 15px 20px;
           background: rgba(255,255,255,0.03);
           border-bottom: 1px solid rgba(255,255,255,0.05);
+          position: sticky;
+          top: 0;
+          z-index: 30;
+          min-width: 0;
         }
 
         /* Force dark theme on admin drawer */
@@ -120,6 +136,9 @@ const dashboardStyles = `
           top: 0;
           z-index: 10;
           overflow-y: auto;
+          width: 280px;
+          min-width: 280px;
+          box-sizing: border-box;
         }
 
         .premium-sidebar::-webkit-scrollbar {
@@ -143,11 +162,13 @@ const dashboardStyles = `
           padding-bottom: 24px;
           border-bottom: 1px solid rgba(255, 255, 255, 0.06);
           margin-bottom: 25px;
+          min-width: 0;
         }
 
         .premium-logo .logo-circle {
           width: 42px;
           height: 42px;
+          min-width: 42px;
           font-size: 1.4rem;
           font-weight: 900;
           border-radius: 14px;
@@ -163,6 +184,10 @@ const dashboardStyles = `
         .premium-logo span {
           font-weight: 900;
           font-size: 1.2rem;
+          min-width: 0;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
           background: linear-gradient(135deg, #ff4444 0%, #ffffff 50%, #ff2222 100%);
           -webkit-background-clip: text;
           background-clip: text;
@@ -175,6 +200,7 @@ const dashboardStyles = `
           flex-direction: column;
           gap: 6px;
           flex-grow: 1;
+          min-width: 0;
         }
 
         .nav-item-premium {
@@ -188,6 +214,16 @@ const dashboardStyles = `
           cursor: pointer;
           transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
           border: 1px solid transparent;
+          min-width: 0;
+          width: 100%;
+          box-sizing: border-box;
+        }
+
+        .nav-item-premium span:last-child {
+          min-width: 0;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
 
         .nav-item-premium:hover {
@@ -207,6 +243,8 @@ const dashboardStyles = `
         .nav-icon {
           font-size: 1.2rem;
           transition: transform 0.3s ease;
+          flex: 0 0 24px;
+          text-align: center;
         }
 
         .nav-item-premium.active .nav-icon {
@@ -801,7 +839,7 @@ const dashboardStyles = `
           top: 0;
           bottom: 0;
           right: 0;
-          width: 280px;
+          width: min(360px, calc(100vw - 28px));
           background: rgba(10, 12, 26, 0.85);
           backdrop-filter: blur(30px);
           -webkit-backdrop-filter: blur(30px);
@@ -813,6 +851,8 @@ const dashboardStyles = `
           gap: 16px;
           transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
           overflow-y: auto;
+          box-sizing: border-box;
+          max-width: 100vw;
         }
 
         .mobile-drawer.open {
@@ -837,6 +877,14 @@ const dashboardStyles = `
           gap: 10px;
           font-weight: 800;
           color: #ffffff;
+          min-width: 0;
+        }
+
+        .mobile-drawer-title span {
+          min-width: 0;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
 
         .mobile-drawer-close {
@@ -865,6 +913,7 @@ const dashboardStyles = `
         .mobile-drawer-link {
           display: flex;
           align-items: center;
+          gap: 10px;
           padding: 12px 14px;
           border-radius: 10px;
           color: #cbd5e1;
@@ -875,6 +924,16 @@ const dashboardStyles = `
           text-align: right;
           cursor: pointer;
           transition: all 0.2s ease;
+          box-sizing: border-box;
+          min-width: 0;
+          text-decoration: none;
+          line-height: 1.35;
+        }
+
+        .mobile-drawer-link span:first-child {
+          flex: 0 0 24px;
+          text-align: center;
+          margin-inline-end: 0 !important;
         }
 
         .mobile-drawer-link:hover {
@@ -927,7 +986,7 @@ const dashboardStyles = `
         }
 
         /* Responsiveness */
-        @media (max-width: 992px) {
+        @media (max-width: 1180px) {
           .admin-dashboard-root {
             grid-template-columns: minmax(0, 1fr);
           }

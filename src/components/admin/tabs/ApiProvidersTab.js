@@ -39,6 +39,7 @@ export default function ApiProvidersTab() {
   const [selectedServices, setSelectedServices] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
+  const [typeFilter, setTypeFilter] = useState("all");
   const [importConfig, setImportConfig] = useState({ exchange_rate: 1, markup_percent: 10, group_as_packages: true });
   const [isImporting, setIsImporting] = useState(false);
   const [expandedCats, setExpandedCats] = useState({});
@@ -164,9 +165,10 @@ export default function ApiProvidersTab() {
                             s.category?.toLowerCase().includes(searchQuery.toLowerCase()) ||
                             String(s.id).includes(searchQuery);
       const matchesCategory = categoryFilter === "all" || s.category === categoryFilter;
-      return matchesSearch && matchesCategory;
+      const matchesType = typeFilter === "all" || s.serviceType === typeFilter;
+      return matchesSearch && matchesCategory && matchesType;
     });
-  }, [fetchedServices, searchQuery, categoryFilter]);
+  }, [fetchedServices, searchQuery, categoryFilter, typeFilter]);
 
   const allCategories = useMemo(() => {
     const cats = new Set(fetchedServices.map(s => s.category).filter(Boolean));
@@ -431,6 +433,17 @@ export default function ApiProvidersTab() {
                     className="search-input-premium"
                     style={{ width: "100%" }}
                   />
+                  <select 
+                    value={typeFilter} 
+                    onChange={(e) => setTypeFilter(e.target.value)}
+                    className="search-input-premium"
+                    style={{ width: "100%", cursor: "pointer", marginBottom: "10px" }}
+                  >
+                    <option value="all" style={{ background: "#11162d" }}>جميع أنواع الخدمات</option>
+                    <option value="imei" style={{ background: "#11162d" }}>IMEI Services</option>
+                    <option value="server" style={{ background: "#11162d" }}>Server Services</option>
+                    <option value="remote" style={{ background: "#11162d" }}>Remote Services</option>
+                  </select>
                   <select 
                     value={categoryFilter} 
                     onChange={(e) => setCategoryFilter(e.target.value)}

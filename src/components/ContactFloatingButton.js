@@ -95,7 +95,13 @@ export default function ContactFloatingButton() {
   const [hoveredId, setHoveredId] = useState(null);
   const pathname = usePathname();
 
-  if (pathname && pathname.startsWith("/admin")) {
+  if (
+    pathname &&
+    (pathname.startsWith("/admin") ||
+      pathname.startsWith("/login") ||
+      pathname.startsWith("/wallet") ||
+      pathname.startsWith("/service"))
+  ) {
     return null;
   }
 

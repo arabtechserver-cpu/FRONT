@@ -1,16 +1,20 @@
-"use client";
+﻿"use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { API_BASE_URL } from "@/config";
 
-export default function ServicesClient() {
-  const [services, setServices] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
+export default function ServicesClient({ initialCategories = [], initialServices = [] }) {
+  const [services, setServices] = useState(initialServices);
+  const [categories, setCategories] = useState(initialCategories);
+  const [loading, setLoading] = useState(initialServices.length === 0);
   const [searchTerm, setSearchTerm] = useState("");
   const [visibleCategories, setVisibleCategories] = useState(5);
-  const [settings, setSettings] = useState({ announcement_text: "🟢 واتساب الإدارة 1: +1 (672) 897-2935 | 🟢 واتساب الإدارة 2: +249 12 366 7227" });
+  const [settings, setSettings] = useState({ announcement_text: "ðŸŸ¢ ÙˆØ§ØªØ³Ø§Ø¨ Ø§Ù„Ø¥Ø¯Ø§Ø±Ø© 1: +1 (672) 897-2935 | ðŸŸ¢ ÙˆØ§ØªØ³Ø§Ø¨ Ø§Ù„Ø¥Ø¯Ø§Ø±Ø© 2: +249 12 366 7227" });
+  
+  const searchParams = useSearchParams();
+  const typeFilter = searchParams.get("type"); // e.g., 'imei', 'server', 'remote'
 
   const getWhatsappLink = (text) => {
     if (!text) return "https://wa.me/16728972935";
@@ -87,16 +91,16 @@ export default function ServicesClient() {
     const lowerName = (name || "").toLowerCase();
     const lowerImg = (image || "").toLowerCase();
 
-    if (lowerImg.includes("pubg") || lowerName.includes("pubg") || lowerName.includes("ببجي")) return "🔫";
-    if (lowerImg.includes("freefire") || lowerImg.includes("free fire") || lowerName.includes("فري فاير") || lowerName.includes("free fire") || lowerName.includes("freefire")) return "🔥";
-    if (lowerImg.includes("bigo") || lowerName.includes("بيجو")) return "💬";
-    if (lowerImg.includes("vodafone") || lowerName.includes("فودافون")) return "📱";
-    if (lowerImg.includes("usdt") || lowerName.includes("usdt") || lowerName.includes("عملة") || lowerName.includes("أرصدة")) return "🪙";
-    if (lowerImg.includes("canva") || lowerName.includes("كانفا")) return "🎨";
-    if (lowerImg.includes("netflix") || lowerName.includes("نتفليكس")) return "🎬";
-    if (lowerName.includes("ايفون") || lowerName.includes("iphone") || lowerName.includes("ipad") || lowerName.includes("ايباد") || lowerName.includes("bypass") || lowerName.includes("تخط") || lowerName.includes("icloud") || lowerName.includes("ايكلاود") || lowerName.includes("hello") || lowerName.includes("removal") || lowerName.includes("hfz") || lowerName.includes("smd") || lowerName.includes("otix")) return "📱";
+    if (lowerImg.includes("pubg") || lowerName.includes("pubg") || lowerName.includes("Ø¨Ø¨Ø¬ÙŠ")) return "ðŸ”«";
+    if (lowerImg.includes("freefire") || lowerImg.includes("free fire") || lowerName.includes("ÙØ±ÙŠ ÙØ§ÙŠØ±") || lowerName.includes("free fire") || lowerName.includes("freefire")) return "ðŸ”¥";
+    if (lowerImg.includes("bigo") || lowerName.includes("Ø¨ÙŠØ¬Ùˆ")) return "ðŸ’¬";
+    if (lowerImg.includes("vodafone") || lowerName.includes("ÙÙˆØ¯Ø§ÙÙˆÙ†")) return "ðŸ“±";
+    if (lowerImg.includes("usdt") || lowerName.includes("usdt") || lowerName.includes("Ø¹Ù…Ù„Ø©") || lowerName.includes("Ø£Ø±ØµØ¯Ø©")) return "ðŸª™";
+    if (lowerImg.includes("canva") || lowerName.includes("ÙƒØ§Ù†ÙØ§")) return "ðŸŽ¨";
+    if (lowerImg.includes("netflix") || lowerName.includes("Ù†ØªÙÙ„ÙŠÙƒØ³")) return "ðŸŽ¬";
+    if (lowerName.includes("Ø§ÙŠÙÙˆÙ†") || lowerName.includes("iphone") || lowerName.includes("ipad") || lowerName.includes("Ø§ÙŠØ¨Ø§Ø¯") || lowerName.includes("bypass") || lowerName.includes("ØªØ®Ø·") || lowerName.includes("icloud") || lowerName.includes("Ø§ÙŠÙƒÙ„Ø§ÙˆØ¯") || lowerName.includes("hello") || lowerName.includes("removal") || lowerName.includes("hfz") || lowerName.includes("smd") || lowerName.includes("otix")) return "ðŸ“±";
 
-    return "⚡";
+    return "âš¡";
   };
 
   const getServiceIcon = (image, name = "") => {
@@ -118,17 +122,25 @@ export default function ServicesClient() {
         style={{ width: "45px", height: "45px", objectFit: "contain", borderRadius: "8px" }}
       />;
     }
-    if (image.includes("pubg")) return "🔫";
-    if (image.includes("freefire")) return "🔥";
-    if (image.includes("bigo")) return "💬";
-    if (image.includes("vodafone")) return "📱";
-    if (image.includes("usdt")) return "🪙";
-    if (image.includes("canva")) return "🎨";
-    if (image.includes("netflix")) return "🎬";
-    return "⚡";
+    if (image.includes("pubg")) return "ðŸ”«";
+    if (image.includes("freefire")) return "ðŸ”¥";
+    if (image.includes("bigo")) return "ðŸ’¬";
+    if (image.includes("vodafone")) return "ðŸ“±";
+
+    if (image.includes("usdt")) return "ðŸª™";
+    if (image.includes("canva")) return "ðŸŽ¨";
+    if (image.includes("netflix")) return "ðŸŽ¬";
+    return "âš¡";
   };
 
-  const catalogCategories = categories;
+  const catalogCategories = useMemo(() => {
+    if (!typeFilter) return categories;
+    return categories.filter(cat => {
+      const catServices = services.filter(s => s.category_id === cat.id);
+      return catServices.some(s => (s.api_service_type || 'imei').toLowerCase() === typeFilter.toLowerCase());
+    });
+  }, [categories, services, typeFilter]);
+
   const catalogServices = services;
 
   const filteredServices = catalogServices.filter((s) =>
@@ -146,13 +158,13 @@ export default function ServicesClient() {
 
       {/* Page Title */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "20px", marginBottom: "10px", gap: "12px", flexWrap: "wrap" }}>
-        <h2 className="section-title" style={{ margin: 0 }}>الخدمات المتاحة</h2>
+        <h2 className="section-title" style={{ margin: 0 }}>Ø§Ù„Ø®Ø¯Ù…Ø§Øª Ø§Ù„Ù…ØªØ§Ø­Ø©</h2>
         <span style={{ fontSize: "0.85rem", color: "var(--text-muted)", fontWeight: "600" }}>
-          {filteredServices.length} خدمة متوفرة
+          {filteredServices.length} Ø®Ø¯Ù…Ø© Ù…ØªÙˆÙØ±Ø©
         </span>
       </div>
       <p style={{ color: "var(--text-muted)", fontSize: "0.88rem", margin: "0 0 20px 0" }}>
-        تصفح وابحث في كافة خدمات السوفت وير وتفعيلات الدونجلات والبرامج المتاحة.
+        ØªØµÙØ­ ÙˆØ§Ø¨Ø­Ø« ÙÙŠ ÙƒØ§ÙØ© Ø®Ø¯Ù…Ø§Øª Ø§Ù„Ø³ÙˆÙØª ÙˆÙŠØ± ÙˆØªÙØ¹ÙŠÙ„Ø§Øª Ø§Ù„Ø¯ÙˆÙ†Ø¬Ù„Ø§Øª ÙˆØ§Ù„Ø¨Ø±Ø§Ù…Ø¬ Ø§Ù„Ù…ØªØ§Ø­Ø©.
       </p>
 
       {/* Centered Search Bar */}
@@ -160,26 +172,26 @@ export default function ServicesClient() {
         <input
           type="text"
           className="search-input-center"
-          placeholder="ابحث عن خدمة سوفت وير، تفعيلات، أدوات..."
+          placeholder="Ø§Ø¨Ø­Ø« Ø¹Ù† Ø®Ø¯Ù…Ø© Ø³ÙˆÙØª ÙˆÙŠØ±ØŒ ØªÙØ¹ÙŠÙ„Ø§ØªØŒ Ø£Ø¯ÙˆØ§Øª..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           dir="ltr"
           style={{ direction: "ltr", textAlign: "left" }}
         />
-        <span className="search-icon-center">🔍</span>
+        <span className="search-icon-center">ðŸ”</span>
       </div>
 
       {/* Services List (scc-grid) */}
       {loading && services.length === 0 ? (
         <div style={{ textAlign: "center", padding: "40px", fontSize: "1.2rem", fontWeight: 700 }}>
-          جاري تحميل الخدمات...
+          Ø¬Ø§Ø±ÙŠ ØªØ­Ù…ÙŠÙ„ Ø§Ù„Ø®Ø¯Ù…Ø§Øª...
         </div>
       ) : filteredServices.length === 0 ? (
         <div className="glass-panel" style={{ textAlign: "center", padding: "40px" }}>
-          <span style={{ fontSize: "3rem" }}>📭</span>
-          <h3 style={{ margin: "15px 0 10px 0" }}>لا تتوفر خدمات مطابقة للبحث</h3>
-          <p style={{ color: "var(--text-muted)", marginBottom: "20px" }}>يرجى تجربة كلمات بحث أخرى أو تصفح الأقسام الرئيسية.</p>
-          <Link href="/" className="glass-btn glass-btn-primary">العودة للرئيسية</Link>
+          <span style={{ fontSize: "3rem" }}>ðŸ“­</span>
+          <h3 style={{ margin: "15px 0 10px 0" }}>Ù„Ø§ ØªØªÙˆÙØ± Ø®Ø¯Ù…Ø§Øª Ù…Ø·Ø§Ø¨Ù‚Ø© Ù„Ù„Ø¨Ø­Ø«</h3>
+          <p style={{ color: "var(--text-muted)", marginBottom: "20px" }}>ÙŠØ±Ø¬Ù‰ ØªØ¬Ø±Ø¨Ø© ÙƒÙ„Ù…Ø§Øª Ø¨Ø­Ø« Ø£Ø®Ø±Ù‰ Ø£Ùˆ ØªØµÙØ­ Ø§Ù„Ø£Ù‚Ø³Ø§Ù… Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠØ©.</p>
+          <Link href="/" className="glass-btn glass-btn-primary">Ø§Ù„Ø¹ÙˆØ¯Ø© Ù„Ù„Ø±Ø¦ÙŠØ³ÙŠØ©</Link>
         </div>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
@@ -218,7 +230,15 @@ export default function ServicesClient() {
                       {(() => {
                         const cleanPath = cat.image.startsWith("/") ? cat.image : `/${cat.image}`;
                         const src = (cat.image.startsWith("http") || cat.image.startsWith("data:")) ? cat.image : `${API_BASE_URL}${cleanPath}`;
-                        return <img src={src} alt={cat.name} style={{ width: "100%", height: "100%", objectFit: "contain" }} />;
+                        return <img
+                          src={src}
+                          alt={cat.name}
+                          loading="lazy"
+                          onError={(e) => {
+                            e.currentTarget.style.display = "none";
+                          }}
+                          style={{ width: "100%", height: "100%", objectFit: "contain" }}
+                        />;
                       })()}
                     </div>
                   )}
@@ -232,7 +252,7 @@ export default function ServicesClient() {
                     borderRadius: "10px",
                     fontWeight: "700"
                   }}>
-                    {catServices.length} {catServices.length === 1 ? "خدمة" : catServices.length === 2 ? "خدمتين" : "خدمات"}
+                    {catServices.length} {catServices.length === 1 ? "Ø®Ø¯Ù…Ø©" : catServices.length === 2 ? "Ø®Ø¯Ù…ØªÙŠÙ†" : "Ø®Ø¯Ù…Ø§Øª"}
                   </span>
                 </div>
 
@@ -258,7 +278,7 @@ export default function ServicesClient() {
                     const catColor = categoryColors[service.category_id] || '#6366f1';
 
                     const hexToRgb = (hex) => {
-                      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+                      const result = /^#?([a-fd]{2})([a-fd]{2})([a-fd]{2})$/i.exec(hex);
                       return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '99, 102, 241';
                     };
                     const catGlow = `rgba(${hexToRgb(catColor)}, 0.35)`;
@@ -302,7 +322,7 @@ export default function ServicesClient() {
                             <div className="scc-meta" style={{ display: "flex", flexWrap: "wrap", gap: "8px", alignItems: "center", marginTop: "4px", width: "100%", minWidth: 0 }}>
                               {service.packages && service.packages.length > 0 ? (
                                 <div style={{ display: "flex", flexDirection: "column", gap: "4px", width: "100%", marginTop: "6px", minWidth: 0 }}>
-                                  <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", fontWeight: "bold" }}>الباقات المتوفرة:</span>
+                                  <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", fontWeight: "bold" }}>Ø§Ù„Ø¨Ø§Ù‚Ø§Øª Ø§Ù„Ù…ØªÙˆÙØ±Ø©:</span>
                                   {service.packages.slice(0, 3).map((pkg, idx) => (
                                     <div key={idx} style={{ 
                                       display: "flex", 
@@ -319,11 +339,11 @@ export default function ServicesClient() {
                                       minWidth: 0
                                     }}>
                                       <span style={{ color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", flex: "1 1 auto", minWidth: 0 }} title={pkg.name}>{pkg.name}</span>
-                                      <span style={{ color: "var(--primary-color)", fontWeight: "bold", flexShrink: 0 }}>${Number(pkg.price).toFixed(2)}</span>
+                                      <span style={{ color: "var(--primary-color)", fontWeight: "bold", flexShrink: 0 }}>$\{Number(pkg.price).toFixed(2)}</span>
                                     </div>
                                   ))}
                                   {service.packages.length > 3 && (
-                                    <span style={{ fontSize: "0.78rem", color: "#fbbf24", background: "rgba(245, 158, 11, 0.14)", border: "1px solid rgba(245, 158, 11, 0.35)", padding: "3px 9px", borderRadius: "8px", fontWeight: "900", marginTop: "4px", display: "inline-block" }}>+ عرض المزيد ({service.packages.length - 3})</span>
+                                    <span style={{ fontSize: "0.78rem", color: "#fbbf24", background: "rgba(245, 158, 11, 0.14)", border: "1px solid rgba(245, 158, 11, 0.35)", padding: "3px 9px", borderRadius: "8px", fontWeight: "900", marginTop: "4px", display: "inline-block" }}>+ Ø¹Ø±Ø¶ Ø§Ù„Ù…Ø²ÙŠØ¯ ({service.packages.length - 3})</span>
                                   )}
                                 </div>
                               ) : service.price > 0 ? (
@@ -333,14 +353,14 @@ export default function ServicesClient() {
                               ) : (
                                 <>
                                   <div className="scc-dot"></div>
-                                  <span>اضغط للعرض</span>
+                                  <span>Ø§Ø¶ØºØ· Ù„Ù„Ø¹Ø±Ø¶</span>
                                 </>
                               )}
                             </div>
                           </div>
                           <div className="scc-arrow">
                             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-left">
-                              <path d="m9 18 6-6-6-6"></path>
+                              <path d="m15 18-6-6 6-6"></path>
                             </svg>
                           </div>
                         </Link>
@@ -375,9 +395,9 @@ export default function ServicesClient() {
                   justifyContent: "center",
                   overflow: "hidden"
                 }}>
-                  <span style={{ fontSize: "1.2rem" }}>⚡</span>
+                  <span style={{ fontSize: "1.2rem" }}>âš¡</span>
                 </div>
-                <h3 className="cat-section-header" style={{ flex: "1 1 auto", wordBreak: "break-word", lineHeight: "1.4" }}>خدمات أخرى</h3>
+                <h3 className="cat-section-header" style={{ flex: "1 1 auto", wordBreak: "break-word", lineHeight: "1.4" }}>Ø®Ø¯Ù…Ø§Øª Ø£Ø®Ø±Ù‰</h3>
                 <span style={{
                   fontSize: "0.75rem",
                   color: "#cbd5e1",
@@ -387,7 +407,7 @@ export default function ServicesClient() {
                   borderRadius: "10px",
                   fontWeight: "700"
                 }}>
-                  {uncategorizedServices.length} خدمة
+                  {uncategorizedServices.length} Ø®Ø¯Ù…Ø©
                 </span>
               </div>
 
@@ -435,7 +455,7 @@ export default function ServicesClient() {
                           <div className="scc-meta" style={{ display: "flex", flexWrap: "wrap", gap: "8px", alignItems: "center", marginTop: "4px", width: "100%", minWidth: 0 }}>
                             {service.packages && service.packages.length > 0 ? (
                               <div style={{ display: "flex", flexDirection: "column", gap: "4px", width: "100%", marginTop: "6px", minWidth: 0 }}>
-                                <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", fontWeight: "bold" }}>الباقات المتوفرة:</span>
+                                <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", fontWeight: "bold" }}>Ø§Ù„Ø¨Ø§Ù‚Ø§Øª Ø§Ù„Ù…ØªÙˆÙØ±Ø©:</span>
                                 {service.packages.slice(0, 3).map((pkg, idx) => (
                                   <div key={idx} style={{ 
                                     display: "flex", 
@@ -456,7 +476,7 @@ export default function ServicesClient() {
                                   </div>
                                 ))}
                                 {service.packages.length > 3 && (
-                                  <span style={{ fontSize: "0.78rem", color: "#fbbf24", background: "rgba(245, 158, 11, 0.14)", border: "1px solid rgba(245, 158, 11, 0.35)", padding: "3px 9px", borderRadius: "8px", fontWeight: "900", marginTop: "4px", display: "inline-block" }}>+ عرض المزيد ({service.packages.length - 3})</span>
+                                  <span style={{ fontSize: "0.78rem", color: "#fbbf24", background: "rgba(245, 158, 11, 0.14)", border: "1px solid rgba(245, 158, 11, 0.35)", padding: "3px 9px", borderRadius: "8px", fontWeight: "900", marginTop: "4px", display: "inline-block" }}>+ Ø¹Ø±Ø¶ Ø§Ù„Ù…Ø²ÙŠØ¯ ({service.packages.length - 3})</span>
                                 )}
                               </div>
                             ) : service.price > 0 ? (
@@ -466,13 +486,13 @@ export default function ServicesClient() {
                             ) : (
                               <>
                                 <div className="scc-dot"></div>
-                                <span>اضغط للعرض</span>
+                                <span>Ø§Ø¶ØºØ· Ù„Ù„Ø¹Ø±Ø¶</span>
                               </>
                             )}
                           </div>
                         </div>
                         <div className="scc-arrow">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-chevron-left">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-left">
                             <path d="m15 18-6-6 6-6"></path>
                           </svg>
                         </div>
@@ -487,10 +507,11 @@ export default function ServicesClient() {
           {searchTerm.trim().length === 0 && visibleCategories < catalogCategories.length && (
             <div style={{ display: "flex", justifyContent: "center", marginTop: "20px", marginBottom: "10px" }}>
               <button
-                onClick={() => setVisibleCategories(prev => prev + 5)}
-                className="btn-show-more-gold"
+                type="button"
+                className="glass-btn glass-btn-primary"
+                onClick={() => setVisibleCategories((count) => count + 5)}
               >
-                عرض المزيد من الأقسام ⬇️
+                عرض المزيد
               </button>
             </div>
           )}

@@ -10,6 +10,25 @@ import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 let globalSettingsCache = null;
 let fetchSettingsPromise = null;
 
+function stripInlinePaymentLogos(paymentMethods = []) {
+  if (!Array.isArray(paymentMethods)) return [];
+
+  return paymentMethods.map((pm) => {
+    if (!pm || typeof pm !== "object") return pm;
+    return typeof pm.logo === "string" && pm.logo.startsWith("data:image")
+      ? { ...pm, logo: "" }
+      : pm;
+  });
+}
+
+function normalizeWalletSettings(settings) {
+  if (!settings) return settings;
+  return {
+    ...settings,
+    payment_methods: stripInlinePaymentLogos(settings.payment_methods),
+  };
+}
+
 export default function WalletPage() {
   const router = useRouter();
   const [token, setToken] = useState("");
@@ -58,14 +77,16 @@ export default function WalletPage() {
   useEffect(() => {
     setToken(localStorage.getItem("customer_token") || "");
     setTheme(document.documentElement.getAttribute("data-theme") || localStorage.getItem("theme") || "dark");
+    setHydrated(true);
     // Check if we have cached settings for instant render
     if (globalSettingsCache) {
-      setPaymentMethods(globalSettingsCache.payment_methods || []);
-      setWhatsappNumbers(globalSettingsCache.whatsapp_numbers || []);
-      setGlobalCurrencies(globalSettingsCache.supported_currencies || ["USD"]);
-      if (globalSettingsCache.supported_currencies?.length > 0) setSelectedCurrency(globalSettingsCache.supported_currencies[0]);
-      if (globalSettingsCache.exchange_rates) setExchangeRates(prev => ({ ...prev, ...globalSettingsCache.exchange_rates }));
-      if (globalSettingsCache.base_currency) setBaseCurrency(globalSettingsCache.base_currency);
+      const cachedSettings = normalizeWalletSettings(globalSettingsCache);
+      setPaymentMethods(cachedSettings.payment_methods || []);
+      setWhatsappNumbers(cachedSettings.whatsapp_numbers || []);
+      setGlobalCurrencies(cachedSettings.supported_currencies || ["USD"]);
+      if (cachedSettings.supported_currencies?.length > 0) setSelectedCurrency(cachedSettings.supported_currencies[0]);
+      if (cachedSettings.exchange_rates) setExchangeRates(prev => ({ ...prev, ...cachedSettings.exchange_rates }));
+      if (cachedSettings.base_currency) setBaseCurrency(cachedSettings.base_currency);
       setLoadingSettings(false);
     }
 
@@ -75,6 +96,7 @@ export default function WalletPage() {
         .then(res => res.ok ? res.json() : null)
         .then(data => {
           if (data) {
+            data = normalizeWalletSettings(data);
             globalSettingsCache = data; // Save to global cache
             if (data.payment_methods) {
               setPaymentMethods(data.payment_methods);
@@ -121,12 +143,10 @@ export default function WalletPage() {
           });
         }
         setLoadingRates(false);
-        setHydrated(true);
       })
       .catch(err => {
         console.error("Error fetching live rates:", err);
         setLoadingRates(false);
-        setHydrated(true);
       });
   }, []);
 
