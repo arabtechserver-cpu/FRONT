@@ -22,6 +22,8 @@ export default function MainLayout({ children }) {
   const [theme, setTheme] = useState("dark");
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const [servicesMenuOpen, setServicesMenuOpen] = useState(false);
+  const servicesMenuRef = useRef(null);
   const [categoriesExpanded, setCategoriesExpanded] = useState(false);
   const [settings, setSettings] = useState({ site_name: "عرب تك سيرفر", site_logo: "/logo.jpg" });
   const [logoFailed, setLogoFailed] = useState(false);
@@ -100,6 +102,19 @@ export default function MainLayout({ children }) {
     const scaleVal = savedScale ? parseFloat(savedScale) : 1;
     setFontScale(Number.isFinite(scaleVal) ? scaleVal : 1);
   }, []);
+
+  useEffect(() => {
+    if (!servicesMenuOpen) return;
+
+    const closeOnOutsidePress = (event) => {
+      if (!servicesMenuRef.current?.contains(event.target)) {
+        setServicesMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("pointerdown", closeOnOutsidePress);
+    return () => document.removeEventListener("pointerdown", closeOnOutsidePress);
+  }, [servicesMenuOpen]);
 
   useEffect(() => {
     fetch(`${API_BASE_URL}/api/services/menu`)
@@ -677,22 +692,31 @@ export default function MainLayout({ children }) {
           <div className="flex items-center gap-3" style={{ position: 'relative' }}>
             <LanguageSwitcher />
             <Link href="/" className={`desktop-link hidden lg-block ${pathname === '/' ? 'active' : ''}`} style={{ fontWeight: 'bold' }}>{t("home")}</Link>
-                        <div 
-              className="hidden lg:block" 
-              style={{ position: 'relative' }} 
-              onMouseEnter={(e) => { e.currentTarget.querySelector('.services-dropdown').style.display = 'flex'; }}
-              onMouseLeave={(e) => { e.currentTarget.querySelector('.services-dropdown').style.display = 'none'; }}
+            <div
+              ref={servicesMenuRef}
+              className="hidden lg:block"
+              style={{ position: 'relative' }}
             >
-              <Link href="/services" className={`desktop-link ${pathname.startsWith('/services') ? 'active' : ''}`} style={{ fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <Link
+                href="/services"
+                className={`desktop-link ${pathname.startsWith('/services') ? 'active' : ''}`}
+                aria-haspopup="menu"
+                aria-expanded={servicesMenuOpen}
+                onClick={(event) => {
+                  event.preventDefault();
+                  setServicesMenuOpen((open) => !open);
+                }}
+                style={{ fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '4px' }}
+              >
                 {t("services")} <span style={{fontSize: '0.7rem'}}>▼</span>
               </Link>
               <div className="services-dropdown" style={{ 
-                position: 'absolute', top: '100%', right: 0, background: 'rgba(15, 23, 42, 0.98)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '8px', minWidth: '200px', display: 'none', flexDirection: 'column', gap: '4px', zIndex: 100, boxShadow: '0 10px 25px rgba(0,0,0,0.5)', marginTop: '5px'
+                position: 'absolute', top: '100%', right: 0, background: 'rgba(15, 23, 42, 0.98)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '8px', minWidth: '200px', display: servicesMenuOpen ? 'flex' : 'none', flexDirection: 'column', gap: '4px', zIndex: 100, boxShadow: '0 10px 25px rgba(0,0,0,0.5)', marginTop: '5px'
               }}>
-                <Link href="/services" className="header-dropdown-item" style={{ padding: '8px 12px', fontSize: '0.9rem' }}>⭐ {t("allServices")}</Link>
-                <Link href="/services?type=imei" className="header-dropdown-item" style={{ padding: '8px 12px', fontSize: '0.9rem' }}>📱 {t("imeiServices")}</Link>
-                <Link href="/services?type=server" className="header-dropdown-item" style={{ padding: '8px 12px', fontSize: '0.9rem' }}>💻 {t("serverServices")}</Link>
-                <Link href="/services?type=remote" className="header-dropdown-item" style={{ padding: '8px 12px', fontSize: '0.9rem' }}>🌐 {t("remoteServices")}</Link>
+                <Link href="/services" onClick={() => setServicesMenuOpen(false)} className="header-dropdown-item" style={{ padding: '8px 12px', fontSize: '0.9rem' }}>⭐ {t("allServices")}</Link>
+                <Link href="/services?type=imei" onClick={() => setServicesMenuOpen(false)} className="header-dropdown-item" style={{ padding: '8px 12px', fontSize: '0.9rem' }}>📱 {t("imeiServices")}</Link>
+                <Link href="/services?type=server" onClick={() => setServicesMenuOpen(false)} className="header-dropdown-item" style={{ padding: '8px 12px', fontSize: '0.9rem' }}>💻 {t("serverServices")}</Link>
+                <Link href="/services?type=remote" onClick={() => setServicesMenuOpen(false)} className="header-dropdown-item" style={{ padding: '8px 12px', fontSize: '0.9rem' }}>🌐 {t("remoteServices")}</Link>
               </div>
             </div>
             <Link href="/orders" className={`desktop-link hidden lg-block ${pathname.startsWith('/orders') ? 'active' : ''}`} style={{ fontWeight: 'bold' }}>{t("orders")}</Link>
