@@ -60,6 +60,79 @@ body {
   top: 0 !important;
 }
 
+html[dir="ltr"],
+html[dir="ltr"] body {
+  direction: ltr;
+  text-align: left;
+}
+
+html[dir="rtl"],
+html[dir="rtl"] body {
+  direction: rtl;
+  text-align: right;
+}
+
+html[dir="ltr"] .app-layout,
+html[dir="ltr"] .main-content,
+html[dir="ltr"] .main-content-inner,
+html[dir="ltr"] .glass-panel,
+html[dir="ltr"] .mobile-drawer,
+html[dir="ltr"] .header-profile-dropdown,
+html[dir="ltr"] footer {
+  direction: ltr;
+  text-align: left;
+}
+
+html[dir="rtl"] .app-layout,
+html[dir="rtl"] .main-content,
+html[dir="rtl"] .main-content-inner,
+html[dir="rtl"] .glass-panel,
+html[dir="rtl"] .mobile-drawer,
+html[dir="rtl"] .header-profile-dropdown,
+html[dir="rtl"] footer {
+  direction: rtl;
+  text-align: right;
+}
+
+html[dir="ltr"] .mobile-drawer {
+  right: auto;
+  left: 0;
+}
+
+html[dir="ltr"] .mobile-drawer.closed {
+  transform: translateX(-105%);
+}
+
+html[dir="rtl"] .mobile-drawer.closed {
+  transform: translateX(105%);
+}
+
+html[dir="ltr"] .services-dropdown {
+  right: auto !important;
+  left: 0 !important;
+}
+
+html[dir="ltr"] .header-profile-dropdown {
+  left: auto !important;
+  right: 0 !important;
+}
+
+html[dir="ltr"] .bottom-nav,
+html[dir="ltr"] .notice-row,
+html[dir="ltr"] .notice-track,
+html[dir="ltr"] .notice-set-item,
+html[dir="ltr"] .language-switcher {
+  direction: ltr;
+}
+
+html[dir="rtl"] .bottom-nav,
+html[dir="rtl"] .notice-row,
+html[dir="rtl"] .notice-track,
+html[dir="rtl"] .notice-set-item,
+html[dir="rtl"] .language-switcher {
+  direction: rtl;
+}
+
 @media (max-width: 992px) {
   .custom-navbar .language-switcher {
     min-width: 96px;

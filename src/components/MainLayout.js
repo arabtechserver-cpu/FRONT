@@ -350,7 +350,7 @@ export default function MainLayout({ children }) {
       setDeferredPrompt(null);
       setShowInstallBanner(false);
     } else {
-      alert("Ù„ØªØ«Ø¨ÙŠØª Ø§Ù„ØªØ·Ø¨ÙŠÙ‚ Ø¹Ù„Ù‰ Ø¬Ù‡Ø§Ø²Ùƒ:\n\n- Ù„Ù„Ø£Ù†Ø¯Ø±ÙˆÙŠØ¯: Ø§Ø¶ØºØ· Ø¹Ù„Ù‰ Ø§Ù„Ù‚Ø§Ø¦Ù…Ø© Ø§Ù„Ù…ÙƒÙˆÙ†Ø© Ù…Ù† 3 Ù†Ù‚Ø§Ø· (ï¸™) ÙÙŠ Ù…ØªØµÙØ­ ÙƒØ±ÙˆÙ… Ø«Ù… Ø§Ø®ØªØ± 'ØªØ«Ø¨ÙŠØª Ø§Ù„ØªØ·Ø¨ÙŠÙ‚' (Install app).\n\n- Ù„Ù„Ø£ÙŠÙÙˆÙ†: Ø§Ø¶ØºØ· Ø¹Ù„Ù‰ Ø²Ø± Ù…Ø´Ø§Ø±ÙƒØ© (ðŸ“¤) ÙÙŠ Ù…ØªØµÙØ­ Safari Ø«Ù… Ø§Ø®ØªØ± 'Ø¥Ø¶Ø§ÙØ© Ø¥Ù„Ù‰ Ø§Ù„Ø´Ø§Ø´Ø© Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠØ©' (Add to Home Screen).");
+      alert(t("installInstructions"));
     }
   };
 
@@ -514,7 +514,7 @@ export default function MainLayout({ children }) {
             type="button"
             onClick={() => { setSupportModalOpen(true); setMenuOpen(false); }}
             className="mobile-drawer-link"
-            style={{ width: "100%", textAlign: "right", border: "none", display: "flex", alignItems: "center", background: "transparent", padding: "14px 16px" }}
+            style={{ width: "100%", textAlign: meta.dir === "rtl" ? "right" : "left", border: "none", display: "flex", alignItems: "center", background: "transparent", padding: "14px 16px" }}
           >
             <span style={{ fontSize: "1.2rem" }}>💬</span> {t("support")}
           </button>
@@ -534,21 +534,21 @@ export default function MainLayout({ children }) {
             <button
               onClick={() => adjustFontScale(-0.05)}
               style={{ background: "transparent", border: "none", color: "var(--text-main)", width: "32px", height: "32px", borderRadius: "8px", cursor: "pointer", fontSize: "0.9rem", fontWeight: "bold", transition: "0.2s" }}
-              title="ØªØµØºÙŠØ± Ø§Ù„Ø®Ø·"
+              title={t("decreaseFontSize")}
               type="button"
             >A-</button>
             <div style={{ width: "1px", height: "20px", background: "rgba(255,255,255,0.1)" }}></div>
             <button
               onClick={resetFontScale}
               style={{ background: "transparent", border: "none", color: "var(--text-main)", width: "32px", height: "32px", borderRadius: "8px", cursor: "pointer", fontSize: "1rem", fontWeight: "900", transition: "0.2s" }}
-              title="Ø­Ø¬Ù… Ø§ÙØªØ±Ø§Ø¶ÙŠ"
+              title={t("defaultFontSize")}
               type="button"
             >A</button>
             <div style={{ width: "1px", height: "20px", background: "rgba(255,255,255,0.1)" }}></div>
             <button
               onClick={() => adjustFontScale(0.05)}
               style={{ background: "transparent", border: "none", color: "var(--text-main)", width: "32px", height: "32px", borderRadius: "8px", cursor: "pointer", fontSize: "1.1rem", fontWeight: "bold", transition: "0.2s" }}
-              title="ØªÙƒØ¨ÙŠØ± Ø§Ù„Ø®Ø·"
+              title={t("increaseFontSize")}
               type="button"
             >A+</button>
           </div>
@@ -699,14 +699,14 @@ export default function MainLayout({ children }) {
               </div>
             </div>
             <Link href="/orders" className={`desktop-link hidden lg-block ${pathname.startsWith('/orders') ? 'active' : ''}`} style={{ fontWeight: 'bold' }}>{t("orders")}</Link>
-            <button onClick={toggleTheme} className="theme-toggle-btn header-btn hidden lg-block" aria-label="ØªØ¨Ø¯ÙŠÙ„ Ø§Ù„Ù…Ø¸Ù‡Ø±" style={{ padding: '6px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', cursor: 'pointer' }}>
+            <button onClick={toggleTheme} className="theme-toggle-btn header-btn hidden lg-block" aria-label={t("toggleTheme")} style={{ padding: '6px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', cursor: 'pointer' }}>
               {theme === 'dark' ? 'ðŸŒ™' : 'â˜€ï¸'}
             </button>
             
             <div className="hidden lg:block">
               {isCustomerLoggedIn && customerUser ? (
                 <div style={{ position: 'relative' }}>
-                  <button className="header-user-btn" type="button" onClick={() => setProfileMenuOpen(!profileMenuOpen)} title="Ø§Ù„Ù…Ù„Ù Ø§Ù„Ø´Ø®ØµÙŠ" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 12px', background: 'rgba(79, 70, 229, 0.1)', border: '1px solid rgba(79, 70, 229, 0.2)', borderRadius: '8px', cursor: 'pointer' }}>
+                  <button className="header-user-btn" type="button" onClick={() => setProfileMenuOpen(!profileMenuOpen)} title={t("profile")} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 12px', background: 'rgba(79, 70, 229, 0.1)', border: '1px solid rgba(79, 70, 229, 0.2)', borderRadius: '8px', cursor: 'pointer' }}>
                     <div className="font-black text-sm" style={{ color: 'rgb(79, 70, 229)' }}>
                       {customerUser.username ? customerUser.username.charAt(0).toUpperCase() : 'U'}
                     </div>
@@ -727,7 +727,7 @@ export default function MainLayout({ children }) {
                       {FEATURES.showApiDocs && (
                         <Link href="/api-docs" className="header-dropdown-item" onClick={() => setProfileMenuOpen(false)}>🔌 {t("apiDocs")}</Link>
                       )}
-                      <button onClick={() => { setProfileMenuOpen(false); window.dispatchEvent(new CustomEvent('openPasswordChangeModal')); }} className="header-dropdown-item" type="button">ðŸ” ØªØºÙŠÙŠØ± ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ±</button>
+                      <button onClick={() => { setProfileMenuOpen(false); window.dispatchEvent(new CustomEvent('openPasswordChangeModal')); }} className="header-dropdown-item" type="button">🔐 {t("changePassword")}</button>
                       <button onClick={() => { handleCustomerLogout(); setProfileMenuOpen(false); }} className="header-dropdown-item" style={{ color: 'var(--danger-color)', width: '100%', textAlign: meta.dir === "rtl" ? 'right' : 'left' }} type="button">🚪 {t("logout")}</button>
                     </div>
                   )}
@@ -809,12 +809,12 @@ export default function MainLayout({ children }) {
                 color: "#ffffff",
                 boxShadow: "0 20px 40px rgba(245, 158, 11, 0.3)"
               }}>
-                <div style={{ fontSize: "2.8rem", marginBottom: "10px" }}>ðŸ›¡ï¸</div>
+                <div style={{ fontSize: "2.8rem", marginBottom: "10px" }}>🛡️</div>
                 <h3 style={{ fontSize: "1.3rem", fontWeight: "900", color: "#fbbf24", marginBottom: "10px" }}>
-                  Ù†ØµÙŠØ­Ø© Ø£Ù…Ø§Ù† Ù„Ø­Ø³Ø§Ø¨Ùƒ ðŸ”’
+                  {t("securityTipTitle")}
                 </h3>
                 <p style={{ fontSize: "0.92rem", color: "#cbd5e1", lineHeight: "1.6", marginBottom: "22px" }}>
-                  Ù„Ø­Ù…Ø§ÙŠØ© Ù…Ø­ÙØ¸ØªÙƒ ÙˆØ­Ø³Ø§Ø¨Ùƒ ØªÙ„Ù‚Ø§Ø¦ÙŠØ§Ù‹ Ø¹Ù†Ø¯ Ø§Ù„Ø®Ù…ÙˆÙ„ØŒ ÙŠÙÙ†ØµØ­ Ø¨ØªØ¹ÙŠÙŠÙ† <strong>ÙƒÙ„Ù…Ø© Ù…Ø±ÙˆØ± Ø§Ù„Ù…Ø¹Ø§Ù…Ù„Ø§Øª ÙˆØ§Ù„Ù‚ÙÙ„</strong> Ø§Ù„Ø¢Ù†.
+                  {t("securityTipBody")}
                 </p>
                 <div style={{ display: "flex", gap: "12px" }}>
                   <button
@@ -826,7 +826,7 @@ export default function MainLayout({ children }) {
                     className="btn-show-more-gold"
                     style={{ flex: 1, padding: "10px", borderRadius: "12px", fontSize: "0.95rem" }}
                   >
-                    ØªØ¹ÙŠÙŠÙ† Ø§Ù„Ø¢Ù† ðŸ”’
+                    {t("setNow")}
                   </button>
                   <button
                     onClick={() => {
@@ -843,7 +843,7 @@ export default function MainLayout({ children }) {
                       fontWeight: "bold"
                     }}
                   >
-                    Ù„Ø§Ø­Ù‚Ø§Ù‹ âœ•
+                    {t("later")} ✕
                   </button>
                 </div>
               </div>

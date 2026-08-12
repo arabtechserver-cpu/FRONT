@@ -3,6 +3,7 @@ import NextTopLoader from 'nextjs-toploader';
 import ContactFloatingButton from "../components/ContactFloatingButton";
 import SiteLoadingScreen from "../components/SiteLoadingScreen";
 import MainLayout from "../components/MainLayout";
+import { I18nProvider } from "@/lib/i18n";
 import { API_BASE_URL, SITE_URL, fetchWithTimeout } from "../config";
 import { cache } from "react";
 import { Cairo, Outfit } from "next/font/google";
@@ -297,10 +298,12 @@ export default async function RootLayout({ children }) {
       <body suppressHydrationWarning={true}>
         <NextTopLoader color="#00b4d8" showSpinner={false} />
         <SiteLoadingScreen />
-        <MainLayout>
-          {children}
-          <ContactFloatingButton />
-        </MainLayout>
+        <I18nProvider>
+          <MainLayout>
+            {children}
+            <ContactFloatingButton />
+          </MainLayout>
+        </I18nProvider>
       </body>
     </html>
   );

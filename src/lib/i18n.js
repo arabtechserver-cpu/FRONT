@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 export const LANGUAGE_STORAGE_KEY = "arabtech_user_language";
 
@@ -12,13 +12,16 @@ export const LANGUAGES = [
   { code: "hi", label: "Hindi", nativeLabel: "हिन्दी", dir: "ltr", htmlLang: "hi" }
 ];
 
-const ui = {
+const dictionary = {
   ar: {
     language: "اللغة",
+    account: "حسابي",
     home: "الرئيسية",
     services: "الخدمات",
+    categories: "الأقسام",
     categoriesServices: "الأقسام والخدمات",
     allServices: "كل الخدمات",
+    otherServices: "خدمات أخرى",
     imeiServices: "خدمات IMEI",
     serverServices: "خدمات السيرفر",
     remoteServices: "خدمات الريموت",
@@ -31,6 +34,9 @@ const ui = {
     chargeBalance: "شحن رصيدي",
     apiDocs: "الربط عبر الـ API",
     termsRefund: "الشروط وسياسة الاسترجاع",
+    terms: "الشروط",
+    privacy: "سياسة الخصوصية",
+    refundPolicy: "سياسة الاسترجاع",
     support: "الدعم الفني",
     fontSize: "حجم الخط",
     darkMode: "المظهر الليلي",
@@ -67,14 +73,87 @@ const ui = {
     tiktokAccount: "حساب تيك توك عرب تك",
     telegramChannel: "قناة تيليجرام عرب تك",
     youtubeChannel: "قناة يوتيوب عرب تك",
-    emailSupport: "البريد الإلكتروني"
+    emailSupport: "البريد الإلكتروني",
+    quickLinks: "روابط سريعة",
+    policiesTerms: "السياسات والشروط",
+    contactUs: "تواصل معنا",
+    footerAbout: "المنصة الرائدة لخدمات السيرفرات، أدوات السوفت وير، وتفعيل الباقات بأسعار تنافسية. نقدم خدمات احترافية لدعم أعمالك التقنية.",
+    rightsReserved: "جميع الحقوق محفوظة © {year} - {site}",
+    contactUsAria: "التواصل معنا",
+    close: "إغلاق",
+    menu: "القائمة",
+    profile: "الملف الشخصي",
+    changePassword: "تغيير كلمة المرور",
+    securityTipTitle: "نصيحة أمان لحسابك",
+    securityTipBody: "لحماية محفظتك وحسابك تلقائياً عند الخمول، يُنصح بتعيين كلمة مرور المعاملات والقفل الآن.",
+    setNow: "تعيين الآن",
+    later: "لاحقاً",
+    defaultFontSize: "حجم افتراضي",
+    decreaseFontSize: "تصغير الخط",
+    increaseFontSize: "تكبير الخط",
+    toggleTheme: "تبديل المظهر",
+    installInstructions: "لتثبيت التطبيق على جهازك:\n\n- للأندرويد: افتح قائمة المتصفح ثم اختر تثبيت التطبيق.\n\n- للآيفون: اضغط زر المشاركة في Safari ثم اختر إضافة إلى الشاشة الرئيسية."
+    ,
+    loading: "جاري التحميل...",
+    save: "حفظ",
+    saving: "جاري الحفظ...",
+    search: "بحث",
+    submit: "إرسال",
+    cancel: "إلغاء",
+    confirm: "تأكيد",
+    status: "الحالة",
+    price: "السعر",
+    total: "الإجمالي",
+    amount: "المبلغ",
+    phone: "رقم الهاتف",
+    notes: "ملاحظات",
+    paymentMethod: "طريقة الدفع",
+    paymentMethods: "طرق الدفع",
+    orderNumber: "رقم الطلب",
+    serviceName: "اسم الخدمة",
+    packageName: "الباقة",
+    accountId: "معرف الحساب",
+    date: "التاريخ",
+    pending: "قيد الانتظار",
+    completed: "مكتمل",
+    rejected: "مرفوض",
+    cancelled: "ملغي",
+    processing: "قيد التنفيذ",
+    username: "اسم المستخدم",
+    apiKey: "مفتاح API",
+    apiUrl: "رابط API",
+    apiCredentials: "بيانات الربط الخاصة بك",
+    allowedIps: "عناوين IP المسموحة",
+    newAccountRequired: "يجب تسجيل الدخول أولاً",
+    loginFirstApi: "يرجى تسجيل الدخول بحسابك أو إنشاء حساب جديد لعرض بيانات الربط الخاصة بك.",
+    activateApi: "تفعيل حساب API",
+    regenerateKey: "توليد مفتاح جديد",
+    copy: "نسخ",
+    copied: "تم النسخ",
+    walletRequests: "طلبات شحن الرصيد",
+    transactionHistory: "سجل الحركات",
+    currentBalance: "الرصيد الحالي",
+    addBalance: "إضافة رصيد",
+    uploadReceipt: "رفع إيصال الدفع",
+    sendWhatsapp: "إرسال عبر واتساب",
+    trackOrder: "تتبع الطلب",
+    track: "تتبع",
+    guestTracking: "تتبع طلب زائر",
+    noOrders: "لا توجد طلبات",
+    noWalletRequests: "لا توجد طلبات شحن",
+    termsTitle: "الشروط وسياسة الاسترجاع",
+    privacyTitle: "سياسة الخصوصية",
+    apiPageTitle: "إعدادات وشرح ربط API"
   },
   en: {
     language: "Language",
+    account: "Account",
     home: "Home",
     services: "Services",
+    categories: "Categories",
     categoriesServices: "Categories & Services",
     allServices: "All Services",
+    otherServices: "Other Services",
     imeiServices: "IMEI Services",
     serverServices: "Server Services",
     remoteServices: "Remote Services",
@@ -87,6 +166,9 @@ const ui = {
     chargeBalance: "Add Balance",
     apiDocs: "API Integration",
     termsRefund: "Terms & Refund Policy",
+    terms: "Terms",
+    privacy: "Privacy Policy",
+    refundPolicy: "Refund Policy",
     support: "Support",
     fontSize: "Font Size",
     darkMode: "Dark Mode",
@@ -123,26 +205,102 @@ const ui = {
     tiktokAccount: "Arab Tech TikTok Account",
     telegramChannel: "Arab Tech Telegram Channel",
     youtubeChannel: "Arab Tech YouTube Channel",
-    emailSupport: "Email Support"
+    emailSupport: "Email Support",
+    quickLinks: "Quick Links",
+    policiesTerms: "Policies & Terms",
+    contactUs: "Contact Us",
+    footerAbout: "A leading platform for server services, software tools, and package activations at competitive prices. We provide professional services to support your technical work.",
+    rightsReserved: "All rights reserved © {year} - {site}",
+    contactUsAria: "Contact us",
+    close: "Close",
+    menu: "Menu",
+    profile: "Profile",
+    changePassword: "Change Password",
+    securityTipTitle: "Security tip for your account",
+    securityTipBody: "To protect your wallet and account automatically during inactivity, we recommend setting a transaction and lock password now.",
+    setNow: "Set Now",
+    later: "Later",
+    defaultFontSize: "Default font size",
+    decreaseFontSize: "Decrease font size",
+    increaseFontSize: "Increase font size",
+    toggleTheme: "Toggle theme",
+    installInstructions: "To install the app:\n\n- Android: open the browser menu and choose Install app.\n\n- iPhone: tap Share in Safari, then choose Add to Home Screen."
+    ,
+    loading: "Loading...",
+    save: "Save",
+    saving: "Saving...",
+    search: "Search",
+    submit: "Submit",
+    cancel: "Cancel",
+    confirm: "Confirm",
+    status: "Status",
+    price: "Price",
+    total: "Total",
+    amount: "Amount",
+    phone: "Phone number",
+    notes: "Notes",
+    paymentMethod: "Payment Method",
+    paymentMethods: "Payment Methods",
+    orderNumber: "Order Number",
+    serviceName: "Service Name",
+    packageName: "Package",
+    accountId: "Account ID",
+    date: "Date",
+    pending: "Pending",
+    completed: "Completed",
+    rejected: "Rejected",
+    cancelled: "Cancelled",
+    processing: "Processing",
+    username: "Username",
+    apiKey: "API Key",
+    apiUrl: "API URL",
+    apiCredentials: "Your API Credentials",
+    allowedIps: "Allowed IP Addresses",
+    newAccountRequired: "Login required",
+    loginFirstApi: "Please log in or create a new account to view your API credentials.",
+    activateApi: "Activate API Account",
+    regenerateKey: "Generate New Key",
+    copy: "Copy",
+    copied: "Copied",
+    walletRequests: "Wallet Top-up Requests",
+    transactionHistory: "Transaction History",
+    currentBalance: "Current Balance",
+    addBalance: "Add Balance",
+    uploadReceipt: "Upload Payment Receipt",
+    sendWhatsapp: "Send via WhatsApp",
+    trackOrder: "Track Order",
+    track: "Track",
+    guestTracking: "Guest Order Tracking",
+    noOrders: "No orders found",
+    noWalletRequests: "No wallet requests found",
+    termsTitle: "Terms & Refund Policy",
+    privacyTitle: "Privacy Policy",
+    apiPageTitle: "API Integration Settings and Guide"
   },
   ru: {
     language: "Язык",
+    account: "Аккаунт",
     home: "Главная",
     services: "Услуги",
+    categories: "Категории",
     categoriesServices: "Категории и услуги",
     allServices: "Все услуги",
+    otherServices: "Другие услуги",
     imeiServices: "IMEI-услуги",
     serverServices: "Серверные услуги",
     remoteServices: "Удаленные услуги",
     orders: "Заказы",
     myOrders: "Мои заказы",
-    trackOrders: "Отслеживание заказов",
+    trackOrders: "Отследить заказы",
     wallet: "Кошелек",
     myWallet: "Мой кошелек",
     chargeWallet: "Пополнить кошелек",
     chargeBalance: "Пополнить баланс",
     apiDocs: "API-интеграция",
     termsRefund: "Условия и возврат",
+    terms: "Условия",
+    privacy: "Политика конфиденциальности",
+    refundPolicy: "Политика возврата",
     support: "Поддержка",
     fontSize: "Размер шрифта",
     darkMode: "Темная тема",
@@ -151,7 +309,7 @@ const ui = {
     register: "Регистрация",
     loginRegister: "Войти / Новый аккаунт",
     balance: "Баланс",
-    secureFast: "Безопасные и быстрые услуги",
+    secureFast: "Безопасные и мгновенные услуги",
     installApp: "Установить {site}",
     installAppDesc: "Быстрее просматривайте сайт в удобном режиме приложения.",
     installNow: "Установить",
@@ -179,14 +337,87 @@ const ui = {
     tiktokAccount: "Аккаунт Arab Tech в TikTok",
     telegramChannel: "Канал Arab Tech в Telegram",
     youtubeChannel: "Канал Arab Tech на YouTube",
-    emailSupport: "Email поддержка"
+    emailSupport: "Email поддержка",
+    quickLinks: "Быстрые ссылки",
+    policiesTerms: "Политики и условия",
+    contactUs: "Связаться с нами",
+    footerAbout: "Ведущая платформа для серверных услуг, программных инструментов и активации пакетов по конкурентным ценам. Мы предоставляем профессиональные услуги для вашей технической работы.",
+    rightsReserved: "Все права защищены © {year} - {site}",
+    contactUsAria: "Связаться с нами",
+    close: "Закрыть",
+    menu: "Меню",
+    profile: "Профиль",
+    changePassword: "Изменить пароль",
+    securityTipTitle: "Совет по безопасности аккаунта",
+    securityTipBody: "Чтобы защитить кошелек и аккаунт при бездействии, рекомендуем сейчас задать пароль для транзакций и блокировки.",
+    setNow: "Задать сейчас",
+    later: "Позже",
+    defaultFontSize: "Размер шрифта по умолчанию",
+    decreaseFontSize: "Уменьшить шрифт",
+    increaseFontSize: "Увеличить шрифт",
+    toggleTheme: "Переключить тему",
+    installInstructions: "Чтобы установить приложение:\n\n- Android: откройте меню браузера и выберите установку приложения.\n\n- iPhone: нажмите Поделиться в Safari и выберите Добавить на главный экран."
+    ,
+    loading: "Загрузка...",
+    save: "Сохранить",
+    saving: "Сохранение...",
+    search: "Поиск",
+    submit: "Отправить",
+    cancel: "Отмена",
+    confirm: "Подтвердить",
+    status: "Статус",
+    price: "Цена",
+    total: "Итого",
+    amount: "Сумма",
+    phone: "Номер телефона",
+    notes: "Заметки",
+    paymentMethod: "Способ оплаты",
+    paymentMethods: "Способы оплаты",
+    orderNumber: "Номер заказа",
+    serviceName: "Название услуги",
+    packageName: "Пакет",
+    accountId: "ID аккаунта",
+    date: "Дата",
+    pending: "Ожидает",
+    completed: "Завершено",
+    rejected: "Отклонено",
+    cancelled: "Отменено",
+    processing: "В обработке",
+    username: "Имя пользователя",
+    apiKey: "API ключ",
+    apiUrl: "API URL",
+    apiCredentials: "Ваши данные API",
+    allowedIps: "Разрешенные IP-адреса",
+    newAccountRequired: "Необходимо войти",
+    loginFirstApi: "Войдите или создайте аккаунт, чтобы увидеть данные API.",
+    activateApi: "Активировать API",
+    regenerateKey: "Создать новый ключ",
+    copy: "Копировать",
+    copied: "Скопировано",
+    walletRequests: "Заявки на пополнение",
+    transactionHistory: "История операций",
+    currentBalance: "Текущий баланс",
+    addBalance: "Пополнить баланс",
+    uploadReceipt: "Загрузить квитанцию",
+    sendWhatsapp: "Отправить через WhatsApp",
+    trackOrder: "Отследить заказ",
+    track: "Отследить",
+    guestTracking: "Отслеживание заказа гостя",
+    noOrders: "Заказов нет",
+    noWalletRequests: "Заявок на пополнение нет",
+    termsTitle: "Условия и политика возврата",
+    privacyTitle: "Политика конфиденциальности",
+    apiPageTitle: "Настройки и руководство API-интеграции"
   },
   zh: {
     language: "语言",
+    account: "账户",
     home: "首页",
     services: "服务",
+    categories: "分类",
     categoriesServices: "分类和服务",
     allServices: "全部服务",
+    otherServices: "其他服务",
     imeiServices: "IMEI 服务",
     serverServices: "服务器服务",
     remoteServices: "远程服务",
@@ -199,6 +430,9 @@ const ui = {
     chargeBalance: "充值余额",
     apiDocs: "API 对接",
     termsRefund: "条款和退款政策",
+    terms: "条款",
+    privacy: "隐私政策",
+    refundPolicy: "退款政策",
     support: "技术支持",
     fontSize: "字体大小",
     darkMode: "深色模式",
@@ -235,14 +469,87 @@ const ui = {
     tiktokAccount: "Arab Tech TikTok 账号",
     telegramChannel: "Arab Tech Telegram 频道",
     youtubeChannel: "Arab Tech YouTube 频道",
-    emailSupport: "邮件支持"
+    emailSupport: "邮件支持",
+    quickLinks: "快捷链接",
+    policiesTerms: "政策和条款",
+    contactUs: "联系我们",
+    footerAbout: "领先的平台，提供服务器服务、软件工具和套餐激活，价格具有竞争力。我们提供专业服务，支持您的技术工作。",
+    rightsReserved: "版权所有 © {year} - {site}",
+    contactUsAria: "联系我们",
+    close: "关闭",
+    menu: "菜单",
+    profile: "个人资料",
+    changePassword: "修改密码",
+    securityTipTitle: "账户安全提示",
+    securityTipBody: "为了在闲置时自动保护您的钱包和账户，建议现在设置交易和锁定密码。",
+    setNow: "立即设置",
+    later: "稍后",
+    defaultFontSize: "默认字体大小",
+    decreaseFontSize: "减小字体",
+    increaseFontSize: "增大字体",
+    toggleTheme: "切换主题",
+    installInstructions: "安装应用：\n\n- Android：打开浏览器菜单并选择安装应用。\n\n- iPhone：在 Safari 中点击分享，然后选择添加到主屏幕。"
+    ,
+    loading: "正在加载...",
+    save: "保存",
+    saving: "正在保存...",
+    search: "搜索",
+    submit: "提交",
+    cancel: "取消",
+    confirm: "确认",
+    status: "状态",
+    price: "价格",
+    total: "总计",
+    amount: "金额",
+    phone: "电话号码",
+    notes: "备注",
+    paymentMethod: "付款方式",
+    paymentMethods: "付款方式",
+    orderNumber: "订单号",
+    serviceName: "服务名称",
+    packageName: "套餐",
+    accountId: "账户 ID",
+    date: "日期",
+    pending: "待处理",
+    completed: "已完成",
+    rejected: "已拒绝",
+    cancelled: "已取消",
+    processing: "处理中",
+    username: "用户名",
+    apiKey: "API 密钥",
+    apiUrl: "API 地址",
+    apiCredentials: "您的 API 凭据",
+    allowedIps: "允许的 IP 地址",
+    newAccountRequired: "需要登录",
+    loginFirstApi: "请登录或创建新账户以查看您的 API 凭据。",
+    activateApi: "启用 API 账户",
+    regenerateKey: "生成新密钥",
+    copy: "复制",
+    copied: "已复制",
+    walletRequests: "钱包充值请求",
+    transactionHistory: "交易记录",
+    currentBalance: "当前余额",
+    addBalance: "充值余额",
+    uploadReceipt: "上传付款凭证",
+    sendWhatsapp: "通过 WhatsApp 发送",
+    trackOrder: "跟踪订单",
+    track: "跟踪",
+    guestTracking: "访客订单跟踪",
+    noOrders: "暂无订单",
+    noWalletRequests: "暂无充值请求",
+    termsTitle: "条款和退款政策",
+    privacyTitle: "隐私政策",
+    apiPageTitle: "API 对接设置和指南"
   },
   hi: {
     language: "भाषा",
+    account: "अकाउंट",
     home: "होम",
     services: "सेवाएं",
+    categories: "श्रेणियां",
     categoriesServices: "श्रेणियां और सेवाएं",
     allServices: "सभी सेवाएं",
+    otherServices: "अन्य सेवाएं",
     imeiServices: "IMEI सेवाएं",
     serverServices: "सर्वर सेवाएं",
     remoteServices: "रिमोट सेवाएं",
@@ -255,6 +562,9 @@ const ui = {
     chargeBalance: "बैलेंस जोड़ें",
     apiDocs: "API इंटीग्रेशन",
     termsRefund: "नियम और रिफंड नीति",
+    terms: "नियम",
+    privacy: "गोपनीयता नीति",
+    refundPolicy: "रिफंड नीति",
     support: "सपोर्ट",
     fontSize: "फॉन्ट आकार",
     darkMode: "डार्क मोड",
@@ -291,55 +601,190 @@ const ui = {
     tiktokAccount: "Arab Tech TikTok अकाउंट",
     telegramChannel: "Arab Tech Telegram चैनल",
     youtubeChannel: "Arab Tech YouTube चैनल",
-    emailSupport: "ईमेल सपोर्ट"
+    emailSupport: "ईमेल सपोर्ट",
+    quickLinks: "त्वरित लिंक",
+    policiesTerms: "नीतियां और नियम",
+    contactUs: "हमसे संपर्क करें",
+    footerAbout: "सर्वर सेवाओं, सॉफ्टवेयर टूल्स और पैकेज एक्टिवेशन के लिए प्रतिस्पर्धी कीमतों वाला अग्रणी प्लेटफॉर्म। हम आपके तकनीकी काम के लिए पेशेवर सेवाएं देते हैं।",
+    rightsReserved: "सभी अधिकार सुरक्षित © {year} - {site}",
+    contactUsAria: "हमसे संपर्क करें",
+    close: "बंद करें",
+    menu: "मेनू",
+    profile: "प्रोफाइल",
+    changePassword: "पासवर्ड बदलें",
+    securityTipTitle: "आपके अकाउंट के लिए सुरक्षा सुझाव",
+    securityTipBody: "निष्क्रियता के दौरान अपने वॉलेट और अकाउंट की सुरक्षा के लिए अभी ट्रांजैक्शन और लॉक पासवर्ड सेट करें।",
+    setNow: "अभी सेट करें",
+    later: "बाद में",
+    defaultFontSize: "डिफॉल्ट फॉन्ट आकार",
+    decreaseFontSize: "फॉन्ट छोटा करें",
+    increaseFontSize: "फॉन्ट बड़ा करें",
+    toggleTheme: "थीम बदलें",
+    installInstructions: "ऐप इंस्टॉल करने के लिए:\n\n- Android: ब्राउज़र मेनू खोलें और Install app चुनें।\n\n- iPhone: Safari में Share दबाएं, फिर Add to Home Screen चुनें।"
+    ,
+    loading: "लोड हो रहा है...",
+    save: "सेव करें",
+    saving: "सेव हो रहा है...",
+    search: "खोजें",
+    submit: "भेजें",
+    cancel: "रद्द करें",
+    confirm: "पुष्टि करें",
+    status: "स्थिति",
+    price: "कीमत",
+    total: "कुल",
+    amount: "राशि",
+    phone: "फोन नंबर",
+    notes: "नोट्स",
+    paymentMethod: "भुगतान तरीका",
+    paymentMethods: "भुगतान तरीके",
+    orderNumber: "ऑर्डर नंबर",
+    serviceName: "सेवा का नाम",
+    packageName: "पैकेज",
+    accountId: "अकाउंट ID",
+    date: "तारीख",
+    pending: "लंबित",
+    completed: "पूरा",
+    rejected: "अस्वीकृत",
+    cancelled: "रद्द",
+    processing: "प्रोसेसिंग",
+    username: "यूज़रनेम",
+    apiKey: "API कुंजी",
+    apiUrl: "API URL",
+    apiCredentials: "आपकी API जानकारी",
+    allowedIps: "अनुमत IP पते",
+    newAccountRequired: "लॉगिन आवश्यक है",
+    loginFirstApi: "API जानकारी देखने के लिए लॉगिन करें या नया अकाउंट बनाएं।",
+    activateApi: "API अकाउंट सक्रिय करें",
+    regenerateKey: "नई कुंजी बनाएं",
+    copy: "कॉपी",
+    copied: "कॉपी हो गया",
+    walletRequests: "वॉलेट टॉप-अप अनुरोध",
+    transactionHistory: "लेन-देन इतिहास",
+    currentBalance: "वर्तमान बैलेंस",
+    addBalance: "बैलेंस जोड़ें",
+    uploadReceipt: "भुगतान रसीद अपलोड करें",
+    sendWhatsapp: "WhatsApp से भेजें",
+    trackOrder: "ऑर्डर ट्रैक करें",
+    track: "ट्रैक करें",
+    guestTracking: "गेस्ट ऑर्डर ट्रैकिंग",
+    noOrders: "कोई ऑर्डर नहीं",
+    noWalletRequests: "कोई वॉलेट अनुरोध नहीं",
+    termsTitle: "नियम और रिफंड नीति",
+    privacyTitle: "गोपनीयता नीति",
+    apiPageTitle: "API इंटीग्रेशन सेटिंग्स और गाइड"
   }
 };
 
-const phraseMap = {
-  "الرئيسية": "home",
-  "الخدمات": "services",
-  "الأقسام والخدمات": "categoriesServices",
-  "كل الخدمات": "allServices",
-  "طلباتى": "myOrders",
-  "طلباتي": "myOrders",
-  "الطلبات": "orders",
-  "تتبع الطلبات": "trackOrders",
-  "المحفظة": "wallet",
-  "محفظتي": "myWallet",
-  "شحن المحفظة": "chargeWallet",
-  "شحن رصيدي": "chargeBalance",
-  "الربط عبر الـ API": "apiDocs",
-  "الشروط وسياسة الاسترجاع": "termsRefund",
-  "الدعم الفني": "support",
-  "حجم الخط": "fontSize",
-  "المظهر الليلي": "darkMode",
-  "تسجيل الخروج": "logout",
-  "تسجيل": "register",
-  "دخول": "login",
-  "تسجيل الدخول / حساب جديد": "loginRegister",
-  "الرصيد:": "balance",
-  "خدمات آمنة وفورية ⚡": "secureFast",
-  "الخدمات المتاحة": "availableServices",
-  "جاري تحميل الخدمات...": "loadingServices",
-  "لا تتوفر خدمات مطابقة للبحث": "noSearchResults",
-  "يرجى تجربة كلمات بحث أخرى أو تصفح الأقسام الرئيسية.": "tryOtherSearch",
-  "العودة للرئيسية": "backHome",
-  "الباقات المتوفرة:": "availablePackages",
-  "عرض المزيد": "viewMore",
-  "اضغط للعرض": "clickToView",
-  "واتساب 1:": "whatsapp1",
-  "واتساب 2:": "whatsapp2",
-  "الدعم الفني وتواصل الإدارة": "supportTitle",
-  "اختر أحد قنوات الدعم الفني الرسمية للتواصل معنا أو الانضمام إلى مجتمعنا:": "supportIntro",
-  "واتساب الإدارة 1": "whatsappAdmin1",
-  "واتساب الإدارة 2": "whatsappAdmin2",
-  "مجتمع واتساب عرب تك": "whatsappCommunity",
-  "صفحة فيسبوك عرب تك": "facebookPage",
-  "حساب تيك توك عرب تك": "tiktokAccount",
-  "قناة تيليجرام عرب تك": "telegramChannel",
-  "قناة يوتيوب عرب تك": "youtubeChannel",
-  "البريد الإلكتروني": "emailSupport"
+const phraseKeys = {
+  home: ["الرئيسية"],
+  services: ["الخدمات"],
+  categories: ["الأقسام"],
+  categoriesServices: ["الأقسام والخدمات"],
+  allServices: ["كل الخدمات"],
+  otherServices: ["خدمات أخرى"],
+  myOrders: ["طلباتي"],
+  orders: ["الطلبات"],
+  trackOrders: ["تتبع الطلبات"],
+  wallet: ["المحفظة"],
+  myWallet: ["محفظتي"],
+  chargeWallet: ["شحن المحفظة"],
+  chargeBalance: ["شحن رصيدي", "شحن الرصيد"],
+  apiDocs: ["الربط عبر الـ API", "الربط عبر API"],
+  termsRefund: ["الشروط وسياسة الاسترجاع"],
+  terms: ["الشروط", "شروط الاستخدام"],
+  privacy: ["سياسة الخصوصية"],
+  refundPolicy: ["سياسة الاسترجاع"],
+  support: ["الدعم الفني"],
+  fontSize: ["حجم الخط"],
+  darkMode: ["المظهر الليلي"],
+  logout: ["تسجيل الخروج"],
+  login: ["دخول", "تسجيل الدخول"],
+  register: ["تسجيل"],
+  loginRegister: ["تسجيل الدخول / حساب جديد"],
+  balance: ["الرصيد"],
+  secureFast: ["خدمات آمنة وفورية", "خدمات آمنة وفورية ⚡"],
+  availableServices: ["الخدمات المتاحة"],
+  loadingServices: ["جاري تحميل الخدمات..."],
+  noSearchResults: ["لا تتوفر خدمات مطابقة للبحث"],
+  tryOtherSearch: ["يرجى تجربة كلمات بحث أخرى أو تصفح الأقسام الرئيسية."],
+  backHome: ["العودة للرئيسية"],
+  availablePackages: ["الباقات المتوفرة:"],
+  viewMore: ["عرض المزيد"],
+  clickToView: ["اضغط للعرض"],
+  whatsapp1: ["واتساب 1:"],
+  whatsapp2: ["واتساب 2:"],
+  supportTitle: ["الدعم الفني وتواصل الإدارة"],
+  supportIntro: ["اختر إحدى قنوات الدعم الفني الرسمية للتواصل معنا أو الانضمام إلى مجتمعنا:"],
+  whatsappAdmin1: ["واتساب الإدارة 1"],
+  whatsappAdmin2: ["واتساب الإدارة 2"],
+  whatsappCommunity: ["مجتمع واتساب عرب تك"],
+  facebookPage: ["صفحة فيسبوك عرب تك", "صفحة الفيسبوك"],
+  tiktokAccount: ["حساب تيك توك عرب تك", "تيك توك"],
+  telegramChannel: ["قناة تيليجرام عرب تك", "قناة تيليجرام"],
+  youtubeChannel: ["قناة يوتيوب عرب تك", "قناة اليوتيوب"],
+  emailSupport: ["البريد الإلكتروني"],
+  quickLinks: ["روابط سريعة"],
+  policiesTerms: ["السياسات والشروط"],
+  contactUs: ["تواصل معنا"],
+  account: ["حسابي"],
+  close: ["إغلاق"],
+  menu: ["القائمة"],
+  profile: ["الملف الشخصي"],
+  changePassword: ["تغيير كلمة المرور"]
+  ,
+  loading: ["جاري التحميل...", "جاري التحميل"],
+  save: ["حفظ"],
+  saving: ["جاري الحفظ...", "جاري الحفظ"],
+  search: ["بحث"],
+  submit: ["إرسال"],
+  cancel: ["إلغاء"],
+  confirm: ["تأكيد"],
+  status: ["الحالة"],
+  price: ["السعر"],
+  total: ["الإجمالي"],
+  amount: ["المبلغ"],
+  phone: ["رقم الهاتف"],
+  notes: ["ملاحظات"],
+  paymentMethod: ["طريقة الدفع"],
+  paymentMethods: ["طرق الدفع"],
+  orderNumber: ["رقم الطلب"],
+  serviceName: ["اسم الخدمة"],
+  packageName: ["الباقة"],
+  accountId: ["معرف الحساب", "معرّف الحساب (ID)"],
+  date: ["التاريخ"],
+  pending: ["قيد الانتظار"],
+  completed: ["مكتمل", "مكتملة"],
+  rejected: ["مرفوض", "مرفوضة"],
+  cancelled: ["ملغي", "ملغية"],
+  processing: ["قيد التنفيذ"],
+  username: ["اسم المستخدم"],
+  apiKey: ["مفتاح API", "مفتاح الـ API"],
+  apiUrl: ["رابط API", "رابط الـ API"],
+  apiCredentials: ["بيانات الربط الخاصة بك", "بيانات الربط الخاصة بك (API Credentials)"],
+  allowedIps: ["عناوين IP المسموحة", "عناوين الـ IP المسموحة"],
+  newAccountRequired: ["يجب تسجيل الدخول أولاً"],
+  loginFirstApi: ["يرجى تسجيل الدخول بحسابك أو إنشاء حساب جديد لعرض بيانات الربط الخاصة بك."],
+  activateApi: ["تفعيل حساب API", "تفعيل حساب الـ API فوراً"],
+  regenerateKey: ["توليد مفتاح جديد"],
+  copy: ["نسخ"],
+  copied: ["تم النسخ"],
+  walletRequests: ["طلبات شحن الرصيد"],
+  transactionHistory: ["سجل الحركات"],
+  currentBalance: ["الرصيد الحالي"],
+  addBalance: ["إضافة رصيد"],
+  uploadReceipt: ["رفع إيصال الدفع"],
+  sendWhatsapp: ["إرسال عبر واتساب"],
+  trackOrder: ["تتبع الطلب"],
+  track: ["تتبع"],
+  guestTracking: ["تتبع طلب زائر"],
+  noOrders: ["لا توجد طلبات"],
+  noWalletRequests: ["لا توجد طلبات شحن"],
+  termsTitle: ["الشروط وسياسة الاسترجاع"],
+  privacyTitle: ["سياسة الخصوصية"],
+  apiPageTitle: ["إعدادات وشرح ربط API", "إعدادات وشرح ربط الـ API"]
 };
+
+const I18nContext = createContext(null);
 
 function normalizeLanguage(code) {
   if (code === "zh-CN") return "zh";
@@ -351,36 +796,55 @@ export function getSavedLanguage() {
   return normalizeLanguage(localStorage.getItem(LANGUAGE_STORAGE_KEY) || "ar");
 }
 
-export function setSiteLanguage(languageCode) {
-  if (typeof window === "undefined") return;
-  const nextLanguage = normalizeLanguage(languageCode);
-  localStorage.setItem(LANGUAGE_STORAGE_KEY, nextLanguage);
-  window.dispatchEvent(new CustomEvent("arabtech-language-change", { detail: nextLanguage }));
-}
-
 export function getLanguageMeta(languageCode) {
   return LANGUAGES.find((lang) => lang.code === normalizeLanguage(languageCode)) || LANGUAGES[0];
 }
 
 export function translate(key, languageCode = "ar", values = {}) {
   const language = normalizeLanguage(languageCode);
-  const template = ui[language]?.[key] || ui.ar[key] || key;
+  const template = dictionary[language]?.[key] || dictionary.ar[key] || key;
   return Object.entries(values).reduce(
     (text, [name, value]) => text.replaceAll(`{${name}}`, String(value)),
     template
   );
 }
 
-function replaceTextWithDictionary(text, languageCode) {
-  if (languageCode === "ar") return text;
-  let nextText = text;
+function buildPhraseMap(languageCode) {
+  const language = normalizeLanguage(languageCode);
+  if (language === "ar") return [];
 
-  Object.entries(phraseMap).forEach(([arabicPhrase, key]) => {
-    const translated = translate(key, languageCode);
-    nextText = nextText.replaceAll(arabicPhrase, translated);
+  return Object.entries(phraseKeys)
+    .flatMap(([key, phrases]) => phrases.map((phrase) => [phrase, translate(key, language)]))
+    .sort((a, b) => b[0].length - a[0].length);
+}
+
+function replaceKnownPhrases(value, languageCode) {
+  if (!value || languageCode === "ar") return value;
+  return buildPhraseMap(languageCode).reduce(
+    (text, [source, target]) => text.replaceAll(source, target),
+    value
+  );
+}
+
+function shouldSkipNode(parent) {
+  return !parent || Boolean(parent.closest("[data-i18n-skip], script, style, textarea, code, pre"));
+}
+
+function applyAttributes(languageCode) {
+  const attrs = ["placeholder", "title", "aria-label", "alt"];
+  attrs.forEach((attr) => {
+    document.querySelectorAll(`[${attr}]`).forEach((el) => {
+      if (el.closest("[data-i18n-skip]")) return;
+      const cacheName = `data-arabtech-original-${attr.replaceAll("-", "_")}`;
+      if (!el.hasAttribute(cacheName)) {
+        el.setAttribute(cacheName, el.getAttribute(attr) || "");
+      }
+      const nextValue = replaceKnownPhrases(el.getAttribute(cacheName) || "", languageCode);
+      if (el.getAttribute(attr) !== nextValue) {
+        el.setAttribute(attr, nextValue);
+      }
+    });
   });
-
-  return nextText;
 }
 
 export function applyStaticTranslations(languageCode) {
@@ -391,16 +855,14 @@ export function applyStaticTranslations(languageCode) {
   document.documentElement.lang = meta.htmlLang;
   document.documentElement.dir = meta.dir;
   document.body?.setAttribute("dir", meta.dir);
+  document.body?.setAttribute("data-language", language);
 
   const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
     acceptNode(node) {
-      const parent = node.parentElement;
-      if (!parent) return NodeFilter.FILTER_REJECT;
-      if (parent.closest("[data-i18n-skip], script, style, textarea, input, select, option, code, pre")) {
-        return NodeFilter.FILTER_REJECT;
-      }
       const text = node.nodeValue || "";
-      return text.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+      return !shouldSkipNode(node.parentElement) && text.trim()
+        ? NodeFilter.FILTER_ACCEPT
+        : NodeFilter.FILTER_REJECT;
     }
   });
 
@@ -408,32 +870,28 @@ export function applyStaticTranslations(languageCode) {
   while (walker.nextNode()) nodes.push(walker.currentNode);
 
   nodes.forEach((node) => {
-    if (!node.__arabtechOriginalText) {
-      node.__arabtechOriginalText = node.nodeValue;
-    }
-    const translatedText = replaceTextWithDictionary(node.__arabtechOriginalText, language);
-    if (node.nodeValue !== translatedText) {
-      node.nodeValue = translatedText;
-    }
+    if (!node.__arabtechOriginalText) node.__arabtechOriginalText = node.nodeValue;
+    const nextValue = replaceKnownPhrases(node.__arabtechOriginalText, language);
+    if (node.nodeValue !== nextValue) node.nodeValue = nextValue;
   });
+
+  applyAttributes(language);
 }
 
-export function useI18n() {
-  const [language, setLanguage] = useState("ar");
+export function I18nProvider({ children }) {
+  const [language, setLanguageState] = useState("ar");
+
+  const setLanguage = (languageCode) => {
+    const nextLanguage = normalizeLanguage(languageCode);
+    localStorage.setItem(LANGUAGE_STORAGE_KEY, nextLanguage);
+    setLanguageState(nextLanguage);
+    applyStaticTranslations(nextLanguage);
+  };
 
   useEffect(() => {
     const savedLanguage = getSavedLanguage();
-    setLanguage(savedLanguage);
+    setLanguageState(savedLanguage);
     applyStaticTranslations(savedLanguage);
-
-    const handleLanguageChange = (event) => {
-      const nextLanguage = normalizeLanguage(event.detail || getSavedLanguage());
-      setLanguage(nextLanguage);
-      applyStaticTranslations(nextLanguage);
-    };
-
-    window.addEventListener("arabtech-language-change", handleLanguageChange);
-    return () => window.removeEventListener("arabtech-language-change", handleLanguageChange);
   }, []);
 
   useEffect(() => {
@@ -442,17 +900,38 @@ export function useI18n() {
     });
 
     if (document.body) {
-      observer.observe(document.body, { childList: true, subtree: true });
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+        characterData: false,
+        attributes: true,
+        attributeFilter: ["placeholder", "title", "aria-label", "alt"]
+      });
     }
 
     return () => observer.disconnect();
   }, [language]);
 
-  return useMemo(() => ({
+  const value = useMemo(() => ({
     language,
     meta: getLanguageMeta(language),
     languages: LANGUAGES,
-    setLanguage: setSiteLanguage,
+    setLanguage,
     t: (key, values) => translate(key, language, values)
   }), [language]);
+
+  return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
+}
+
+export function useI18n() {
+  const context = useContext(I18nContext);
+  if (context) return context;
+
+  return {
+    language: "ar",
+    meta: getLanguageMeta("ar"),
+    languages: LANGUAGES,
+    setLanguage: () => {},
+    t: (key, values) => translate(key, "ar", values)
+  };
 }

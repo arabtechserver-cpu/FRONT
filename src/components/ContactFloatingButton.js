@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { useI18n } from "@/lib/i18n";
 
 const SOCIAL_LINKS = [
   {
@@ -94,6 +95,20 @@ export default function ContactFloatingButton() {
   const [open, setOpen] = useState(false);
   const [hoveredId, setHoveredId] = useState(null);
   const pathname = usePathname();
+  const { t, meta } = useI18n();
+
+  const getLinkTitle = (id, fallback) => {
+    const keys = {
+      wa1: "whatsappAdmin1",
+      wa2: "whatsappAdmin2",
+      fb: "facebookPage",
+      yt: "youtubeChannel",
+      tg: "telegramChannel",
+      tt: "tiktokAccount",
+      comm: "whatsappCommunity"
+    };
+    return keys[id] ? t(keys[id]) : fallback;
+  };
 
   if (
     pathname &&
@@ -109,7 +124,8 @@ export default function ContactFloatingButton() {
     <div
       style={{
         position: "fixed",
-        right: "16px",
+        right: meta.dir === "rtl" ? "16px" : "auto",
+        left: meta.dir === "ltr" ? "16px" : "auto",
         bottom: "100px",
         zIndex: 9999,
         display: "flex",
@@ -122,7 +138,7 @@ export default function ContactFloatingButton() {
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        aria-label="التواصل معنا"
+        aria-label={t("contactUsAria")}
         style={{
           width: "56px",
           height: "56px",
@@ -174,7 +190,7 @@ export default function ContactFloatingButton() {
                   href={item.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label={item.title}
+                  aria-label={getLinkTitle(item.id, item.title)}
                   style={{
                     width: "44px",
                     height: "44px",
@@ -201,7 +217,8 @@ export default function ContactFloatingButton() {
                   <div
                     style={{
                       position: "absolute",
-                      left: "56px",
+                      left: meta.dir === "rtl" ? "56px" : "auto",
+                      right: meta.dir === "ltr" ? "56px" : "auto",
                       whiteSpace: "nowrap",
                       background: "rgba(15, 23, 42, 0.92)",
                       color: "#ffffff",
@@ -216,7 +233,7 @@ export default function ContactFloatingButton() {
                       zIndex: 10000
                     }}
                   >
-                    {item.title}
+                    {getLinkTitle(item.id, item.title)}
                   </div>
                 )}
               </div>
