@@ -55,6 +55,8 @@ export default function WalletPage() {
   const [globalCurrencies, setGlobalCurrencies] = useState(["USD"]);
   const [selectedCurrency, setSelectedCurrency] = useState("USD");
   const [exchangeRates, setExchangeRates] = useState({ "EGP": 50, "SDG": 600 });
+  const [sdgRate, setSdgRate] = useState(null);
+  const [sdgRateInfo, setSdgRateInfo] = useState(null);
   const [baseCurrency, setBaseCurrency] = useState("USD");
   const [whatsappNumbers, setWhatsappNumbers] = useState([]);
   const [receiptImageFile, setReceiptImageFile] = useState(null);
@@ -145,6 +147,21 @@ export default function WalletPage() {
        fetchSettingsPromise.finally(() => setLoadingSettings(false));
     }
 
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`${API_BASE_URL}/api/exchange-rates/sdg`)
+      .then((response) => response.ok ? response.json() : null)
+      .then((data) => {
+        if (cancelled || !data?.rate) return;
+        setSdgRate(Number(data.rate));
+        setSdgRateInfo(data);
+        setExchangeRates((previous) => ({ ...previous, SDG: Number(data.rate) }));
+      })
+      .catch(() => { });
+
+    return () => { cancelled = true; };
   }, []);
 
   // ── Handle PayPal return redirect (capture after PayPal approval) ──────────
@@ -477,6 +494,21 @@ export default function WalletPage() {
       </section>
 
       {/* ── Recharge Wallet Section ── */}
+      <section style={{ padding: "18px 20px", borderRadius: "16px", background: "rgba(14, 165, 233, 0.08)", border: "1px solid rgba(14, 165, 233, 0.25)", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "12px" }}>
+        <div>
+          <div style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>Sudanese pound exchange rate</div>
+          <strong style={{ display: "block", color: "#38bdf8", fontSize: "1.2rem", marginTop: "5px" }}>
+            1 USD = {sdgRate ? Number(sdgRate).toFixed(2) : "..."} SDG
+          </strong>
+        </div>
+        <div style={{ color: "#34d399", fontWeight: 800, direction: "ltr" }}>
+          1 SDG = {sdgRate ? `$${(1 / Number(sdgRate)).toFixed(6)}` : "..."} USD
+        </div>
+        <div style={{ width: "100%", color: "var(--text-muted)", fontSize: "0.75rem" }}>
+          {sdgRateInfo?.mode === "manual" ? "Manual rate" : "Updated automatically from a free daily API"}
+        </div>
+      </section>
+
       <section className="glass-panel" style={{ display: "flex", flexDirection: "column", gap: "20px", padding: "24px", borderRadius: "24px" }}>
         <div>
           <h2 style={{ fontWeight: 900, fontSize: "1.4rem", marginBottom: "8px", display: "flex", alignItems: "center", gap: "8px" }}>

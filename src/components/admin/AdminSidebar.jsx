@@ -16,6 +16,7 @@ export default function AdminSidebar() {
   const pathname = usePathname();
 
   const allTabs = [
+    { tab: "exchange-rates", icon: "FX", label: "SDG / USD exchange rate" },
     { tab: "orders", icon: "📥", label: "طلبات الخدمات" },
     { tab: "menu-drawer", icon: "📱", label: "قائمة الموبايل الجانبية" },
     { tab: "categories", icon: "📁", label: "إدارة الأقسام" },

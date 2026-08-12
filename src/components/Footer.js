@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useI18n } from "@/lib/i18n";
 
-export default function Footer({ siteName = "Arab Tech Server" }) {
+export default function Footer({ siteName = "Arab Tech Server", showServices = false }) {
   const { t, meta } = useI18n();
   const underlineSide = meta.dir === "rtl" ? { right: 0 } : { left: 0 };
 
@@ -72,7 +72,9 @@ export default function Footer({ siteName = "Arab Tech Server" }) {
             </h4>
             <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "12px" }}>
               <li><Link href="/" style={linkStyle} onMouseEnter={(e) => setHover(e, "#fff")} onMouseLeave={(e) => setHover(e, "#94a3b8")}>{t("home")}</Link></li>
-              <li><Link href="/services" style={linkStyle} onMouseEnter={(e) => setHover(e, "#fff")} onMouseLeave={(e) => setHover(e, "#94a3b8")}>{t("services")}</Link></li>
+              {showServices && (
+                <li><Link href="/services" style={linkStyle} onMouseEnter={(e) => setHover(e, "#fff")} onMouseLeave={(e) => setHover(e, "#94a3b8")}>{t("services")}</Link></li>
+              )}
               <li><Link href="/wallet" style={linkStyle} onMouseEnter={(e) => setHover(e, "#fff")} onMouseLeave={(e) => setHover(e, "#94a3b8")}>{t("chargeBalance")}</Link></li>
             </ul>
           </div>

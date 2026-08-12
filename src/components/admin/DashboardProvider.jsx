@@ -569,7 +569,7 @@ export default function DashboardProvider({ children }) {
         requests.push(loadOrders(), loadWalletTransactions());
       } else if (tab === "categories" || tab === "menu-drawer" || tab === "featured-sections") {
         requests.push(loadCategories());
-        if (tab === "featured-sections") requests.push(loadServices());
+        if (tab === "menu-drawer" || tab === "featured-sections") requests.push(loadServices());
       } else if (tab === "services") {
         requests.push(loadCategories(), loadServices(), loadApiProviders());
       } else if (tab === "amrr_unlocker") {

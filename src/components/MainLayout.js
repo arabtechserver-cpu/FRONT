@@ -25,7 +25,11 @@ export default function MainLayout({ children }) {
   const [servicesMenuOpen, setServicesMenuOpen] = useState(false);
   const servicesMenuRef = useRef(null);
   const [categoriesExpanded, setCategoriesExpanded] = useState(false);
-  const [settings, setSettings] = useState({ site_name: "عرب تك سيرفر", site_logo: "/logo.jpg" });
+  const [settings, setSettings] = useState({
+    site_name: "عرب تك سيرفر",
+    site_logo: "/logo.jpg",
+    services_menu_placements: { desktop: true, mobile: true, footer: true }
+  });
   const [logoFailed, setLogoFailed] = useState(false);
   const [txPasswordModalOpen, setTxPasswordModalOpen] = useState(false);
 
@@ -467,6 +471,7 @@ export default function MainLayout({ children }) {
             <span style={{ fontSize: "1.2rem" }}>🏠</span> {t("home")}
           </Link>
           
+          {settings.services_menu_placements?.mobile !== false && (
           <div className="mobile-drawer-dropdown-container" style={{ position: "relative" }}>
             <div 
               className="mobile-drawer-link" 
@@ -503,6 +508,7 @@ export default function MainLayout({ children }) {
               </Link>
             </div>
           </div>
+          )}
 
           <Link href="/orders" className="mobile-drawer-link" onClick={() => setMenuOpen(false)}>
             <span style={{ fontSize: "1.2rem" }}>📦</span> {t("trackOrders")}
@@ -692,6 +698,7 @@ export default function MainLayout({ children }) {
           <div className="flex items-center gap-2" style={{ position: 'relative' }}>
             <LanguageSwitcher />
             <Link href="/" className={`desktop-link hidden lg-block ${pathname === '/' ? 'active' : ''}`} style={{ fontWeight: 'bold' }}>{t("home")}</Link>
+            {settings.services_menu_placements?.desktop !== false && (
             <div
               ref={servicesMenuRef}
               className="hidden lg:block"
@@ -717,6 +724,7 @@ export default function MainLayout({ children }) {
                 <Link href="/services?type=remote" onClick={() => setServicesMenuOpen(false)} className="header-dropdown-item">🌐 {t("remoteServices")}</Link>
               </div>
             </div>
+            )}
             <Link href="/orders" className={`desktop-link hidden lg-block ${pathname.startsWith('/orders') ? 'active' : ''}`} style={{ fontWeight: 'bold' }}>{t("orders")}</Link>
             <Link href="/wallet" className={`desktop-link hidden lg-block ${pathname.startsWith('/wallet') ? 'active' : ''}`} style={{ fontWeight: 'bold' }}>{t("wallet")}</Link>
             <button onClick={toggleTheme} className="theme-toggle-btn header-btn hidden lg-block" aria-label={t("toggleTheme")} style={{ padding: '6px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', cursor: 'pointer' }}>
@@ -869,7 +877,11 @@ export default function MainLayout({ children }) {
             </div>
           )}
         </main>
-        <Footer siteName={settings.site_name} siteLogo={settings.site_logo} />
+        <Footer
+          siteName={settings.site_name}
+          siteLogo={settings.site_logo}
+          showServices={settings.services_menu_placements?.footer === true}
+        />
       </div>
 
       {/* Mobile Bottom Navigation Bar */}
