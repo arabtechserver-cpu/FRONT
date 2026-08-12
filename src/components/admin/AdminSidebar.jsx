@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AdminDashboardContext } from "@/components/admin/AdminDashboardContext";
 import { FEATURES } from "@/features";
-import { useI18n } from "@/lib/i18n";
 
 export default function AdminSidebar() {
   const context = useContext(AdminDashboardContext);
@@ -15,25 +14,24 @@ export default function AdminSidebar() {
   } = context;
   
   const pathname = usePathname();
-  const { t } = useI18n();
 
   const allTabs = [
-    { tab: "exchange-rates", icon: "FX", label: t("sdgExchangeRate") },
     { tab: "orders", icon: "📥", label: "طلبات الخدمات" },
-    { tab: "menu-drawer", icon: "📱", label: "قائمة الموبايل الجانبية" },
-    { tab: "categories", icon: "📁", label: "إدارة الأقسام" },
+    { tab: "wallets", icon: "💳", label: "طلبات شحن الرصيد" },
     { tab: "services", icon: "⚡", label: "إدارة الخدمات" },
-    { tab: "api-providers", icon: "🔌", label: "مزودي الـ API" },
-    { tab: "amrr_unlocker", icon: "🔗", label: "بوابة Amrr Unlocker" },
-    { tab: "banners", icon: "🖼️", label: "إدارة البانر الإعلاني" },
+    { tab: "categories", icon: "📁", label: "إدارة الأقسام" },
+    { tab: "customers", icon: "👥", label: "إدارة المستخدمين" },
+    { tab: "menu-drawer", icon: "📱", label: "قائمة الموبايل الجانبية" },
+    { tab: "exchange-rates", icon: "💱", label: "سعر صرف الجنيه السوداني" },
+    { tab: "api-providers", icon: "🔌", label: "مزودو الخدمات" },
+    { tab: "api_resellers", icon: "🔑", label: "موزعو الخدمات" },
     { tab: "featured-sections", icon: "⭐", label: "الأقسام المميزة" },
+    { tab: "banners", icon: "🖼️", label: "إدارة البانر الإعلاني" },
     { tab: "reviews", icon: "⭐", label: "آراء العملاء" },
     { tab: "memberships", icon: "⭐", label: "نظام العضويات" },
-    { tab: "wallets", icon: "💳", label: "طلبات شحن الرصيد" },
-    { tab: "customers", icon: "👥", label: "إدارة المستخدمين" },
-    { tab: "api_resellers", icon: "🔑", label: "موزعي الـ API" },
+    { tab: "amrr_unlocker", icon: "🔗", label: "بوابة الخدمات الخارجية" },
     { tab: "settings", icon: "⚙️", label: "إعدادات الموقع" },
-    { tab: "gmail", icon: "📧", label: "بوابة ربط الجميل" },
+    { tab: "gmail", icon: "📧", label: "بوابة ربط الجيميل" },
     { tab: "backups", icon: "💾", label: "النسخ الاحتياطي" },
   ];
 
