@@ -1375,7 +1375,7 @@ const legacyEnglishPhrases = {
   "لا توجد بيانات كافية حتى الآن 🔄": "Not enough data yet 🔄",
   "طلب خدمة": "Order a service",
   "1 - 15 دقيقة": "1 - 15 minutes",
-  "عرب تك سيرفر online": "Arab Tech Server online",
+  "عرب تك سيرفر online": "Arab Tech Server",
   "← العودة إلى قسم": "← Back to category",
   "قسم": "Category",
   "الأقسام الفرعية": "Subcategories",

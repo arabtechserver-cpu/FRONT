@@ -5,6 +5,32 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { API_BASE_URL } from "@/config";
 import { Turnstile } from '@marsidev/react-turnstile';
+import { useI18n } from "@/lib/i18n";
+
+function cleanSiteName(name) {
+  return String(name || "عرب تك سيرفر").replace(/\s+online\b/gi, "").trim();
+}
+
+function translateLoginDynamicText(text, language) {
+  if (!text || language === "ar") return text;
+
+  const replacements = [
+    ["واتساب", "WhatsApp"],
+    ["جميل", "Gmail"],
+    ["حسابك", "your account"],
+    ["تم إرسال كود تحقق (OTP) إلى واتساب/جميل الخاص بك لتأكيد الدخول.", "A verification code (OTP) was sent to your WhatsApp/Gmail to confirm sign-in."],
+    ["تم إرسال كود التحقق بنجاح.", "The verification code was sent successfully."],
+    ["تم تأكيد هويتك وتفعيل الحساب بنجاح! 🚀", "Your identity was verified and your account was activated successfully! 🚀"],
+    ["يرجى إدخال كود التحقق المكون من 6 أرقام.", "Enter the 6-digit verification code."],
+    ["كود التحقق غير صحيح.", "The verification code is incorrect."],
+    ["تعذر التحقق من الكود.", "Could not verify the code."]
+  ];
+
+  return replacements.reduce(
+    (value, [source, target]) => value.replaceAll(source, target),
+    String(text)
+  );
+}
 
 export default function CustomerLogin() {
   const [activeTab, setActiveTab] = useState("login"); // login, register
@@ -45,6 +71,8 @@ export default function CustomerLogin() {
   const [emailValidState, setEmailValidState] = useState({ checking: false, valid: null, message: "" });
 
   const router = useRouter();
+  const { language } = useI18n();
+  const siteName = cleanSiteName(settings.site_name);
 
   useEffect(() => {
     setIsMounted(true);
@@ -554,12 +582,12 @@ export default function CustomerLogin() {
               {settings.site_logo && settings.site_logo !== "default" ? (
                 <img 
                   src={settings.site_logo.startsWith("http") || settings.site_logo.startsWith("data:") ? settings.site_logo : (settings.site_logo.includes("uploads") ? `${API_BASE_URL}${settings.site_logo.startsWith("/") ? "" : "/"}${settings.site_logo}` : settings.site_logo)} 
-                  alt={settings.site_name} 
+                  alt={siteName} 
                   style={{ width: "64px", height: "64px", borderRadius: "16px", objectFit: "cover" }} 
                 />
               ) : (
                 <div className="logo-circle" style={{ width: "64px", height: "64px", fontSize: "1.8rem", borderRadius: "16px" }}>
-                  {settings.site_name ? settings.site_name.charAt(0) : "ع"}
+                  {siteName ? siteName.charAt(0) : "ع"}
                 </div>
               )}
             </div>
@@ -725,13 +753,13 @@ export default function CustomerLogin() {
 
               {error && (
                 <div style={{ padding: "10px 14px", background: "rgba(244, 63, 94, 0.1)", borderRight: "4px solid var(--danger-color)", color: "var(--danger-color)", borderRadius: "8px", fontSize: "0.85rem", fontWeight: "600", marginTop: "10px" }}>
-                  ⚠️ {error}
+                  ⚠️ {translateLoginDynamicText(error, language)}
                 </div>
               )}
 
               {success && (
                 <div style={{ padding: "10px 14px", background: "rgba(16, 185, 129, 0.1)", borderRight: "4px solid var(--success-color)", color: "var(--success-color)", borderRadius: "8px", fontSize: "0.85rem", fontWeight: "600", marginTop: "10px" }}>
-                  ✓ {success}
+                  ✓ {translateLoginDynamicText(success, language)}
                 </div>
               )}
             </div>
@@ -887,11 +915,11 @@ export default function CustomerLogin() {
           <div className="animate-line line-1" style={{ display: "inline-flex", justifyContent: "center", marginBottom: "10px" }}>
             <img 
               src="/logo.jpg" 
-              alt={settings.site_name || "عرب تك سيرفر online"} 
+              alt={siteName} 
               style={{ width: "54px", height: "54px", borderRadius: "12px", objectFit: "contain", flexShrink: 0, filter: "drop-shadow(0 2px 5px rgba(234,179,8,0.2))" }} 
             />
           </div>
-          <h2 className="animate-line line-2" style={{ fontWeight: 900, margin: 0 }}>حساب {settings.site_name}</h2>
+          <h2 className="animate-line line-2" style={{ fontWeight: 900, margin: 0 }}>حساب {siteName}</h2>
           <p className="animate-line line-3" style={{ color: "var(--text-muted)", fontSize: "0.82rem", marginTop: "4px" }}>تابع مشترياتك واحصل على خدماتك بسرعة فائقة</p>
         </div>
 
@@ -901,7 +929,7 @@ export default function CustomerLogin() {
               <div style={{ fontSize: "2rem", marginBottom: "6px" }}>📲</div>
               <h3 style={{ fontWeight: 800, color: "#38bdf8", margin: "0 0 6px 0" }}>تأكيد الهوية وتفعيل الحساب</h3>
               <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", margin: "0 0 12px 0", lineHeight: 1.5 }}>
-                تم إرسال كود تحقق (OTP) مكون من 6 أرقام إلى <strong>{otpInfo || "حسابك"}</strong>. يرجى إدخاله أدناه لإتمام العملية.
+                تم إرسال كود تحقق (OTP) مكون من 6 أرقام إلى <strong>{translateLoginDynamicText(otpInfo || "حسابك", language)}</strong>. يرجى إدخاله أدناه لإتمام العملية.
               </p>
               <div style={{ background: "rgba(255, 255, 255, 0.03)", borderRadius: "8px", padding: "10px", fontSize: "0.8rem", color: "#e2e8f0", border: "1px solid rgba(255,255,255,0.05)" }}>
                 📢 <strong>لتلقي الأكواد عبر تيليجرام:</strong><br />
@@ -932,13 +960,13 @@ export default function CustomerLogin() {
 
             {error && (
               <div style={{ padding: "10px 14px", background: "rgba(244, 63, 94, 0.1)", borderRight: "4px solid var(--danger-color)", color: "var(--danger-color)", borderRadius: "8px", fontSize: "0.85rem", fontWeight: "600" }}>
-                ⚠️ {error}
+                ⚠️ {translateLoginDynamicText(error, language)}
               </div>
             )}
 
             {success && (
               <div style={{ padding: "10px 14px", background: "rgba(16, 185, 129, 0.1)", borderRight: "4px solid var(--success-color)", color: "var(--success-color)", borderRadius: "8px", fontSize: "0.85rem", fontWeight: "600" }}>
-                ✓ {success}
+                ✓ {translateLoginDynamicText(success, language)}
               </div>
             )}
 
@@ -987,8 +1015,8 @@ export default function CustomerLogin() {
                     onSuccess={(token) => setTurnstileToken(token)}
                   />
                 </div>
-                {error && <div style={{ padding: "10px", background: "rgba(244, 63, 94, 0.1)", color: "var(--danger-color)", borderRadius: "8px", fontSize: "0.85rem" }}>⚠️ {error}</div>}
-                {success && <div style={{ padding: "10px", background: "rgba(16, 185, 129, 0.1)", color: "var(--success-color)", borderRadius: "8px", fontSize: "0.85rem" }}>✓ {success}</div>}
+                {error && <div style={{ padding: "10px", background: "rgba(244, 63, 94, 0.1)", color: "var(--danger-color)", borderRadius: "8px", fontSize: "0.85rem" }}>⚠️ {translateLoginDynamicText(error, language)}</div>}
+                {success && <div style={{ padding: "10px", background: "rgba(16, 185, 129, 0.1)", color: "var(--success-color)", borderRadius: "8px", fontSize: "0.85rem" }}>✓ {translateLoginDynamicText(success, language)}</div>}
                 <button type="submit" disabled={submitting} className="glass-btn glass-btn-primary animate-line line-7" style={{ padding: "12px", borderRadius: "12px" }}>
                   {submitting ? "جاري الإرسال..." : "إرسال كود التحقق"}
                 </button>
@@ -1027,8 +1055,8 @@ export default function CustomerLogin() {
                     required
                   />
                 </div>
-                {error && <div style={{ padding: "10px", background: "rgba(244, 63, 94, 0.1)", color: "var(--danger-color)", borderRadius: "8px", fontSize: "0.85rem" }}>⚠️ {error}</div>}
-                {success && <div style={{ padding: "10px", background: "rgba(16, 185, 129, 0.1)", color: "var(--success-color)", borderRadius: "8px", fontSize: "0.85rem" }}>✓ {success}</div>}
+                {error && <div style={{ padding: "10px", background: "rgba(244, 63, 94, 0.1)", color: "var(--danger-color)", borderRadius: "8px", fontSize: "0.85rem" }}>⚠️ {translateLoginDynamicText(error, language)}</div>}
+                {success && <div style={{ padding: "10px", background: "rgba(16, 185, 129, 0.1)", color: "var(--success-color)", borderRadius: "8px", fontSize: "0.85rem" }}>✓ {translateLoginDynamicText(success, language)}</div>}
                 <button type="submit" disabled={submitting} className="glass-btn glass-btn-primary animate-line line-7" style={{ padding: "12px", borderRadius: "12px" }}>
                   {submitting ? "جاري التحقق..." : "تأكيد الكود"}
                 </button>
@@ -1083,8 +1111,8 @@ export default function CustomerLogin() {
                   />
                 </div>
 
-                {error && <div style={{ padding: "10px", background: "rgba(244, 63, 94, 0.1)", color: "var(--danger-color)", borderRadius: "8px", fontSize: "0.85rem" }}>⚠️ {error}</div>}
-                {success && <div style={{ padding: "10px", background: "rgba(16, 185, 129, 0.1)", color: "var(--success-color)", borderRadius: "8px", fontSize: "0.85rem" }}>✓ {success}</div>}
+                {error && <div style={{ padding: "10px", background: "rgba(244, 63, 94, 0.1)", color: "var(--danger-color)", borderRadius: "8px", fontSize: "0.85rem" }}>⚠️ {translateLoginDynamicText(error, language)}</div>}
+                {success && <div style={{ padding: "10px", background: "rgba(16, 185, 129, 0.1)", color: "var(--success-color)", borderRadius: "8px", fontSize: "0.85rem" }}>✓ {translateLoginDynamicText(success, language)}</div>}
                 <button type="submit" disabled={submitting} className="glass-btn glass-btn-primary animate-line line-7" style={{ padding: "12px", borderRadius: "12px" }}>
                   {submitting ? "جاري الحفظ..." : "حفظ كلمة المرور"}
                 </button>
@@ -1182,7 +1210,7 @@ export default function CustomerLogin() {
                         : "#f43f5e"
                     }}>
                       {emailValidState.checking ? "⏳ " : emailValidState.valid ? "✓ " : "⚠️ "}
-                      {emailValidState.message}
+                      {translateLoginDynamicText(emailValidState.message, language)}
                     </div>
                   )}
                 </div>
@@ -1259,13 +1287,13 @@ export default function CustomerLogin() {
 
             {error && (
               <div style={{ padding: "10px 14px", background: "rgba(244, 63, 94, 0.1)", borderRight: "4px solid var(--danger-color)", color: "var(--danger-color)", borderRadius: "8px", fontSize: "0.85rem", fontWeight: "600" }}>
-                ⚠️ {error}
+                ⚠️ {translateLoginDynamicText(error, language)}
               </div>
             )}
 
             {success && (
               <div style={{ padding: "10px 14px", background: "rgba(16, 185, 129, 0.1)", borderRight: "4px solid var(--success-color)", color: "var(--success-color)", borderRadius: "8px", fontSize: "0.85rem", fontWeight: "600" }}>
-                ✓ {success}
+                ✓ {translateLoginDynamicText(success, language)}
               </div>
             )}
 
