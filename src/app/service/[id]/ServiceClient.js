@@ -228,6 +228,7 @@ export default function ServiceDetail({ params, initialService = null }) {
                 const preselectedPkg = subService.packages.find(p => String(p.id) === String(pkgId));
                 if (preselectedPkg) {
                   setSelectedPackage(preselectedPkg);
+                  setStep(2);
                 } else {
                   setSelectedPackage(subService.packages[0]);
                 }
@@ -236,6 +237,7 @@ export default function ServiceDetail({ params, initialService = null }) {
             const preselectedPkg = data.packages.find(p => String(p.id) === String(pkgId));
             if (preselectedPkg) {
               setSelectedPackage(preselectedPkg);
+              setStep(2);
             } else {
               setSelectedPackage(data.packages[0]);
             }
@@ -258,6 +260,7 @@ export default function ServiceDetail({ params, initialService = null }) {
             const preselectedPkg = fallback.packages.find(p => String(p.id) === String(pkgId));
             if (preselectedPkg) {
               setSelectedPackage(preselectedPkg);
+              setStep(2);
             } else {
               setSelectedPackage(fallback.packages[0]);
             }
@@ -366,6 +369,16 @@ export default function ServiceDetail({ params, initialService = null }) {
 
   const handleFieldChange = (fieldName, value) => {
     setFormData(prev => ({ ...prev, [fieldName]: value }));
+  };
+
+  const selectPackageAndContinue = (pkg) => {
+    if (!pkg) return;
+    if (service.price_type === "both") {
+      setCustomerPricingMode("packages");
+    }
+    setSelectedPackage(pkg);
+    setStep(2);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleReceiptChange = (e) => {
@@ -726,10 +739,7 @@ export default function ServiceDetail({ params, initialService = null }) {
                   className="scc-card"
                   onClick={(e) => {
                     e.stopPropagation();
-                    if (service.price_type === "both") {
-                      setCustomerPricingMode("packages");
-                    }
-                    setSelectedPackage(pkg);
+                    selectPackageAndContinue(pkg);
                   }}
                   style={{
                     cursor: "pointer",
