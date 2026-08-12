@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
@@ -10,17 +10,19 @@ import ProtectionModal from "./ProtectionModal";
 import Footer from "./Footer";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { FEATURES } from "@/features";
+import { useI18n } from "@/lib/i18n";
 
 
 export default function MainLayout({ children }) {
   const router = useRouter();
   const pathname = usePathname();
+  const { t, meta } = useI18n();
 
   const [theme, setTheme] = useState("dark");
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const [categoriesExpanded, setCategoriesExpanded] = useState(false);
-  const [settings, setSettings] = useState({ site_name: "عرب تك سيرفر", site_logo: "/logo.jpg" });
+  const [settings, setSettings] = useState({ site_name: "Ø¹Ø±Ø¨ ØªÙƒ Ø³ÙŠØ±ÙØ±", site_logo: "/logo.jpg" });
   const [logoFailed, setLogoFailed] = useState(false);
   const [txPasswordModalOpen, setTxPasswordModalOpen] = useState(false);
 
@@ -141,7 +143,7 @@ export default function MainLayout({ children }) {
         localStorage.removeItem("customer_user");
         setIsCustomerLoggedIn(false);
         setCustomerUser(null);
-        alert("🔒 تم إقفال الجلسة وتأمين حسابك تلقائياً بسبب عدم النشاط لمدة 30 دقيقة.");
+        alert("ðŸ”’ ØªÙ… Ø¥Ù‚ÙØ§Ù„ Ø§Ù„Ø¬Ù„Ø³Ø© ÙˆØªØ£Ù…ÙŠÙ† Ø­Ø³Ø§Ø¨Ùƒ ØªÙ„Ù‚Ø§Ø¦ÙŠØ§Ù‹ Ø¨Ø³Ø¨Ø¨ Ø¹Ø¯Ù… Ø§Ù„Ù†Ø´Ø§Ø· Ù„Ù…Ø¯Ø© 30 Ø¯Ù‚ÙŠÙ‚Ø©.");
         router.push("/login");
       }
     }, 60000);
@@ -306,7 +308,7 @@ export default function MainLayout({ children }) {
 
     return (
       <div style={{ display: "inline-flex", alignItems: "center", gap: "6px", flexWrap: "wrap", marginTop: "4px" }} onClick={(e) => e.stopPropagation()}>
-        <span>الرصيد:</span>
+        <span>{t("balance")}:</span>
         <span style={{ fontWeight: 900, color: "var(--primary-color)" }}>
           {(activeCurrency === "USD" || activeCurrency === "USDT") ? `${balanceVal.toFixed(2)} ${activeCurrency}` : `${balanceVal.toFixed(2)}`}
         </span>
@@ -328,7 +330,7 @@ export default function MainLayout({ children }) {
         >
           {availableCurrencies.map(curr => (
             <option key={curr} value={curr} style={{ background: "var(--bg-main)", color: "#ffffff" }}>
-              {curr} {curr === "USD" ? "🇺🇸" : curr === "EGP" ? "🇪🇬" : "🇸🇩"}
+              {curr} {curr === "USD" ? "ðŸ‡ºðŸ‡¸" : curr === "EGP" ? "ðŸ‡ªðŸ‡¬" : "ðŸ‡¸ðŸ‡©"}
             </option>
           ))}
         </select>
@@ -348,16 +350,16 @@ export default function MainLayout({ children }) {
       setDeferredPrompt(null);
       setShowInstallBanner(false);
     } else {
-      alert("لتثبيت التطبيق على جهازك:\n\n- للأندرويد: اضغط على القائمة المكونة من 3 نقاط (︙) في متصفح كروم ثم اختر 'تثبيت التطبيق' (Install app).\n\n- للأيفون: اضغط على زر مشاركة (📤) في متصفح Safari ثم اختر 'إضافة إلى الشاشة الرئيسية' (Add to Home Screen).");
+      alert("Ù„ØªØ«Ø¨ÙŠØª Ø§Ù„ØªØ·Ø¨ÙŠÙ‚ Ø¹Ù„Ù‰ Ø¬Ù‡Ø§Ø²Ùƒ:\n\n- Ù„Ù„Ø£Ù†Ø¯Ø±ÙˆÙŠØ¯: Ø§Ø¶ØºØ· Ø¹Ù„Ù‰ Ø§Ù„Ù‚Ø§Ø¦Ù…Ø© Ø§Ù„Ù…ÙƒÙˆÙ†Ø© Ù…Ù† 3 Ù†Ù‚Ø§Ø· (ï¸™) ÙÙŠ Ù…ØªØµÙØ­ ÙƒØ±ÙˆÙ… Ø«Ù… Ø§Ø®ØªØ± 'ØªØ«Ø¨ÙŠØª Ø§Ù„ØªØ·Ø¨ÙŠÙ‚' (Install app).\n\n- Ù„Ù„Ø£ÙŠÙÙˆÙ†: Ø§Ø¶ØºØ· Ø¹Ù„Ù‰ Ø²Ø± Ù…Ø´Ø§Ø±ÙƒØ© (ðŸ“¤) ÙÙŠ Ù…ØªØµÙØ­ Safari Ø«Ù… Ø§Ø®ØªØ± 'Ø¥Ø¶Ø§ÙØ© Ø¥Ù„Ù‰ Ø§Ù„Ø´Ø§Ø´Ø© Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠØ©' (Add to Home Screen).");
     }
   };
 
   const navLinks = [
-    { href: "/", label: "الرئيسية", icon: "🏠" },
-    { href: "/services", label: "الخدمات", icon: "🛒" },
-    { href: "/orders", label: "طلباتي", icon: "📦" },
-    { href: "/wallet", label: "المحفظة", icon: "💳" },
-    { href: "/terms", label: "الشروط والاسترجاع", icon: "⚖️" }
+    { href: "/", label: t("home"), icon: "🏠" },
+    { href: "/services", label: t("services"), icon: "🛒" },
+    { href: "/orders", label: t("myOrders"), icon: "📦" },
+    { href: "/wallet", label: t("wallet"), icon: "💳" },
+    { href: "/terms", label: t("termsRefund"), icon: "⚖️" }
   ];
 
   const isActive = (href) => {
@@ -366,14 +368,14 @@ export default function MainLayout({ children }) {
   };
 
   const getPageTitle = () => {
-    if (pathname === "/" || pathname === "/Home") return "الرئيسية";
-    if (pathname.startsWith("/orders")) return "طلباتي";
-    if (pathname.startsWith("/wallet")) return "المحفظة";
-    if (pathname.startsWith("/membership")) return "العضوية";
-    if (pathname.startsWith("/category")) return "القسم";
-    if (pathname.startsWith("/service")) return "الخدمة";
-    if (pathname.startsWith("/login")) return "تسجيل الدخول";
-    return "Home";
+    if (pathname === "/" || pathname === "/Home") return t("home");
+    if (pathname.startsWith("/orders")) return t("myOrders");
+    if (pathname.startsWith("/wallet")) return t("wallet");
+    if (pathname.startsWith("/membership")) return "Membership";
+    if (pathname.startsWith("/category")) return t("categoriesServices");
+    if (pathname.startsWith("/service")) return t("services");
+    if (pathname.startsWith("/login")) return t("login");
+    return t("home");
   };
 
 
@@ -386,7 +388,7 @@ export default function MainLayout({ children }) {
     && (pathname.startsWith("/login") || pathname.startsWith("/wallet") || pathname.startsWith("/service"));
 
   return (
-    <div className="app-layout">
+    <div className="app-layout" dir={meta.dir}>
       {/* Background (Video removed for performance) */}
       <div className="video-background-container" style={{
         position: 'fixed',
@@ -400,7 +402,7 @@ export default function MainLayout({ children }) {
       }}>
       </div>
 
-      {/* Abstract Animated Shapes — 4 colorful orbs */}
+      {/* Abstract Animated Shapes â€” 4 colorful orbs */}
       <div className="animated-shape shape-1"></div>
       <div className="animated-shape shape-2"></div>
       <div className="animated-shape shape-3"></div>
@@ -426,23 +428,23 @@ export default function MainLayout({ children }) {
             )}
             <div>
               <div style={{ fontWeight: 900, fontSize: '1rem', color: 'var(--text-main)', letterSpacing: '-0.01em' }}>{settings.site_name}</div>
-              <div style={{ fontSize: '0.72rem', color: 'var(--primary-color)', fontWeight: 700, marginTop: '1px' }}>خدمات آمنة وفورية ⚡</div>
+              <div style={{ fontSize: '0.72rem', color: 'var(--primary-color)', fontWeight: 700, marginTop: '1px' }}>{t("secureFast")}</div>
             </div>
           </div>
-          <button className="mobile-drawer-close" onClick={() => setMenuOpen(false)} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)', width: '36px', height: '36px', borderRadius: '10px', fontSize: '1rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', transition: 'all 0.2s' }}>✕</button>
+          <button className="mobile-drawer-close" onClick={() => setMenuOpen(false)} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)', width: '36px', height: '36px', borderRadius: '10px', fontSize: '1rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', transition: 'all 0.2s' }}>âœ•</button>
         </div>
 
         {isCustomerLoggedIn && customerUser ? (
           <div className="mobile-drawer-user-card" style={{ marginBottom: "15px", display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "6px", padding: "16px", background: "linear-gradient(135deg, rgba(234, 179, 8, 0.1), rgba(202, 138, 4, 0.05))", borderRadius: "16px", border: "1px solid rgba(234, 179, 8, 0.2)" }}>
-            <div style={{ fontSize: "1rem", fontWeight: 800, color: "var(--text-main)" }}>مرحباً، {customerUser.username} 👋</div>
+            <div style={{ fontSize: "1rem", fontWeight: 800, color: "var(--text-main)" }}>{t("welcomeUser", { username: customerUser.username })}</div>
             <div style={{ fontSize: "0.9rem", color: "#eab308", fontWeight: 900, background: "rgba(255,255,255,0.05)", padding: "6px 12px", borderRadius: "8px", display: "inline-block", border: "1px solid rgba(234, 179, 8, 0.15)" }}>
               {renderBalanceDropdownAndValue(customerUser)}
             </div>
           </div>
         ) : (
           <Link href="/login" className="mobile-drawer-link" onClick={() => setMenuOpen(false)} style={{ background: "rgba(234, 179, 8, 0.1)", color: "#eab308", fontWeight: 700, justifyContent: "center", borderRadius: "10px", padding: "10px", border: "1px solid rgba(234, 179, 8, 0.3)", boxShadow: "0 4px 20px rgba(234, 179, 8, 0.1)", fontSize: "0.85rem", gap: "8px" }}>
-            <span style={{ fontSize: "1.1rem", display: "flex", alignItems: "center" }}>👤</span>
-            <span style={{ color: "#eab308" }}>تسجيل الدخول / حساب جديد</span>
+            <span style={{ fontSize: "1.1rem", display: "flex", alignItems: "center" }}>ðŸ‘¤</span>
+            <span style={{ color: "#eab308" }}>{t("loginRegister")}</span>
           </Link>
         )}
 
@@ -450,7 +452,7 @@ export default function MainLayout({ children }) {
 
         <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
           <Link href="/" className="mobile-drawer-link" onClick={() => setMenuOpen(false)}>
-            <span style={{ fontSize: "1.2rem" }}>🏠</span> الرئيسية
+            <span style={{ fontSize: "1.2rem" }}>🏠</span> {t("home")}
           </Link>
           
           <div className="mobile-drawer-dropdown-container" style={{ position: "relative" }}>
@@ -460,9 +462,9 @@ export default function MainLayout({ children }) {
               onClick={() => setCategoriesExpanded(!categoriesExpanded)}
             >
               <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                <span style={{ fontSize: "1.2rem" }}>🛒</span> الأقسام والخدمات
+                <span style={{ fontSize: "1.2rem" }}>🛒</span> {t("categoriesServices")}
               </div>
-              <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", transform: categoriesExpanded ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.3s" }}>▼</span>
+              <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", transform: categoriesExpanded ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.3s" }}>â–¼</span>
             </div>
                         <div 
               className="mobile-drawer-dropdown-list" 
@@ -476,37 +478,37 @@ export default function MainLayout({ children }) {
               }}
             >
               <Link href="/services" className="mobile-drawer-link" style={{ padding: "8px 16px", fontSize: "0.95rem" }} onClick={() => setMenuOpen(false)}>
-                ⭐ كل الخدمات
+                ⭐ {t("allServices")}
               </Link>
               <Link href="/services?type=imei" className="mobile-drawer-link" style={{ padding: "8px 16px", fontSize: "0.95rem" }} onClick={() => setMenuOpen(false)}>
-                📱 IMEI Services
+                📱 {t("imeiServices")}
               </Link>
               <Link href="/services?type=server" className="mobile-drawer-link" style={{ padding: "8px 16px", fontSize: "0.95rem" }} onClick={() => setMenuOpen(false)}>
-                💻 Server Services
+                💻 {t("serverServices")}
               </Link>
               <Link href="/services?type=remote" className="mobile-drawer-link" style={{ padding: "8px 16px", fontSize: "0.95rem" }} onClick={() => setMenuOpen(false)}>
-                🌐 Remote Services
+                🌐 {t("remoteServices")}
               </Link>
             </div>
           </div>
 
           <Link href="/orders" className="mobile-drawer-link" onClick={() => setMenuOpen(false)}>
-            <span style={{ fontSize: "1.2rem" }}>📦</span> تتبع الطلبات
+            <span style={{ fontSize: "1.2rem" }}>📦</span> {t("trackOrders")}
           </Link>
           
 
           {isCustomerLoggedIn && (
             <Link href="/wallet" className="mobile-drawer-link" onClick={() => setMenuOpen(false)}>
-              <span style={{ fontSize: "1.2rem" }}>💳</span> شحن رصيدي
+              <span style={{ fontSize: "1.2rem" }}>💳</span> {t("chargeBalance")}
             </Link>
           )}
           {FEATURES.showApiDocs && (
             <Link href="/api-docs" className="mobile-drawer-link" onClick={() => setMenuOpen(false)}>
-              <span style={{ fontSize: "1.2rem" }}>🔌</span> الربط عبر الـ API
+              <span style={{ fontSize: "1.2rem" }}>🔌</span> {t("apiDocs")}
             </Link>
           )}
           <Link href="/terms" className="mobile-drawer-link" onClick={() => setMenuOpen(false)}>
-            <span style={{ fontSize: "1.2rem" }}>⚖️</span> الشروط وسياسة الاسترجاع
+            <span style={{ fontSize: "1.2rem" }}>⚖️</span> {t("termsRefund")}
           </Link>
           <button
             type="button"
@@ -514,7 +516,7 @@ export default function MainLayout({ children }) {
             className="mobile-drawer-link"
             style={{ width: "100%", textAlign: "right", border: "none", display: "flex", alignItems: "center", background: "transparent", padding: "14px 16px" }}
           >
-            <span style={{ fontSize: "1.2rem" }}>💬</span> الدعم الفني
+            <span style={{ fontSize: "1.2rem" }}>💬</span> {t("support")}
           </button>
         </div>
 
@@ -525,28 +527,28 @@ export default function MainLayout({ children }) {
         {/* Premium Font Scale Toggle */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 16px", background: "rgba(255,255,255,0.03)", borderRadius: "14px", border: "1px solid rgba(255,255,255,0.05)", margin: "4px 0" }}>
           <span style={{ fontSize: "0.95rem", fontWeight: "800", color: "var(--text-main)", display: "flex", alignItems: "center", gap: "10px" }}>
-            <span style={{ fontSize: "1.2rem" }}>📝</span>
-            حجم الخط
+            <span style={{ fontSize: "1.2rem" }}>ðŸ“</span>
+            {t("fontSize")}
           </span>
           <div style={{ display: "flex", gap: "6px", alignItems: "center", background: "rgba(0,0,0,0.2)", padding: "4px", borderRadius: "10px" }}>
             <button
               onClick={() => adjustFontScale(-0.05)}
               style={{ background: "transparent", border: "none", color: "var(--text-main)", width: "32px", height: "32px", borderRadius: "8px", cursor: "pointer", fontSize: "0.9rem", fontWeight: "bold", transition: "0.2s" }}
-              title="تصغير الخط"
+              title="ØªØµØºÙŠØ± Ø§Ù„Ø®Ø·"
               type="button"
             >A-</button>
             <div style={{ width: "1px", height: "20px", background: "rgba(255,255,255,0.1)" }}></div>
             <button
               onClick={resetFontScale}
               style={{ background: "transparent", border: "none", color: "var(--text-main)", width: "32px", height: "32px", borderRadius: "8px", cursor: "pointer", fontSize: "1rem", fontWeight: "900", transition: "0.2s" }}
-              title="حجم افتراضي"
+              title="Ø­Ø¬Ù… Ø§ÙØªØ±Ø§Ø¶ÙŠ"
               type="button"
             >A</button>
             <div style={{ width: "1px", height: "20px", background: "rgba(255,255,255,0.1)" }}></div>
             <button
               onClick={() => adjustFontScale(0.05)}
               style={{ background: "transparent", border: "none", color: "var(--text-main)", width: "32px", height: "32px", borderRadius: "8px", cursor: "pointer", fontSize: "1.1rem", fontWeight: "bold", transition: "0.2s" }}
-              title="تكبير الخط"
+              title="ØªÙƒØ¨ÙŠØ± Ø§Ù„Ø®Ø·"
               type="button"
             >A+</button>
           </div>
@@ -555,8 +557,8 @@ export default function MainLayout({ children }) {
         {/* Premium Theme Toggle */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 16px", background: "rgba(255,255,255,0.03)", borderRadius: "14px", border: "1px solid rgba(255,255,255,0.05)", margin: "4px 0" }}>
           <span style={{ fontSize: "0.95rem", fontWeight: "800", color: "var(--text-main)", display: "flex", alignItems: "center", gap: "10px" }}>
-            <span style={{ fontSize: "1.2rem" }}>{theme === 'dark' ? '🌙' : '☀️'}</span>
-            المظهر الليلي
+            <span style={{ fontSize: "1.2rem" }}>{theme === 'dark' ? 'ðŸŒ™' : 'â˜€ï¸'}</span>
+            {t("darkMode")}
           </span>
           <button
             onClick={toggleTheme}
@@ -592,7 +594,7 @@ export default function MainLayout({ children }) {
           <>
             <div className="mobile-drawer-divider" style={{ margin: "12px 0" }} />
             <button className="mobile-drawer-link danger" onClick={() => { handleCustomerLogout(); setMenuOpen(false); }} style={{ justifyContent: "center", padding: "14px", borderRadius: "12px", fontWeight: 900 }}>
-              🚪 تسجيل الخروج
+              🚪 {t("logout")}
             </button>
           </>
         )}
@@ -604,10 +606,10 @@ export default function MainLayout({ children }) {
         {showInstallBanner && !isFocusedConversionPage && (
           <div className="pwa-install-banner">
             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-              <span style={{ fontSize: "1.5rem" }}>📱</span>
+              <span style={{ fontSize: "1.5rem" }}>ðŸ“±</span>
               <div>
-                <strong style={{ display: "block", fontSize: "0.9rem", color: "var(--text-main)", textAlign: "right" }}>ثبّت تطبيق {settings.site_name}</strong>
-                <span style={{ fontSize: "0.78rem", color: "var(--text-muted)", display: "block", textAlign: "right" }}>تصفح أسرع وتجربة استخدام أفضل بدون متصفح!</span>
+                <strong style={{ display: "block", fontSize: "0.9rem", color: "var(--text-main)", textAlign: meta.dir === "rtl" ? "right" : "left" }}>{t("installApp", { site: settings.site_name })}</strong>
+                <span style={{ fontSize: "0.78rem", color: "var(--text-muted)", display: "block", textAlign: meta.dir === "rtl" ? "right" : "left" }}>{t("installAppDesc")}</span>
               </div>
             </div>
             <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
@@ -616,7 +618,7 @@ export default function MainLayout({ children }) {
                 className="glass-btn glass-btn-primary"
                 style={{ padding: "6px 14px", borderRadius: "8px", fontSize: "0.82rem" }}
               >
-                تثبيت الآن
+                {t("installNow")}
               </button>
               <button
                 onClick={() => {
@@ -625,7 +627,7 @@ export default function MainLayout({ children }) {
                 }}
                 style={{ background: "transparent", border: "none", color: "var(--text-muted)", cursor: "pointer", padding: "0 5px", fontSize: "1.1rem" }}
               >
-                ✕
+                âœ•
               </button>
             </div>
           </div>
@@ -649,7 +651,7 @@ export default function MainLayout({ children }) {
           
           {/* Right Section (Logo & Mobile Menu) */}
           <div className="flex items-center gap-3" style={{ minWidth: 0 }}>
-            <button className="header-btn w-9 h-9" type="button" aria-label="القائمة" onClick={() => setMenuOpen(!menuOpen)} style={{ flexShrink: 0 }}>
+            <button className="header-btn w-9 h-9" type="button" aria-label="Ø§Ù„Ù‚Ø§Ø¦Ù…Ø©" onClick={() => setMenuOpen(!menuOpen)} style={{ flexShrink: 0 }}>
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-menu w-5 h-5">
                 <line x1="4" x2="20" y1="12" y2="12"></line>
                 <line x1="4" x2="20" y1="6" y2="6"></line>
@@ -664,7 +666,7 @@ export default function MainLayout({ children }) {
               )}
               <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', height: '24px', overflowY: 'hidden', minWidth: '180px' }}>
                 <span className={`font-black absolute transition-all duration-700 ease-in-out ${logoLang === 'ar' ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full'}`} style={{ color: '#eab308', whiteSpace: 'nowrap', fontSize: 'clamp(0.9rem, 3vw, 1.15rem)', letterSpacing: '0.5px', textShadow: '0 2px 10px rgba(234, 179, 8, 0.4)' }}>
-                  عرب تك سيرفر online
+                  Ø¹Ø±Ø¨ ØªÙƒ Ø³ÙŠØ±ÙØ± online
                 </span>
                 <span translate="no" className={`font-black absolute transition-all duration-700 ease-in-out ${logoLang === 'en' ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-full'}`} style={{ color: '#eab308', whiteSpace: 'nowrap', fontSize: 'clamp(0.85rem, 2.5vw, 1rem)', letterSpacing: '0.5px', textShadow: '0 2px 10px rgba(234, 179, 8, 0.4)' }}>
                   Arab Tech Server
@@ -677,7 +679,7 @@ export default function MainLayout({ children }) {
           {/* Left Section (Auth & Theme & Home link) */}
           <div className="flex items-center gap-3" style={{ position: 'relative' }}>
             <LanguageSwitcher />
-            <Link href="/" className={`desktop-link hidden lg-block ${pathname === '/' ? 'active' : ''}`} style={{ fontWeight: 'bold' }}>الرئيسية</Link>
+            <Link href="/" className={`desktop-link hidden lg-block ${pathname === '/' ? 'active' : ''}`} style={{ fontWeight: 'bold' }}>{t("home")}</Link>
                         <div 
               className="hidden lg:block" 
               style={{ position: 'relative' }} 
@@ -685,26 +687,26 @@ export default function MainLayout({ children }) {
               onMouseLeave={(e) => { e.currentTarget.querySelector('.services-dropdown').style.display = 'none'; }}
             >
               <Link href="/services" className={`desktop-link ${pathname.startsWith('/services') ? 'active' : ''}`} style={{ fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                الخدمات <span style={{fontSize: '0.7rem'}}>▼</span>
+                {t("services")} <span style={{fontSize: '0.7rem'}}>▼</span>
               </Link>
               <div className="services-dropdown" style={{ 
                 position: 'absolute', top: '100%', right: 0, background: 'rgba(15, 23, 42, 0.98)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '8px', minWidth: '200px', display: 'none', flexDirection: 'column', gap: '4px', zIndex: 100, boxShadow: '0 10px 25px rgba(0,0,0,0.5)', marginTop: '5px'
               }}>
-                <Link href="/services" className="header-dropdown-item" style={{ padding: '8px 12px', fontSize: '0.9rem' }}>⭐ كل الخدمات</Link>
-                <Link href="/services?type=imei" className="header-dropdown-item" style={{ padding: '8px 12px', fontSize: '0.9rem' }}>📱 IMEI Services</Link>
-                <Link href="/services?type=server" className="header-dropdown-item" style={{ padding: '8px 12px', fontSize: '0.9rem' }}>💻 Server Services</Link>
-                <Link href="/services?type=remote" className="header-dropdown-item" style={{ padding: '8px 12px', fontSize: '0.9rem' }}>🌐 Remote Services</Link>
+                <Link href="/services" className="header-dropdown-item" style={{ padding: '8px 12px', fontSize: '0.9rem' }}>⭐ {t("allServices")}</Link>
+                <Link href="/services?type=imei" className="header-dropdown-item" style={{ padding: '8px 12px', fontSize: '0.9rem' }}>📱 {t("imeiServices")}</Link>
+                <Link href="/services?type=server" className="header-dropdown-item" style={{ padding: '8px 12px', fontSize: '0.9rem' }}>💻 {t("serverServices")}</Link>
+                <Link href="/services?type=remote" className="header-dropdown-item" style={{ padding: '8px 12px', fontSize: '0.9rem' }}>🌐 {t("remoteServices")}</Link>
               </div>
             </div>
-            <Link href="/orders" className={`desktop-link hidden lg-block ${pathname.startsWith('/orders') ? 'active' : ''}`} style={{ fontWeight: 'bold' }}>الطلبات</Link>
-            <button onClick={toggleTheme} className="theme-toggle-btn header-btn hidden lg-block" aria-label="تبديل المظهر" style={{ padding: '6px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', cursor: 'pointer' }}>
-              {theme === 'dark' ? '🌙' : '☀️'}
+            <Link href="/orders" className={`desktop-link hidden lg-block ${pathname.startsWith('/orders') ? 'active' : ''}`} style={{ fontWeight: 'bold' }}>{t("orders")}</Link>
+            <button onClick={toggleTheme} className="theme-toggle-btn header-btn hidden lg-block" aria-label="ØªØ¨Ø¯ÙŠÙ„ Ø§Ù„Ù…Ø¸Ù‡Ø±" style={{ padding: '6px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', cursor: 'pointer' }}>
+              {theme === 'dark' ? 'ðŸŒ™' : 'â˜€ï¸'}
             </button>
             
             <div className="hidden lg:block">
               {isCustomerLoggedIn && customerUser ? (
                 <div style={{ position: 'relative' }}>
-                  <button className="header-user-btn" type="button" onClick={() => setProfileMenuOpen(!profileMenuOpen)} title="الملف الشخصي" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 12px', background: 'rgba(79, 70, 229, 0.1)', border: '1px solid rgba(79, 70, 229, 0.2)', borderRadius: '8px', cursor: 'pointer' }}>
+                  <button className="header-user-btn" type="button" onClick={() => setProfileMenuOpen(!profileMenuOpen)} title="Ø§Ù„Ù…Ù„Ù Ø§Ù„Ø´Ø®ØµÙŠ" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 12px', background: 'rgba(79, 70, 229, 0.1)', border: '1px solid rgba(79, 70, 229, 0.2)', borderRadius: '8px', cursor: 'pointer' }}>
                     <div className="font-black text-sm" style={{ color: 'rgb(79, 70, 229)' }}>
                       {customerUser.username ? customerUser.username.charAt(0).toUpperCase() : 'U'}
                     </div>
@@ -720,20 +722,20 @@ export default function MainLayout({ children }) {
                           {renderBalanceDropdownAndValue(customerUser)}
                         </div>
                       </div>
-                      <Link href="/orders" className="header-dropdown-item" onClick={() => setProfileMenuOpen(false)}>📦 طلباتي</Link>
-                      <Link href="/wallet" className="header-dropdown-item" onClick={() => setProfileMenuOpen(false)}>💳 شحن المحفظة</Link>
+                      <Link href="/orders" className="header-dropdown-item" onClick={() => setProfileMenuOpen(false)}>📦 {t("myOrders")}</Link>
+                      <Link href="/wallet" className="header-dropdown-item" onClick={() => setProfileMenuOpen(false)}>💳 {t("chargeWallet")}</Link>
                       {FEATURES.showApiDocs && (
-                        <Link href="/api-docs" className="header-dropdown-item" onClick={() => setProfileMenuOpen(false)}>🔌 الربط عبر الـ API</Link>
+                        <Link href="/api-docs" className="header-dropdown-item" onClick={() => setProfileMenuOpen(false)}>🔌 {t("apiDocs")}</Link>
                       )}
-                      <button onClick={() => { setProfileMenuOpen(false); window.dispatchEvent(new CustomEvent('openPasswordChangeModal')); }} className="header-dropdown-item" type="button">🔐 تغيير كلمة المرور</button>
-                      <button onClick={() => { handleCustomerLogout(); setProfileMenuOpen(false); }} className="header-dropdown-item" style={{ color: 'var(--danger-color)', width: '100%', textAlign: 'right' }} type="button">🚪 تسجيل الخروج</button>
+                      <button onClick={() => { setProfileMenuOpen(false); window.dispatchEvent(new CustomEvent('openPasswordChangeModal')); }} className="header-dropdown-item" type="button">ðŸ” ØªØºÙŠÙŠØ± ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ±</button>
+                      <button onClick={() => { handleCustomerLogout(); setProfileMenuOpen(false); }} className="header-dropdown-item" style={{ color: 'var(--danger-color)', width: '100%', textAlign: meta.dir === "rtl" ? 'right' : 'left' }} type="button">🚪 {t("logout")}</button>
                     </div>
                   )}
                 </div>
               ) : (
                 <div style={{ display: 'flex', gap: '8px' }}>
-                  <Link href="/login" style={{ textDecoration: 'none', padding: '6px 16px', background: 'var(--primary-color)', color: '#fff', borderRadius: '8px', fontWeight: 'bold', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}>تسجيل</Link>
-                  <Link href="/login" style={{ textDecoration: 'none', padding: '6px 16px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--text-main)', borderRadius: '8px', fontWeight: 'bold', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}>دخول</Link>
+                  <Link href="/login" style={{ textDecoration: 'none', padding: '6px 16px', background: 'var(--primary-color)', color: '#fff', borderRadius: '8px', fontWeight: 'bold', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}>{t("register")}</Link>
+                  <Link href="/login" style={{ textDecoration: 'none', padding: '6px 16px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--text-main)', borderRadius: '8px', fontWeight: 'bold', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}>{t("login")}</Link>
                 </div>
               )}
             </div>
@@ -747,28 +749,26 @@ export default function MainLayout({ children }) {
               <div className="notice-track" role="presentation">
                 <div className="notice-set" role="presentation">
                   <div className="notice-set-item">
-                    <span className="notice-pill notice-pill-gold">✨ مرحبا بكم هنا سيرفر عرب تك متاح جميع الخدمات بفضل الله واسعار مناسبه للجميع</span>
-                    <span className="notice-pill notice-pill-gold">✨ Welcome to Arab Tech Server, all services are available and prices are suitable for everyone</span>
+                    <span className="notice-pill notice-pill-gold">✨ {t("announcement")}</span>
                     <a href="https://wa.me/249123667227" target="_blank" rel="noopener noreferrer" className="notice-pill notice-pill-link">
-                      <span className="notice-pill-label">💬 واتساب 1:</span>
+                      <span className="notice-pill-label">💬 {t("whatsapp1")}</span>
                       <bdi dir="ltr" className="notice-pill-bdi">+249&nbsp;12&nbsp;366&nbsp;7227</bdi>
                     </a>
                     <a href="https://wa.me/16728972935" target="_blank" rel="noopener noreferrer" className="notice-pill notice-pill-link">
-                      <span className="notice-pill-label">💬 واتساب 2:</span>
+                      <span className="notice-pill-label">💬 {t("whatsapp2")}</span>
                       <bdi dir="ltr" className="notice-pill-bdi">+1&nbsp;(672)&nbsp;897-2935</bdi>
                     </a>
                   </div>
                 </div>
                 <div className="notice-set" aria-hidden="true" role="presentation">
                   <div className="notice-set-item">
-                    <span className="notice-pill notice-pill-gold">✨ مرحبا بكم هنا سيرفر عرب تك متاح جميع الخدمات بفضل الله واسعار مناسبه للجميع</span>
-                    <span className="notice-pill notice-pill-gold">✨ Welcome to Arab Tech Server, all services are available and prices are suitable for everyone</span>
+                    <span className="notice-pill notice-pill-gold">✨ {t("announcement")}</span>
                     <a href="https://wa.me/249123667227" target="_blank" rel="noopener noreferrer" className="notice-pill notice-pill-link">
-                      <span className="notice-pill-label">💬 واتساب 1:</span>
+                      <span className="notice-pill-label">💬 {t("whatsapp1")}</span>
                       <bdi dir="ltr" className="notice-pill-bdi">+249&nbsp;12&nbsp;366&nbsp;7227</bdi>
                     </a>
                     <a href="https://wa.me/16728972935" target="_blank" rel="noopener noreferrer" className="notice-pill notice-pill-link">
-                      <span className="notice-pill-label">💬 واتساب 2:</span>
+                      <span className="notice-pill-label">💬 {t("whatsapp2")}</span>
                       <bdi dir="ltr" className="notice-pill-bdi">+1&nbsp;(672)&nbsp;897-2935</bdi>
                     </a>
                   </div>
@@ -809,12 +809,12 @@ export default function MainLayout({ children }) {
                 color: "#ffffff",
                 boxShadow: "0 20px 40px rgba(245, 158, 11, 0.3)"
               }}>
-                <div style={{ fontSize: "2.8rem", marginBottom: "10px" }}>🛡️</div>
+                <div style={{ fontSize: "2.8rem", marginBottom: "10px" }}>ðŸ›¡ï¸</div>
                 <h3 style={{ fontSize: "1.3rem", fontWeight: "900", color: "#fbbf24", marginBottom: "10px" }}>
-                  نصيحة أمان لحسابك 🔒
+                  Ù†ØµÙŠØ­Ø© Ø£Ù…Ø§Ù† Ù„Ø­Ø³Ø§Ø¨Ùƒ ðŸ”’
                 </h3>
                 <p style={{ fontSize: "0.92rem", color: "#cbd5e1", lineHeight: "1.6", marginBottom: "22px" }}>
-                  لحماية محفظتك وحسابك تلقائياً عند الخمول، يُنصح بتعيين <strong>كلمة مرور المعاملات والقفل</strong> الآن.
+                  Ù„Ø­Ù…Ø§ÙŠØ© Ù…Ø­ÙØ¸ØªÙƒ ÙˆØ­Ø³Ø§Ø¨Ùƒ ØªÙ„Ù‚Ø§Ø¦ÙŠØ§Ù‹ Ø¹Ù†Ø¯ Ø§Ù„Ø®Ù…ÙˆÙ„ØŒ ÙŠÙÙ†ØµØ­ Ø¨ØªØ¹ÙŠÙŠÙ† <strong>ÙƒÙ„Ù…Ø© Ù…Ø±ÙˆØ± Ø§Ù„Ù…Ø¹Ø§Ù…Ù„Ø§Øª ÙˆØ§Ù„Ù‚ÙÙ„</strong> Ø§Ù„Ø¢Ù†.
                 </p>
                 <div style={{ display: "flex", gap: "12px" }}>
                   <button
@@ -826,7 +826,7 @@ export default function MainLayout({ children }) {
                     className="btn-show-more-gold"
                     style={{ flex: 1, padding: "10px", borderRadius: "12px", fontSize: "0.95rem" }}
                   >
-                    تعيين الآن 🔒
+                    ØªØ¹ÙŠÙŠÙ† Ø§Ù„Ø¢Ù† ðŸ”’
                   </button>
                   <button
                     onClick={() => {
@@ -843,7 +843,7 @@ export default function MainLayout({ children }) {
                       fontWeight: "bold"
                     }}
                   >
-                    لاحقاً ✕
+                    Ù„Ø§Ø­Ù‚Ø§Ù‹ âœ•
                   </button>
                 </div>
               </div>
@@ -857,19 +857,19 @@ export default function MainLayout({ children }) {
       {!isFocusedConversionPage && <nav className="bottom-nav">
         <Link href="/" className={`bottom-nav-item ${pathname === "/" ? "active" : ""}`}>
           <span className="bottom-nav-icon">🏠</span>
-          <span className="bottom-nav-label">الرئيسية</span>
+          <span className="bottom-nav-label">{t("home")}</span>
         </Link>
         <Link href="/orders" className={`bottom-nav-item ${pathname.startsWith("/orders") ? "active" : ""}`}>
           <span className="bottom-nav-icon">📦</span>
-          <span className="bottom-nav-label">طلباتي</span>
+          <span className="bottom-nav-label">{t("myOrders")}</span>
         </Link>
         <Link href="/wallet" className={`bottom-nav-item ${pathname.startsWith("/wallet") ? "active" : ""}`}>
           <span className="bottom-nav-icon">💳</span>
-          <span className="bottom-nav-label">محفظتي</span>
+          <span className="bottom-nav-label">{t("myWallet")}</span>
         </Link>
         <Link href="/login" className={`bottom-nav-item ${pathname.startsWith("/login") ? "active" : ""}`}>
           <span className="bottom-nav-icon">👤</span>
-          <span className="bottom-nav-label">حسابي</span>
+          <span className="bottom-nav-label">{t("login")}</span>
         </Link>
       </nav>}
 
@@ -901,12 +901,12 @@ export default function MainLayout({ children }) {
               maxWidth: "480px",
               width: "100%",
               boxShadow: "0 20px 50px rgba(0, 0, 0, 0.4)",
-              direction: "rtl"
+              direction: meta.dir
             }}
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
               <h3 style={{ margin: 0, fontSize: "1.2rem", fontWeight: 900, color: "#ffffff", display: "flex", alignItems: "center", gap: "8px" }}>
-                <span>💬</span> الدعم الفني وتواصل الإدارة
+                <span>💬</span> {t("supportTitle")}
               </h3>
               <button
                 onClick={() => setSupportModalOpen(false)}
@@ -924,12 +924,12 @@ export default function MainLayout({ children }) {
                   fontSize: "0.9rem"
                 }}
               >
-                ✕
+                âœ•
               </button>
             </div>
 
             <p style={{ color: "#94a3b8", fontSize: "0.85rem", marginTop: 0, marginBottom: "20px", lineHeight: "1.5" }}>
-              اختر أحد قنوات الدعم الفني الرسمية للتواصل معنا أو الانضمام إلى مجتمعنا:
+              {t("supportIntro")}
             </p>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
@@ -954,13 +954,13 @@ export default function MainLayout({ children }) {
                 }}
               >
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  <span style={{ fontSize: "1.2rem" }}>🟢</span>
+                  <span style={{ fontSize: "1.2rem" }}>ðŸŸ¢</span>
                   <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                    <span>واتساب الإدارة 1</span>
+                    <span>{t("whatsappAdmin1")}</span>
                     <span dir="ltr" style={{ direction: "ltr", unicodeBidi: "isolate" }}>(+249 12 366 7227)</span>
                   </div>
                 </div>
-                <span style={{ color: "#10b981" }}>←</span>
+                <span style={{ color: "#10b981" }}>â†</span>
               </a>
 
               {/* WhatsApp Support 2 */}
@@ -984,13 +984,13 @@ export default function MainLayout({ children }) {
                 }}
               >
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  <span style={{ fontSize: "1.2rem" }}>🟢</span>
+                  <span style={{ fontSize: "1.2rem" }}>ðŸŸ¢</span>
                   <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                    <span>واتساب الإدارة 2</span>
+                    <span>{t("whatsappAdmin2")}</span>
                     <span dir="ltr" style={{ direction: "ltr", unicodeBidi: "isolate" }}>(+1 672-897-2935)</span>
                   </div>
                 </div>
-                <span style={{ color: "#22d3ee" }}>←</span>
+                <span style={{ color: "#22d3ee" }}>â†</span>
               </a>
 
               {/* WhatsApp Community */}
@@ -1015,9 +1015,9 @@ export default function MainLayout({ children }) {
               >
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                   <span style={{ fontSize: "1.2rem" }}>💬</span>
-                  <span>مجتمع واتساب عرب تك</span>
+                  <span>{t("whatsappCommunity")}</span>
                 </div>
-                <span style={{ color: "#34d399" }}>←</span>
+                <span style={{ color: "#34d399" }}>â†</span>
               </a>
 
               {/* Facebook Page */}
@@ -1042,9 +1042,9 @@ export default function MainLayout({ children }) {
               >
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                   <span style={{ fontSize: "1.2rem" }}>📘</span>
-                  <span>صفحة فيسبوك عرب تك</span>
+                  <span>{t("facebookPage")}</span>
                 </div>
-                <span style={{ color: "#478bfb" }}>←</span>
+                <span style={{ color: "#478bfb" }}>â†</span>
               </a>
 
               {/* TikTok Account */}
@@ -1069,9 +1069,9 @@ export default function MainLayout({ children }) {
               >
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                   <span style={{ fontSize: "1.2rem" }}>🎵</span>
-                  <span>حساب تيك توك عرب تك</span>
+                  <span>{t("tiktokAccount")}</span>
                 </div>
-                <span style={{ color: "#fe2c55" }}>←</span>
+                <span style={{ color: "#fe2c55" }}>â†</span>
               </a>
 
               {/* Telegram Channel */}
@@ -1096,9 +1096,9 @@ export default function MainLayout({ children }) {
               >
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                   <span style={{ fontSize: "1.2rem" }}>✈️</span>
-                  <span>قناة تيليجرام عرب تك</span>
+                  <span>{t("telegramChannel")}</span>
                 </div>
-                <span style={{ color: "#0088cc" }}>←</span>
+                <span style={{ color: "#0088cc" }}>â†</span>
               </a>
 
               {/* YouTube Channel */}
@@ -1123,9 +1123,9 @@ export default function MainLayout({ children }) {
               >
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                   <span style={{ fontSize: "1.2rem" }}>🔴</span>
-                  <span>قناة يوتيوب عرب تك</span>
+                  <span>{t("youtubeChannel")}</span>
                 </div>
-                <span style={{ color: "#ff4d4d" }}>←</span>
+                <span style={{ color: "#ff4d4d" }}>â†</span>
               </a>
 
               {/* Email Support */}
@@ -1148,9 +1148,9 @@ export default function MainLayout({ children }) {
               >
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                   <span style={{ fontSize: "1.2rem" }}>✉️</span>
-                  <span>البريد الإلكتروني (arabtechserver@gmail.com)</span>
+                  <span>{t("emailSupport")} (arabtechserver@gmail.com)</span>
                 </div>
-                <span style={{ color: "#ef4444" }}>←</span>
+                <span style={{ color: "#ef4444" }}>â†</span>
               </a>
             </div>
           </div>

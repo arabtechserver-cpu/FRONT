@@ -261,6 +261,11 @@ export default async function RootLayout({ children }) {
                 try {
                   var savedTheme = localStorage.getItem('theme') || 'dark';
                   document.documentElement.setAttribute('data-theme', savedTheme);
+                  var savedLanguage = localStorage.getItem('arabtech_user_language') || 'ar';
+                  if (savedLanguage === 'zh-CN') savedLanguage = 'zh';
+                  var isRtl = savedLanguage === 'ar';
+                  document.documentElement.lang = savedLanguage;
+                  document.documentElement.dir = isRtl ? 'rtl' : 'ltr';
                 } catch (e) {
                   console.error('Failed to set theme early:', e);
                 }

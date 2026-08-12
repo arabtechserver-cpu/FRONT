@@ -4,8 +4,10 @@ import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { API_BASE_URL } from "@/config";
+import { useI18n } from "@/lib/i18n";
 
 export default function ServicesClient({ initialCategories = [], initialServices = [] }) {
+  const { t } = useI18n();
   const [services, setServices] = useState(initialServices);
   const [categories, setCategories] = useState(initialCategories);
   const [loading, setLoading] = useState(initialServices.length === 0);
@@ -158,13 +160,13 @@ export default function ServicesClient({ initialCategories = [], initialServices
 
       {/* Page Title */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "20px", marginBottom: "10px", gap: "12px", flexWrap: "wrap" }}>
-        <h2 className="section-title" style={{ margin: 0 }}>Ø§Ù„Ø®Ø¯Ù…Ø§Øª Ø§Ù„Ù…ØªØ§Ø­Ø©</h2>
+        <h2 className="section-title" style={{ margin: 0 }}>{t("availableServices")}</h2>
         <span style={{ fontSize: "0.85rem", color: "var(--text-muted)", fontWeight: "600" }}>
-          {filteredServices.length} Ø®Ø¯Ù…Ø© Ù…ØªÙˆÙØ±Ø©
+          {t("serviceCount", { count: filteredServices.length })}
         </span>
       </div>
       <p style={{ color: "var(--text-muted)", fontSize: "0.88rem", margin: "0 0 20px 0" }}>
-        ØªØµÙØ­ ÙˆØ§Ø¨Ø­Ø« ÙÙŠ ÙƒØ§ÙØ© Ø®Ø¯Ù…Ø§Øª Ø§Ù„Ø³ÙˆÙØª ÙˆÙŠØ± ÙˆØªÙØ¹ÙŠÙ„Ø§Øª Ø§Ù„Ø¯ÙˆÙ†Ø¬Ù„Ø§Øª ÙˆØ§Ù„Ø¨Ø±Ø§Ù…Ø¬ Ø§Ù„Ù…ØªØ§Ø­Ø©.
+        {t("servicesIntro")}
       </p>
 
       {/* Centered Search Bar */}
@@ -172,7 +174,7 @@ export default function ServicesClient({ initialCategories = [], initialServices
         <input
           type="text"
           className="search-input-center"
-          placeholder="Ø§Ø¨Ø­Ø« Ø¹Ù† Ø®Ø¯Ù…Ø© Ø³ÙˆÙØª ÙˆÙŠØ±ØŒ ØªÙØ¹ÙŠÙ„Ø§ØªØŒ Ø£Ø¯ÙˆØ§Øª..."
+          placeholder={t("searchServices")}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           dir="ltr"
@@ -184,14 +186,14 @@ export default function ServicesClient({ initialCategories = [], initialServices
       {/* Services List (scc-grid) */}
       {loading && services.length === 0 ? (
         <div style={{ textAlign: "center", padding: "40px", fontSize: "1.2rem", fontWeight: 700 }}>
-          Ø¬Ø§Ø±ÙŠ ØªØ­Ù…ÙŠÙ„ Ø§Ù„Ø®Ø¯Ù…Ø§Øª...
+          {t("loadingServices")}
         </div>
       ) : filteredServices.length === 0 ? (
         <div className="glass-panel" style={{ textAlign: "center", padding: "40px" }}>
           <span style={{ fontSize: "3rem" }}>ðŸ“­</span>
-          <h3 style={{ margin: "15px 0 10px 0" }}>Ù„Ø§ ØªØªÙˆÙØ± Ø®Ø¯Ù…Ø§Øª Ù…Ø·Ø§Ø¨Ù‚Ø© Ù„Ù„Ø¨Ø­Ø«</h3>
-          <p style={{ color: "var(--text-muted)", marginBottom: "20px" }}>ÙŠØ±Ø¬Ù‰ ØªØ¬Ø±Ø¨Ø© ÙƒÙ„Ù…Ø§Øª Ø¨Ø­Ø« Ø£Ø®Ø±Ù‰ Ø£Ùˆ ØªØµÙØ­ Ø§Ù„Ø£Ù‚Ø³Ø§Ù… Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠØ©.</p>
-          <Link href="/" className="glass-btn glass-btn-primary">Ø§Ù„Ø¹ÙˆØ¯Ø© Ù„Ù„Ø±Ø¦ÙŠØ³ÙŠØ©</Link>
+          <h3 style={{ margin: "15px 0 10px 0" }}>{t("noSearchResults")}</h3>
+          <p style={{ color: "var(--text-muted)", marginBottom: "20px" }}>{t("tryOtherSearch")}</p>
+          <Link href="/" className="glass-btn glass-btn-primary">{t("backHome")}</Link>
         </div>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
@@ -322,7 +324,7 @@ export default function ServicesClient({ initialCategories = [], initialServices
                             <div className="scc-meta" style={{ display: "flex", flexWrap: "wrap", gap: "8px", alignItems: "center", marginTop: "4px", width: "100%", minWidth: 0 }}>
                               {service.packages && service.packages.length > 0 ? (
                                 <div style={{ display: "flex", flexDirection: "column", gap: "4px", width: "100%", marginTop: "6px", minWidth: 0 }}>
-                                  <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", fontWeight: "bold" }}>Ø§Ù„Ø¨Ø§Ù‚Ø§Øª Ø§Ù„Ù…ØªÙˆÙØ±Ø©:</span>
+                                  <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", fontWeight: "bold" }}>{t("availablePackages")}</span>
                                   {service.packages.slice(0, 3).map((pkg, idx) => (
                                     <div key={idx} style={{ 
                                       display: "flex", 
@@ -339,11 +341,11 @@ export default function ServicesClient({ initialCategories = [], initialServices
                                       minWidth: 0
                                     }}>
                                       <span style={{ color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", flex: "1 1 auto", minWidth: 0 }} title={pkg.name}>{pkg.name}</span>
-                                      <span style={{ color: "var(--primary-color)", fontWeight: "bold", flexShrink: 0 }}>$\{Number(pkg.price).toFixed(2)}</span>
+                                      <span style={{ color: "var(--primary-color)", fontWeight: "bold", flexShrink: 0 }}>${Number(pkg.price).toFixed(2)}</span>
                                     </div>
                                   ))}
                                   {service.packages.length > 3 && (
-                                    <span style={{ fontSize: "0.78rem", color: "#fbbf24", background: "rgba(245, 158, 11, 0.14)", border: "1px solid rgba(245, 158, 11, 0.35)", padding: "3px 9px", borderRadius: "8px", fontWeight: "900", marginTop: "4px", display: "inline-block" }}>+ Ø¹Ø±Ø¶ Ø§Ù„Ù…Ø²ÙŠØ¯ ({service.packages.length - 3})</span>
+                                    <span style={{ fontSize: "0.78rem", color: "#fbbf24", background: "rgba(245, 158, 11, 0.14)", border: "1px solid rgba(245, 158, 11, 0.35)", padding: "3px 9px", borderRadius: "8px", fontWeight: "900", marginTop: "4px", display: "inline-block" }}>+ {t("viewMore")} ({service.packages.length - 3})</span>
                                   )}
                                 </div>
                               ) : service.price > 0 ? (
@@ -353,7 +355,7 @@ export default function ServicesClient({ initialCategories = [], initialServices
                               ) : (
                                 <>
                                   <div className="scc-dot"></div>
-                                  <span>Ø§Ø¶ØºØ· Ù„Ù„Ø¹Ø±Ø¶</span>
+                                  <span>{t("clickToView")}</span>
                                 </>
                               )}
                             </div>
@@ -455,7 +457,7 @@ export default function ServicesClient({ initialCategories = [], initialServices
                           <div className="scc-meta" style={{ display: "flex", flexWrap: "wrap", gap: "8px", alignItems: "center", marginTop: "4px", width: "100%", minWidth: 0 }}>
                             {service.packages && service.packages.length > 0 ? (
                               <div style={{ display: "flex", flexDirection: "column", gap: "4px", width: "100%", marginTop: "6px", minWidth: 0 }}>
-                                <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", fontWeight: "bold" }}>Ø§Ù„Ø¨Ø§Ù‚Ø§Øª Ø§Ù„Ù…ØªÙˆÙØ±Ø©:</span>
+                                <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", fontWeight: "bold" }}>{t("availablePackages")}</span>
                                 {service.packages.slice(0, 3).map((pkg, idx) => (
                                   <div key={idx} style={{ 
                                     display: "flex", 
@@ -476,7 +478,7 @@ export default function ServicesClient({ initialCategories = [], initialServices
                                   </div>
                                 ))}
                                 {service.packages.length > 3 && (
-                                  <span style={{ fontSize: "0.78rem", color: "#fbbf24", background: "rgba(245, 158, 11, 0.14)", border: "1px solid rgba(245, 158, 11, 0.35)", padding: "3px 9px", borderRadius: "8px", fontWeight: "900", marginTop: "4px", display: "inline-block" }}>+ Ø¹Ø±Ø¶ Ø§Ù„Ù…Ø²ÙŠØ¯ ({service.packages.length - 3})</span>
+                                  <span style={{ fontSize: "0.78rem", color: "#fbbf24", background: "rgba(245, 158, 11, 0.14)", border: "1px solid rgba(245, 158, 11, 0.35)", padding: "3px 9px", borderRadius: "8px", fontWeight: "900", marginTop: "4px", display: "inline-block" }}>+ {t("viewMore")} ({service.packages.length - 3})</span>
                                 )}
                               </div>
                             ) : service.price > 0 ? (
@@ -486,7 +488,7 @@ export default function ServicesClient({ initialCategories = [], initialServices
                             ) : (
                               <>
                                 <div className="scc-dot"></div>
-                                <span>Ø§Ø¶ØºØ· Ù„Ù„Ø¹Ø±Ø¶</span>
+                                <span>{t("clickToView")}</span>
                               </>
                             )}
                           </div>
@@ -511,7 +513,7 @@ export default function ServicesClient({ initialCategories = [], initialServices
                 className="glass-btn glass-btn-primary"
                 onClick={() => setVisibleCategories((count) => count + 5)}
               >
-                عرض المزيد
+                {t("viewMore")}
               </button>
             </div>
           )}
