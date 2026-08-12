@@ -135,17 +135,36 @@ export default function ServicesClient({ initialCategories = [], initialServices
     return "⚡";
   };
 
+  const normalizeServiceType = (value) => String(value || "").trim().toLowerCase();
+  const serviceMatchesType = (service) => {
+    if (!typeFilter) return true;
+    const targetType = normalizeServiceType(typeFilter);
+    const serviceTypes = [normalizeServiceType(service.api_service_type)];
+    if (Array.isArray(service.packages)) {
+      service.packages.forEach((pkg) => {
+        const packageType = normalizeServiceType(pkg?.api_service_type);
+        if (packageType) serviceTypes.push(packageType);
+      });
+    }
+    return serviceTypes.includes(targetType);
+  };
+
+  const typeFilteredServices = useMemo(
+    () => services.filter(serviceMatchesType),
+    [services, typeFilter]
+  );
+
   const catalogCategories = useMemo(() => {
     if (!typeFilter) return categories;
     return categories.filter(cat => {
-      const catServices = services.filter(s => s.category_id === cat.id);
-      const assignedType = String(cat.menu_service_type || '').toLowerCase();
+      const catServices = typeFilteredServices.filter(s => s.category_id === cat.id);
+      const assignedType = normalizeServiceType(cat.menu_service_type);
       return assignedType === typeFilter.toLowerCase() ||
-        catServices.some(s => (s.api_service_type || 'imei').toLowerCase() === typeFilter.toLowerCase());
+        catServices.length > 0;
     });
-  }, [categories, services, typeFilter]);
+  }, [categories, typeFilteredServices, typeFilter]);
 
-  const catalogServices = services;
+  const catalogServices = typeFilteredServices;
 
   const filteredServices = catalogServices.filter((s) =>
     s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
