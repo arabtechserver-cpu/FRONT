@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AdminDashboardContext } from "@/components/admin/AdminDashboardContext";
 import { FEATURES } from "@/features";
+import { useI18n } from "@/lib/i18n";
 
 export default function AdminSidebar() {
   const context = useContext(AdminDashboardContext);
@@ -14,9 +15,10 @@ export default function AdminSidebar() {
   } = context;
   
   const pathname = usePathname();
+  const { t } = useI18n();
 
   const allTabs = [
-    { tab: "exchange-rates", icon: "FX", label: "SDG / USD exchange rate" },
+    { tab: "exchange-rates", icon: "FX", label: t("sdgExchangeRate") },
     { tab: "orders", icon: "📥", label: "طلبات الخدمات" },
     { tab: "menu-drawer", icon: "📱", label: "قائمة الموبايل الجانبية" },
     { tab: "categories", icon: "📁", label: "إدارة الأقسام" },

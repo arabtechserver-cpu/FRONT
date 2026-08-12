@@ -496,16 +496,16 @@ export default function WalletPage() {
       {/* ── Recharge Wallet Section ── */}
       <section style={{ padding: "18px 20px", borderRadius: "16px", background: "rgba(14, 165, 233, 0.08)", border: "1px solid rgba(14, 165, 233, 0.25)", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "12px" }}>
         <div>
-          <div style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>Sudanese pound exchange rate</div>
+          <div style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>{t("sdgExchangeRate")}</div>
           <strong style={{ display: "block", color: "#38bdf8", fontSize: "1.2rem", marginTop: "5px" }}>
-            1 USD = {sdgRate ? Number(sdgRate).toFixed(2) : "..."} SDG
+            {t("oneUsdEquals")} {sdgRate ? Number(sdgRate).toFixed(2) : "..."} SDG
           </strong>
         </div>
         <div style={{ color: "#34d399", fontWeight: 800, direction: "ltr" }}>
-          1 SDG = {sdgRate ? `$${(1 / Number(sdgRate)).toFixed(6)}` : "..."} USD
+          {t("oneSdgEquals")} {sdgRate ? `$${(1 / Number(sdgRate)).toFixed(6)}` : "..."} USD
         </div>
         <div style={{ width: "100%", color: "var(--text-muted)", fontSize: "0.75rem" }}>
-          {sdgRateInfo?.mode === "manual" ? "Manual rate" : "Updated automatically from a free daily API"}
+          {sdgRateInfo?.mode === "manual" ? t("manualRate") : t("exchangeRateUpdated")}
         </div>
       </section>
 
