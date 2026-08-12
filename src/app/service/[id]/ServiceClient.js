@@ -340,9 +340,16 @@ export default function ServiceDetail({ params, initialService = null }) {
       uniqueFields.push(f);
     }
 
+    const activeServiceType = String(
+      selectedPackage?.api_service_type || activeService?.api_service_type || ''
+    ).toLowerCase();
+
     return uniqueFields
       .filter(f => {
         const fid = (f.name || f.id || "").toLowerCase().trim();
+        if ((activeServiceType === "server" || activeServiceType === "remote") && (fid === "imei" || fid === "custom_imei")) {
+          return false;
+        }
         // Hide standalone phone/tel fields (they are collected separately in payment section)
         // Also hide provider quantity fields because they are collected via customQuantity
         if (fid === "phone" || fid === "tel" || fid === "quantity" || fid === "qty" || fid === "qnt") {
@@ -356,7 +363,7 @@ export default function ServiceDetail({ params, initialService = null }) {
         // Normalize: always use 'name' as the key for formData, falling back to 'id'
         name: (f.name || f.id || "").trim()
       }));
-  }, [serviceFields, defaultFields, selectedPackage]);
+  }, [activeService, serviceFields, defaultFields, selectedPackage]);
 
   const fieldsSectionTitle = useMemo(() => {
     if (!activeService) return t("serviceData");
