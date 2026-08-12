@@ -139,7 +139,9 @@ export default function ServicesClient({ initialCategories = [], initialServices
     if (!typeFilter) return categories;
     return categories.filter(cat => {
       const catServices = services.filter(s => s.category_id === cat.id);
-      return catServices.some(s => (s.api_service_type || 'imei').toLowerCase() === typeFilter.toLowerCase());
+      const assignedType = String(cat.menu_service_type || '').toLowerCase();
+      return assignedType === typeFilter.toLowerCase() ||
+        catServices.some(s => (s.api_service_type || 'imei').toLowerCase() === typeFilter.toLowerCase());
     });
   }, [categories, services, typeFilter]);
 

@@ -13,7 +13,6 @@ import { FEATURES } from "@/features";
 import { useI18n } from "@/lib/i18n";
 import { Moon, Sun, X } from "lucide-react";
 
-
 export default function MainLayout({ children }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -471,7 +470,6 @@ export default function MainLayout({ children }) {
             <span style={{ fontSize: "1.2rem" }}>🏠</span> {t("home")}
           </Link>
           
-          {settings.services_menu_placements?.mobile !== false && (
           <div className="mobile-drawer-dropdown-container" style={{ position: "relative" }}>
             <div 
               className="mobile-drawer-link" 
@@ -508,7 +506,6 @@ export default function MainLayout({ children }) {
               </Link>
             </div>
           </div>
-          )}
 
           <Link href="/orders" className="mobile-drawer-link" onClick={() => setMenuOpen(false)}>
             <span style={{ fontSize: "1.2rem" }}>📦</span> {t("trackOrders")}
@@ -698,7 +695,6 @@ export default function MainLayout({ children }) {
           <div className="flex items-center gap-2" style={{ position: 'relative' }}>
             <LanguageSwitcher />
             <Link href="/" className={`desktop-link hidden lg-block ${pathname === '/' ? 'active' : ''}`} style={{ fontWeight: 'bold' }}>{t("home")}</Link>
-            {settings.services_menu_placements?.desktop !== false && (
             <div
               ref={servicesMenuRef}
               className="hidden lg:block"
@@ -724,7 +720,6 @@ export default function MainLayout({ children }) {
                 <Link href="/services?type=remote" onClick={() => setServicesMenuOpen(false)} className="header-dropdown-item">🌐 {t("remoteServices")}</Link>
               </div>
             </div>
-            )}
             <Link href="/orders" className={`desktop-link hidden lg-block ${pathname.startsWith('/orders') ? 'active' : ''}`} style={{ fontWeight: 'bold' }}>{t("orders")}</Link>
             <Link href="/wallet" className={`desktop-link hidden lg-block ${pathname.startsWith('/wallet') ? 'active' : ''}`} style={{ fontWeight: 'bold' }}>{t("wallet")}</Link>
             <button onClick={toggleTheme} className="theme-toggle-btn header-btn hidden lg-block" aria-label={t("toggleTheme")} style={{ padding: '6px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', cursor: 'pointer' }}>

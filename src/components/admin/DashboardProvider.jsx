@@ -1349,6 +1349,26 @@ export default function DashboardProvider({ children }) {
     }
   };
 
+  const handleSetCategoryServiceType = async (id, serviceType) => {
+    const allowedTypes = ["", "imei", "server", "remote"];
+    const nextType = String(serviceType || "").trim().toLowerCase();
+    if (!allowedTypes.includes(nextType)) return;
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/categories/${id}/service-menu-type`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ service_type: nextType })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "حدث خطأ أثناء ربط القسم.");
+      setCategories(prev => prev.map(c => Number(c.id) === Number(id) ? { ...c, menu_service_type: nextType } : c));
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
+  };
+
   const handleHideAllCategoriesFromMenu = async () => {
     if (!confirm("هل أنت متأكد أنك تريد إخفاء جميع الأقسام من القائمة الجانبية؟")) return;
     try {
@@ -2465,6 +2485,7 @@ export default function DashboardProvider({ children }) {
     handleOpenCodeModal: typeof handleOpenCodeModal !== 'undefined' ? handleOpenCodeModal : undefined,
     handleOpenEditBanner: typeof handleOpenEditBanner !== 'undefined' ? handleOpenEditBanner : undefined,
     handleToggleCategoryMenuVisibility: typeof handleToggleCategoryMenuVisibility !== 'undefined' ? handleToggleCategoryMenuVisibility : undefined,
+    handleSetCategoryServiceType: typeof handleSetCategoryServiceType !== 'undefined' ? handleSetCategoryServiceType : undefined,
     handleHideAllCategoriesFromMenu: typeof handleHideAllCategoriesFromMenu !== 'undefined' ? handleHideAllCategoriesFromMenu : undefined,
     handleOpenEditCat: typeof handleOpenEditCat !== 'undefined' ? handleOpenEditCat : undefined,
     handleOpenEditCustomer: typeof handleOpenEditCustomer !== 'undefined' ? handleOpenEditCustomer : undefined,

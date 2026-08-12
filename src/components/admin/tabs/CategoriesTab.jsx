@@ -10,6 +10,7 @@ export default function CategoriesTab({
   handleDeleteCategory,
   handleClearAllCategories,
   handleToggleCategoryMenuVisibility,
+  handleSetCategoryServiceType,
   handleOpenMergeCategories,
   catModal,
   API_BASE_URL
@@ -20,6 +21,7 @@ export default function CategoriesTab({
   const [itemsPerPage, setItemsPerPage] = useState(24);
   const [orders, setOrders] = useState({});
   const [savingOrders, setSavingOrders] = useState(false);
+  const [savingServiceType, setSavingServiceType] = useState(false);
 
   const finalFilteredCats = filteredCategories || [];
 
@@ -89,6 +91,19 @@ export default function CategoriesTab({
       setSelectedCats([]);
     } else {
       setSelectedCats(finalFilteredCats.map(c => c.id));
+    }
+  };
+
+  const assignSelectedCategories = async (serviceType) => {
+    if (!handleSetCategoryServiceType || selectedCats.length === 0) return;
+    try {
+      setSavingServiceType(true);
+      await Promise.all(selectedCats.map((id) => handleSetCategoryServiceType(id, serviceType)));
+      setSelectedCats([]);
+    } catch (error) {
+      alert(error.message || "حدث خطأ أثناء ربط الأقسام.");
+    } finally {
+      setSavingServiceType(false);
     }
   };
 
@@ -196,6 +211,31 @@ export default function CategoriesTab({
           </div>
           <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
 
+            <button
+              onClick={() => assignSelectedCategories("imei")}
+              disabled={savingServiceType}
+              className="action-btn"
+              style={{ background: "#2563eb", color: "white", padding: "10px 16px", border: "none", opacity: savingServiceType ? 0.6 : 1 }}
+            >
+              📱 خدمات IMEI
+            </button>
+            <button
+              onClick={() => assignSelectedCategories("server")}
+              disabled={savingServiceType}
+              className="action-btn"
+              style={{ background: "#0891b2", color: "white", padding: "10px 16px", border: "none", opacity: savingServiceType ? 0.6 : 1 }}
+            >
+              💻 خدمات السيرفر
+            </button>
+            <button
+              onClick={() => assignSelectedCategories("remote")}
+              disabled={savingServiceType}
+              className="action-btn"
+              style={{ background: "#7c3aed", color: "white", padding: "10px 16px", border: "none", opacity: savingServiceType ? 0.6 : 1 }}
+            >
+              🌐 خدمات الريموت
+            </button>
+
             <button 
               onClick={() => handleOpenMergeCategories(selectedCats, () => setSelectedCats([]))} 
               className="action-btn"
@@ -260,6 +300,12 @@ export default function CategoriesTab({
             </span>
             
             <h3 className="category-title-premium" style={{ marginTop: "15px", marginBottom: "5px", fontSize: "1.1rem", lineHeight: "1.4", minHeight: "45px" }}>{cat.name}</h3>
+
+            {cat.menu_service_type && (
+              <span style={{ alignSelf: "center", padding: "4px 10px", borderRadius: "999px", background: "rgba(14, 165, 233, 0.12)", color: "#38bdf8", border: "1px solid rgba(14, 165, 233, 0.25)", fontSize: "0.78rem", fontWeight: 700 }}>
+                {cat.menu_service_type === "imei" ? "خدمات IMEI" : cat.menu_service_type === "server" ? "خدمات السيرفر" : "خدمات الريموت"}
+              </span>
+            )}
             
             <div style={{ display: "flex", flexDirection: "column", gap: "8px", alignItems: "center", marginBottom: "15px", width: "100%" }}>
               {cat.parent_id ? (
