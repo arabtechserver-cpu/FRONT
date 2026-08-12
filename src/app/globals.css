@@ -57,9 +57,17 @@
 }
 
 #google_translate_element,
+.goog-te-gadget {
+  position: absolute !important;
+  left: -9999px !important;
+  top: -9999px !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+}
+
 .goog-te-banner-frame,
-.goog-te-gadget,
-.skiptranslate {
+body > .skiptranslate {
   display: none !important;
 }
 

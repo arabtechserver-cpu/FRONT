@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 import { usePathname } from "next/navigation";
 
 const LANGUAGES = [
@@ -13,6 +13,7 @@ const LANGUAGES = [
 
 const STORAGE_KEY = "arabtech_user_language";
 const GOOGLE_COOKIE = "googtrans";
+const GOOGLE_ELEMENT_ID = "google_translate_element";
 
 function getSavedLanguage() {
   if (typeof window === "undefined") return "ar";
@@ -42,9 +43,41 @@ function setTranslateCookie(languageCode) {
   }
 }
 
-function loadGoogleTranslate() {
-  if (typeof window === "undefined") return;
-  if (document.querySelector("script[data-google-translate]")) return;
+function ensureTranslateContainer() {
+  let container = document.getElementById(GOOGLE_ELEMENT_ID);
+  if (container) return container;
+
+  container = document.createElement("div");
+  container.id = GOOGLE_ELEMENT_ID;
+  container.setAttribute("aria-hidden", "true");
+  document.body.appendChild(container);
+  return container;
+}
+
+function waitForTranslateCombo(languageCode) {
+  return new Promise((resolve) => {
+    let attempts = 0;
+    const timer = window.setInterval(() => {
+      const combo = document.querySelector(".goog-te-combo");
+      attempts += 1;
+
+      if (combo || attempts > 40) {
+        window.clearInterval(timer);
+        resolve(combo);
+      }
+    }, 250);
+  }).then((combo) => {
+    if (!combo || languageCode === "ar") return false;
+
+    combo.value = languageCode;
+    combo.dispatchEvent(new Event("change", { bubbles: true }));
+    return true;
+  });
+}
+
+function loadGoogleTranslate(languageCode) {
+  if (typeof window === "undefined") return Promise.resolve(false);
+  ensureTranslateContainer();
 
   window.googleTranslateElementInit = () => {
     if (!window.google?.translate?.TranslateElement) return;
@@ -54,9 +87,18 @@ function loadGoogleTranslate() {
         includedLanguages: LANGUAGES.map((lang) => lang.code).join(","),
         autoDisplay: false
       },
-      "google_translate_element"
+      GOOGLE_ELEMENT_ID
     );
   };
+
+  if (window.google?.translate?.TranslateElement) {
+    window.googleTranslateElementInit();
+    return waitForTranslateCombo(languageCode);
+  }
+
+  if (document.querySelector("script[data-google-translate]")) {
+    return waitForTranslateCombo(languageCode);
+  }
 
   const script = document.createElement("script");
   script.src = "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
@@ -64,9 +106,12 @@ function loadGoogleTranslate() {
   script.defer = true;
   script.dataset.googleTranslate = "true";
   document.body.appendChild(script);
+
+  return waitForTranslateCombo(languageCode);
 }
 
 export default function LanguageSwitcher({ compact = false }) {
+  const id = useId();
   const pathname = usePathname();
   const [language, setLanguage] = useState("ar");
 
@@ -85,7 +130,8 @@ export default function LanguageSwitcher({ compact = false }) {
     document.documentElement.dir = savedLanguage === "ar" ? "rtl" : "ltr";
 
     if (savedLanguage !== "ar") {
-      loadGoogleTranslate();
+      setTranslateCookie(savedLanguage);
+      loadGoogleTranslate(savedLanguage);
     }
   }, [isAdmin]);
 
@@ -99,16 +145,25 @@ export default function LanguageSwitcher({ compact = false }) {
     document.documentElement.lang = nextLanguage === "zh-CN" ? "zh" : nextLanguage;
     document.documentElement.dir = nextLanguage === "ar" ? "rtl" : "ltr";
 
-    window.location.reload();
+    if (nextLanguage === "ar") {
+      window.location.reload();
+      return;
+    }
+
+    loadGoogleTranslate(nextLanguage).then((applied) => {
+      if (!applied) {
+        window.location.reload();
+      }
+    });
   };
 
   return (
     <div className={`language-switcher ${compact ? "language-switcher-compact" : ""}`} translate="no">
-      <label className="language-switcher-label" htmlFor={compact ? "site-language-compact" : "site-language"}>
+      <label className="language-switcher-label" htmlFor={`site-language-${id}`}>
         Language
       </label>
       <select
-        id={compact ? "site-language-compact" : "site-language"}
+        id={`site-language-${id}`}
         value={language}
         onChange={handleChange}
         aria-label={`Current language: ${currentLabel}`}
@@ -120,7 +175,6 @@ export default function LanguageSwitcher({ compact = false }) {
           </option>
         ))}
       </select>
-      <div id="google_translate_element" aria-hidden="true" />
     </div>
   );
 }
