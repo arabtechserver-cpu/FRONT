@@ -102,7 +102,7 @@ export default function ServicesClient({ initialCategories = [], initialServices
     if (lowerImg.includes("netflix") || lowerName.includes("نتفليكس")) return "🎬";
     if (lowerName.includes("ايفون") || lowerName.includes("iphone") || lowerName.includes("ipad") || lowerName.includes("ايباد") || lowerName.includes("bypass") || lowerName.includes("تخطي") || lowerName.includes("icloud") || lowerName.includes("ايكلاود") || lowerName.includes("hello") || lowerName.includes("removal") || lowerName.includes("hfz") || lowerName.includes("smd") || lowerName.includes("otix")) return "📱";
 
-    return "âš¡";
+    return "⚡";
   };
 
   const getServiceIcon = (image, name = "") => {
@@ -132,7 +132,7 @@ export default function ServicesClient({ initialCategories = [], initialServices
     if (image.includes("usdt")) return "🪙";
     if (image.includes("canva")) return "🎨";
     if (image.includes("netflix")) return "🎬";
-    return "âš¡";
+    return "⚡";
   };
 
   const catalogCategories = useMemo(() => {
@@ -397,7 +397,7 @@ export default function ServicesClient({ initialCategories = [], initialServices
                   justifyContent: "center",
                   overflow: "hidden"
                 }}>
-                  <span style={{ fontSize: "1.2rem" }}>âš¡</span>
+                  <span style={{ fontSize: "1.2rem" }}>⚡</span>
                 </div>
                 <h3 className="cat-section-header" style={{ flex: "1 1 auto", wordBreak: "break-word", lineHeight: "1.4" }}>خدمات أخرى</h3>
                 <span style={{

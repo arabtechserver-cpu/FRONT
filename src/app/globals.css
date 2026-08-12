@@ -150,7 +150,7 @@ html[dir="rtl"] .language-switcher {
   }
 }
 /* ============================================================
-   SPIDER STORE — PREMIUM DESIGN SYSTEM
+   SPIDER STORE - PREMIUM DESIGN SYSTEM
    Dark Mode + Light Mode | Full Animations | Glassmorphism
    ============================================================ */
 
@@ -263,7 +263,7 @@ html[dir="rtl"] .language-switcher {
 
 :root {
   --font-scale: 1;
-  --font-cairo:  var(--font-cairo-google), var(--font-outfit-google), sans-serif;
+  --font-cairo: "Cairo", "Outfit", "Segoe UI", Tahoma, Arial, sans-serif;
   --border-radius-xs: 8px;
   --border-radius-sm: 14px;
   --border-radius-md: 20px;

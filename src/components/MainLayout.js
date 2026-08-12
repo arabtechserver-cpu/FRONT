@@ -464,7 +464,7 @@ export default function MainLayout({ children }) {
               <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                 <span style={{ fontSize: "1.2rem" }}>🛒</span> {t("categoriesServices")}
               </div>
-              <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", transform: categoriesExpanded ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.3s" }}>â–¼</span>
+              <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", transform: categoriesExpanded ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.3s" }}>▼</span>
             </div>
                         <div 
               className="mobile-drawer-dropdown-list" 
