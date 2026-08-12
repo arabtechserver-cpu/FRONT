@@ -2200,3 +2200,64 @@ html[dir="rtl"] .home-layout .search-icon-center {
   right: 18px;
   left: auto;
 }
+
+/* Compact section spacing for a faster, easier homepage scan. */
+.home-layout .hp-body-grid {
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.home-layout .hp-cat-grid-section,
+.home-layout .hp-services-panel,
+.home-layout .hp-why-section,
+.home-layout .hp-reviews-section {
+  margin-bottom: 14px;
+}
+
+.home-layout .hp-sidebar-col {
+  gap: 10px;
+}
+
+.home-layout .hp-featured-card {
+  margin-bottom: 8px;
+}
+
+.home-layout .hp-section-header {
+  margin-bottom: 8px;
+}
+
+.home-layout .hp-bottom-features {
+  margin-bottom: 16px;
+}
+
+.home-layout .hp-bottom-stats {
+  margin-bottom: 20px;
+}
+
+.home-layout .hp-reviews-marquee-wrapper {
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.home-layout .faq-section {
+  margin-top: 24px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 768px) {
+  .home-layout .hp-body-grid {
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .home-layout .hp-sidebar-col {
+    gap: 8px;
+  }
+
+  .home-layout .hp-cat-grid-section,
+  .home-layout .hp-services-panel,
+  .home-layout .hp-why-section,
+  .home-layout .hp-reviews-section {
+    margin-bottom: 10px;
+  }
+}
