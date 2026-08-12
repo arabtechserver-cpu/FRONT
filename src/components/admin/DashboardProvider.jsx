@@ -4,22 +4,8 @@ import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import { API_BASE_URL } from "@/config";
-import Link from "next/link";
 // import dashboardStyles removed
 import { AdminDashboardContext } from "@/components/admin/AdminDashboardContext";
-import AdminDashboardModals from "@/components/admin/modals/AdminDashboardModals";
-import SettingsTab from "@/components/admin/tabs/SettingsTab";
-import GmailTab from "@/components/admin/tabs/GmailTab";
-import AmrrUnlockerTab from "@/components/admin/tabs/AmrrUnlockerTab";
-import OrdersTab from "@/components/admin/tabs/OrdersTab";
-import WalletsTab from "@/components/admin/tabs/WalletsTab";
-import CustomersTab from "@/components/admin/tabs/CustomersTab";
-import CategoriesTab from "@/components/admin/tabs/CategoriesTab";
-import ServicesTab from "@/components/admin/tabs/ServicesTab";
-import BannersTab from "@/components/admin/tabs/BannersTab";
-import BackupsTab from "@/components/admin/tabs/BackupsTab";
-import MembershipsTab from "@/components/admin/tabs/MembershipsTab";
-import AdminReviewsTab from "@/components/admin/tabs/AdminReviewsTab";
 export default function DashboardProvider({ children }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -178,6 +164,7 @@ export default function DashboardProvider({ children }) {
   const [waStatus, setWaStatus] = useState("disconnected"); // 'disconnected'|'loading'|'qr'|'ready'
   const [waQR, setWaQR] = useState(null);
   const waPollingRef = useRef(null);
+  const settingsLoadedRef = useRef(false);
   const [featuredSections, setFeaturedSections] = useState([]);
 
   const [newAdminUsername, setNewAdminUsername] = useState("");
@@ -395,7 +382,6 @@ export default function DashboardProvider({ children }) {
     return filteredUnlockerServices.slice(start, start + unlockerPageSize);
   }, [filteredUnlockerServices, unlockerPage, unlockerPageSize]);
 
-  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     setHydrated(true);
 
@@ -412,7 +398,6 @@ export default function DashboardProvider({ children }) {
       setNewAdminUsername("");
     }
   }, []);
-  /* eslint-enable react-hooks/set-state-in-effect */
 
   const stats = useMemo(() => {
     const total = orders.length;
@@ -457,10 +442,10 @@ export default function DashboardProvider({ children }) {
     const catData = await catRes.json();
     const sortedCats = [...(catData || [])].sort((a, b) => a.name.localeCompare(b.name, 'en'));
     setCategories(sortedCats);
-    if (sortedCats.length > 0 && !newServiceCatId) {
-      setNewServiceCatId(sortedCats[0].id.toString());
+    if (sortedCats.length > 0) {
+      setNewServiceCatId((current) => current || sortedCats[0].id.toString());
     }
-  }, [newServiceCatId]);
+  }, []);
 
   const loadServices = useCallback(async () => {
     const serviceRes = await fetch(`${API_BASE_URL}/api/services`);
@@ -505,6 +490,7 @@ export default function DashboardProvider({ children }) {
     if (settingsData.featured_sections !== undefined) {
       setFeaturedSections(Array.isArray(settingsData.featured_sections) ? settingsData.featured_sections : []);
     }
+    settingsLoadedRef.current = true;
   }, [authedHeaders]);
 
   const loadOrders = useCallback(async () => {
@@ -543,10 +529,10 @@ export default function DashboardProvider({ children }) {
     if (!customersRes.ok) return;
     const customersData = await customersRes.json();
     setCustomers(customersData);
-    if (!selectedCustomerId && customersData.length > 0) {
-      setSelectedCustomerId(customersData[0].id);
+    if (customersData.length > 0) {
+      setSelectedCustomerId((current) => current || customersData[0].id);
     }
-  }, [authedHeaders, selectedCustomerId]);
+  }, [authedHeaders]);
 
   const loadApiProviders = useCallback(async () => {
     const apiProvidersRes = await fetch(`${API_BASE_URL}/api/api-providers`, { headers: authedHeaders() });
@@ -567,37 +553,38 @@ export default function DashboardProvider({ children }) {
     setErrorMsg("");
     try {
       const tab = tabOverride || currentDashboardTab;
+      const requests = [];
 
-      if (!isSilent) {
-        await loadSettings();
+      // Site identity is shared by the sidebar. Fetch it once, in parallel with
+      // the active page data, and refresh it only on settings-driven pages.
+      if (!isSilent && (
+        !settingsLoadedRef.current ||
+        tab === "settings" ||
+        tab === "featured-sections"
+      )) {
+        requests.push(loadSettings());
       }
 
       if (tab === "orders") {
-        await Promise.all([loadOrders(), loadWalletTransactions()]);
+        requests.push(loadOrders(), loadWalletTransactions());
       } else if (tab === "categories" || tab === "menu-drawer" || tab === "featured-sections") {
-        await loadCategories();
-        if (tab === "featured-sections") await loadSettings();
+        requests.push(loadCategories());
+        if (tab === "featured-sections") requests.push(loadServices());
       } else if (tab === "services") {
-        await Promise.all([loadCategories(), loadServices(), loadApiProviders()]);
-      } else if (tab === "api-providers") {
-        await loadApiProviders();
+        requests.push(loadCategories(), loadServices(), loadApiProviders());
       } else if (tab === "amrr_unlocker") {
-        await Promise.all([loadCategories(), loadUnlockerSettings()]);
+        requests.push(loadCategories(), loadUnlockerSettings());
       } else if (tab === "banners") {
-        await loadBanners();
+        requests.push(loadBanners());
       } else if (tab === "wallets") {
-        await loadWallets();
+        requests.push(loadWallets());
       } else if (tab === "customers" || tab === "api_resellers") {
-        await loadCustomers();
-      } else if (tab === "memberships") {
-        await Promise.all([loadCustomers(), loadCategories(), loadServices()]);
-      } else if (tab === "settings" || tab === "gmail") {
-        await loadSettings();
-      } else if (tab === "backups") {
-        // BackupsTab loads its own list on demand.
-      } else {
-        await loadOrders();
+        requests.push(loadCustomers());
       }
+
+      // API providers, memberships, Gmail, reviews, and backups own their data
+      // loading. Avoid issuing a second copy of the same requests here.
+      await Promise.all(requests);
     } catch (err) {
       console.error("Error fetching admin data:", err);
       setErrorMsg("Failed to load admin data from the server.");
@@ -637,7 +624,7 @@ export default function DashboardProvider({ children }) {
   }, [currentDashboardTab, fetchData, token]);
 
   useEffect(() => {
-    if (!token || !selectedCustomerId) return;
+    if (!token || !selectedCustomerId || currentDashboardTab !== "customers") return;
 
     const loadCustomerTransactions = async () => {
       try {
@@ -655,7 +642,7 @@ export default function DashboardProvider({ children }) {
     };
 
     loadCustomerTransactions();
-  }, [token, selectedCustomerId]);
+  }, [token, selectedCustomerId, currentDashboardTab]);
 
 
   const saveUnlockerSettings = async (e) => {
@@ -2308,87 +2295,110 @@ export default function DashboardProvider({ children }) {
   };
 
   // Filtering Logic
-  const filteredOrders = Array.isArray(orders) ? orders.filter(o => {
+  const filteredOrders = useMemo(() => {
+    if (!Array.isArray(orders)) return [];
     const query = (orderSearch || "").trim().toLowerCase();
-    if (!query) return orderFilter === "all" ? true : o.status === orderFilter;
-    const matchesSearch =
-      o.id.toString().includes(query) ||
-      (o.service_name || "").toLowerCase().includes(query) ||
-      (o.player_id || "").toLowerCase().includes(query) ||
-      (o.phone || "").includes(query) ||
-      (o.payment_method || "").toLowerCase().includes(query) ||
-      (o.sender_phone || "").includes(query) ||
-      (o.transfer_to || "").includes(query);
+    return orders.filter((order) => {
+      const matchesStatus = orderFilter === "all" || order.status === orderFilter;
+      if (!query) return matchesStatus;
+      const matchesSearch =
+        String(order.id).includes(query) ||
+        (order.service_name || "").toLowerCase().includes(query) ||
+        (order.player_id || "").toLowerCase().includes(query) ||
+        (order.phone || "").includes(query) ||
+        (order.payment_method || "").toLowerCase().includes(query) ||
+        (order.sender_phone || "").includes(query) ||
+        (order.transfer_to || "").includes(query);
+      return matchesSearch && matchesStatus;
+    });
+  }, [orders, orderSearch, orderFilter]);
 
-    const matchesStatus = orderFilter === "all" ? true : o.status === orderFilter;
-    return matchesSearch && matchesStatus;
-  }) : [];
-
-  const filteredCategories = Array.isArray(categories) ? categories.filter(c => {
+  const filteredCategories = useMemo(() => {
+    if (!Array.isArray(categories)) return [];
     const query = (catSearch || "").trim().toLowerCase();
-    return (c.name || "").toLowerCase().includes(query);
-  }) : [];
-
-  const filteredServices = Array.isArray(services) ? services.filter(s => {
-    const parentCat = Array.isArray(categories) ? categories.find(c => c.id === s.category_id) : null;
-    const catName = parentCat ? parentCat.name : "";
-    const query = (serviceSearch || "").trim().toLowerCase();
-
-    let hasMatchingPackage = false;
-    if (query) {
-      let parsedPackages = [];
-      try {
-        parsedPackages = typeof s.packages === "string" ? JSON.parse(s.packages) : (s.packages || []);
-      } catch (e) {
-        parsedPackages = [];
-      }
-      if (Array.isArray(parsedPackages)) {
-        hasMatchingPackage = parsedPackages.some(pkg => (pkg.name || "").toLowerCase().includes(query));
-      }
-    }
-
-    return (s.name || "").toLowerCase().includes(query) ||
-      catName.toLowerCase().includes(query) ||
-      String(s.id).includes(query) ||
-      hasMatchingPackage;
-  }) : [];
-
-  const filteredWalletRequests = Array.isArray(walletRequests) ? walletRequests.filter((request) => {
-    const search = walletSearch.toLowerCase();
-    const matchesSearch =
-      request.id.toString().includes(walletSearch) ||
-      (request.customer_username || "").toLowerCase().includes(search) ||
-      String(request.amount).includes(walletSearch) ||
-      (request.sender_phone || "").toLowerCase().includes(search) ||
-      (request.method || "").toLowerCase().includes(search) ||
-      (request.notes || "").toLowerCase().includes(search);
-
-    const matchesStatus = walletFilter === "all" ? true : request.status === walletFilter;
-    return matchesSearch && matchesStatus;
-  }) : [];
-
-  const filteredWalletTransactions = Array.isArray(walletTransactions) ? walletTransactions.filter((tx) => {
-    const search = walletSearch.toLowerCase();
-    const typeLabel = tx.type === "credit" ? "إضافة" : "خصم";
-    return (
-      tx.id.toString().includes(walletSearch) ||
-      (tx.customer_username || "").toLowerCase().includes(search) ||
-      String(tx.amount || "").includes(walletSearch) ||
-      String(tx.reference_id || "").includes(walletSearch) ||
-      (tx.description || "").toLowerCase().includes(search) ||
-      typeLabel.toLowerCase().includes(search)
+    if (!query) return categories;
+    return categories.filter((category) =>
+      (category.name || "").toLowerCase().includes(query)
     );
-  }) : [];
+  }, [categories, catSearch]);
 
-  const filteredCustomers = Array.isArray(customers) ? customers.filter((customer) => {
-    const search = customerSearch.toLowerCase();
-    return (
-      customer.id.toString().includes(customerSearch) ||
+  const categoryNamesById = useMemo(() => new Map(
+    (Array.isArray(categories) ? categories : []).map((category) => [
+      String(category.id),
+      (category.name || "").toLowerCase(),
+    ])
+  ), [categories]);
+
+  const filteredServices = useMemo(() => {
+    if (!Array.isArray(services)) return [];
+    const query = (serviceSearch || "").trim().toLowerCase();
+    if (!query) return services;
+
+    return services.filter((service) => {
+      if (
+        (service.name || "").toLowerCase().includes(query) ||
+        (categoryNamesById.get(String(service.category_id)) || "").includes(query) ||
+        String(service.id).includes(query)
+      ) {
+        return true;
+      }
+
+      let packages = service.packages || [];
+      if (typeof packages === "string") {
+        try {
+          packages = JSON.parse(packages);
+        } catch {
+          packages = [];
+        }
+      }
+      return Array.isArray(packages) && packages.some((item) =>
+        (item.name || "").toLowerCase().includes(query)
+      );
+    });
+  }, [services, serviceSearch, categoryNamesById]);
+
+  const filteredWalletRequests = useMemo(() => {
+    if (!Array.isArray(walletRequests)) return [];
+    const search = (walletSearch || "").toLowerCase();
+    return walletRequests.filter((request) => {
+      const matchesSearch =
+        String(request.id).includes(search) ||
+        (request.customer_username || "").toLowerCase().includes(search) ||
+        String(request.amount).includes(search) ||
+        (request.sender_phone || "").toLowerCase().includes(search) ||
+        (request.method || "").toLowerCase().includes(search) ||
+        (request.notes || "").toLowerCase().includes(search);
+      const matchesStatus = walletFilter === "all" || request.status === walletFilter;
+      return matchesSearch && matchesStatus;
+    });
+  }, [walletRequests, walletSearch, walletFilter]);
+
+  const filteredWalletTransactions = useMemo(() => {
+    if (!Array.isArray(walletTransactions)) return [];
+    const search = (walletSearch || "").toLowerCase();
+    return walletTransactions.filter((transaction) => {
+      const typeLabel = transaction.type === "credit" ? "إضافة" : "خصم";
+      return (
+        String(transaction.id).includes(search) ||
+        (transaction.customer_username || "").toLowerCase().includes(search) ||
+        String(transaction.amount || "").includes(search) ||
+        String(transaction.reference_id || "").includes(search) ||
+        (transaction.description || "").toLowerCase().includes(search) ||
+        typeLabel.toLowerCase().includes(search)
+      );
+    });
+  }, [walletTransactions, walletSearch]);
+
+  const filteredCustomers = useMemo(() => {
+    if (!Array.isArray(customers)) return [];
+    const search = (customerSearch || "").toLowerCase();
+    return customers.filter((customer) => (
+      String(customer.id).includes(search) ||
       (customer.username || "").toLowerCase().includes(search) ||
       (customer.phone || "").toLowerCase().includes(search) ||
-      String(customer.balance || "").includes(customerSearch)
-    );
-  }) : [];
+      String(customer.balance || "").includes(search)
+    ));
+  }, [customers, customerSearch]);
 
   if (!hydrated) return null;
 

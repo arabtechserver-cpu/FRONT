@@ -4,11 +4,19 @@ import React, { useState, useEffect, use, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { API_BASE_URL } from "@/config";
+import { useI18n } from "@/lib/i18n";
 
 export default function ServiceDetail({ params, initialService = null }) {
   const unwrappedParams = use(params);
   const serviceId = unwrappedParams.id;
   const router = useRouter();
+  const { language, meta, t } = useI18n();
+  const localizeServiceText = (value) => {
+    if (typeof value !== "string") return value;
+    return value
+      .replaceAll("باقات وتفعيل خدمات", t("servicePackagesActivation"))
+      .replaceAll("تبدأ معالجة الطلب بعد الدفع مباشرة.", t("executionStartsAfterPayment"));
+  };
 
   const [service, setService] = useState(initialService);
   const [loading, setLoading] = useState(!initialService);
@@ -348,12 +356,13 @@ export default function ServiceDetail({ params, initialService = null }) {
   }, [serviceFields, defaultFields, selectedPackage]);
 
   const fieldsSectionTitle = useMemo(() => {
-    if (!activeService) return "بيانات الخدمة";
+    if (!activeService) return t("serviceData");
     if (activeService.fields_title && activeService.fields_title.trim()) {
-      return activeService.fields_title.trim();
+      const title = activeService.fields_title.trim();
+      return title === "بيانات الخدمة" ? t("serviceData") : title;
     }
-    return "بيانات الخدمة";
-  }, [activeService]);
+    return t("serviceData");
+  }, [activeService, t]);
 
   const handleFieldChange = (fieldName, value) => {
     setFormData(prev => ({ ...prev, [fieldName]: value }));
@@ -601,7 +610,7 @@ export default function ServiceDetail({ params, initialService = null }) {
         `}</style>
         <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "400px", flexDirection: "column", gap: "20px" }}>
           <div className="spinner-loader"></div>
-          <p style={{ color: "var(--text-muted)", fontSize: "1rem" }}>جاري تحميل تفاصيل الخدمة...</p>
+          <p style={{ color: "var(--text-muted)", fontSize: "1rem" }}>{t("serviceDetailsLoading")}</p>
         </div>
       </>
     );
@@ -612,7 +621,7 @@ export default function ServiceDetail({ params, initialService = null }) {
       {service.is_bundle && service.bundle_services_data && service.bundle_services_data.length > 0 && (
         <div style={{ marginBottom: "24px", background: "rgba(16, 185, 129, 0.05)", padding: "20px", borderRadius: "14px", border: "1px solid rgba(16, 185, 129, 0.2)" }}>
           <h3 style={{ fontWeight: 800, marginBottom: "15px", fontSize: "1.1rem", color: "#6ee7b7" }}>
-            1. اختر الخدمة من الباقة:
+            {t("selectBundleServiceStep")}
           </h3>
           <select
             value={selectedSubServiceId || ""}
@@ -633,7 +642,7 @@ export default function ServiceDetail({ params, initialService = null }) {
               appearance: "none"
             }}
           >
-            <option value="" disabled>-- اختر الخدمة المطلوبة --</option>
+            <option value="" disabled>{t("selectRequiredService")}</option>
             {service.bundle_services_data.map(sub => (
               <option key={sub.id} value={sub.id}>{sub.name}</option>
             ))}
@@ -642,7 +651,7 @@ export default function ServiceDetail({ params, initialService = null }) {
       )}
 
       <h3 style={{ fontWeight: 800, marginBottom: "15px", fontSize: "1.1rem" }}>
-        {service.is_bundle ? "2. اختر الباقة:" : "1. اختر الباقة المطلوبة:"}
+        {service.is_bundle ? t("selectPackageStepTwo") : t("selectPackageStepOne")}
       </h3>
 
       {service.packages && service.packages.length > 3 && (
@@ -1615,7 +1624,7 @@ export default function ServiceDetail({ params, initialService = null }) {
               </div>
             </div>
 
-            <p style={{ fontSize: "0.95rem", color: "var(--text-muted)", lineHeight: "1.7" }}>{service.description}</p>
+            <p style={{ fontSize: "0.95rem", color: "var(--text-muted)", lineHeight: "1.7" }}>{localizeServiceText(service.description)}</p>
 
             <div style={{
               display: "grid",
@@ -1623,23 +1632,23 @@ export default function ServiceDetail({ params, initialService = null }) {
               gap: "12px"
             }}>
               <div style={{ padding: "14px", borderRadius: "14px", background: "rgba(34, 197, 94, 0.06)", border: "1px solid rgba(34, 197, 94, 0.16)" }}>
-                <strong style={{ display: "block", color: "#4ade80", marginBottom: "6px", fontSize: "0.9rem" }}>مدة التنفيذ</strong>
+                <strong style={{ display: "block", color: "#4ade80", marginBottom: "6px", fontSize: "0.9rem" }}>{t("executionTime")}</strong>
                 <span style={{ color: "var(--text-muted)", fontSize: "0.84rem", lineHeight: 1.6 }}>
-                  {selectedPackage?.api_delivery_time || activeService?.api_delivery_time || service?.api_delivery_time || "تبدأ معالجة الطلب بعد الدفع مباشرة."}
+                  {localizeServiceText(selectedPackage?.api_delivery_time || activeService?.api_delivery_time || service?.api_delivery_time) || t("executionStartsAfterPayment")}
                 </span>
               </div>
               <div style={{ padding: "14px", borderRadius: "14px", background: "rgba(59, 130, 246, 0.06)", border: "1px solid rgba(59, 130, 246, 0.16)" }}>
-                <strong style={{ display: "block", color: "#60a5fa", marginBottom: "6px", fontSize: "0.9rem" }}>الضمان</strong>
+                <strong style={{ display: "block", color: "#60a5fa", marginBottom: "6px", fontSize: "0.9rem" }}>{t("guarantee")}</strong>
                 <span style={{ color: "var(--text-muted)", fontSize: "0.84rem", lineHeight: 1.6 }}>
-                  يتم مراجعة الطلب قبل التنفيذ، وأي مشكلة في البيانات أو الدفع يتم التواصل معك لحلها.
+                  {t("orderReviewGuarantee")}
                 </span>
               </div>
               <div style={{ padding: "14px", borderRadius: "14px", background: "rgba(245, 158, 11, 0.06)", border: "1px solid rgba(245, 158, 11, 0.16)" }}>
-                <strong style={{ display: "block", color: "#fbbf24", marginBottom: "6px", fontSize: "0.9rem" }}>البيانات المطلوبة</strong>
+                <strong style={{ display: "block", color: "#fbbf24", marginBottom: "6px", fontSize: "0.9rem" }}>{t("requiredData")}</strong>
                 <span style={{ color: "var(--text-muted)", fontSize: "0.84rem", lineHeight: 1.6 }}>
                   {activeFields.length > 0
-                    ? activeFields.map((field) => field.label || field.name).join("، ")
-                    : "سيتم عرض البيانات المطلوبة بعد اختيار الباقة المناسبة."}
+                    ? activeFields.map((field) => field.label || field.name).join(language === "ar" ? "، " : ", ")
+                    : t("requiredDataAfterPackage")}
                 </span>
               </div>
             </div>
@@ -1785,7 +1794,7 @@ export default function ServiceDetail({ params, initialService = null }) {
                   transition: "all 0.3s ease"
                 }}
               >
-                <span>المتابعة للدفع وإتمام الطلب {isContinueEnabled && (
+                <span>{t("continueToCheckout")} {isContinueEnabled && (
                   <span>({(() => {
                     const isUsd = service.category_currency === 'USD' || service.category_currency === 'USDT' || baseCurrency === 'USD' || baseCurrency === 'USDT';
                     let usdPrice = 0;
@@ -1816,7 +1825,7 @@ export default function ServiceDetail({ params, initialService = null }) {
                     }
                   })()})</span>
                 )}</span>
-                <span style={{ fontSize: "1.2rem" }}>←</span>
+                <span style={{ fontSize: "1.2rem" }}>{meta.dir === "rtl" ? "←" : "→"}</span>
               </button>
             </div>
           </div>
