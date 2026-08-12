@@ -387,9 +387,10 @@ export default function MainLayout({ children }) {
 
   const isFocusedConversionPage = pathname
     && (pathname.startsWith("/login") || pathname.startsWith("/wallet") || pathname.startsWith("/service"));
+  const isHomePage = pathname === "/";
 
   return (
-    <div className="app-layout" dir={meta.dir}>
+    <div className={`app-layout ${isHomePage ? "home-layout" : ""}`} dir={meta.dir}>
       {/* Background (Video removed for performance) */}
       <div className="video-background-container" style={{
         position: 'fixed',
@@ -647,7 +648,7 @@ export default function MainLayout({ children }) {
           
           {/* Right Section (Logo & Mobile Menu) */}
           <div className="flex items-center gap-3" style={{ minWidth: 0 }}>
-            <button className="header-btn w-9 h-9" type="button" aria-label={t("menu")} onClick={() => setMenuOpen(!menuOpen)} style={{ flexShrink: 0 }}>
+            <button className="header-btn header-menu-trigger w-9 h-9" type="button" aria-label={t("menu")} onClick={() => setMenuOpen(!menuOpen)} style={{ flexShrink: 0 }}>
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-menu w-5 h-5">
                 <line x1="4" x2="20" y1="12" y2="12"></line>
                 <line x1="4" x2="20" y1="6" y2="6"></line>
@@ -695,6 +696,7 @@ export default function MainLayout({ children }) {
               </div>
             </div>
             <Link href="/orders" className={`desktop-link hidden lg-block ${pathname.startsWith('/orders') ? 'active' : ''}`} style={{ fontWeight: 'bold' }}>{t("orders")}</Link>
+            <Link href="/wallet" className={`desktop-link hidden lg-block ${pathname.startsWith('/wallet') ? 'active' : ''}`} style={{ fontWeight: 'bold' }}>{t("wallet")}</Link>
             <button onClick={toggleTheme} className="theme-toggle-btn header-btn hidden lg-block" aria-label={t("toggleTheme")} style={{ padding: '6px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', cursor: 'pointer' }}>
               {theme === 'dark' ? <Moon size={18} aria-hidden="true" /> : <Sun size={18} aria-hidden="true" />}
             </button>
@@ -730,8 +732,7 @@ export default function MainLayout({ children }) {
                 </div>
               ) : (
                 <div style={{ display: 'flex', gap: '8px' }}>
-                  <Link href="/login" style={{ textDecoration: 'none', padding: '6px 16px', background: 'var(--primary-color)', color: '#fff', borderRadius: '8px', fontWeight: 'bold', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}>{t("register")}</Link>
-                  <Link href="/login" style={{ textDecoration: 'none', padding: '6px 16px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--text-main)', borderRadius: '8px', fontWeight: 'bold', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}>{t("login")}</Link>
+                  <Link href="/login" style={{ textDecoration: 'none', padding: '7px 14px', background: 'var(--primary-color)', color: '#fff', borderRadius: '8px', fontWeight: 'bold', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}>{t("login")}</Link>
                 </div>
               )}
             </div>
@@ -739,7 +740,7 @@ export default function MainLayout({ children }) {
         </header>
 
         {/* Global Notice Bar (Sticky Marquee) */}
-        <div className="notice-bar-container notice-slim" style={{ position: 'sticky', top: '70px', zIndex: 998, padding: '0', background: 'transparent' }}>
+        <div className={`notice-bar-container notice-slim ${isHomePage ? "home-notice" : ""}`} style={{ position: 'sticky', top: '70px', zIndex: 998, padding: '0', background: 'transparent' }}>
           <div className="container">
             <div className="notice-row" dir={meta.dir} data-i18n-skip aria-label={t("announcement")}>
               <div className="notice-track" role="presentation">

@@ -133,6 +133,12 @@ html[dir="rtl"] .language-switcher {
   direction: rtl;
 }
 
+@media (min-width: 993px) {
+  .header-menu-trigger {
+    display: none !important;
+  }
+}
+
 @media (max-width: 992px) {
   .custom-navbar .language-switcher {
     min-width: 96px;

@@ -2017,3 +2017,111 @@ details[open] .faq-question::after { content: "－"; }
   border-left: none !important;
   border-right: none !important;
 }
+
+/* Keep the customer journey short and scannable. */
+.home-layout .home-notice {
+  display: none !important;
+}
+
+.home-layout .hero-banner {
+  min-height: 360px !important;
+  height: 360px !important;
+  margin-top: 0 !important;
+  margin-bottom: 16px !important;
+}
+
+.home-layout .banner-content {
+  padding: 26px 20px 62px !important;
+}
+
+.home-layout .banner-bg-img {
+  object-fit: cover !important;
+  object-position: center !important;
+  filter: saturate(0.85) brightness(0.8);
+}
+
+.home-layout .banner-bg-overlay {
+  display: block !important;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(90deg, rgba(5, 10, 20, 0.88) 0%, rgba(5, 10, 20, 0.64) 48%, rgba(5, 10, 20, 0.18) 100%);
+}
+
+.home-layout .banner-info {
+  max-width: 470px;
+  padding: 18px 20px;
+  gap: 6px;
+  border-radius: 12px;
+  background: rgba(7, 14, 28, 0.78);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
+}
+
+.home-layout .banner-content.has-bg-img .banner-info {
+  display: flex !important;
+}
+
+.home-layout .banner-title {
+  font-size: clamp(1.65rem, 3.6vw, 2.5rem);
+  line-height: 1.16;
+}
+
+.home-layout .banner-desc {
+  max-width: 390px;
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
+.home-layout .hp-body-grid {
+  grid-template-columns: minmax(0, 1fr) !important;
+  max-width: 980px;
+  margin-inline: auto;
+}
+
+.home-layout .hp-sidebar-col,
+.home-layout .hp-bottom-features,
+.home-layout .hp-bottom-stats,
+.home-layout .hp-dev-banner {
+  display: none !important;
+}
+
+.home-layout .hp-reviews-marquee-track:nth-child(n + 2) {
+  display: none;
+}
+
+.home-layout .hp-reviews-marquee-wrapper {
+  gap: 0;
+}
+
+.home-layout .hp-services-panel {
+  margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  .home-layout .hero-banner {
+    min-height: 330px !important;
+    height: 330px !important;
+  }
+
+  .home-layout .banner-content {
+    padding: 20px 14px 52px !important;
+  }
+
+  .home-layout .banner-info {
+    max-width: 100%;
+    padding: 16px;
+  }
+
+  .home-layout .banner-title {
+    font-size: 1.55rem;
+  }
+
+  .home-layout .banner-desc {
+    font-size: 0.76rem;
+  }
+
+  .home-layout .hero-cta-btn {
+    padding: 9px 14px;
+    font-size: 0.78rem;
+  }
+}
