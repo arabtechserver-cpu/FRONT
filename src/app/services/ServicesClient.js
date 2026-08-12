@@ -13,7 +13,7 @@ export default function ServicesClient({ initialCategories = [], initialServices
   const [loading, setLoading] = useState(initialServices.length === 0);
   const [searchTerm, setSearchTerm] = useState("");
   const [visibleCategories, setVisibleCategories] = useState(5);
-  const [settings, setSettings] = useState({ announcement_text: "ðŸŸ¢ ÙˆØ§ØªØ³Ø§Ø¨ Ø§Ù„Ø¥Ø¯Ø§Ø±Ø© 1: +1 (672) 897-2935 | ðŸŸ¢ ÙˆØ§ØªØ³Ø§Ø¨ Ø§Ù„Ø¥Ø¯Ø§Ø±Ø© 2: +249 12 366 7227" });
+  const [settings, setSettings] = useState({ announcement_text: "🟢 واتساب الإدارة 1: +1 (672) 897-2935 | 🟢 واتساب الإدارة 2: +249 12 366 7227" });
   
   const searchParams = useSearchParams();
   const typeFilter = searchParams.get("type"); // e.g., 'imei', 'server', 'remote'
@@ -93,14 +93,14 @@ export default function ServicesClient({ initialCategories = [], initialServices
     const lowerName = (name || "").toLowerCase();
     const lowerImg = (image || "").toLowerCase();
 
-    if (lowerImg.includes("pubg") || lowerName.includes("pubg") || lowerName.includes("Ø¨Ø¨Ø¬ÙŠ")) return "ðŸ”«";
-    if (lowerImg.includes("freefire") || lowerImg.includes("free fire") || lowerName.includes("ÙØ±ÙŠ ÙØ§ÙŠØ±") || lowerName.includes("free fire") || lowerName.includes("freefire")) return "ðŸ”¥";
-    if (lowerImg.includes("bigo") || lowerName.includes("Ø¨ÙŠØ¬Ùˆ")) return "ðŸ’¬";
-    if (lowerImg.includes("vodafone") || lowerName.includes("ÙÙˆØ¯Ø§ÙÙˆÙ†")) return "ðŸ“±";
-    if (lowerImg.includes("usdt") || lowerName.includes("usdt") || lowerName.includes("Ø¹Ù…Ù„Ø©") || lowerName.includes("Ø£Ø±ØµØ¯Ø©")) return "ðŸª™";
-    if (lowerImg.includes("canva") || lowerName.includes("ÙƒØ§Ù†ÙØ§")) return "ðŸŽ¨";
-    if (lowerImg.includes("netflix") || lowerName.includes("Ù†ØªÙÙ„ÙŠÙƒØ³")) return "ðŸŽ¬";
-    if (lowerName.includes("Ø§ÙŠÙÙˆÙ†") || lowerName.includes("iphone") || lowerName.includes("ipad") || lowerName.includes("Ø§ÙŠØ¨Ø§Ø¯") || lowerName.includes("bypass") || lowerName.includes("ØªØ®Ø·") || lowerName.includes("icloud") || lowerName.includes("Ø§ÙŠÙƒÙ„Ø§ÙˆØ¯") || lowerName.includes("hello") || lowerName.includes("removal") || lowerName.includes("hfz") || lowerName.includes("smd") || lowerName.includes("otix")) return "ðŸ“±";
+    if (lowerImg.includes("pubg") || lowerName.includes("pubg") || lowerName.includes("ببجي")) return "🔫";
+    if (lowerImg.includes("freefire") || lowerImg.includes("free fire") || lowerName.includes("فري فاير") || lowerName.includes("free fire") || lowerName.includes("freefire")) return "🔥";
+    if (lowerImg.includes("bigo") || lowerName.includes("بيجو")) return "💬";
+    if (lowerImg.includes("vodafone") || lowerName.includes("فودافون")) return "📱";
+    if (lowerImg.includes("usdt") || lowerName.includes("usdt") || lowerName.includes("عملة") || lowerName.includes("أرصدة")) return "🪙";
+    if (lowerImg.includes("canva") || lowerName.includes("كانفا")) return "🎨";
+    if (lowerImg.includes("netflix") || lowerName.includes("نتفليكس")) return "🎬";
+    if (lowerName.includes("ايفون") || lowerName.includes("iphone") || lowerName.includes("ipad") || lowerName.includes("ايباد") || lowerName.includes("bypass") || lowerName.includes("تخطي") || lowerName.includes("icloud") || lowerName.includes("ايكلاود") || lowerName.includes("hello") || lowerName.includes("removal") || lowerName.includes("hfz") || lowerName.includes("smd") || lowerName.includes("otix")) return "📱";
 
     return "âš¡";
   };
@@ -124,14 +124,14 @@ export default function ServicesClient({ initialCategories = [], initialServices
         style={{ width: "45px", height: "45px", objectFit: "contain", borderRadius: "8px" }}
       />;
     }
-    if (image.includes("pubg")) return "ðŸ”«";
-    if (image.includes("freefire")) return "ðŸ”¥";
-    if (image.includes("bigo")) return "ðŸ’¬";
-    if (image.includes("vodafone")) return "ðŸ“±";
+    if (image.includes("pubg")) return "🔫";
+    if (image.includes("freefire")) return "🔥";
+    if (image.includes("bigo")) return "💬";
+    if (image.includes("vodafone")) return "📱";
 
-    if (image.includes("usdt")) return "ðŸª™";
-    if (image.includes("canva")) return "ðŸŽ¨";
-    if (image.includes("netflix")) return "ðŸŽ¬";
+    if (image.includes("usdt")) return "🪙";
+    if (image.includes("canva")) return "🎨";
+    if (image.includes("netflix")) return "🎬";
     return "âš¡";
   };
 
@@ -180,7 +180,7 @@ export default function ServicesClient({ initialCategories = [], initialServices
           dir="ltr"
           style={{ direction: "ltr", textAlign: "left" }}
         />
-        <span className="search-icon-center">ðŸ”</span>
+        <span className="search-icon-center">🔍</span>
       </div>
 
       {/* Services List (scc-grid) */}
@@ -190,7 +190,7 @@ export default function ServicesClient({ initialCategories = [], initialServices
         </div>
       ) : filteredServices.length === 0 ? (
         <div className="glass-panel" style={{ textAlign: "center", padding: "40px" }}>
-          <span style={{ fontSize: "3rem" }}>ðŸ“­</span>
+          <span style={{ fontSize: "3rem" }}>📭</span>
           <h3 style={{ margin: "15px 0 10px 0" }}>{t("noSearchResults")}</h3>
           <p style={{ color: "var(--text-muted)", marginBottom: "20px" }}>{t("tryOtherSearch")}</p>
           <Link href="/" className="glass-btn glass-btn-primary">{t("backHome")}</Link>
@@ -254,7 +254,7 @@ export default function ServicesClient({ initialCategories = [], initialServices
                     borderRadius: "10px",
                     fontWeight: "700"
                   }}>
-                    {catServices.length} {catServices.length === 1 ? "Ø®Ø¯Ù…Ø©" : catServices.length === 2 ? "Ø®Ø¯Ù…ØªÙŠÙ†" : "Ø®Ø¯Ù…Ø§Øª"}
+                    {catServices.length} {catServices.length === 1 ? "خدمة" : catServices.length === 2 ? "خدمتين" : "خدمات"}
                   </span>
                 </div>
 
@@ -399,7 +399,7 @@ export default function ServicesClient({ initialCategories = [], initialServices
                 }}>
                   <span style={{ fontSize: "1.2rem" }}>âš¡</span>
                 </div>
-                <h3 className="cat-section-header" style={{ flex: "1 1 auto", wordBreak: "break-word", lineHeight: "1.4" }}>Ø®Ø¯Ù…Ø§Øª Ø£Ø®Ø±Ù‰</h3>
+                <h3 className="cat-section-header" style={{ flex: "1 1 auto", wordBreak: "break-word", lineHeight: "1.4" }}>خدمات أخرى</h3>
                 <span style={{
                   fontSize: "0.75rem",
                   color: "#cbd5e1",
@@ -409,7 +409,7 @@ export default function ServicesClient({ initialCategories = [], initialServices
                   borderRadius: "10px",
                   fontWeight: "700"
                 }}>
-                  {uncategorizedServices.length} Ø®Ø¯Ù…Ø©
+                  {uncategorizedServices.length} خدمة
                 </span>
               </div>
 

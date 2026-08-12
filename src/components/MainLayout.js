@@ -22,7 +22,7 @@ export default function MainLayout({ children }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const [categoriesExpanded, setCategoriesExpanded] = useState(false);
-  const [settings, setSettings] = useState({ site_name: "Ø¹Ø±Ø¨ ØªÙƒ Ø³ÙŠØ±ÙØ±", site_logo: "/logo.jpg" });
+  const [settings, setSettings] = useState({ site_name: "عرب تك سيرفر", site_logo: "/logo.jpg" });
   const [logoFailed, setLogoFailed] = useState(false);
   const [txPasswordModalOpen, setTxPasswordModalOpen] = useState(false);
 
@@ -143,7 +143,7 @@ export default function MainLayout({ children }) {
         localStorage.removeItem("customer_user");
         setIsCustomerLoggedIn(false);
         setCustomerUser(null);
-        alert("ðŸ”’ ØªÙ… Ø¥Ù‚ÙØ§Ù„ Ø§Ù„Ø¬Ù„Ø³Ø© ÙˆØªØ£Ù…ÙŠÙ† Ø­Ø³Ø§Ø¨Ùƒ ØªÙ„Ù‚Ø§Ø¦ÙŠØ§Ù‹ Ø¨Ø³Ø¨Ø¨ Ø¹Ø¯Ù… Ø§Ù„Ù†Ø´Ø§Ø· Ù„Ù…Ø¯Ø© 30 Ø¯Ù‚ÙŠÙ‚Ø©.");
+        alert("🔒 تم إقفال الجلسة وتأمين حسابك تلقائياً بسبب عدم النشاط لمدة 30 دقيقة.");
         router.push("/login");
       }
     }, 60000);
@@ -330,7 +330,7 @@ export default function MainLayout({ children }) {
         >
           {availableCurrencies.map(curr => (
             <option key={curr} value={curr} style={{ background: "var(--bg-main)", color: "#ffffff" }}>
-              {curr} {curr === "USD" ? "ðŸ‡ºðŸ‡¸" : curr === "EGP" ? "ðŸ‡ªðŸ‡¬" : "ðŸ‡¸ðŸ‡©"}
+              {curr} {curr === "USD" ? "🇺🇸" : curr === "EGP" ? "🇪🇬" : "🇸🇩"}
             </option>
           ))}
         </select>
@@ -402,7 +402,7 @@ export default function MainLayout({ children }) {
       }}>
       </div>
 
-      {/* Abstract Animated Shapes â€” 4 colorful orbs */}
+      {/* Abstract animated shapes - 4 colorful accents */}
       <div className="animated-shape shape-1"></div>
       <div className="animated-shape shape-2"></div>
       <div className="animated-shape shape-3"></div>
@@ -443,7 +443,7 @@ export default function MainLayout({ children }) {
           </div>
         ) : (
           <Link href="/login" className="mobile-drawer-link" onClick={() => setMenuOpen(false)} style={{ background: "rgba(234, 179, 8, 0.1)", color: "#eab308", fontWeight: 700, justifyContent: "center", borderRadius: "10px", padding: "10px", border: "1px solid rgba(234, 179, 8, 0.3)", boxShadow: "0 4px 20px rgba(234, 179, 8, 0.1)", fontSize: "0.85rem", gap: "8px" }}>
-            <span style={{ fontSize: "1.1rem", display: "flex", alignItems: "center" }}>ðŸ‘¤</span>
+            <span style={{ fontSize: "1.1rem", display: "flex", alignItems: "center" }}>👤</span>
             <span style={{ color: "#eab308" }}>{t("loginRegister")}</span>
           </Link>
         )}
@@ -527,7 +527,7 @@ export default function MainLayout({ children }) {
         {/* Premium Font Scale Toggle */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 16px", background: "rgba(255,255,255,0.03)", borderRadius: "14px", border: "1px solid rgba(255,255,255,0.05)", margin: "4px 0" }}>
           <span style={{ fontSize: "0.95rem", fontWeight: "800", color: "var(--text-main)", display: "flex", alignItems: "center", gap: "10px" }}>
-            <span style={{ fontSize: "1.2rem" }}>ðŸ“</span>
+            <span style={{ fontSize: "1.2rem" }}>📝</span>
             {t("fontSize")}
           </span>
           <div style={{ display: "flex", gap: "6px", alignItems: "center", background: "rgba(0,0,0,0.2)", padding: "4px", borderRadius: "10px" }}>
@@ -557,7 +557,7 @@ export default function MainLayout({ children }) {
         {/* Premium Theme Toggle */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 16px", background: "rgba(255,255,255,0.03)", borderRadius: "14px", border: "1px solid rgba(255,255,255,0.05)", margin: "4px 0" }}>
           <span style={{ fontSize: "0.95rem", fontWeight: "800", color: "var(--text-main)", display: "flex", alignItems: "center", gap: "10px" }}>
-            <span style={{ fontSize: "1.2rem" }}>{theme === 'dark' ? 'ðŸŒ™' : 'â˜€ï¸'}</span>
+            <span style={{ fontSize: "1.2rem" }}>{theme === 'dark' ? '🌙' : '☀️'}</span>
             {t("darkMode")}
           </span>
           <button
@@ -606,7 +606,7 @@ export default function MainLayout({ children }) {
         {showInstallBanner && !isFocusedConversionPage && (
           <div className="pwa-install-banner">
             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-              <span style={{ fontSize: "1.5rem" }}>ðŸ“±</span>
+              <span style={{ fontSize: "1.5rem" }}>📱</span>
               <div>
                 <strong style={{ display: "block", fontSize: "0.9rem", color: "var(--text-main)", textAlign: meta.dir === "rtl" ? "right" : "left" }}>{t("installApp", { site: settings.site_name })}</strong>
                 <span style={{ fontSize: "0.78rem", color: "var(--text-muted)", display: "block", textAlign: meta.dir === "rtl" ? "right" : "left" }}>{t("installAppDesc")}</span>
@@ -651,7 +651,7 @@ export default function MainLayout({ children }) {
           
           {/* Right Section (Logo & Mobile Menu) */}
           <div className="flex items-center gap-3" style={{ minWidth: 0 }}>
-            <button className="header-btn w-9 h-9" type="button" aria-label="Ø§Ù„Ù‚Ø§Ø¦Ù…Ø©" onClick={() => setMenuOpen(!menuOpen)} style={{ flexShrink: 0 }}>
+            <button className="header-btn w-9 h-9" type="button" aria-label={t("menu")} onClick={() => setMenuOpen(!menuOpen)} style={{ flexShrink: 0 }}>
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-menu w-5 h-5">
                 <line x1="4" x2="20" y1="12" y2="12"></line>
                 <line x1="4" x2="20" y1="6" y2="6"></line>
@@ -666,7 +666,7 @@ export default function MainLayout({ children }) {
               )}
               <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', height: '24px', overflowY: 'hidden', minWidth: '180px' }}>
                 <span className={`font-black absolute transition-all duration-700 ease-in-out ${logoLang === 'ar' ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full'}`} style={{ color: '#eab308', whiteSpace: 'nowrap', fontSize: 'clamp(0.9rem, 3vw, 1.15rem)', letterSpacing: '0.5px', textShadow: '0 2px 10px rgba(234, 179, 8, 0.4)' }}>
-                  Ø¹Ø±Ø¨ ØªÙƒ Ø³ÙŠØ±ÙØ± online
+                  عرب تك سيرفر online
                 </span>
                 <span translate="no" className={`font-black absolute transition-all duration-700 ease-in-out ${logoLang === 'en' ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-full'}`} style={{ color: '#eab308', whiteSpace: 'nowrap', fontSize: 'clamp(0.85rem, 2.5vw, 1rem)', letterSpacing: '0.5px', textShadow: '0 2px 10px rgba(234, 179, 8, 0.4)' }}>
                   Arab Tech Server
@@ -700,7 +700,7 @@ export default function MainLayout({ children }) {
             </div>
             <Link href="/orders" className={`desktop-link hidden lg-block ${pathname.startsWith('/orders') ? 'active' : ''}`} style={{ fontWeight: 'bold' }}>{t("orders")}</Link>
             <button onClick={toggleTheme} className="theme-toggle-btn header-btn hidden lg-block" aria-label={t("toggleTheme")} style={{ padding: '6px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', cursor: 'pointer' }}>
-              {theme === 'dark' ? 'ðŸŒ™' : 'â˜€ï¸'}
+              {theme === 'dark' ? '🌙' : '☀️'}
             </button>
             
             <div className="hidden lg:block">
