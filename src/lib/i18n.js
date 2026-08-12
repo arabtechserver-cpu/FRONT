@@ -1246,6 +1246,13 @@ export function getLanguageMeta(languageCode) {
   return LANGUAGES.find((lang) => lang.code === normalizeLanguage(languageCode)) || LANGUAGES[0];
 }
 
+function getRuntimeLanguage(languageCode) {
+  if (typeof window !== "undefined" && window.location.pathname.startsWith("/admin")) {
+    return "ar";
+  }
+  return normalizeLanguage(languageCode);
+}
+
 export function translate(key, languageCode = "ar", values = {}) {
   const language = normalizeLanguage(languageCode);
   const template =
@@ -1299,7 +1306,7 @@ function applyAttributes(languageCode) {
 
 export function applyStaticTranslations(languageCode) {
   if (typeof document === "undefined") return;
-  const language = normalizeLanguage(languageCode);
+  const language = getRuntimeLanguage(languageCode);
   const meta = getLanguageMeta(language);
 
   document.documentElement.lang = meta.htmlLang;
@@ -1335,18 +1342,18 @@ export function I18nProvider({ children }) {
     const nextLanguage = normalizeLanguage(languageCode);
     localStorage.setItem(LANGUAGE_STORAGE_KEY, nextLanguage);
     setLanguageState(nextLanguage);
-    applyStaticTranslations(nextLanguage);
+    applyStaticTranslations(getRuntimeLanguage(nextLanguage));
   };
 
   useEffect(() => {
     const savedLanguage = getSavedLanguage();
     setLanguageState(savedLanguage);
-    applyStaticTranslations(savedLanguage);
+    applyStaticTranslations(getRuntimeLanguage(savedLanguage));
   }, []);
 
   useEffect(() => {
     const observer = new MutationObserver(() => {
-      applyStaticTranslations(language);
+      applyStaticTranslations(getRuntimeLanguage(language));
     });
 
     if (document.body) {

@@ -127,7 +127,7 @@ export default function OrdersTab({
       <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
         {filteredOrders.length === 0 ? (
           <div style={{ textAlign: "center", padding: "48px", color: "#64748b", fontSize: "1rem", fontWeight: 600, background: "rgba(255,255,255,0.02)", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.04)" }}>
-            لا توجد أي طلبات شحن تطابق معايير البحث.
+            لا توجد طلبات مطابقة للفلتر الحالي.
           </div>
         ) : (
           paginatedOrders.map((order) => (
@@ -407,7 +407,7 @@ export default function OrdersTab({
               {filteredWalletTransactions.length === 0 ? (
                 <tr>
                   <td colSpan="8" style={{ textAlign: "center", padding: "36px", color: "#64748b" }}>
-                    لا توجد حركات محفظة مطابقة للبحث.
+                    لا توجد حركات محفظة مطابقة للفلتر الحالي.
                   </td>
                 </tr>
               ) : (

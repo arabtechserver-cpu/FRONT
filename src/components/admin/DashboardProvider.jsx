@@ -508,7 +508,7 @@ export default function DashboardProvider({ children }) {
   }, [authedHeaders]);
 
   const loadOrders = useCallback(async () => {
-    const orderRes = await fetch(`${API_BASE_URL}/api/orders`, { headers: authedHeaders() });
+    const orderRes = await fetch(`${API_BASE_URL}/api/orders?limit=100`, { headers: authedHeaders() });
     if (orderRes.status === 401 || orderRes.status === 403) {
       handleAuthFailure();
       return;

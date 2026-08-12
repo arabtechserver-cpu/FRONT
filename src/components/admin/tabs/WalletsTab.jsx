@@ -91,7 +91,7 @@ export default function WalletsTab({
             {filteredWalletRequests.length === 0 ? (
               <tr>
                 <td colSpan="8" style={{ textAlign: "center", padding: "40px", color: "#64748b" }}>
-                  لا توجد طلبات شحن رصيد تطابق معايير البحث.
+                  لا توجد طلبات شحن رصيد مطابقة للفلتر الحالي.
                 </td>
               </tr>
             ) : (
