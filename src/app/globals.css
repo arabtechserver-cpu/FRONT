@@ -4,6 +4,69 @@
 @import './layout.css';
 @import './navbar.css';
 
+/* Services page spacing: keep the catalog compact and easy to scan. */
+.services-page-header {
+  margin-top: 10px !important;
+  margin-bottom: 6px !important;
+  gap: 8px !important;
+}
+
+.services-page-intro {
+  margin-bottom: 12px !important;
+}
+
+.services-page-search {
+  margin-top: 8px !important;
+  margin-bottom: 16px !important;
+}
+
+.services-page-groups {
+  gap: 24px !important;
+}
+
+.services-page-group {
+  gap: 12px !important;
+}
+
+.services-page-group-header {
+  gap: 8px !important;
+  padding-bottom: 8px !important;
+  border-bottom-width: 1px !important;
+}
+
+.services-page-group .scc-grid {
+  gap: 10px;
+  margin-bottom: 0;
+}
+
+.services-page-group .scc-card {
+  gap: 10px;
+  padding: 10px 14px;
+  min-height: 68px;
+}
+
+@media (max-width: 640px) {
+  .services-page-groups {
+    gap: 16px !important;
+  }
+
+  .services-page-group {
+    gap: 10px !important;
+  }
+
+  .services-page-group-header {
+    padding-bottom: 7px !important;
+  }
+
+  .services-page-group .scc-grid {
+    gap: 8px;
+  }
+
+  .services-page-group .scc-card {
+    padding: 9px 12px;
+  }
+}
+
 /* User language switcher */
 .language-switcher {
   display: inline-flex;

@@ -159,18 +159,18 @@ export default function ServicesClient({ initialCategories = [], initialServices
 
 
       {/* Page Title */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "20px", marginBottom: "10px", gap: "12px", flexWrap: "wrap" }}>
+      <div className="services-page-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "20px", marginBottom: "10px", gap: "12px", flexWrap: "wrap" }}>
         <h2 className="section-title" style={{ margin: 0 }}>{t("availableServices")}</h2>
         <span style={{ fontSize: "0.85rem", color: "var(--text-muted)", fontWeight: "600" }}>
           {t("serviceCount", { count: filteredServices.length })}
         </span>
       </div>
-      <p style={{ color: "var(--text-muted)", fontSize: "0.88rem", margin: "0 0 20px 0" }}>
+      <p className="services-page-intro" style={{ color: "var(--text-muted)", fontSize: "0.88rem", margin: "0 0 20px 0" }}>
         {t("servicesIntro")}
       </p>
 
       {/* Centered Search Bar */}
-      <div className="search-container-center">
+      <div className="search-container-center services-page-search">
         <input
           type="text"
           className="search-input-center"
@@ -196,7 +196,7 @@ export default function ServicesClient({ initialCategories = [], initialServices
           <Link href="/" className="glass-btn glass-btn-primary">{t("backHome")}</Link>
         </div>
       ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
+        <div className="services-page-groups" style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
           {catalogCategories.filter(cat => {
             if (searchTerm.trim().length > 0) return true;
             return true;
@@ -205,9 +205,9 @@ export default function ServicesClient({ initialCategories = [], initialServices
             if (catServices.length === 0) return null;
 
             return (
-              <div key={cat.id} style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
+              <div key={cat.id} className="services-page-group" style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
                 {/* Category Header */}
-                <div style={{
+                <div className="services-page-group-header" style={{
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "space-between",
@@ -375,8 +375,8 @@ export default function ServicesClient({ initialCategories = [], initialServices
           })}
 
           {uncategorizedServices.length > 0 && (
-            <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
-              <div style={{
+            <div className="services-page-group" style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
+              <div className="services-page-group-header" style={{
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
