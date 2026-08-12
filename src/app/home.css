@@ -2265,3 +2265,215 @@ details[open] .faq-question::after { content: "－"; }
     height: 42px;
   }
 }
+
+/* Restore the original two-column section placement and card sizing. */
+.home-layout .hp-body-grid {
+  grid-template-columns: minmax(0, 1fr) 340px !important;
+  max-width: none;
+  margin-inline: 0;
+}
+
+.home-layout .hp-sidebar-col {
+  display: flex !important;
+  flex-direction: column;
+  gap: 24px;
+  position: sticky;
+  top: 100px;
+  width: 100%;
+  margin-top: 0;
+  align-items: stretch;
+}
+
+.home-layout .hp-sidebar-col > * {
+  display: block !important;
+  min-width: 0;
+  margin-top: 0;
+  padding: 18px;
+  border-radius: 18px;
+}
+
+.home-layout .hp-featured-cover {
+  height: 130px;
+  aspect-ratio: auto;
+}
+
+.home-layout .hp-featured-item-img {
+  width: 80px;
+  height: 55px;
+}
+
+.home-layout .hp-featured-item {
+  padding: 9px 0;
+}
+
+.home-layout .hp-featured-item-title {
+  font-size: 0.8rem;
+}
+
+.home-layout .hp-section-heading {
+  font-size: inherit;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+}
+
+.home-layout .hp-payment-method {
+  min-height: 0;
+  padding: 12px 10px;
+}
+
+.home-layout .hp-support-desc {
+  min-height: 0;
+  display: block;
+  -webkit-line-clamp: unset;
+  overflow: visible;
+}
+
+.home-layout .hp-steps-box,
+.home-layout .hp-live-stats-box {
+  margin-top: 24px;
+}
+
+.home-layout .hp-step-text {
+  font-size: 0.82rem;
+}
+
+.home-layout .hp-ls-label,
+.home-layout .hp-ls-val {
+  font-size: 0.8rem;
+}
+
+.home-layout .hp-bottom-features {
+  display: grid !important;
+  max-width: none;
+  margin-inline: 0;
+}
+
+.home-layout .hp-bottom-stats,
+.home-layout .hp-dev-banner {
+  display: grid !important;
+}
+
+.home-layout .hp-dev-banner {
+  display: flex !important;
+}
+
+.home-layout .hp-reviews-marquee-track:nth-child(n + 2) {
+  display: flex !important;
+}
+
+@media (max-width: 1024px) and (min-width: 769px) {
+  .home-layout .hp-body-grid {
+    grid-template-columns: minmax(0, 1fr) 280px !important;
+    gap: 18px;
+  }
+}
+
+@media (max-width: 768px) {
+  .home-layout .hp-body-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 20px;
+  }
+
+  .home-layout .hp-sidebar-col {
+    position: static;
+    gap: 14px;
+  }
+}
+
+/* Return the homepage to the simplified placement used before the last restore. */
+.home-layout .hp-body-grid {
+  grid-template-columns: minmax(0, 1fr) !important;
+  max-width: 980px;
+  margin-inline: auto;
+}
+
+.home-layout .hp-sidebar-col {
+  display: grid !important;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  position: static;
+  margin-top: 16px;
+  align-items: start;
+}
+
+.home-layout .hp-sidebar-col > * {
+  display: none !important;
+  min-width: 0;
+  margin-top: 0;
+  padding: 14px;
+  border-radius: 14px;
+}
+
+.home-layout .hp-sidebar-col > .hp-payment-box,
+.home-layout .hp-sidebar-col > .hp-support-box,
+.home-layout .hp-sidebar-col > .hp-steps-box {
+  display: block !important;
+}
+
+@media (min-width: 769px) {
+  .home-layout .hp-sidebar-col > .hp-featured-box,
+  .home-layout .hp-sidebar-col > .hp-sidebar-why,
+  .home-layout .hp-sidebar-col > .hp-live-stats-box {
+    display: block !important;
+  }
+}
+
+.home-layout .hp-featured-cover {
+  height: 112px;
+  aspect-ratio: 16 / 7;
+}
+
+.home-layout .hp-featured-item-img {
+  width: 60px;
+  height: 44px;
+}
+
+.home-layout .hp-featured-item {
+  padding: 7px 0;
+}
+
+.home-layout .hp-featured-item-title {
+  font-size: 0.76rem;
+}
+
+.home-layout .hp-section-heading {
+  font-size: 0.98rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.home-layout .hp-payment-method {
+  min-height: 52px;
+  padding: 10px 8px;
+}
+
+.home-layout .hp-support-desc {
+  min-height: 58px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+
+.home-layout .hp-step-text,
+.home-layout .hp-ls-label,
+.home-layout .hp-ls-val {
+  font-size: 0.76rem;
+}
+
+.home-layout .hp-bottom-features {
+  display: grid !important;
+  max-width: 980px;
+  margin-inline: auto;
+}
+
+.home-layout .hp-bottom-stats,
+.home-layout .hp-dev-banner {
+  display: none !important;
+}
+
+.home-layout .hp-reviews-marquee-track:nth-child(n + 2) {
+  display: none !important;
+}
