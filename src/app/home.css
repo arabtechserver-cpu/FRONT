@@ -2020,7 +2020,7 @@ details[open] .faq-question::after { content: "－"; }
 
 /* Keep the customer journey short and scannable. */
 .home-layout .home-notice {
-  display: none !important;
+  display: block !important;
 }
 
 .home-layout .hero-banner {
@@ -2079,10 +2079,49 @@ details[open] .faq-question::after { content: "－"; }
 }
 
 .home-layout .hp-sidebar-col,
-.home-layout .hp-bottom-features,
 .home-layout .hp-bottom-stats,
 .home-layout .hp-dev-banner {
   display: none !important;
+}
+
+.home-layout .hp-sidebar-col {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  align-items: start;
+  margin-top: 16px;
+}
+
+.home-layout .hp-sidebar-col > * {
+  display: none !important;
+}
+
+.home-layout .hp-sidebar-col > .hp-payment-box,
+.home-layout .hp-sidebar-col > .hp-support-box,
+.home-layout .hp-sidebar-col > .hp-steps-box {
+  display: block !important;
+}
+
+.home-layout .hp-bottom-features {
+  display: grid !important;
+  max-width: 980px;
+  margin-inline: auto;
+}
+
+.home-layout .home-notice .notice-set:nth-child(2) {
+  display: none;
+}
+
+@media (min-width: 769px) {
+  .home-layout .home-notice {
+    display: none !important;
+  }
+
+  .home-layout .hp-sidebar-col > .hp-featured-box,
+  .home-layout .hp-sidebar-col > .hp-sidebar-why,
+  .home-layout .hp-sidebar-col > .hp-live-stats-box {
+    display: block !important;
+  }
 }
 
 .home-layout .hp-reviews-marquee-track:nth-child(n + 2) {
@@ -2098,6 +2137,20 @@ details[open] .faq-question::after { content: "－"; }
 }
 
 @media (max-width: 768px) {
+  .home-layout .home-notice {
+    max-height: 34px;
+    overflow: hidden;
+  }
+
+  .home-layout .home-notice .notice-row {
+    min-height: 34px;
+  }
+
+  .home-layout .hp-sidebar-col {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
   .home-layout .hero-banner {
     min-height: 330px !important;
     height: 330px !important;
