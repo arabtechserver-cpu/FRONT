@@ -546,6 +546,40 @@ body::after {
   }
 }
 
+/* Language-aware alignment for shared components. */
+html[dir="ltr"] .custom-navbar > .flex {
+  gap: 8px !important;
+}
+
+html[dir="ltr"] .nav-links-desktop {
+  gap: 12px;
+  margin-left: 8px;
+}
+
+html[dir="ltr"] .faq-section,
+html[dir="ltr"] .faq-question,
+html[dir="ltr"] .faq-answer,
+html[dir="ltr"] .service-card,
+html[dir="ltr"] .service-header,
+html[dir="ltr"] .service-meta,
+html[dir="ltr"] .service-desc,
+html[dir="ltr"] .scc-content {
+  direction: ltr;
+  text-align: left;
+}
+
+html[dir="ltr"] .header-dropdown-item,
+html[dir="ltr"] .services-dropdown {
+  direction: ltr;
+  text-align: left;
+}
+
+html[dir="rtl"] .header-dropdown-item,
+html[dir="rtl"] .services-dropdown {
+  direction: rtl;
+  text-align: right;
+}
+
 /* ===== BASE ELEMENTS ===== */
 a { color: inherit; text-decoration: none; }
 button, input, textarea, select { font-family: var(--font-cairo); }

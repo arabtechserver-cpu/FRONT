@@ -2150,3 +2150,53 @@ details[open] .faq-question::after { content: "－"; }
     height: 104px;
   }
 }
+
+/* Keep homepage content aligned with the selected language. */
+html[dir="ltr"] .home-layout .banner-content {
+  direction: ltr;
+}
+
+html[dir="ltr"] .home-layout .banner-title,
+html[dir="ltr"] .home-layout .banner-desc,
+html[dir="ltr"] .home-layout .banner-info {
+  text-align: left;
+}
+
+html[dir="ltr"] .home-layout .banner-feat-item,
+html[dir="ltr"] .home-layout .hp-row,
+html[dir="ltr"] .home-layout .hp-sidebar-why-item,
+html[dir="ltr"] .home-layout .hp-step-item,
+html[dir="ltr"] .home-layout .hp-bottom-feat-item,
+html[dir="ltr"] .home-layout .hp-review-header {
+  direction: ltr;
+}
+
+html[dir="ltr"] .home-layout .hp-featured-link,
+html[dir="ltr"] .home-layout .hp-featured-item-info {
+  direction: ltr;
+  text-align: left;
+}
+
+html[dir="ltr"] .home-layout .search-input-center {
+  direction: ltr !important;
+  text-align: left !important;
+  padding-left: 50px;
+  padding-right: 20px;
+}
+
+html[dir="rtl"] .home-layout .search-input-center {
+  direction: rtl !important;
+  text-align: right !important;
+  padding-right: 50px;
+  padding-left: 20px;
+}
+
+html[dir="ltr"] .home-layout .search-icon-center {
+  left: 18px;
+  right: auto;
+}
+
+html[dir="rtl"] .home-layout .search-icon-center {
+  right: 18px;
+  left: auto;
+}

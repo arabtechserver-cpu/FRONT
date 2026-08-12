@@ -650,11 +650,11 @@ export default function MainLayout({ children }) {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          padding: '0 20px',
-          height: '70px',
-          background: theme === 'dark' ? 'rgba(10, 15, 30, 0.8)' : 'rgba(255, 255, 255, 0.8)',
+          padding: '0 12px',
+          height: '64px',
+          background: 'var(--navbar-bg)',
           backdropFilter: 'blur(12px)',
-          borderBottom: theme === 'dark' ? '1px solid rgba(255, 255, 255, 0.05)' : '1px solid rgba(0, 0, 0, 0.05)',
+          borderBottom: '1px solid var(--navbar-border-ref)',
           position: 'sticky',
           top: 0,
           zIndex: 1000
@@ -662,7 +662,7 @@ export default function MainLayout({ children }) {
           <div className="custom-navbar-glow"></div>
           
           {/* Right Section (Logo & Mobile Menu) */}
-          <div className="flex items-center gap-3" style={{ minWidth: 0 }}>
+          <div className="flex items-center gap-2" style={{ minWidth: 0 }}>
             <button className="header-btn header-menu-trigger w-9 h-9" type="button" aria-label={t("menu")} onClick={() => setMenuOpen(!menuOpen)} style={{ flexShrink: 0 }}>
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-menu w-5 h-5">
                 <line x1="4" x2="20" y1="12" y2="12"></line>
@@ -689,7 +689,7 @@ export default function MainLayout({ children }) {
 
 
           {/* Left Section (Auth & Theme & Home link) */}
-          <div className="flex items-center gap-3" style={{ position: 'relative' }}>
+          <div className="flex items-center gap-2" style={{ position: 'relative' }}>
             <LanguageSwitcher />
             <Link href="/" className={`desktop-link hidden lg-block ${pathname === '/' ? 'active' : ''}`} style={{ fontWeight: 'bold' }}>{t("home")}</Link>
             <div
@@ -710,13 +710,11 @@ export default function MainLayout({ children }) {
               >
                 {t("services")} <span style={{fontSize: '0.7rem'}}>▼</span>
               </Link>
-              <div className="services-dropdown" style={{ 
-                position: 'absolute', top: '100%', right: 0, background: 'rgba(15, 23, 42, 0.98)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '8px', minWidth: '200px', display: servicesMenuOpen ? 'flex' : 'none', flexDirection: 'column', gap: '4px', zIndex: 100, boxShadow: '0 10px 25px rgba(0,0,0,0.5)', marginTop: '5px'
-              }}>
-                <Link href="/services" onClick={() => setServicesMenuOpen(false)} className="header-dropdown-item" style={{ padding: '8px 12px', fontSize: '0.9rem' }}>⭐ {t("allServices")}</Link>
-                <Link href="/services?type=imei" onClick={() => setServicesMenuOpen(false)} className="header-dropdown-item" style={{ padding: '8px 12px', fontSize: '0.9rem' }}>📱 {t("imeiServices")}</Link>
-                <Link href="/services?type=server" onClick={() => setServicesMenuOpen(false)} className="header-dropdown-item" style={{ padding: '8px 12px', fontSize: '0.9rem' }}>💻 {t("serverServices")}</Link>
-                <Link href="/services?type=remote" onClick={() => setServicesMenuOpen(false)} className="header-dropdown-item" style={{ padding: '8px 12px', fontSize: '0.9rem' }}>🌐 {t("remoteServices")}</Link>
+              <div className="services-dropdown" style={{ display: servicesMenuOpen ? 'flex' : 'none' }}>
+                <Link href="/services" onClick={() => setServicesMenuOpen(false)} className="header-dropdown-item">⭐ {t("allServices")}</Link>
+                <Link href="/services?type=imei" onClick={() => setServicesMenuOpen(false)} className="header-dropdown-item">📱 {t("imeiServices")}</Link>
+                <Link href="/services?type=server" onClick={() => setServicesMenuOpen(false)} className="header-dropdown-item">💻 {t("serverServices")}</Link>
+                <Link href="/services?type=remote" onClick={() => setServicesMenuOpen(false)} className="header-dropdown-item">🌐 {t("remoteServices")}</Link>
               </div>
             </div>
             <Link href="/orders" className={`desktop-link hidden lg-block ${pathname.startsWith('/orders') ? 'active' : ''}`} style={{ fontWeight: 'bold' }}>{t("orders")}</Link>
@@ -764,7 +762,7 @@ export default function MainLayout({ children }) {
         </header>
 
         {/* Global Notice Bar (Sticky Marquee) */}
-        <div className={`notice-bar-container notice-slim ${isHomePage ? "home-notice" : ""}`} style={{ position: 'sticky', top: '70px', zIndex: 998, padding: '0', background: 'transparent' }}>
+        <div className={`notice-bar-container notice-slim ${isHomePage ? "home-notice" : ""}`} style={{ position: 'sticky', top: '64px', zIndex: 998, padding: '0', background: 'transparent' }}>
           <div className="container">
             <div className="notice-row" dir={meta.dir} data-i18n-skip aria-label={t("announcement")}>
               <div className="notice-track" role="presentation">

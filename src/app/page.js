@@ -319,8 +319,8 @@ export default function Home() {
             placeholder="ابحث عن الخدمات، الأقسام، والباقات..."
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
-            dir="ltr"
-            style={{ direction: "ltr", textAlign: "left" }}
+            dir={meta.dir}
+            style={{ direction: meta.dir, textAlign: meta.dir === "rtl" ? "right" : "left" }}
           />
           <span className="search-icon-center">🔍</span>
         </div>
