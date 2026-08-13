@@ -2,13 +2,11 @@
 
 import React, { useEffect, useState } from "react";
 import { API_BASE_URL } from "@/config";
-import { useI18n } from "@/lib/i18n";
 
 const fallbackRate = 600;
 
 export default function ExchangeRatesTab({ token }) {
-  const { t, meta } = useI18n();
-  const [mode, setMode] = useState("auto");
+    const [mode, setMode] = useState("auto");
   const [rate, setRate] = useState("");
   const [currentRate, setCurrentRate] = useState(null);
   const [updatedAt, setUpdatedAt] = useState(null);
@@ -32,7 +30,7 @@ export default function ExchangeRatesTab({ token }) {
     try {
       const response = await fetch(`${API_BASE_URL}/api/exchange-rates/sdg`);
       const data = await response.json();
-      if (!response.ok) throw new Error(data.message || t("exchangeRateLoadError"));
+      if (!response.ok) throw new Error(data.message || "فشل في تحميل سعر الصرف");
       applyRate(data);
     } catch (err) {
       setError(err.message);
@@ -56,9 +54,9 @@ export default function ExchangeRatesTab({ token }) {
         body: JSON.stringify({ mode, rate: Number(rate) })
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.message || t("exchangeRateSaveError"));
+      if (!response.ok) throw new Error(data.message || "فشل في حفظ إعدادات السعر");
       applyRate(data);
-      setMessage(t("exchangeRateSaved"));
+      setMessage("تم حفظ الإعدادات بنجاح!");
     } catch (err) {
       setError(err.message);
     } finally {
@@ -76,9 +74,9 @@ export default function ExchangeRatesTab({ token }) {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.message || t("exchangeRateRefreshError"));
+      if (!response.ok) throw new Error(data.message || "فشل في تحديث السعر");
       applyRate(data);
-      setMessage(t("exchangeRateRefreshed"));
+      setMessage("تم تحديث السعر بنجاح!");
     } catch (err) {
       setError(err.message);
     } finally {
@@ -87,23 +85,23 @@ export default function ExchangeRatesTab({ token }) {
   };
 
   return (
-    <div dir={meta.dir} style={{ display: "flex", flexDirection: "column", gap: 20, maxWidth: 900 }}>
+    <div dir={"rtl"} style={{ display: "flex", flexDirection: "column", gap: 20, maxWidth: 900 }}>
       <div style={{ background: "var(--bg-glass)", border: "var(--border-glass)", borderRadius: 16, padding: 24 }}>
-        <h2 style={{ margin: 0, color: "var(--text-main)", fontSize: "1.45rem" }}>{t("sdgExchangeRate")}</h2>
+        <h2 style={{ margin: 0, color: "var(--text-main)", fontSize: "1.45rem" }}>{"أسعار الصرف (الدولار / الجنيه السوداني)"}</h2>
         <p style={{ margin: "8px 0 0", color: "var(--text-muted)", lineHeight: 1.7 }}>
-          {t("sdgExchangeDescription")}
+          {"قم بإدارة سعر صرف الدولار مقابل الجنيه السوداني. يمكنك تحديد السعر يدوياً أو تفعيل التحديث التلقائي."}
         </p>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 14 }}>
         <div style={{ background: "rgba(14,165,233,0.1)", border: "1px solid rgba(14,165,233,0.3)", borderRadius: 14, padding: 20 }}>
-          <div style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>{t("oneUsdEquals")}</div>
+          <div style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>{"1 دولار أمريكي ="}</div>
           <strong style={{ display: "block", marginTop: 8, color: "#38bdf8", fontSize: "1.65rem" }}>
             {loading ? "..." : `${Number(currentRate || fallbackRate).toFixed(2)} SDG`}
           </strong>
         </div>
         <div style={{ background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.3)", borderRadius: 14, padding: 20 }}>
-          <div style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>{t("oneSdgEquals")}</div>
+          <div style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>{"1 جنيه سوداني ="}</div>
           <strong style={{ display: "block", marginTop: 8, color: "#34d399", fontSize: "1.65rem" }}>
             {loading ? "..." : `$${(1 / Number(currentRate || fallbackRate)).toFixed(6)} USD`}
           </strong>
@@ -112,29 +110,29 @@ export default function ExchangeRatesTab({ token }) {
 
       <div style={{ background: "var(--bg-glass)", border: "var(--border-glass)", borderRadius: 16, padding: 24, display: "flex", flexDirection: "column", gap: 18 }}>
         <label style={{ display: "flex", flexDirection: "column", gap: 8, color: "var(--text-main)", fontWeight: 700 }}>
-          {t("status")}
+          {"حالة التحديث"}
           <select value={mode} onChange={(event) => setMode(event.target.value)} style={{ padding: 12, borderRadius: 10, background: "var(--input-bg)", color: "var(--text-main)", border: "var(--border-glass)" }}>
-            <option value="auto">{t("automaticRate")}</option>
-            <option value="manual">{t("manualRate")}</option>
+            <option value="auto">{"تلقائي (جلب السعر عبر API)"}</option>
+            <option value="manual">{"تثبيت يدوي"}</option>
           </select>
         </label>
 
         <label style={{ display: "flex", flexDirection: "column", gap: 8, color: "var(--text-main)", fontWeight: 700 }}>
-          {t("sdgPerUsd")}
+          {"سعر الجنيه مقابل الدولار"}
           <input type="number" min="0.000001" step="0.000001" value={rate} onChange={(event) => setRate(event.target.value)} disabled={mode !== "manual"} style={{ padding: 12, borderRadius: 10, background: "var(--input-bg)", color: "var(--text-main)", border: "var(--border-glass)", opacity: mode === "manual" ? 1 : 0.65 }} />
         </label>
 
         <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
           <button type="button" onClick={saveSettings} disabled={saving || loading} className="glass-btn glass-btn-primary">
-            {saving ? t("savingRate") : t("saveRateSettings")}
+            {saving ? "جاري الحفظ..." : "حفظ الإعدادات"}
           </button>
           <button type="button" onClick={refreshRate} disabled={refreshing || loading} className="glass-btn">
-            {refreshing ? t("refreshingRate") : t("refreshRate")}
+            {refreshing ? "جاري التحديث..." : "تحديث السعر الآن"}
           </button>
         </div>
 
         <div style={{ color: "var(--text-muted)", fontSize: "0.84rem", lineHeight: 1.7 }}>
-          <div>{t("lastRateUpdate")}: {updatedAt ? new Date(updatedAt).toLocaleString(meta.htmlLang || "ar") : t("exchangeRateUnavailable")}</div>
+          <div>{"آخر تحديث"}: {updatedAt ? new Date(updatedAt).toLocaleString("ar") : "غير متوفر"}</div>
         </div>
 
         {(message || error) && (
