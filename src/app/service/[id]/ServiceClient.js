@@ -370,6 +370,22 @@ export default function ServiceDetail({ params, initialService = null }) {
 
   // Parse dynamic fields from service
   const serviceFields = useMemo(() => {
+    if (!service) return null;
+    if (service.is_bundle && service.bundle_services_data && selectedSubServiceId) {
+      return service.bundle_services_data.find(s => s.id.toString() === selectedSubServiceId.toString()) || service;
+    }
+    return service;
+  }, [service, selectedSubServiceId]);
+
+  const hasImage = useMemo(() => {
+    if (!activeService?.image) return false;
+    const img = activeService.image.trim();
+    if (img === "" || img === "default" || img.endsWith("/default")) return false;
+    return !imageError;
+  }, [activeService?.image, imageError]);
+
+  // Parse dynamic fields from service
+  const serviceFields = useMemo(() => {
     if (!activeService) return [];
 
     let sFields = [];
@@ -407,6 +423,11 @@ export default function ServiceDetail({ params, initialService = null }) {
       const fieldLabel = String(f.label || "").toLowerCase().trim();
       if (!fieldId && !fieldLabel) continue;
 
+      // Make IMEI optional as requested by the user
+      if (fieldId === 'imei' || fieldId === 'sn' || fieldId === 'ecid') {
+        f.required = false;
+      }
+      
       const idKey = fieldId ? `id_${fieldId}` : null;
       const labelKey = fieldLabel ? `lbl_${fieldLabel}` : null;
 
