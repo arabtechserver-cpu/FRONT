@@ -85,7 +85,7 @@ export default function AiChatWidget() {
       
       {/* Chat Window */}
       {isOpen && (
-        <div style={{
+        <div className="ai-chat-window" style={{
           width: '350px',
           height: '500px',
           maxHeight: '80vh',
@@ -102,7 +102,7 @@ export default function AiChatWidget() {
           animation: 'fadeIn 0.3s ease'
         }}>
           {/* Header */}
-          <div style={{
+          <div className="ai-chat-header" style={{
             padding: '15px 20px',
             borderBottom: '1px solid var(--border-glass, rgba(255, 255, 255, 0.1))',
             display: 'flex',
@@ -145,13 +145,13 @@ export default function AiChatWidget() {
             gap: '12px'
           }}>
             {messages.length === 0 && (
-              <div style={{ textAlign: 'center', color: 'var(--text-muted, #aaa)', marginTop: '20px', fontSize: '0.9rem' }}>
+              <div className="ai-chat-empty" style={{ textAlign: 'center', color: 'var(--text-muted, #aaa)', marginTop: '20px', fontSize: '0.9rem' }}>
                 مرحباً! أنا المساعد الذكي، يمكنني مساعدتك في البحث عن الخدمات ومعرفة رصيدك وطلباتك. تفضل بسؤالي!
               </div>
             )}
             
             {messages.map((msg, idx) => (
-              <div key={idx} style={{
+              <div key={idx} className={`ai-chat-message ${msg.role}`} style={{
                 alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start',
                 maxWidth: '85%',
                 background: msg.role === 'user' ? 'linear-gradient(135deg, #00b4d8, #0077b6)' : 'rgba(255, 255, 255, 0.05)',
@@ -192,7 +192,7 @@ export default function AiChatWidget() {
           </div>
 
           {/* Input Area */}
-          <form onSubmit={handleSend} style={{
+          <form className="ai-chat-form" onSubmit={handleSend} style={{
             padding: '15px',
             borderTop: '1px solid var(--border-glass, rgba(255, 255, 255, 0.1))',
             display: 'flex',
@@ -215,7 +215,7 @@ export default function AiChatWidget() {
                 fontFamily: 'inherit'
               }}
             />
-            <button 
+            <button className="ai-chat-send" 
               type="submit"
               disabled={isLoading || !input.trim()}
               style={{
@@ -293,6 +293,21 @@ export default function AiChatWidget() {
         .ai-chat-input::placeholder {
           color: rgba(255, 255, 255, 0.6) !important;
           -webkit-text-fill-color: rgba(255, 255, 255, 0.6) !important;
+        }
+        .ai-chat-window { color: var(--text-main, #f8fafc); background: var(--bg-secondary, #0f172a) !important; border-color: var(--border-glass, rgba(148,163,184,.25)) !important; }
+        .ai-chat-header, .ai-chat-form { border-color: var(--border-glass, rgba(148,163,184,.25)) !important; }
+        .ai-chat-message.assistant { background: var(--bg-glass, rgba(255,255,255,.07)) !important; color: var(--text-main, #f8fafc) !important; border-color: var(--border-glass, rgba(148,163,184,.25)) !important; }
+        .ai-chat-message.user { color: #fff !important; }
+        [data-theme="light"] .ai-chat-window { background: #ffffff !important; color: #0f172a; box-shadow: 0 18px 55px rgba(15,23,42,.18); }
+        [data-theme="light"] .ai-chat-header { background: #ecfeff !important; }
+        [data-theme="light"] .ai-chat-form { background: #f8fafc; }
+        [data-theme="light"] .ai-chat-input { background: #fff !important; color: #0f172a !important; -webkit-text-fill-color: #0f172a !important; border-color: #cbd5e1 !important; }
+        [data-theme="light"] .ai-chat-input::placeholder { color: #64748b !important; -webkit-text-fill-color: #64748b !important; }
+        @media (max-width: 560px) {
+          .ai-chat-window { width: min(390px, calc(100vw - 24px)) !important; height: min(620px, calc(100vh - 150px)) !important; border-radius: 18px !important; }
+          .ai-chat-widget-container { left: 12px; right: 12px; bottom: 14px; align-items: flex-start; }
+          .ai-chat-form { padding: 10px !important; gap: 7px !important; }
+          .ai-chat-message { max-width: 92% !important; font-size: .9rem !important; }
         }
       `}</style>
     </div>
