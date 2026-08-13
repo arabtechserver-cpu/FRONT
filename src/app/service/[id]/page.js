@@ -1,5 +1,5 @@
 import ServiceClient from "./ServiceClient";
-import { API_BASE_URL, SITE_URL } from "@/config";
+import { API_BASE_URL, SITE_URL, fetchWithTimeout } from "@/config";
 import { cache } from "react";
 
 const staticServices = [
@@ -92,7 +92,11 @@ const staticServices = [
 
 const getServiceData = cache(async function getServiceData(id) {
   try {
-    const res = await fetch(`${API_BASE_URL}/api/services/${id}`, { next: { revalidate: 3600 } });
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/api/services/${id}`,
+      { cache: "no-store" },
+      10000
+    );
     if (res.ok) {
       return await res.json();
     }

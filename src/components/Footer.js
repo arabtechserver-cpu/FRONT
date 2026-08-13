@@ -87,7 +87,7 @@ export default function Footer({ siteName = "Arab Tech Server", showServices = f
             <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "12px" }}>
               <li><Link href="/terms" style={linkStyle} onMouseEnter={(e) => setHover(e, "#fff")} onMouseLeave={(e) => setHover(e, "#94a3b8")}>{t("terms")}</Link></li>
               <li><Link href="/privacy" style={linkStyle} onMouseEnter={(e) => setHover(e, "#fff")} onMouseLeave={(e) => setHover(e, "#94a3b8")}>{t("privacy")}</Link></li>
-              <li><Link href="/terms" style={linkStyle} onMouseEnter={(e) => setHover(e, "#fff")} onMouseLeave={(e) => setHover(e, "#94a3b8")}>{t("refundPolicy")}</Link></li>
+              <li><Link href="/terms#refund-policy" style={linkStyle} onMouseEnter={(e) => setHover(e, "#fff")} onMouseLeave={(e) => setHover(e, "#94a3b8")}>{t("refundPolicy")}</Link></li>
             </ul>
           </div>
 
@@ -117,11 +117,6 @@ export default function Footer({ siteName = "Arab Tech Server", showServices = f
           <p style={{ color: "#64748b", fontSize: "0.85rem", margin: 0, textAlign: "center" }}>
             {t("rightsReserved", { year: new Date().getFullYear(), site: siteName })}
           </p>
-          <div style={{ display: "flex", gap: "15px", alignItems: "center" }}>
-            <span style={{ color: "#64748b", fontSize: "0.8rem" }}>
-              Developed with ❤️ by <a href="https://portfolio-18f21.web.app/" target="_blank" rel="noopener noreferrer" style={{ color: "#38bdf8", textDecoration: "none", fontWeight: "bold" }}>Mina Samir</a>
-            </span>
-          </div>
         </div>
       </div>
     </footer>

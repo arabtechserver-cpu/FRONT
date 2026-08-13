@@ -425,7 +425,9 @@ export default function WalletPage() {
   }
 
   return (
-    <div dir={meta.dir} style={{ display: "flex", flexDirection: "column", gap: "24px", maxWidth: "800px", margin: "0 auto", textAlign: meta.dir === "rtl" ? "right" : "left" }}>
+    <div className="wallet-layout-wrapper" dir={meta.dir} style={{ display: "flex", flexDirection: "column", gap: "24px", maxWidth: "1000px", margin: "0 auto" }}>
+      
+      {/* PayPal Modals stay the same */}
 
       {/* ── PayPal Capturing Overlay ── */}
       {capturingPaypal && (
@@ -463,302 +465,282 @@ export default function WalletPage() {
 
       {/* ── PayPal Error Toast ── */}
       {paypalError && (
-        <div style={{ position: "fixed", top: "20px", left: "50%", transform: "translateX(-50%)", background: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.45)", borderRadius: "14px", padding: "14px 24px", color: "#ef4444", fontWeight: 700, zIndex: 9998, display: "flex", alignItems: "center", gap: "10px", backdropFilter: "blur(10px)", boxShadow: "0 10px 30px rgba(0,0,0,0.4)" }}>
+        <div style={{ position: "fixed", top: "20px", left: "50%", transform: "translateX(-50%)", background: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.45)", borderRadius: "14px", padding: "14px 24px", color: "#ef4444", fontWeight: 700, zIndex: 9998, display: "flex", alignItems: "center", gap: "10px", backdropFilter: "blur(10px)", boxShadow: "0 10px 30px var(--bg-secondary)" }}>
           <span>⚠️</span>
           <span>{paypalError}</span>
           <button onClick={() => setPaypalError("")} style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer", fontSize: "1.3rem", marginRight: "8px", lineHeight: 1 }}>✕</button>
         </div>
       )}
 
+      
       {/* ── Wallet Balance Top Card ── */}
-      <section style={{ 
-        padding: "40px 30px", 
-        borderRadius: "24px", 
-        textAlign: "center", 
-        background: "linear-gradient(135deg, rgba(10, 15, 30, 0.9) 0%, rgba(30, 41, 59, 0.95) 100%)", 
-        border: "1px solid rgba(234, 179, 8, 0.3)", 
-        boxShadow: "0 20px 40px -10px rgba(234, 179, 8, 0.15), inset 0 0 20px rgba(234, 179, 8, 0.05)",
-        position: "relative",
-        overflow: "hidden"
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+        <h2 className="section-title" style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <span>محفظتي</span>
+          <span style={{ fontSize: '1.8rem', color: 'var(--primary-color)' }}>👛</span>
+        </h2>
+      </div>
+
+      <section className="glass-panel" style={{ 
+        padding: '30px 40px', 
+        borderRadius: '24px', 
+        position: 'relative',
+        overflow: 'hidden',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        background: 'var(--bg-glass-deep)',
+        border: '1px solid var(--border-glass)',
+        boxShadow: '0 10px 40px var(--bg-secondary)',
+        minHeight: '260px',
+        marginBottom: '24px',
+        flexWrap: 'wrap',
+        gap: '20px'
       }}>
         {/* Glow effect */}
-        <div style={{ position: "absolute", top: "-50%", left: "-50%", width: "200%", height: "200%", background: "radial-gradient(circle, rgba(234,179,8,0.05) 0%, transparent 60%)", pointerEvents: "none" }}></div>
+        <div style={{ position: 'absolute', top: '-50%', right: '-20%', width: '70%', height: '200%', background: 'radial-gradient(ellipse at center, rgba(22, 119, 238, 0.1) 0%, transparent 70%)', pointerEvents: 'none' }}></div>
         
-        <h2 style={{ color: "var(--text-main)", fontSize: "1.1rem", marginBottom: "15px", fontWeight: "bold", position: "relative", zIndex: 2 }}>الرصيد الحالي للمحفظة</h2>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", position: "relative", zIndex: 2 }}>
-          <div style={{ fontSize: "3.5rem", fontWeight: 900, background: "linear-gradient(to right, #fde047, #eab308, #ca8a04)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", filter: "drop-shadow(0 4px 12px rgba(234,179,8,0.3))" }}>
-            $ {Number(customer?.balance || 0).toFixed(2)}
+        {/* Right side (Text & Button in RTL) */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '15px', position: 'relative', zIndex: 2, flex: 1, minWidth: '300px' }}>
+          <span style={{ color: 'var(--text-muted)', fontSize: '1.15rem', fontWeight: 'bold' }}>رصيد المحفظة</span>
+          
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+            <div style={{ fontSize: 'clamp(3rem, 5vw, 4.5rem)', fontWeight: 900, color: 'var(--text-main)', letterSpacing: '-1px', lineHeight: 1 }}>
+              {Number(customer?.balance || 0).toFixed(2)}
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+              <span style={{ fontSize: '0.9rem', color: 'var(--text-main)', fontWeight: 'bold', background: 'var(--bg-hover)', padding: '2px 8px', borderRadius: '8px', border: '1px solid var(--border-color)', marginBottom: '4px' }}>
+                {baseCurrency || 'SAR'}
+              </span>
+              <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>ريال سعودي</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '45px', height: '45px', borderRadius: '50%', border: '2px solid var(--border-color)', marginLeft: '10px' }}>
+              <span style={{ fontSize: '1.4rem', color: 'var(--text-muted)', opacity: 0.5 }}>✓</span>
+            </div>
           </div>
-          <span style={{ fontSize: "1.3rem", color: "#eab308", fontWeight: "bold", opacity: 0.9, marginTop: "15px" }}>USD</span>
+
+          <button 
+            onClick={() => {
+              const rechargeSection = document.getElementById('recharge-section');
+              if (rechargeSection) rechargeSection.scrollIntoView({ behavior: 'smooth' });
+            }}
+            className="glass-btn glass-btn-primary" 
+            style={{ marginTop: '10px', padding: '16px 40px', borderRadius: '16px', fontSize: '1.2rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '10px', width: 'clamp(200px, 100%, 280px)', justifyContent: 'center', boxShadow: '0 8px 25px rgba(22,119,238,0.3)' }}
+          >
+            <span>شحن الرصيد</span>
+            <span style={{ fontSize: '1.5rem', fontWeight: '300' }}>+</span>
+          </button>
+        </div>
+
+        {/* Left side (3D Graphic in RTL) */}
+        <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto', paddingRight: '20px' }}>
+          <div style={{ width: 'clamp(150px, 30vw, 280px)', height: 'clamp(150px, 30vw, 280px)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 'clamp(6rem, 15vw, 10rem)', filter: 'drop-shadow(0 20px 30px rgba(22,119,238,0.25))' }}>
+             💳
+          </div>
         </div>
       </section>
 
-      {/* ── Recharge Wallet Section ── */}
-      <section style={{ padding: "18px 20px", borderRadius: "16px", background: "rgba(14, 165, 233, 0.08)", border: "1px solid rgba(14, 165, 233, 0.25)", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "12px" }}>
-        <div>
-          <div style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>{t("sdgExchangeRate")}</div>
-          <strong style={{ display: "block", color: "#38bdf8", fontSize: "1.2rem", marginTop: "5px" }}>
-            {t("oneUsdEquals")} {sdgRate ? Number(sdgRate).toFixed(2) : "..."} SDG
-          </strong>
-        </div>
-        <div style={{ color: "#34d399", fontWeight: 800, direction: "ltr" }}>
-          {t("oneSdgEquals")} {sdgRate ? `$${(1 / Number(sdgRate)).toFixed(6)}` : "..."} USD
-        </div>
-        <div style={{ width: "100%", color: "var(--text-muted)", fontSize: "0.75rem" }}>
-          {sdgRateInfo?.mode === "manual" ? t("manualRate") : t("exchangeRateUpdated")}
-        </div>
-      </section>
-
-      <section className="glass-panel" style={{ display: "flex", flexDirection: "column", gap: "20px", padding: "24px", borderRadius: "24px" }}>
-        <div>
-          <h2 style={{ fontWeight: 900, fontSize: "1.4rem", marginBottom: "8px", display: "flex", alignItems: "center", gap: "8px" }}>
-            <span style={{ fontSize: "1.6rem" }}>⚡</span> {t("chargeWallet")}
-          </h2>
-          <p style={{ color: "var(--text-muted)", fontSize: "0.95rem" }}>اختر طريقة الدفع المناسبة لشحن رصيدك.</p>
-        </div>
-
-        {loadingSettings ? (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "16px", marginBottom: "24px" }}>
-            {[1, 2, 3].map(i => (
-              <div key={i} style={{ 
-                height: "170px", 
-                background: "rgba(255,255,255,0.03)", 
-                borderRadius: "20px", 
-                border: "1px solid rgba(255,255,255,0.05)",
-                animation: "pulse 1.5s ease-in-out infinite" 
-              }}></div>
-            ))}
+      
+      <div id="recharge-section" style={{ display: "flex", flexWrap: "wrap", gap: "24px" }}>
+        
+        {/* RIGHT COLUMN (Arabic Right): Security Features (Now First in RTL) */}
+        <section className="glass-panel" style={{ flex: "1 1 300px", padding: "40px 30px", borderRadius: "24px", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", height: "fit-content" }}>
+          <h3 style={{ fontSize: "1.4rem", fontWeight: 900, marginBottom: "30px" }}>أمان محفظتك</h3>
+          
+          <div style={{ width: "160px", height: "160px", background: "url('/images/shield-3d.png') center/contain no-repeat", borderRadius: "30px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "5rem", marginBottom: "30px", border: "1px solid rgba(56, 189, 248, 0.25)", filter: "drop-shadow(0 15px 25px rgba(56,189,248,0.2))" }}>
+            {/* Fallback if no image */}
+            <span style={{opacity: 0.8}}>🛡️</span>
           </div>
-        ) : (() => {
-          const allMethods = paymentMethods;
+          
+          <div style={{ display: "flex", flexDirection: "column", gap: "25px", width: "100%", textAlign: "right" }}>
+            <div style={{ display: "flex", gap: "15px", alignItems: "flex-start" }}>
+              <div style={{ color: "var(--brand-blue)", fontSize: "1.8rem" }}>🛡️</div>
+              <div>
+                <h4 style={{ margin: "0 0 5px 0", fontSize: "1.1rem", fontWeight: 800 }}>تشفير وحماية متقدمة</h4>
+                <p style={{ margin: 0, fontSize: "0.9rem", color: "var(--text-muted)" }}>تحافظ على أمان بياناتك ورصيدك</p>
+              </div>
+            </div>
+            <div style={{ display: "flex", gap: "15px", alignItems: "flex-start" }}>
+              <div style={{ color: "var(--brand-blue)", fontSize: "1.8rem" }}>🔒</div>
+              <div>
+                <h4 style={{ margin: "0 0 5px 0", fontSize: "1.1rem", fontWeight: 800 }}>معاملات آمنة</h4>
+                <p style={{ margin: 0, fontSize: "0.9rem", color: "var(--text-muted)" }}>جميع العمليات محمية ومشفرة</p>
+              </div>
+            </div>
+            <div style={{ display: "flex", gap: "15px", alignItems: "flex-start" }}>
+              <div style={{ color: "var(--brand-blue)", fontSize: "1.8rem" }}>👥</div>
+              <div>
+                <h4 style={{ margin: "0 0 5px 0", fontSize: "1.1rem", fontWeight: 800 }}>خصوصية تامة</h4>
+                <p style={{ margin: 0, fontSize: "0.9rem", color: "var(--text-muted)" }}>نحن لا نشارك بياناتك مع أي جهة</p>
+              </div>
+            </div>
+          </div>
+        </section>
 
-          if (allMethods.length === 0) {
-            return <div style={{ color: "var(--text-muted)", textAlign: "center", padding: "40px" }}>لا توجد خدمات شحن متاحة حالياً. يرجى تهيئة طرق الدفع من لوحة التحكم.</div>;
-          }
+        {/* LEFT COLUMN (Arabic Left): Recharge Wallet (Now Second in RTL) */}
+        <section className="glass-panel" style={{ flex: "2 1 600px", display: "flex", flexDirection: "column", gap: "25px", padding: "40px", borderRadius: "24px" }}>
+          
+          {/* Header */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <h2 style={{ fontWeight: 900, fontSize: "1.5rem", margin: 0 }}>شحن الرصيد (يدوي)</h2>
+            <span style={{ fontSize: "1.8rem", color: "var(--primary-color)" }}>💳</span>
+          </div>
 
-          return (
-            <>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "16px", marginBottom: "24px" }}>
-                {allMethods.map((pm) => {
-                const isSelected = selectedMethodId === pm.id;
-                return (
-                  <div
-                    key={pm.id}
-                    onClick={() => {
-                      setError(""); // Clear error when switching
-                      setSelectedMethodId(pm.id);
-                    }}
-                    style={{
-                      border: isSelected ? "2px solid #3b82f6" : "1px solid rgba(255,255,255,0.08)",
-                      borderRadius: "20px",
-                      background: isSelected ? "linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(37, 99, 235, 0.05) 100%)" : "rgba(255,255,255,0.02)",
-                      overflow: "hidden",
-                      transition: "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
-                      cursor: "pointer",
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      padding: "25px",
-                      gap: "15px",
-                      textAlign: "center",
-                      boxShadow: isSelected ? "0 10px 30px -10px rgba(59, 130, 246, 0.4)" : "0 4px 6px -1px rgba(0,0,0,0.1)",
-                      transform: isSelected ? "translateY(-5px)" : "translateY(0)"
-                    }}
-                  >
-                    {pm.logo ? (
-                      <div style={{ width: "100%", height: "120px", borderRadius: "12px", display: "flex", justifyContent: "center", alignItems: "center", overflow: "hidden" }}>
-                        <img src={pm.logo.startsWith("data:image") ? pm.logo : `${API_BASE_URL}${pm.logo}`} alt={pm.name} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
-                      </div>
-                    ) : (
-                      <div style={{ fontSize: "3rem" }}>
-                        {pm.name.toLowerCase().includes("paypal") || pm.name.includes("باي بال") ? "🅿️" : pm.name.toLowerCase().includes("bnb") || pm.name.toLowerCase().includes("crypto") ? "🟡" : "🏦"}
-                      </div>
-                    )}
-                    <span style={{ fontSize: "1.2rem", fontWeight: 900, color: isSelected ? "#3b82f6" : "var(--text-main)" }}>
-                      {pm.name}
-                    </span>
-                  </div>
-                );
-              })}
+          {/* Wizard UI */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", margin: "20px 0 30px", position: "relative" }}>
+            <div style={{ position: "absolute", top: "15px", right: "10%", left: "10%", height: "2px", background: "var(--border-color)", zIndex: 0 }}></div>
+            
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", zIndex: 1 }}>
+              <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: "var(--primary-color)", color: "white", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: "bold", fontSize: "1rem", boxShadow: "0 4px 10px rgba(22,119,238,0.4)" }}>1</div>
+              <div style={{ fontWeight: "bold", fontSize: "0.95rem" }}>إنشاء طلب</div>
+              <div style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>تم إنشاء الطلب</div>
             </div>
 
-            {selectedMethodId && allMethods.find(pm => pm.id === selectedMethodId) && (
-              <div 
-                ref={paymentDetailsRef}
-                style={{
-                border: "1px solid var(--primary-color)",
-                borderRadius: "16px",
-                background: "rgba(255,255,255,0.02)",
-                padding: "24px",
-                animation: "fadeIn 0.4s ease-in-out"
-              }}>
-                {(() => {
-                  const pm = allMethods.find(pm => pm.id === selectedMethodId);
-                  const isPaypal = pm.isDirectPaypal || pm.name.toLowerCase().includes("paypal") || pm.name.includes("باي بال");
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", zIndex: 1 }}>
+              <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: "var(--bg-glass)", border: "1px solid var(--text-muted)", color: "var(--text-muted)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: "bold", fontSize: "1rem" }}>2</div>
+              <div style={{ fontWeight: "bold", fontSize: "0.95rem", color: "var(--text-muted)" }}>قيد المراجعة</div>
+              <div style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>جار التحقق من الإيصال</div>
+            </div>
 
-                  if (isPaypal) {
-                    return (
-                      <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: "14px", flexWrap: "wrap" }}>
-                          <div style={{ background: "linear-gradient(135deg, #003087, #009cde)", borderRadius: "12px", padding: "10px 18px", fontWeight: 900, color: "var(--text-main)", fontSize: "1rem", letterSpacing: "1px", display: "flex", alignItems: "center", gap: "6px" }}>
-                            <span style={{ fontSize: "1.3rem" }}>🅿️</span> PayPal
-                          </div>
-                          <div>
-                            <div style={{ fontWeight: 900, fontSize: "1.1rem", color: "var(--text-main)" }}>الدفع المباشر بـ PayPal</div>
-                            <div style={{ color: "#60a5fa", fontSize: "0.83rem", marginTop: "2px" }}>دفع في نفس الصفحة (In-Context) • فوري</div>
-                          </div>
-                        </div>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", zIndex: 1 }}>
+              <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: "var(--bg-glass)", border: "1px solid var(--text-muted)", color: "var(--text-muted)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: "bold", fontSize: "1rem" }}>3</div>
+              <div style={{ fontWeight: "bold", fontSize: "0.95rem", color: "var(--text-muted)" }}>تم الشحن</div>
+              <div style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>تمت إضافة الرصيد</div>
+            </div>
+          </div>
 
-                        <div>
-                          <input
-                            id="paypal-amount-input"
-                            type="number"
-                            min="1"
-                            step="0.01"
-                            placeholder="أدخل المبلغ بالدولار USD (مثال: 10)"
-                            value={paypalAmount}
-                            onChange={(e) => setPaypalAmount(e.target.value)}
-                            style={{
-                              width: "100%", padding: "15px 18px", fontSize: "1.1rem", borderRadius: "14px",
-                              background: "rgba(255,255,255,0.05)", border: "2px solid rgba(255,255,255,0.15)",
-                              color: "var(--text-main)", outline: "none", boxSizing: "border-box",
-                              transition: "border-color 0.2s", marginBottom: "16px"
-                            }}
-                            onFocus={(e) => e.target.style.borderColor = "#0070ba"}
-                            onBlur={(e) => e.target.style.borderColor = "rgba(255,255,255,0.15)"}
-                          />
-                        </div>
+          <div style={{ background: "var(--bg-secondary)", borderRadius: "20px", padding: "30px", border: "1px solid var(--border-glass)", display: "flex", flexDirection: "column", gap: "25px" }}>
+            <div style={{ textAlign: "center" }}>
+              <h3 style={{ fontSize: "1.3rem", fontWeight: "bold", margin: "0 0 5px 0" }}>رفع الإيصال</h3>
+              <p style={{ color: "var(--text-muted)", fontSize: "0.9rem", margin: 0 }}>قم برفع صورة الإيصال بعد التحويل البنكي</p>
+            </div>
 
-                        {paypalAmount && Number(paypalAmount) >= 1 ? (
-                          <div style={{ background: "#fff", borderRadius: "8px", padding: "10px 10px 0 10px" }}>
-                            <WalletPayPalButtons
-                              amount={paypalAmount}
-                              createOrder={createPaypalOrder}
-                              onApprove={onPaypalApprove}
-                              onError={() => setPaypalError("تعذر إكمال عملية الدفع عبر PayPal.")}
-                            />
-                          </div>
-                        ) : (
-                          <div style={{ color: "var(--text-muted)", fontSize: "0.95rem" }}>يرجى إدخال مبلغ 1 دولار أو أكثر لإظهار أزرار الدفع.</div>
-                        )}
+            {loadingSettings ? (
+              <div style={{ textAlign: "center", padding: "20px" }}>جاري تحميل طرق الدفع...</div>
+            ) : (() => {
+              const allMethods = paymentMethods;
+              if (allMethods.length === 0) {
+                return <div style={{ color: "var(--text-muted)", textAlign: "center", padding: "20px" }}>لا توجد خدمات شحن متاحة حالياً.</div>;
+              }
+              return (
+                <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+                  
+                  <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                    {allMethods.map(pm => (
+                      <div key={pm.id} onClick={() => setSelectedMethodId(pm.id)} style={{ padding: "10px 15px", borderRadius: "10px", border: selectedMethodId === pm.id ? "1px solid var(--primary-color)" : "1px solid var(--border-color)", background: selectedMethodId === pm.id ? "rgba(22,119,238,0.1)" : "var(--bg-glass)", cursor: "pointer", fontWeight: "bold", fontSize: "0.9rem", color: selectedMethodId === pm.id ? "var(--primary-color)" : "var(--text-muted)" }}>
+                        {pm.name}
                       </div>
-                    );
-                  }
+                    ))}
+                  </div>
 
-                  return (
-                    <div>
-                      <div style={{ marginBottom: "24px" }}>
-                        <p style={{ color: "var(--text-main)", fontSize: "1rem", lineHeight: 1.7, marginBottom: "16px", background: "rgba(139, 92, 246, 0.1)", padding: "16px", borderRadius: "10px", borderRight: "4px solid var(--primary-color)" }}>
-                          {pm.description}
-                        </p>
-                        
-                        {pm.image && (
-                          <div style={{ textAlign: "center", marginBottom: "16px" }}>
-                            <div style={{ fontWeight: 800, marginBottom: "10px", color: "var(--text-muted)" }}>باركود (QR Code) الدفع:</div>
-                            <img src={pm.image.startsWith("data:image") ? pm.image : `${API_BASE_URL}${pm.image}`} alt="QR Code / Barcode" style={{ maxWidth: "200px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.1)", background: "white", padding: "10px", boxShadow: "0 4px 15px rgba(0,0,0,0.2)" }} />
-                          </div>
-                        )}
-                        
-                        <div style={{ padding: "16px", borderRadius: "16px", background: "rgba(59, 130, 246, 0.08)", border: "1px solid rgba(59, 130, 246, 0.2)", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "10px" }}>
-                          <div style={{ flex: 1 }}>
-                            <div style={{ fontWeight: 800, marginBottom: "6px", color: "var(--text-muted)" }}>رقم أو عنوان التحويل:</div>
-                            <div style={{ fontSize: "1.3rem", fontWeight: 900, color: "var(--text-main)", direction: "ltr", userSelect: "all", wordBreak: "break-all" }}>{pm.value}</div>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              navigator.clipboard.writeText(pm.value);
-                              setCopied(true);
-                              setTimeout(() => setCopied(false), 2000);
-                            }}
-                            style={{ background: copied ? "#10b981" : "#3b82f6", color: "var(--text-main)", border: "none", borderRadius: "10px", padding: "10px 20px", fontSize: "1rem", cursor: "pointer", fontWeight: "bold", transition: "all 0.2s", display: "flex", alignItems: "center", gap: "6px" }}
-                          >
-                            {copied ? "تم النسخ ✓" : "نسخ العنوان 📋"}
-                          </button>
-                        </div>
-                      </div>
-
-                      <div style={{ borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "24px", marginTop: "24px" }}>
-                        <h3 style={{ fontSize: "1.2rem", fontWeight: "bold", marginBottom: "16px", color: "var(--text-main)" }}>تأكيد عملية الدفع وإرسال الوصل</h3>
-                        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-                          <div className="form-group" style={{ marginBottom: 0 }}>
-                            <label>عملة التحويل والدفع:</label>
-                            <select value={selectedCurrency} onChange={(e) => setSelectedCurrency(e.target.value)} style={{ width: "100%", padding: "14px", background: "rgba(255, 255, 255, 0.03)", border: "1px solid rgba(255, 255, 255, 0.08)", borderRadius: "12px", color: "var(--text-main)", outline: "none", fontSize: "1rem" }}>
-                              {globalCurrencies.map((curr) => (
-                                <option key={curr} value={curr} style={{ background: "var(--bg-color)" }}>
-                                  {curr} {curr === "USD" ? "(الدولار الأمريكي 🇺🇸)" : curr === "EGP" ? "(الجنيه المصري 🇪🇬)" : curr === "SDG" ? "(الجنيه السوداني 🇸🇩)" : curr === "USDT" ? "(تيزر 🟢)" : ""}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
-
-                          <div className="form-group" style={{ marginBottom: 0 }}>
-                            <label>المبلغ المطلوب إضافته للمحفظة بالدولار (USD):</label>
-                            <input type="number" min="0.01" step="0.01" placeholder="مثال: 10" value={amount} onChange={(e) => setAmount(e.target.value)} required style={{ padding: "14px", fontSize: "1rem", borderRadius: "12px" }} />
-                            {amount && (
-                              <div style={{ marginTop: "12px", padding: "14px", background: "rgba(96, 165, 250, 0.08)", borderRight: "4px solid var(--primary-color)", borderRadius: "10px", fontSize: "0.9rem", color: "#60a5fa", display: "flex", flexDirection: "column", gap: "6px" }}>
-                                <div>💵 سيتم إضافة: <strong>$ {Number(amount).toFixed(2)} USD</strong></div>
-                                {selectedCurrency !== baseCurrency && (
-                                  <div>💸 المبلغ المطلوب تحويله: <strong>{Number(Number(amount) * (selectedCurrency === baseCurrency ? 1 : (exchangeRates[selectedCurrency] || 50))).toFixed(2)} {selectedCurrency}</strong></div>
-                                )}
-                              </div>
-                            )}
-                          </div>
-
-                          <div className="form-group" style={{ marginBottom: 0 }}>
-                            <label>رقم الهاتف / اسم المحفظة المحول منها: <span style={{ color: "var(--danger-color)" }}>*</span></label>
-                            <input type="text" placeholder="الرقم أو اسم الحساب" value={senderPhone} onChange={(e) => setSenderPhone(e.target.value)} required style={{ padding: "14px", fontSize: "1rem", borderRadius: "12px" }} />
-                          </div>
-
-                          <div className="form-group" style={{ marginBottom: 0 }}>
-                            <label>صورة وصل التحويل: <span style={{ color: "var(--danger-color)" }}>*</span></label>
-                            <div style={{ border: "2px dashed rgba(255,255,255,0.15)", borderRadius: "14px", padding: "24px", textAlign: "center", background: "rgba(255,255,255,0.02)", cursor: "pointer", transition: "background 0.2s" }} onClick={() => document.getElementById("receipt-upload-input").click()} onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.05)"} onMouseLeave={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.02)"}>
-                              <input id="receipt-upload-input" type="file" accept="image/*" style={{ display: "none" }} onChange={(e) => { const file = e.target.files[0]; if (file) { setReceiptImageFile(file); const reader = new FileReader(); reader.onload = (ev) => setReceiptImagePreview(ev.target.result); reader.readAsDataURL(file); } }} />
-                              {receiptImagePreview ? (
-                                <div>
-                                  <img src={receiptImagePreview} alt="وصل التحويل" style={{ maxWidth: "100%", maxHeight: "250px", borderRadius: "10px", objectFit: "contain", boxShadow: "0 4px 15px rgba(0,0,0,0.3)" }} />
-                                  <div style={{ fontSize: "0.9rem", color: "#10b981", marginTop: "12px", fontWeight: "bold" }}>✓ تم إرفاق الصورة بنجاح</div>
-                                </div>
-                              ) : (
-                                <div style={{ color: "var(--text-muted)", fontSize: "0.95rem" }}>
-                                  <div style={{ fontSize: "2.5rem", marginBottom: "10px" }}>📸</div>
-                                  اضغط هنا لرفع صورة إيصال الدفع
-                                </div>
-                              )}
-                            </div>
-                          </div>
-
-                          <div className="form-group" style={{ marginBottom: 0 }}>
-                            <label>ملاحظات إضافية:</label>
-                            <textarea rows="2" placeholder="اكتب أي تفاصيل..." value={notes} onChange={(e) => setNotes(e.target.value)} style={{ padding: "14px", fontSize: "1rem", borderRadius: "12px" }} />
-                          </div>
-
-                          {error && (
-                            <div style={{ padding: "12px 16px", background: "rgba(244, 63, 94, 0.1)", borderRight: "4px solid var(--danger-color)", color: "var(--danger-color)", borderRadius: "10px", fontSize: "0.9rem", fontWeight: "600" }}>
-                              ⚠️ {error}
-                            </div>
-                          )}
-
-                          <button type="submit" disabled={submitting} className="glass-btn glass-btn-primary" style={{ padding: "16px", borderRadius: "14px", fontSize: "1.05rem", marginTop: "8px" }}>
-                            {submitting ? "جاري إرسال الطلب..." : "إرسال طلب الشحن 🚀"}
-                          </button>
-                        </form>
-                      </div>
+                  <div style={{ display: "flex", gap: "15px", flexWrap: "wrap" }}>
+                    <div className="form-group" style={{ flex: "1 1 200px", marginBottom: 0 }}>
+                      <select value={selectedCurrency} onChange={(e) => setSelectedCurrency(e.target.value)} style={{ width: "100%", padding: "14px", background: "var(--bg-color)", border: "1px solid var(--border-color)", borderRadius: "12px", color: "var(--text-main)", outline: "none" }}>
+                        {globalCurrencies.map((curr) => <option key={curr} value={curr}>{curr}</option>)}
+                      </select>
                     </div>
-                  );
-                })()}
-              </div>
-            )}
-            </>
-          );
-        })()}
-      </section>
+                    <div className="form-group" style={{ flex: "2 1 300px", marginBottom: 0 }}>
+                      <input type="number" min="0.01" step="0.01" placeholder="المبلغ المطلوب شحنه (USD)" value={amount} onChange={(e) => setAmount(e.target.value)} required style={{ width: "100%", padding: "14px", background: "var(--bg-color)", border: "1px solid var(--border-color)", borderRadius: "12px", color: "var(--text-main)", outline: "none" }} />
+                    </div>
+                  </div>
+
+                  <div className="form-group" style={{ marginBottom: 0 }}>
+                    <input type="text" placeholder="رقم الهاتف / اسم المحساب المحول منه" value={senderPhone} onChange={(e) => setSenderPhone(e.target.value)} required style={{ width: "100%", padding: "14px", background: "var(--bg-color)", border: "1px solid var(--border-color)", borderRadius: "12px", color: "var(--text-main)", outline: "none" }} />
+                  </div>
+
+                  <div className="form-group" style={{ marginBottom: 0 }}>
+                    <div style={{ border: "2px dashed var(--primary-color)", borderRadius: "20px", padding: "40px 20px", textAlign: "center", background: "rgba(22,119,238,0.03)", cursor: "pointer", transition: "background 0.2s" }} onClick={() => document.getElementById("receipt-upload-input").click()}>
+                      <input id="receipt-upload-input" type="file" accept="image/*" style={{ display: "none" }} onChange={(e) => { const file = e.target.files[0]; if (file) { setReceiptImageFile(file); const reader = new FileReader(); reader.onload = (ev) => setReceiptImagePreview(ev.target.result); reader.readAsDataURL(file); } }} />
+                      {receiptImagePreview ? (
+                        <div>
+                          <img src={receiptImagePreview} alt="وصل التحويل" style={{ maxWidth: "100%", maxHeight: "200px", borderRadius: "10px", objectFit: "contain", boxShadow: "0 4px 15px rgba(0,0,0,0.2)" }} />
+                          <div style={{ fontSize: "1rem", color: "#10b981", marginTop: "12px", fontWeight: "bold" }}>✓ تم الإرفاق</div>
+                        </div>
+                      ) : (
+                        <div style={{ color: "var(--primary-color)", display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
+                          <span style={{ fontSize: "2rem" }}>📤</span>
+                          <span style={{ fontSize: "1.2rem", fontWeight: "bold" }}>اضغط هنا لرفع الإيصال</span>
+                          <span style={{ fontSize: "0.9rem", color: "var(--text-muted)" }}>أو اسحب وأفلت الصورة هنا</span>
+                          <div style={{ display: "flex", gap: "10px", marginTop: "15px" }}>
+                             <span style={{ fontSize: "0.75rem", background: "var(--bg-color)", padding: "4px 8px", borderRadius: "6px", color: "var(--text-muted)" }}>JPG, PNG</span>
+                             <span style={{ fontSize: "0.75rem", background: "var(--bg-color)", padding: "4px 8px", borderRadius: "6px", color: "var(--text-muted)" }}>الحد الأقصى 5MB</span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", color: "var(--text-muted)", fontSize: "0.85rem", marginTop: "5px" }}>
+                    <span style={{ fontSize: "1.1rem" }}>ℹ️</span>
+                    <span>سيتم إشعارك عند مراجعة الإيصال وإضافة الرصيد إلى محفظتك.</span>
+                  </div>
+
+                  {error && <div style={{ color: "var(--danger-color)", fontSize: "0.9rem", fontWeight: "bold", textAlign: "center" }}>⚠️ {error}</div>}
+
+                  <button type="submit" disabled={submitting} className="glass-btn glass-btn-primary" style={{ padding: "16px", borderRadius: "14px", fontSize: "1.1rem", fontWeight: "bold", marginTop: "10px", width: "100%" }}>
+                    {submitting ? "جاري الإرسال..." : "إرسال الطلب"}
+                  </button>
+                </form>
+              );
+            })()}
+          </div>
+        </section>
+      </div> {/* END OF recharge-section */}
+
+      {/* ── Transaction History (سجل المعاملات) ── */}
+      <div style={{ marginTop: "30px", marginBottom: "30px" }}>
+        <h2 style={{ fontSize: "1.4rem", fontWeight: 900, marginBottom: "15px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <span>سجل المعاملات</span>
+        </h2>
+        
+        <div className="glass-panel" style={{ borderRadius: "24px", overflow: "hidden", border: "1px solid var(--border-glass)", background: "var(--bg-glass-deep)" }}>
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "600px" }}>
+              <thead>
+                <tr style={{ background: "var(--bg-hover)", borderBottom: "1px solid var(--border-color)" }}>
+                  <th style={{ padding: "16px 20px", textAlign: "right", color: "var(--text-muted)", fontSize: "0.9rem" }}>التاريخ</th>
+                  <th style={{ padding: "16px 20px", textAlign: "right", color: "var(--text-muted)", fontSize: "0.9rem" }}>النوع</th>
+                  <th style={{ padding: "16px 20px", textAlign: "right", color: "var(--text-muted)", fontSize: "0.9rem" }}>الوصف</th>
+                  <th style={{ padding: "16px 20px", textAlign: "right", color: "var(--text-muted)", fontSize: "0.9rem" }}>المبلغ</th>
+                  <th style={{ padding: "16px 20px", textAlign: "right", color: "var(--text-muted)", fontSize: "0.9rem" }}>الحالة</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style={{ borderBottom: "1px solid var(--border-color)", transition: "background 0.2s" }} onMouseEnter={(e)=>e.currentTarget.style.background="var(--bg-hover)"} onMouseLeave={(e)=>e.currentTarget.style.background="transparent"}>
+                  <td style={{ padding: "16px 20px", fontSize: "0.95rem" }}>2024-05-20 14:35</td>
+                  <td style={{ padding: "16px 20px", fontSize: "0.95rem" }}>شحن رصيد</td>
+                  <td style={{ padding: "16px 20px", fontSize: "0.95rem", color: "var(--text-muted)" }}>إيداع عبر تحويل بنكي</td>
+                  <td style={{ padding: "16px 20px", fontSize: "0.95rem", fontWeight: "bold", color: "#10b981", direction: "ltr", textAlign: "right" }}>+500.00 SAR</td>
+                  <td style={{ padding: "16px 20px" }}><span style={{ background: "rgba(16, 185, 129, 0.1)", color: "#10b981", padding: "4px 12px", borderRadius: "8px", fontSize: "0.85rem", fontWeight: "bold", border: "1px solid rgba(16, 185, 129, 0.2)" }}>تم الشحن</span></td>
+                </tr>
+                <tr style={{ borderBottom: "1px solid var(--border-color)", transition: "background 0.2s" }} onMouseEnter={(e)=>e.currentTarget.style.background="var(--bg-hover)"} onMouseLeave={(e)=>e.currentTarget.style.background="transparent"}>
+                  <td style={{ padding: "16px 20px", fontSize: "0.95rem" }}>2024-05-18 10:22</td>
+                  <td style={{ padding: "16px 20px", fontSize: "0.95rem" }}>شحن رصيد</td>
+                  <td style={{ padding: "16px 20px", fontSize: "0.95rem", color: "var(--text-muted)" }}>إيداع عبر تحويل بنكي</td>
+                  <td style={{ padding: "16px 20px", fontSize: "0.95rem", fontWeight: "bold", color: "#10b981", direction: "ltr", textAlign: "right" }}>+300.00 SAR</td>
+                  <td style={{ padding: "16px 20px" }}><span style={{ background: "rgba(16, 185, 129, 0.1)", color: "#10b981", padding: "4px 12px", borderRadius: "8px", fontSize: "0.85rem", fontWeight: "bold", border: "1px solid rgba(16, 185, 129, 0.2)" }}>تم الشحن</span></td>
+                </tr>
+                <tr style={{ borderBottom: "1px solid var(--border-color)", transition: "background 0.2s" }} onMouseEnter={(e)=>e.currentTarget.style.background="var(--bg-hover)"} onMouseLeave={(e)=>e.currentTarget.style.background="transparent"}>
+                  <td style={{ padding: "16px 20px", fontSize: "0.95rem" }}>2024-05-15 16:40</td>
+                  <td style={{ padding: "16px 20px", fontSize: "0.95rem" }}>استخدام</td>
+                  <td style={{ padding: "16px 20px", fontSize: "0.95rem", color: "var(--text-muted)" }}>سداد فاتورة خدمة</td>
+                  <td style={{ padding: "16px 20px", fontSize: "0.95rem", fontWeight: "bold", color: "var(--text-main)", direction: "ltr", textAlign: "right" }}>-150.00 SAR</td>
+                  <td style={{ padding: "16px 20px" }}><span style={{ background: "rgba(59, 130, 246, 0.1)", color: "var(--primary-color)", padding: "4px 12px", borderRadius: "8px", fontSize: "0.85rem", fontWeight: "bold", border: "1px solid rgba(59, 130, 246, 0.2)" }}>مكتمل</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div style={{ textAlign: "center", padding: "15px", borderTop: "1px solid var(--border-color)", background: "var(--bg-color)" }}>
+            <button style={{ background: "none", border: "none", color: "var(--primary-color)", fontWeight: "bold", cursor: "pointer" }}>عرض جميع المعاملات &lt;</button>
+          </div>
+        </div>
+      </div>
+
 
       {/* WhatsApp Modal */}
       {pendingWhatsapp && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.8)", backdropFilter: "blur(10px)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }}>
-          <div style={{ background: "var(--bg-card)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "24px", padding: "24px", maxWidth: "420px", width: "100%", display: "flex", flexDirection: "column", gap: "16px", boxShadow: "0 20px 50px rgba(0,0,0,0.5)" }}>
+          <div style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", borderRadius: "24px", padding: "24px", maxWidth: "420px", width: "100%", display: "flex", flexDirection: "column", gap: "16px", boxShadow: "0 20px 50px var(--bg-secondary)" }}>
             <div style={{ textAlign: "center" }}>
               <div style={{ fontSize: "3.5rem" }}>{pendingWhatsapp.autoSent ? "🤖" : "✅"}</div>
               <h3 style={{ fontWeight: 900, marginTop: "10px", fontSize: "1.3rem" }}>تم تسجيل طلبك بنجاح!</h3>
@@ -791,7 +773,7 @@ export default function WalletPage() {
                 {whatsappSent && <div style={{ color: "#10b981", fontWeight: "bold", textAlign: "center", fontSize: "0.85rem" }}>✓ تم فتح واتساب — لا تنسَ إرفاق صورة الوصل</div>}
               </>
             )}
-            <button onClick={() => setPendingWhatsapp(null)} style={{ padding: "12px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "14px", color: "var(--text-main)", cursor: "pointer", fontWeight: "bold", fontSize: "1rem", marginTop: "4px" }} onMouseEnter={(e)=>e.currentTarget.style.background="rgba(255,255,255,0.1)"} onMouseLeave={(e)=>e.currentTarget.style.background="rgba(255,255,255,0.05)"}>
+            <button onClick={() => setPendingWhatsapp(null)} style={{ padding: "12px", background: "var(--bg-glass)", border: "1px solid var(--border-color)", borderRadius: "14px", color: "var(--text-main)", cursor: "pointer", fontWeight: "bold", fontSize: "1rem", marginTop: "4px" }} onMouseEnter={(e)=>e.currentTarget.style.background="var(--border-color)"} onMouseLeave={(e)=>e.currentTarget.style.background="var(--bg-glass)"}>
               إغلاق
             </button>
           </div>
@@ -800,7 +782,7 @@ export default function WalletPage() {
 
       {/* Order History */}
       <section className="glass-panel" style={{ display: "flex", flexDirection: "column", gap: "20px", padding: "24px", borderRadius: "24px" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.08)", paddingBottom: "16px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--bg-glass)", paddingBottom: "16px" }}>
           <div>
             <h3 style={{ fontWeight: 900, marginBottom: "4px", fontSize: "1.2rem", display: "flex", alignItems: "center", gap: "8px" }}>
               <span style={{ fontSize: "1.4rem" }}>📜</span> سجل طلبات الشحن
@@ -815,14 +797,14 @@ export default function WalletPage() {
         {loading ? (
           <div style={{ textAlign: "center", padding: "30px", color: "var(--text-muted)" }}>جاري التحميل...</div>
         ) : requests.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "40px", color: "var(--text-muted)", background: "rgba(255,255,255,0.02)", borderRadius: "16px" }}>
+          <div style={{ textAlign: "center", padding: "40px", color: "var(--text-muted)", background: "var(--bg-glass)", borderRadius: "16px" }}>
             <div style={{ fontSize: "2.5rem", marginBottom: "10px" }}>🏜️</div>
             لا توجد طلبات شحن رصيد بعد.
           </div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
             {requests.map((request) => (
-              <div key={request.id} style={{ padding: "18px", borderRadius: "16px", background: "rgba(255, 255, 255, 0.02)", border: "1px solid rgba(255, 255, 255, 0.06)", display: "flex", flexDirection: "column", gap: "12px" }}>
+              <div key={request.id} style={{ padding: "18px", borderRadius: "16px", background: "var(--bg-glass)", border: "1px solid var(--bg-glass)", display: "flex", flexDirection: "column", gap: "12px" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", gap: "10px", flexWrap: "wrap", alignItems: "center" }}>
                   <strong style={{ fontSize: "1.1rem" }}>
                     طلب #{request.id}
@@ -842,7 +824,7 @@ export default function WalletPage() {
                   <div>من رقم: <strong style={{ color: "var(--text-main)" }}>{request.sender_phone || "-"}</strong></div>
                   <div>بتاريخ: <strong style={{ color: "var(--text-main)" }}>{new Date(request.created_at).toLocaleString("ar-EG")}</strong></div>
                   {request.notes && !request.notes.includes("paypal_order") && (
-                    <div style={{ gridColumn: "span 2", background: "rgba(0,0,0,0.2)", padding: "10px", borderRadius: "8px", marginTop: "4px" }}>
+                    <div style={{ gridColumn: "span 2", background: "var(--bg-secondary)", padding: "10px", borderRadius: "8px", marginTop: "4px" }}>
                       الملاحظات: <strong style={{ color: "var(--text-main)" }}>{request.notes.replace(/^\[تم تحويل:[^\]]+\]\s*/, "")}</strong>
                     </div>
                   )}
@@ -854,7 +836,7 @@ export default function WalletPage() {
       </section>
       
       <div style={{ textAlign: "center", marginBottom: "40px", fontSize: "0.85rem", color: "var(--text-muted)" }}>
-        🔒 شحنك للمحفظة يخضع لـ <Link href="/terms" style={{ color: "var(--primary-color)", fontWeight: "bold", textDecoration: "underline" }}>شروط الاستخدام وسياسة الاسترجاع</Link>
+        🔒 شحنك للمحفظة يخضع لـ <Link href="/terms#refund-policy" style={{ color: "var(--primary-color)", fontWeight: "bold", textDecoration: "underline" }}>شروط الاستخدام وسياسة الاسترجاع</Link>
       </div>
     </div>
   );

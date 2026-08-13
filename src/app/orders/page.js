@@ -22,6 +22,7 @@ export default function OrdersHistory() {
   const [singleOrder, setSingleOrder] = useState(null);
   const [trackError, setTrackError] = useState("");
   const [trackLoading, setTrackLoading] = useState(false);
+  const [filterTab, setFilterTab] = useState("all");
 
   const customer = useMemo(() => {
     try {
@@ -189,7 +190,7 @@ export default function OrdersHistory() {
       }
 
       return (
-        <div key={key} style={{ background: "rgba(255, 255, 255, 0.05)", padding: "6px 12px", borderRadius: "8px", border: "1px solid rgba(255, 255, 255, 0.08)", fontSize: "0.82rem" }}>
+        <div key={key} style={{ background: "var(--primary-light)", padding: "6px 12px", borderRadius: "8px", border: "var(--border-glass)", fontSize: "0.82rem" }}>
           <span style={{ color: "var(--text-muted)" }}>{label}:</span> <span style={{ direction: "ltr", display: "inline-block", fontWeight: "bold", color: "var(--text-main)" }}>{String(value)}</span>
         </div>
       );
@@ -242,171 +243,205 @@ export default function OrdersHistory() {
   return (
     <>
       {/* Main content */}
-      <div style={{ marginBottom: "40px" }}>
+      <div style={{ marginBottom: "40px", marginTop: "20px" }}>
         {isLoggedIn ? (
           /* Logged In: Show purchase history */
-          <div>
-            <h2 className="section-title">مشترياتي وطلباتي السابقة</h2>
+          <div className="orders-dashboard">
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
+              <h2 className="section-title" style={{ margin: 0 }}>طلباتي</h2>
+            </div>
 
+            {/* Top Cards */}
+            <div className="orders-top-cards" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "20px", marginBottom: "30px" }}>
+              <div className="glass-panel" style={{ padding: "20px", display: "flex", alignItems: "center", justifyContent: "space-between", borderRadius: "20px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+                  <div style={{ width: "50px", height: "50px", background: "rgba(22, 119, 238, 0.1)", borderRadius: "14px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.5rem", color: "var(--brand-blue)" }}>
+                    👜
+                  </div>
+                  <div>
+                    <h3 style={{ fontSize: "1.1rem", fontWeight: "900", margin: "0 0 4px 0" }}>الطلبات النشطة</h3>
+                    <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", margin: 0 }}>عرض الطلبات النشطة</p>
+                  </div>
+                </div>
+                <div style={{ background: "var(--bg-glass)", borderRadius: "10px", padding: "4px 8px", fontSize: "1.2rem", color: "var(--text-main)" }}>❮</div>
+              </div>
+
+              <div className="glass-panel" style={{ padding: "20px", display: "flex", alignItems: "center", justifyContent: "space-between", borderRadius: "20px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+                  <div style={{ width: "50px", height: "50px", background: "rgba(34, 197, 94, 0.1)", borderRadius: "14px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.5rem", color: "#22c55e" }}>
+                    🛡️
+                  </div>
+                  <div>
+                    <h3 style={{ fontSize: "1.1rem", fontWeight: "900", margin: "0 0 4px 0" }}>الطلبات المكتملة</h3>
+                    <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", margin: 0 }}>عرض الطلبات المكتملة</p>
+                  </div>
+                </div>
+                <div style={{ background: "var(--bg-glass)", borderRadius: "10px", padding: "4px 8px", fontSize: "1.2rem", color: "var(--text-main)" }}>❮</div>
+              </div>
+
+              <div className="glass-panel" style={{ padding: "20px", display: "flex", alignItems: "center", justifyContent: "space-between", borderRadius: "20px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+                  <div style={{ width: "50px", height: "50px", background: "rgba(56, 189, 248, 0.1)", borderRadius: "14px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.5rem", color: "#38bdf8" }}>
+                    💳
+                  </div>
+                  <div>
+                    <h3 style={{ fontSize: "1.1rem", fontWeight: "900", margin: "0 0 4px 0" }}>المحفظة</h3>
+                    <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", margin: 0 }}>عرض الرصيد والمعاملات</p>
+                  </div>
+                </div>
+                <div style={{ background: "var(--bg-glass)", borderRadius: "10px", padding: "4px 8px", fontSize: "1.2rem", color: "var(--text-main)" }}>❮</div>
+              </div>
+            </div>
+
+            {/* Filter Tabs */}
+            <div style={{ display: "flex", gap: "12px", marginBottom: "20px", overflowX: "auto", paddingBottom: "10px", borderBottom: "1px solid var(--border-glass)" }}>
+              {["all", "pending", "processing", "completed"].map(tab => {
+                const labels = {
+                  "all": "الكل",
+                  "pending": "قيد المراجعة",
+                  "processing": "قيد التنفيذ",
+                  "completed": "مكتمل"
+                };
+                return (
+                  <button
+                    key={tab}
+                    onClick={() => setFilterTab(tab)}
+                    style={{
+                      padding: "8px 24px",
+                      borderRadius: "10px",
+                      fontWeight: "bold",
+                      fontSize: "0.95rem",
+                      border: "none",
+                      cursor: "pointer",
+                      transition: "all 0.2s",
+                      background: filterTab === tab ? "var(--brand-blue)" : "transparent",
+                      color: filterTab === tab ? "#fff" : "var(--text-muted)",
+                      border: filterTab === tab ? "none" : "1px solid var(--border-glass)",
+                      whiteSpace: "nowrap"
+                    }}
+                  >
+                    {labels[tab]}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Data Table */}
             {loading ? (
               <div style={{ textAlign: "center", padding: "40px", fontWeight: "bold" }}>جاري تحميل طلباتك...</div>
             ) : orders.length === 0 ? (
               <div className="glass-panel" style={{ textAlign: "center", padding: "50px 20px" }}>
                 <span style={{ fontSize: "3.5rem" }}>🛍️</span>
                 <h3 style={{ margin: "15px 0" }}>لم تقم بأي عمليات شراء بعد!</h3>
-                <p style={{ color: "var(--text-muted)", marginBottom: "20px" }}>تصفح أقسام البرمجيات والخدمات وتفعيل السوفت وير فوراً.</p>
                 <Link href="/" className="glass-btn glass-btn-primary">قم بطلب خدمة</Link>
               </div>
             ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-                {orders.map((order) => (
-                  <div className="glass-panel" key={order.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "20px", padding: "20px 30px" }}>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                        <span style={{ fontWeight: 900, color: "var(--accent-color)" }}>طلب رقم #{order.id}</span>
-                        <span className={`badge badge-${order.status}`} style={{ fontSize: "0.75rem" }}>
-                          {order.status === "pending" && "انتظار"}
-                          {order.status === "processing" && "قيد المعالجة"}
-                          {order.status === "completed" && "مكتمل"}
-                          {order.status === "cancelled" && "ملغي"}
-                        </span>
-                      </div>
-                      <h3 style={{ fontWeight: 800, fontSize: "1.2rem", marginTop: "4px" }}>{order.service_name}</h3>
-                      <p style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>
-                        الباقة: <strong>{order.package_name}</strong> | القيمة: <strong>{Number(order.package_price || 0).toFixed(2)} {baseCurrency}</strong>
-                      </p>
-                      <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginTop: "8px" }}>
-                        {renderOrderFields(order)}
-                      </div>
-                      {order.code && (
-                        <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginTop: "12px", maxWidth: "400px" }}>
-                          <span style={{ color: "#c084fc", fontSize: "0.85rem", fontWeight: "bold" }}>🔑 كود التفعيل / رسالة الخدمة:</span>
-                          <div style={{
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "space-between",
-                            gap: "12px",
-                            background: "rgba(10, 12, 26, 0.4)",
-                            padding: "10px 14px",
-                            borderRadius: "10px",
-                            border: "1px solid rgba(255, 255, 255, 0.06)"
-                          }}>
-                            <span style={{
-                              fontFamily: "monospace",
-                              fontWeight: "bold",
-                              fontSize: "1.1rem",
-                              color: "var(--text-main)",
-                              whiteSpace: "pre-wrap",
-                              wordBreak: "break-all",
-                              direction: "ltr",
-                              textAlign: "left"
-                            }}>
-                              {order.code}
-                            </span>
-                            <button
-                              onClick={() => {
-                                navigator.clipboard.writeText(order.code);
-                                alert("تم نسخ الكود بنجاح! 📋");
-                              }}
-                              style={{
-                                background: "rgba(255, 255, 255, 0.05)",
-                                border: "1px solid rgba(255, 255, 255, 0.1)",
-                                borderRadius: "6px",
-                                color: "var(--text-main)",
-                                padding: "4px 10px",
-                                fontSize: "0.75rem",
-                                cursor: "pointer",
-                                fontWeight: "bold",
-                                transition: "all 0.2s"
-                              }}
-                              onMouseEnter={(e) => {
-                                e.target.style.background = "rgba(255, 255, 255, 0.1)";
-                                e.target.style.color = "#ffffff";
-                              }}
-                              onMouseLeave={(e) => {
-                                e.target.style.background = "rgba(255, 255, 255, 0.05)";
-                                e.target.style.color = "#cbd5e1";
-                              }}
-                            >
-                              نسخ 📋
-                            </button>
-                          </div>
-                        </div>
-                      )}
-                      {order.download_link && (
-                        <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginTop: "12px", maxWidth: "400px" }}>
-                          <span style={{ color: "#38bdf8", fontSize: "0.85rem", fontWeight: "bold" }}>📥 رابط تحميل الأداة / التطبيق:</span>
-                          <a
-                            href={order.download_link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            style={{
-                              display: "inline-flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              gap: "8px",
-                              background: "rgba(56, 189, 248, 0.1)",
-                              padding: "12px 18px",
-                              borderRadius: "12px",
-                              border: "1px solid rgba(56, 189, 248, 0.25)",
-                              color: "#38bdf8",
-                              fontWeight: "bold",
-                              textDecoration: "none",
-                              transition: "all 0.2s",
-                              textAlign: "center"
-                            }}
-                            onMouseEnter={(e) => {
-                              e.target.style.background = "rgba(56, 189, 248, 0.2)";
-                              e.target.style.borderColor = "rgba(56, 189, 248, 0.4)";
-                            }}
-                            onMouseLeave={(e) => {
-                              e.target.style.background = "rgba(56, 189, 248, 0.1)";
-                              e.target.style.borderColor = "rgba(56, 189, 248, 0.25)";
-                            }}
-                          >
-                            📥 {order.download_link_title || "تحميل الأداة"}
-                          </a>
-                        </div>
-                      )}
-                    </div>
+              <div className="glass-panel" style={{ overflowX: "auto", borderRadius: "16px", padding: "0" }}>
+                <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "900px" }}>
+                  <thead>
+                    <tr style={{ background: "var(--primary-light)", borderBottom: "1px solid var(--border-glass)" }}>
+                      <th style={{ padding: "16px", textAlign: "right", color: "var(--text-muted)", fontWeight: "bold", fontSize: "0.9rem" }}>الخدمة</th>
+                      <th style={{ padding: "16px", textAlign: "right", color: "var(--text-muted)", fontWeight: "bold", fontSize: "0.9rem" }}>الباقة</th>
+                      <th style={{ padding: "16px", textAlign: "right", color: "var(--text-muted)", fontWeight: "bold", fontSize: "0.9rem" }}>رقم الطلب</th>
+                      <th style={{ padding: "16px", textAlign: "right", color: "var(--text-muted)", fontWeight: "bold", fontSize: "0.9rem" }}>السعر</th>
+                      <th style={{ padding: "16px", textAlign: "right", color: "var(--text-muted)", fontWeight: "bold", fontSize: "0.9rem" }}>التاريخ</th>
+                      <th style={{ padding: "16px", textAlign: "center", color: "var(--text-muted)", fontWeight: "bold", fontSize: "0.9rem", minWidth: "250px" }}>حالة الطلب</th>
+                      <th style={{ padding: "16px", textAlign: "left", color: "var(--text-muted)", fontWeight: "bold", fontSize: "0.9rem" }}>الإجراء</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {orders.filter(o => {
+                      if (filterTab === "all") return true;
+                      if (filterTab === "pending" && o.status === "pending") return true;
+                      if (filterTab === "processing" && o.status === "processing") return true;
+                      if (filterTab === "completed" && o.status === "completed") return true;
+                      return false;
+                    }).map((order) => {
+                      
+                      // Calculate Stepper State
+                      const statusSteps = [
+                        { key: "received", label: "تم الاستلام" },
+                        { key: "pending", label: "قيد المراجعة" },
+                        { key: "processing", label: "قيد التنفيذ" },
+                        { key: "completed", label: "مكتمل" }
+                      ];
+                      
+                      let currentIndex = 1; // default to pending
+                      if (order.status === "processing") currentIndex = 2;
+                      if (order.status === "completed") currentIndex = 3;
+                      if (order.status === "cancelled") currentIndex = -1; // handle cancelled if needed
 
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "8px" }}>
-                      <span style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>
-                        {new Date(order.created_at).toLocaleString("ar-EG")}
-                      </span>
-                      {(order.status === "pending" || order.status === "processing") && (
-                        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", justifyContent: "flex-end", marginTop: "6px" }}>
-                          <a
-                            href={getSpeedUpWhatsAppUrl("16728972935", order, customer?.username)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="glass-btn"
-                            style={{ padding: "6px 14px", fontSize: "0.8rem", borderRadius: "8px", background: "rgba(16, 185, 129, 0.15)", border: "1px solid rgba(16, 185, 129, 0.35)", color: "#4ade80", fontWeight: "bold", display: "inline-flex", alignItems: "center", gap: "6px" }}
-                          >
-                            <span>⚡ تسريع الطلب (إدارة 1)</span>
-                          </a>
-                          <a
-                            href={getSpeedUpWhatsAppUrl("249123667227", order, customer?.username)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="glass-btn"
-                            style={{ padding: "6px 14px", fontSize: "0.8rem", borderRadius: "8px", background: "rgba(34, 197, 94, 0.15)", border: "1px solid rgba(34, 197, 94, 0.35)", color: "#86efac", fontWeight: "bold", display: "inline-flex", alignItems: "center", gap: "6px" }}
-                          >
-                            <span>⚡ تسريع الطلب (إدارة 2)</span>
-                          </a>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ))}
+                      return (
+                        <tr key={order.id} style={{ borderBottom: "1px solid var(--border-glass)", transition: "background 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.background = "var(--primary-light)"} onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}>
+                          <td style={{ padding: "16px", color: "var(--text-main)", fontWeight: "bold", display: "flex", alignItems: "center", gap: "10px" }}>
+                            <div style={{ width: "36px", height: "36px", background: "var(--primary-glow)", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                              <img src="/services-icon.png" alt="" style={{ width: "20px", height: "20px", objectFit: "contain", filter: "invert(1)" }} onError={(e) => e.target.style.display="none"} />
+                            </div>
+                            {order.service_name}
+                          </td>
+                          <td style={{ padding: "16px", color: "var(--text-muted)", fontSize: "0.9rem" }}>
+                            {order.package_name || "—"}
+                          </td>
+                          <td style={{ padding: "16px", color: "var(--text-muted)", fontSize: "0.9rem", direction: "ltr", textAlign: "right" }}>
+                            #ATS-{new Date().getFullYear()}-{order.id.toString().padStart(4, '0')}
+                          </td>
+                          <td style={{ padding: "16px", color: "var(--text-main)", fontWeight: "bold" }}>
+                            {Number(order.package_price || 0).toFixed(2)} {baseCurrency}
+                          </td>
+                          <td style={{ padding: "16px", color: "var(--text-muted)", fontSize: "0.9rem", direction: "ltr", textAlign: "right" }}>
+                            {order.created_at.split('T')[0].replace(/-/g, '/')}
+                          </td>
+                          
+                          {/* STATUS STEPPER */}
+                          <td style={{ padding: "16px" }}>
+                            {order.status === "cancelled" ? (
+                              <div style={{ color: "var(--danger-color)", fontWeight: "bold", textAlign: "center" }}>ملغي</div>
+                            ) : (
+                              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", position: "relative", width: "100%", margin: "0 auto", maxWidth: "220px" }}>
+                                {/* connecting line */}
+                                <div style={{ position: "absolute", top: "24px", left: "10px", right: "10px", height: "2px", background: "var(--border-glass)", zIndex: 0 }}></div>
+                                <div style={{ position: "absolute", top: "24px", right: "10px", width: `${(currentIndex / (statusSteps.length - 1)) * 100}%`, height: "2px", background: "var(--brand-blue)", zIndex: 1, transition: "width 0.4s ease" }}></div>
+                                
+                                {statusSteps.map((step, idx) => {
+                                  const isPast = idx <= currentIndex;
+                                  const isCurrent = idx === currentIndex;
+                                  return (
+                                    <div key={step.key} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "6px", zIndex: 2 }}>
+                                      <div style={{ fontSize: "0.65rem", color: isPast ? "var(--text-main)" : "var(--text-muted)", fontWeight: "bold" }}>{step.label}</div>
+                                      <div style={{
+                                        width: "12px", height: "12px", borderRadius: "50%",
+                                        background: isCurrent ? "var(--brand-blue)" : (isPast ? "var(--brand-cyan)" : "var(--border-glass)"),
+                                        boxShadow: isCurrent ? "0 0 8px var(--brand-blue)" : "none",
+                                        border: isPast ? "none" : "2px solid var(--bg-secondary)"
+                                      }}></div>
+                                    </div>
+                                  )
+                                })}
+                              </div>
+                            )}
+                          </td>
+                          
+                          <td style={{ padding: "16px", textAlign: "left" }}>
+                            <button
+                              onClick={() => { alert(`تفاصيل الطلب: \n${order.code ? 'الكود: '+order.code : 'لا يوجد كود'}`); }}
+                              className="glass-btn"
+                              style={{ padding: "6px 14px", fontSize: "0.85rem", background: "var(--brand-blue)", borderRadius: "8px", display: "inline-flex", alignItems: "center", gap: "6px" }}
+                            >
+                              متابعة الطلب
+                              <span style={{ fontSize: "1rem" }}>❮</span>
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
               </div>
             )}
           </div>
         ) : (
           /* Guest: Search by ID & Phone form */
           <div className="orders-layout">
-
-            {/* Form Column */}
             <div className="glass-panel" style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
               <div>
                 <h2 style={{ fontWeight: 900 }}>تتبع حالة طلب الخدمة</h2>
@@ -420,225 +455,97 @@ export default function OrdersHistory() {
               <form onSubmit={handleTrackSingleOrder} style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
                 <div className="form-group" style={{ marginBottom: 0 }}>
                   <label htmlFor="track_id">رقم الطلب (Order ID):</label>
-                  <input
-                    id="track_id"
-                    type="number"
-                    placeholder="مثال: 12"
-                    value={trackId}
-                    onChange={(e) => setTrackId(e.target.value)}
-                    required
-                  />
+                  <input id="track_id" type="number" placeholder="مثال: 12" value={trackId} onChange={(e) => setTrackId(e.target.value)} required />
                 </div>
-
                 <div className="form-group" style={{ marginBottom: 0 }}>
                   <label htmlFor="track_phone">رقم الهاتف المستخدم:</label>
-                  <input
-                    id="track_phone"
-                    type="text"
-                    placeholder="مثال: 01023456789"
-                    value={trackPhone}
-                    onChange={(e) => setTrackPhone(e.target.value)}
-                    required
-                  />
+                  <input id="track_phone" type="text" placeholder="مثال: 01023456789" value={trackPhone} onChange={(e) => setTrackPhone(e.target.value)} required />
                 </div>
-
-                {trackError && (
-                  <div style={{ padding: "10px 14px", background: "rgba(244, 63, 94, 0.1)", borderRight: "4px solid var(--danger-color)", color: "var(--danger-color)", borderRadius: "8px", fontSize: "0.85rem", fontWeight: "600" }}>
-                    ⚠️ {trackError}
-                  </div>
-                )}
-
-                <button
-                  type="submit"
-                  disabled={trackLoading}
-                  className="glass-btn glass-btn-primary"
-                  style={{ padding: "12px", borderRadius: "12px" }}
-                >
-                  {trackLoading ? "جاري البحث..." : "تتبع حالة الطلب 🔍"}
+                {trackError && <div style={{ padding: "10px 14px", background: "rgba(244, 63, 94, 0.1)", borderRight: "4px solid var(--danger-color)", color: "var(--danger-color)", borderRadius: "8px", fontSize: "0.85rem", fontWeight: "600" }}>⚠️ {trackError}</div>}
+                <button type="submit" disabled={trackLoading} className="glass-btn glass-btn-primary" style={{ marginTop: "10px", width: "100%", padding: "14px", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}>
+                  {trackLoading ? "جاري البحث..." : "تتبع الطلب الآن 🔍"}
                 </button>
               </form>
-            </div>
 
-            {/* Result Column or Info */}
-            <div className="glass-panel" style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
-              {singleOrder ? (
-                /* Order found */
-                <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
-                  <div style={{ textAlign: "center" }}>
-                    <span style={{ fontSize: "3rem" }}>📦</span>
-                    <h3 style={{ fontWeight: 900, marginTop: "10px", color: "var(--text-main)" }}>تفاصيل الطلب #{singleOrder.id}</h3>
-
-                    <div style={{ display: "inline-block", marginTop: "10px" }}>
-                      <span className={`badge badge-${singleOrder.status}`} style={{ fontSize: "0.9rem", padding: "6px 16px" }}>
-                        {singleOrder.status === "pending" && "طلبك قيد الانتظار"}
-                        {singleOrder.status === "processing" && "طلبك قيد المعالجة ⚡"}
-                        {singleOrder.status === "completed" && "تم تنفيذ طلبك بنجاح ✅"}
-                        {singleOrder.status === "cancelled" && "تم إلغاء الطلب ❌"}
-                      </span>
-                    </div>
+              {singleOrder && (
+                <div className="glass-panel" style={{ marginTop: "15px", border: "1px solid var(--border-glass)", background: "var(--primary-light)", display: "flex", flexDirection: "column", gap: "10px", padding: "18px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <span style={{ fontWeight: 900, color: "var(--accent-color)" }}>الطلب #{singleOrder.id}</span>
+                    <span className={`badge badge-${singleOrder.status}`}>{singleOrder.status === "completed" ? "مكتمل" : singleOrder.status === "processing" ? "قيد التنفيذ" : singleOrder.status === "pending" ? "قيد المراجعة" : "ملغي"}</span>
                   </div>
-
-                  <hr style={{ opacity: 0.12, borderColor: "rgba(255,255,255,0.08)" }} />
-
-                  <div style={{ display: "flex", flexDirection: "column", gap: "10px", fontSize: "0.92rem", padding: "16px", borderRadius: "16px", background: "linear-gradient(180deg, rgba(13, 18, 36, 0.95), rgba(13, 18, 36, 0.75))", border: "1px solid rgba(255,255,255,0.08)" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", gap: "12px" }}>
-                      <span style={{ color: "var(--text-main)" }}>الخدمة:</span>
-                      <strong style={{ color: "var(--text-main)", textAlign: "left" }}>{singleOrder.service_name} ({singleOrder.category_name})</strong>
-                    </div>
-                    <div style={{ display: "flex", justifyContent: "space-between", gap: "12px" }}>
-                      <span style={{ color: "var(--text-main)" }}>الباقة المطلوبة:</span>
-                      <strong style={{ color: "var(--text-main)", textAlign: "left" }}>{singleOrder.package_name}</strong>
-                    </div>
-                    {renderGuestOrderFields(singleOrder)}
-                    <div style={{ display: "flex", justifyContent: "space-between", gap: "12px" }}>
-                      <span style={{ color: "var(--text-main)" }}>القيمة الإجمالية:</span>
-                      <strong style={{ color: "#34d399" }}>{Number(singleOrder.package_price || 0).toFixed(2)} {baseCurrency}</strong>
-                    </div>
-                    <div style={{ display: "flex", justifyContent: "space-between", gap: "12px" }}>
-                      <span style={{ color: "var(--text-main)" }}>تاريخ الطلب:</span>
-                      <span style={{ color: "var(--text-main)" }}>{new Date(singleOrder.created_at).toLocaleString("ar-EG")}</span>
-                    </div>
+                  <h3 style={{ margin: "5px 0", fontSize: "1.1rem" }}>{singleOrder.service_name}</h3>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginTop: "10px" }}>
                     {singleOrder.code && (
-                      <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginTop: "10px", borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: "12px" }}>
-                        <span style={{ color: "#c084fc", fontSize: "0.85rem", fontWeight: "bold" }}>🔑 كود التفعيل / رسالة الخدمة:</span>
-                        <div style={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "space-between",
-                          gap: "12px",
-                          background: "rgba(10, 12, 26, 0.4)",
-                          padding: "10px 14px",
-                          borderRadius: "10px",
-                          border: "1px solid rgba(255, 255, 255, 0.06)"
-                        }}>
-                          <span style={{
-                            fontFamily: "monospace",
-                            fontWeight: "bold",
-                            fontSize: "1.1rem",
-                            color: "var(--text-main)",
-                            whiteSpace: "pre-wrap",
-                            wordBreak: "break-all",
-                            direction: "ltr",
-                            textAlign: "left"
-                          }}>
-                            {singleOrder.code}
-                          </span>
-                          <button
-                            onClick={() => {
-                              navigator.clipboard.writeText(singleOrder.code);
-                              alert("تم نسخ الكود بنجاح! 📋");
-                            }}
-                            style={{
-                              background: "rgba(255, 255, 255, 0.05)",
-                              border: "1px solid rgba(255, 255, 255, 0.1)",
-                              borderRadius: "6px",
-                              color: "var(--text-main)",
-                              padding: "4px 10px",
-                              fontSize: "0.75rem",
-                              cursor: "pointer",
-                              fontWeight: "bold",
-                              transition: "all 0.2s"
-                            }}
-                            onMouseEnter={(e) => {
-                              e.target.style.background = "rgba(255, 255, 255, 0.1)";
-                              e.target.style.color = "#ffffff";
-                            }}
-                            onMouseLeave={(e) => {
-                              e.target.style.background = "rgba(255, 255, 255, 0.05)";
-                              e.target.style.color = "#cbd5e1";
-                            }}
-                          >
-                            نسخ 📋
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                    {singleOrder.download_link && (
-                      <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginTop: "10px", borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: "12px" }}>
-                        <span style={{ color: "#38bdf8", fontSize: "0.85rem", fontWeight: "bold" }}>📥 رابط تحميل الأداة / التطبيق:</span>
-                        <a
-                          href={singleOrder.download_link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            gap: "8px",
-                            background: "rgba(56, 189, 248, 0.1)",
-                            padding: "12px 18px",
-                            borderRadius: "12px",
-                            border: "1px solid rgba(56, 189, 248, 0.25)",
-                            color: "#38bdf8",
-                            fontWeight: "bold",
-                            textDecoration: "none",
-                            transition: "all 0.2s",
-                            textAlign: "center"
-                          }}
-                          onMouseEnter={(e) => {
-                            e.target.style.background = "rgba(56, 189, 248, 0.2)";
-                            e.target.style.borderColor = "rgba(56, 189, 248, 0.4)";
-                          }}
-                          onMouseLeave={(e) => {
-                            e.target.style.background = "rgba(56, 189, 248, 0.1)";
-                            e.target.style.borderColor = "rgba(56, 189, 248, 0.25)";
-                          }}
-                        >
-                          📥 {singleOrder.download_link_title || "تحميل الأداة"}
-                        </a>
+                      <div style={{ padding: "12px", background: "var(--bg-glass-deep)", borderRadius: "8px", border: "var(--border-glass)", fontFamily: "monospace", color: "var(--text-main)", fontWeight: "bold" }}>
+                        {singleOrder.code}
                       </div>
                     )}
                   </div>
-
-                  {(singleOrder.status === "pending" || singleOrder.status === "processing") && (
-                    <div style={{ display: "flex", gap: "10px", marginTop: "14px", flexDirection: "column", background: "rgba(16, 185, 129, 0.06)", padding: "16px", borderRadius: "14px", border: "1px solid rgba(16, 185, 129, 0.2)" }}>
-                      <div style={{ fontSize: "0.92rem", color: "#4ade80", textAlign: "center", fontWeight: "bold" }}>
-                        ⚡ لتسريع تنفيذ الطلب فوراً عبر واتساب الإدارة:
-                      </div>
-                      <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-                        <a
-                          href={getSpeedUpWhatsAppUrl("16728972935", singleOrder, customer?.username)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="glass-btn"
-                          style={{ flex: "1 1 200px", padding: "12px 14px", borderRadius: "10px", background: "rgba(16, 185, 129, 0.2)", border: "1px solid rgba(16, 185, 129, 0.4)", color: "var(--text-main)", fontWeight: "bold", textAlign: "center", textDecoration: "none", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "8px" }}
-                        >
-                          <span>🟢 واتساب الإدارة 1 (+1 672-897-2935)</span>
-                        </a>
-                        <a
-                          href={getSpeedUpWhatsAppUrl("249123667227", singleOrder, customer?.username)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="glass-btn"
-                          style={{ flex: "1 1 200px", padding: "12px 14px", borderRadius: "10px", background: "rgba(34, 197, 94, 0.2)", border: "1px solid rgba(34, 197, 94, 0.4)", color: "var(--text-main)", fontWeight: "bold", textAlign: "center", textDecoration: "none", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "8px" }}
-                        >
-                          <span>🟢 واتساب الإدارة 2 (+249 12-366-7227)</span>
-                        </a>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                /* Static Guidance */
-                <div style={{ textAlign: "center", padding: "20px 10px" }}>
-                  <span style={{ fontSize: "3.5rem" }}>🔑</span>
-                  <h3 style={{ fontWeight: 900, margin: "15px 0" }}>تسجيل الدخول لتتبع أسهل</h3>
-                  <p style={{ color: "var(--text-muted)", fontSize: "0.9rem", lineHeight: "1.7", marginBottom: "20px" }}>
-                    عند تسجيل حساب جديد، ستتمكن من مراجعة وتتبع جميع طلبات الخدمات السابقة الخاصة بك في مكان واحد ودون الحاجة لإدخال أرقام الهواتف أو أرقام الطلبات يدوياً في كل مرة.
-                  </p>
-                  <Link href="/login" className="glass-btn glass-btn-primary" style={{ width: "100%", padding: "12px", borderRadius: "12px" }}>
-                    تسجيل الدخول / إنشاء حساب
-                  </Link>
                 </div>
               )}
             </div>
           </div>
         )}
+
+      {/* ── Bottom Server Stats Banner (Orders Page Mockup) ── */}
+      <div style={{ marginTop: "50px", marginBottom: "40px", position: "relative", padding: "40px 20px", borderRadius: "24px", background: "var(--bg-glass-deep)", border: "1px solid var(--border-glass)", overflow: "hidden", display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: "20px" }}>
+        
+        {/* Glow & Graphic */}
+        <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "300px", height: "100%", background: "radial-gradient(circle, rgba(22, 119, 238, 0.15) 0%, transparent 60%)", pointerEvents: "none", zIndex: 0 }}></div>
+        <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", zIndex: 1, pointerEvents: "none", opacity: 0.9 }}>
+           {/* Fallback server icon if no image */}
+           <div style={{ fontSize: "8rem", filter: "drop-shadow(0 10px 20px rgba(22,119,238,0.4))" }}>🗄️</div>
+        </div>
+
+        {/* Right side items (in RTL) */}
+        <div style={{ display: "flex", flex: 1, gap: "20px", zIndex: 2, justifyContent: "flex-start", flexWrap: "wrap" }}>
+          
+          <div style={{ display: "flex", gap: "15px", alignItems: "center" }}>
+            <div style={{ color: "var(--brand-blue)", fontSize: "2rem" }}>🛡️</div>
+            <div>
+              <h4 style={{ margin: "0 0 5px 0", fontSize: "1.1rem", fontWeight: 800 }}>أمان وموثوقية</h4>
+              <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--text-muted)", maxWidth: "160px" }}>حماية متقدمة لبياناتك على مدار الساعة</p>
+            </div>
+          </div>
+
+          <div style={{ display: "flex", gap: "15px", alignItems: "center" }}>
+            <div style={{ color: "var(--brand-blue)", fontSize: "2rem" }}>⏱️</div>
+            <div>
+              <h4 style={{ margin: "0 0 5px 0", fontSize: "1.1rem", fontWeight: 800 }}>أداء عالي</h4>
+              <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--text-muted)", maxWidth: "160px" }}>بنية تحتية قوية وسرعة استجابة فائقة</p>
+            </div>
+          </div>
+
+        </div>
+
+        {/* Center Spacer for Graphic */}
+        <div style={{ flex: "0 1 200px" }}></div>
+
+        {/* Left side items (in RTL) */}
+        <div style={{ display: "flex", flex: 1, gap: "20px", zIndex: 2, justifyContent: "flex-end", flexWrap: "wrap" }}>
+          
+          <div style={{ display: "flex", gap: "15px", alignItems: "center" }}>
+            <div style={{ color: "var(--brand-blue)", fontSize: "2rem" }}>🎧</div>
+            <div>
+              <h4 style={{ margin: "0 0 5px 0", fontSize: "1.1rem", fontWeight: 800 }}>دعم فني متخصص</h4>
+              <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--text-muted)", maxWidth: "160px" }}>فريق محترف جاهز لمساعدتك دائماً</p>
+            </div>
+          </div>
+
+          <div style={{ display: "flex", gap: "15px", alignItems: "center" }}>
+            <div style={{ color: "var(--brand-blue)", fontSize: "2rem" }}>🎛️</div>
+            <div>
+              <h4 style={{ margin: "0 0 5px 0", fontSize: "1.1rem", fontWeight: 800 }}>إدارة سهلة</h4>
+              <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--text-muted)", maxWidth: "160px" }}>لوحة تحكم متقدمة تجربة سلسة ومرنة</p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
       </div>
 
     </>
   );
 }
-
-
-

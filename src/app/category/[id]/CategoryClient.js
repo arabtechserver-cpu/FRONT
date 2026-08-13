@@ -628,8 +628,8 @@ export default function CategoryServices({ params }) {
                         window.scrollTo({ top: 0, behavior: "smooth" });
                       }}
                       style={{
-                        background: currentPage === 1 ? "rgba(255,255,255,0.03)" : "rgba(255,255,255,0.08)",
-                        border: "1px solid rgba(255,255,255,0.1)",
+                        background: currentPage === 1 ? "var(--bg-glass)" : "var(--bg-glass)",
+                        border: "1px solid var(--border-color)",
                         borderRadius: "10px",
                         padding: "8px 16px",
                         color: currentPage === 1 ? "var(--text-muted)" : "var(--text-main)",
@@ -662,8 +662,8 @@ export default function CategoryServices({ params }) {
                             width: "36px",
                             height: "36px",
                             borderRadius: "10px",
-                            border: isSelected ? "1px solid var(--primary-color)" : "1px solid rgba(255,255,255,0.1)",
-                            background: isSelected ? "var(--primary-color)" : "rgba(255,255,255,0.05)",
+                            border: isSelected ? "1px solid var(--primary-color)" : "1px solid var(--border-color)",
+                            background: isSelected ? "var(--primary-color)" : "var(--bg-glass)",
                             color: isSelected ? "#ffffff" : "var(--text-main)",
                             cursor: "pointer",
                             fontWeight: "bold",
@@ -683,8 +683,8 @@ export default function CategoryServices({ params }) {
                         window.scrollTo({ top: 0, behavior: "smooth" });
                       }}
                       style={{
-                        background: currentPage === totalPages ? "rgba(255,255,255,0.03)" : "rgba(255,255,255,0.08)",
-                        border: "1px solid rgba(255,255,255,0.1)",
+                        background: currentPage === totalPages ? "var(--bg-glass)" : "var(--bg-glass)",
+                        border: "1px solid var(--border-color)",
                         borderRadius: "10px",
                         padding: "8px 16px",
                         color: currentPage === totalPages ? "var(--text-muted)" : "var(--text-main)",

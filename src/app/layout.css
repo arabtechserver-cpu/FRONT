@@ -656,7 +656,7 @@
   }
 
   .main-content-inner {
-    padding: 15px 15px 80px 15px !important;
+    padding: 15px 15px 125px 15px !important;
   }
 
   .bottom-nav {
@@ -666,7 +666,7 @@
 
 @media (max-width: 360px) {
   .main-content-inner {
-    padding: 10px 10px 80px 10px !important;
+    padding: 10px 10px 125px 10px !important;
   }
 }
 
@@ -689,6 +689,26 @@
   box-shadow: var(--shadow-glass);
   max-width: 460px;
   margin: 0 auto;
+}
+
+@media (max-width: 992px) {
+  .pwa-install-banner {
+    top: 104px;
+    bottom: auto;
+    left: 10px;
+    right: 10px;
+    max-width: 440px;
+  }
+
+  .contact-floating-button {
+    display: none !important;
+  }
+
+  .contact-floating-toggle {
+    width: 48px !important;
+    height: 48px !important;
+    font-size: 1.15rem !important;
+  }
 }
 
 @media (min-width: 993px) {

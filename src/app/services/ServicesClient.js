@@ -1,22 +1,75 @@
-﻿"use client";
+"use client";
 
-import { useState, useEffect, useMemo } from "react";
-import { useSearchParams } from "next/navigation";
+import { useState, useEffect, useMemo, useCallback, useLayoutEffect } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { API_BASE_URL } from "@/config";
+import HeroSlider from "@/components/HeroSlider";
 import { useI18n } from "@/lib/i18n";
+import { trackConversion } from "@/lib/analytics";
 
-export default function ServicesClient({ initialCategories = [], initialServices = [] }) {
-  const { t } = useI18n();
+export default function ServicesClient({ initialCategories = [], initialServices = [], isHome = false, homeHeroTitle, homeHeroSubtitle }) {
+  const { t, meta } = useI18n();
   const [services, setServices] = useState(initialServices);
   const [categories, setCategories] = useState(initialCategories);
+  const [customer, setCustomer] = useState(null);
+  const [authChecked, setAuthChecked] = useState(false);
+
+  useEffect(() => {
+    if (!isHome) {
+      setAuthChecked(true);
+      return;
+    }
+    try {
+      const token = localStorage.getItem("customer_token");
+      if (token) {
+        fetch(`${API_BASE_URL}/api/customer/me`, {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+        .then(res => res.ok ? res.json() : null)
+        .then(data => {
+          if (data) setCustomer(data);
+          setAuthChecked(true);
+        })
+        .catch(() => setAuthChecked(true));
+      } else {
+        setAuthChecked(true);
+      }
+    } catch(e) {
+      setAuthChecked(true);
+    }
+  }, [isHome]);
   const [loading, setLoading] = useState(initialServices.length === 0);
   const [searchTerm, setSearchTerm] = useState("");
   const [visibleCategories, setVisibleCategories] = useState(5);
   const [settings, setSettings] = useState({ announcement_text: "🟢 واتساب الإدارة 1: +1 (672) 897-2935 | 🟢 واتساب الإدارة 2: +249 12 366 7227" });
   
+  // Isomorphic layout effect to avoid hydration mismatch while restoring state synchronously before paint
+  const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
+
+  useIsomorphicLayoutEffect(() => {
+    try {
+      const savedSearch = sessionStorage.getItem("arabtech_services_search");
+      if (savedSearch) setSearchTerm(savedSearch);
+      const savedLimit = sessionStorage.getItem("arabtech_services_limit");
+      if (savedLimit) setVisibleCategories(parseInt(savedLimit));
+    } catch(e) {}
+  }, []);
+
+  useEffect(() => {
+    try {
+      sessionStorage.setItem("arabtech_services_search", searchTerm);
+      sessionStorage.setItem("arabtech_services_limit", visibleCategories.toString());
+    } catch(e) {}
+  }, [searchTerm, visibleCategories]);
+  
+  const router = useRouter();
   const searchParams = useSearchParams();
   const typeFilter = searchParams.get("type"); // e.g., 'imei', 'server', 'remote'
+
+  useEffect(() => {
+    trackConversion("catalog_view", { typeFilter: typeFilter || "all" });
+  }, [typeFilter]);
 
   const getWhatsappLink = (text) => {
     if (!text) return "https://wa.me/16728972935";
@@ -135,30 +188,30 @@ export default function ServicesClient({ initialCategories = [], initialServices
     return "⚡";
   };
 
-  const normalizeServiceType = (value) => String(value || "").trim().toLowerCase();
-  const serviceMatchesType = (service) => {
+  const serviceMatchesType = useCallback((service) => {
     if (!typeFilter) return true;
-    const targetType = normalizeServiceType(typeFilter);
-    const serviceTypes = [normalizeServiceType(service.api_service_type)];
+    const normalizeType = (value) => String(value || "").trim().toLowerCase();
+    const targetType = normalizeType(typeFilter);
+    const serviceTypes = [normalizeType(service.api_service_type)];
     if (Array.isArray(service.packages)) {
       service.packages.forEach((pkg) => {
-        const packageType = normalizeServiceType(pkg?.api_service_type);
+        const packageType = normalizeType(pkg?.api_service_type);
         if (packageType) serviceTypes.push(packageType);
       });
     }
     return serviceTypes.includes(targetType);
-  };
+  }, [typeFilter]);
 
   const typeFilteredServices = useMemo(
     () => services.filter(serviceMatchesType),
-    [services, typeFilter]
+    [services, serviceMatchesType]
   );
 
   const catalogCategories = useMemo(() => {
     if (!typeFilter) return categories;
     return categories.filter(cat => {
-      const catServices = typeFilteredServices.filter(s => s.category_id === cat.id);
-      const assignedType = normalizeServiceType(cat.menu_service_type);
+      const catServices = typeFilteredServices.filter(s => Number(s.category_id) === Number(cat.id));
+      const assignedType = String(cat.menu_service_type || "").trim().toLowerCase();
       return assignedType === typeFilter.toLowerCase() ||
         catServices.length > 0;
     });
@@ -166,43 +219,115 @@ export default function ServicesClient({ initialCategories = [], initialServices
 
   const catalogServices = typeFilteredServices;
 
+
   const filteredServices = catalogServices.filter((s) =>
     s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     s.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const uncategorizedServices = filteredServices
-    .filter((s) => !catalogCategories.some((c) => c.id === s.category_id))
+    .filter((s) => !catalogCategories.some((c) => Number(c.id) === Number(s.category_id)))
     .sort((a, b) => a.name.localeCompare(b.name, 'en'));
 
   return (
     <>
+      {isHome && <HeroSlider />}
 
+      {/* Filter and Search Bar (Single Row) */}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '20px', alignItems: 'center' }}>
+        
+        {/* Search */}
+        <div style={{ flex: '1 1 250px', position: 'relative' }}>
+          <input
+            type="text"
+            className="search-input-center"
+            placeholder="ابحث عن خدمة..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            dir="rtl"
+            style={{ width: '100%', padding: '12px 40px 12px 15px', borderRadius: '12px', background: 'var(--bg-glass-deep)', border: '1px solid var(--border-glass)', color: 'var(--text-main)' }}
+          />
+          <span style={{ position: 'absolute', right: '15px', top: '50%', transform: 'translateY(-50%)', opacity: 0.5 }}>🔍</span>
+        </div>
 
-      {/* Page Title */}
-      <div className="services-page-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "20px", marginBottom: "10px", gap: "12px", flexWrap: "wrap" }}>
-        <h2 className="section-title" style={{ margin: 0 }}>{t("availableServices")}</h2>
-        <span style={{ fontSize: "0.85rem", color: "var(--text-muted)", fontWeight: "600" }}>
-          {t("serviceCount", { count: filteredServices.length })}
-        </span>
+        {/* Sort/Filter Dropdowns */}
+        <div style={{ display: 'flex', gap: '10px', flex: '0 0 auto' }}>
+          <div className="glass-panel" style={{ padding: '8px 15px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+             <span>السعر</span>
+             <span>🔽</span>
+          </div>
+          <div className="glass-panel" style={{ padding: '8px 15px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+             <span>التصنيف</span>
+             <span>🔽</span>
+          </div>
+        </div>
       </div>
-      <p className="services-page-intro" style={{ color: "var(--text-muted)", fontSize: "0.88rem", margin: "0 0 20px 0" }}>
-        {t("servicesIntro")}
-      </p>
 
-      {/* Centered Search Bar */}
-      <div className="search-container-center services-page-search">
-        <input
-          type="text"
-          className="search-input-center"
-          placeholder={t("searchServices")}
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          dir="ltr"
-          style={{ direction: "ltr", textAlign: "left" }}
-        />
-        <span className="search-icon-center">🔍</span>
-      </div>
+      {/* Category Pills */}
+      <nav aria-label="تصفية الخدمات" style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "25px" }}>
+        {[
+          { href: isHome ? "/" : "/services", value: null, label: "الكل", icon: "🔗" },
+          { href: (isHome ? "/" : "/services") + "?type=server", value: "server", label: "سيرفر", icon: "🖥️" },
+          { href: (isHome ? "/" : "/services") + "?type=imei", value: "imei", label: "IMEI", icon: "📱" },
+          { href: (isHome ? "/" : "/services") + "?type=remote", value: "remote", label: "ريموت", icon: "🎮" }
+        ].map((item) => {
+          const active = (typeFilter || null) === item.value;
+          return (
+            <Link
+              key={item.label}
+              href={item.href}
+              className={active ? "glass-btn glass-btn-primary" : "glass-btn"}
+              style={{ padding: "8px 20px", borderRadius: "999px", textDecoration: "none", fontSize: "0.95rem", display: 'flex', alignItems: 'center', gap: '6px' }}
+            >
+              <span>{item.icon}</span>
+              <span>{item.label}</span>
+            </Link>
+          );
+        })}
+      </nav>
+
+      {/* Wallet Balance Banner (Only if logged in theoretically, but we'll show it based on design) */}
+      {isHome && authChecked && (
+                  customer ? (
+                    <div className="wallet-hero-card" style={{ display: "flex", flexWrap: "wrap-reverse", justifyContent: "space-between", alignItems: "center", padding: "20px", borderRadius: "16px", marginBottom: "30px", background: "var(--bg-glass-deep)", border: "1px solid var(--border-glass)" }}>
+                      <Link className="glass-btn glass-btn-primary" href="/wallet" style={{ padding: "12px 25px", borderRadius: "12px", fontWeight: "bold", textDecoration: "none" }}>
+                        اشحن محفظتك الآن
+                      </Link>
+                      <div style={{ display: "flex", alignItems: "center", gap: "15px", textAlign: "right" }}>
+                        <div>
+                          <div style={{ fontSize: "1.2rem", fontWeight: "900" }}>
+                            رصيدك الحالي: <span style={{ color: "var(--primary-color)" }}>${Number(customer.balance || 0).toFixed(2)}</span>
+                          </div>
+                          <div style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>
+                            أضف رصيدك الآن واستمتع بتنفيذ فوري بدون تأخير
+                          </div>
+                        </div>
+                        <div style={{ width: "50px", height: "50px", background: "rgba(0, 180, 216, 0.1)", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.5rem", color: "var(--primary-color)" }}>
+                          👛
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="wallet-hero-card" style={{ display: "flex", flexWrap: "wrap-reverse", justifyContent: "space-between", alignItems: "center", padding: "20px", borderRadius: "16px", marginBottom: "30px", background: "var(--bg-glass-deep)", border: "1px solid var(--border-glass)" }}>
+                      <Link className="glass-btn glass-btn-primary" href="/login" style={{ padding: "12px 25px", borderRadius: "12px", fontWeight: "bold", textDecoration: "none" }}>
+                        تسجيل الدخول
+                      </Link>
+                      <div style={{ display: "flex", alignItems: "center", gap: "15px", textAlign: "right" }}>
+                        <div>
+                          <div style={{ fontSize: "1.2rem", fontWeight: "900" }}>
+                            أهلاً بك في خدماتنا!
+                          </div>
+                          <div style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>
+                            سجل دخولك لتتمكن من شحن رصيدك وتنفيذ الطلبات فوراً
+                          </div>
+                        </div>
+                        <div style={{ width: "50px", height: "50px", background: "rgba(0, 180, 216, 0.1)", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.5rem", color: "var(--primary-color)" }}>
+                          👋
+                        </div>
+                      </div>
+                    </div>
+                  )
+      )}
 
       {/* Services List (scc-grid) */}
       {loading && services.length === 0 ? (
@@ -222,7 +347,7 @@ export default function ServicesClient({ initialCategories = [], initialServices
             if (searchTerm.trim().length > 0) return true;
             return true;
           }).slice(0, searchTerm.trim().length > 0 ? catalogCategories.length : visibleCategories).map((cat) => {
-            const catServices = filteredServices.filter(s => s.category_id === cat.id).sort((a, b) => a.name.localeCompare(b.name, 'en'));
+            const catServices = filteredServices.filter(s => Number(s.category_id) === Number(cat.id)).sort((a, b) => a.name.localeCompare(b.name, 'en'));
             if (catServices.length === 0) return null;
 
             return (
@@ -234,7 +359,7 @@ export default function ServicesClient({ initialCategories = [], initialServices
                   justifyContent: "space-between",
                   gap: "12px",
                   paddingBottom: "12px",
-                  borderBottom: "2px solid rgba(255, 255, 255, 0.05)",
+                  borderBottom: "2px solid var(--bg-glass)",
                   position: "relative",
                   flexWrap: "wrap"
                 }}>
@@ -243,8 +368,8 @@ export default function ServicesClient({ initialCategories = [], initialServices
                       width: "36px",
                       height: "36px",
                       borderRadius: "10px",
-                      background: "rgba(255, 255, 255, 0.03)",
-                      border: "1px solid rgba(255, 255, 255, 0.05)",
+                      background: "var(--bg-glass)",
+                      border: "1px solid var(--bg-glass)",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -344,30 +469,49 @@ export default function ServicesClient({ initialCategories = [], initialServices
                             <span className="scc-name">{service.name}</span>
                             <div className="scc-meta" style={{ display: "flex", flexWrap: "wrap", gap: "8px", alignItems: "center", marginTop: "4px", width: "100%", minWidth: 0 }}>
                               {service.packages && service.packages.length > 0 ? (
-                                <div style={{ display: "flex", flexDirection: "column", gap: "4px", width: "100%", marginTop: "6px", minWidth: 0 }}>
-                                  <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", fontWeight: "bold" }}>{t("availablePackages")}</span>
-                                  {service.packages.slice(0, 3).map((pkg, idx) => (
-                                    <div key={idx} style={{ 
-                                      display: "flex", 
-                                      justifyContent: "space-between", 
-                                      alignItems: "center",
-                                      gap: "8px",
-                                      fontSize: "0.85rem", 
-                                      background: "rgba(255, 255, 255, 0.03)", 
-                                      padding: "4px 8px", 
-                                      borderRadius: "6px",
-                                      border: "1px solid rgba(255, 255, 255, 0.05)",
-                                      width: "100%",
-                                      boxSizing: "border-box",
-                                      minWidth: 0
-                                    }}>
-                                      <span style={{ color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", flex: "1 1 auto", minWidth: 0 }} title={pkg.name}>{pkg.name}</span>
-                                      <span style={{ color: "var(--primary-color)", fontWeight: "bold", flexShrink: 0 }}>${Number(pkg.price).toFixed(2)}</span>
-                                    </div>
-                                  ))}
-                                  {service.packages.length > 3 && (
-                                    <span style={{ fontSize: "0.78rem", color: "#fbbf24", background: "rgba(245, 158, 11, 0.14)", border: "1px solid rgba(245, 158, 11, 0.35)", padding: "3px 9px", borderRadius: "8px", fontWeight: "900", marginTop: "4px", display: "inline-block" }}>+ {t("viewMore")} ({service.packages.length - 3})</span>
-                                  )}
+                                <div style={{ display: "flex", flexDirection: "column", gap: "10px", width: "100%", marginTop: "10px", minWidth: 0 }}>
+                                  <span style={{ fontSize: "0.85rem", color: "var(--text-muted)", fontWeight: "bold" }}>{t("availablePackages")}</span>
+                                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))", gap: "10px" }}>
+                                    {service.packages.map((pkg, idx) => (
+                                      <div key={idx} style={{ 
+                                        display: "flex", 
+                                        flexDirection: "column",
+                                        justifyContent: "center", 
+                                        alignItems: "center",
+                                        textAlign: "center",
+                                        gap: "10px",
+                                        fontSize: "0.85rem", 
+                                        background: "var(--bg-glass-deep)", 
+                                        padding: "15px 12px", 
+                                        borderRadius: "12px",
+                                        border: "1px solid var(--border-glass)",
+                                        boxShadow: "0 4px 15px rgba(0,0,0,0.1)",
+                                        minWidth: 0,
+                                        height: "100%",
+                                        transition: "all 0.3s ease",
+                                        cursor: "pointer",
+                                        position: "relative",
+                                        zIndex: 10
+                                      }}
+                                      onMouseEnter={(e) => {
+                                        e.currentTarget.style.transform = "translateY(-3px)";
+                                        e.currentTarget.style.borderColor = "var(--primary-color)";
+                                      }}
+                                      onMouseLeave={(e) => {
+                                        e.currentTarget.style.transform = "translateY(0)";
+                                        e.currentTarget.style.borderColor = "var(--border-glass)";
+                                      }}
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        router.push(`/service/${service.id}?pkg=${encodeURIComponent(pkg.name)}`);
+                                      }}
+                                      >
+                                        <span style={{ color: "#fff", whiteSpace: "normal", wordBreak: "break-word", fontWeight: 600, lineHeight: "1.4" }} title={pkg.name}>{pkg.name}</span>
+                                        <span style={{ color: "var(--primary-color)", fontWeight: "900", fontSize: "1rem", marginTop: "auto", background: "rgba(0, 180, 216, 0.1)", padding: "4px 12px", borderRadius: "8px" }}>${Number(pkg.price).toFixed(2)}</span>
+                                      </div>
+                                    ))}
+                                  </div>
                                 </div>
                               ) : service.price > 0 ? (
                                 <span style={{ color: "var(--primary-color)", fontWeight: 900, fontSize: "0.9rem" }}>
@@ -403,7 +547,7 @@ export default function ServicesClient({ initialCategories = [], initialServices
                 justifyContent: "space-between",
                 gap: "12px",
                 paddingBottom: "12px",
-                borderBottom: "2px solid rgba(255, 255, 255, 0.05)",
+                borderBottom: "2px solid var(--bg-glass)",
                 position: "relative",
                 flexWrap: "wrap"
               }}>
@@ -411,8 +555,8 @@ export default function ServicesClient({ initialCategories = [], initialServices
                   width: "36px",
                   height: "36px",
                   borderRadius: "10px",
-                  background: "rgba(255, 255, 255, 0.03)",
-                  border: "1px solid rgba(255, 255, 255, 0.05)",
+                  background: "var(--bg-glass)",
+                  border: "1px solid var(--bg-glass)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -424,8 +568,8 @@ export default function ServicesClient({ initialCategories = [], initialServices
                 <span style={{
                   fontSize: "0.75rem",
                   color: "#cbd5e1",
-                  background: "rgba(255, 255, 255, 0.05)",
-                  border: "1px solid rgba(255, 255, 255, 0.08)",
+                  background: "var(--bg-glass)",
+                  border: "1px solid var(--bg-glass)",
                   padding: "2px 8px",
                   borderRadius: "10px",
                   fontWeight: "700"
@@ -486,15 +630,15 @@ export default function ServicesClient({ initialCategories = [], initialServices
                                     alignItems: "center",
                                     gap: "8px",
                                     fontSize: "0.85rem", 
-                                    background: "rgba(255, 255, 255, 0.03)", 
-                                    padding: "4px 8px", 
+                                    background: "var(--bg-glass)", 
+                                    padding: "8px 10px", 
                                     borderRadius: "6px",
-                                    border: "1px solid rgba(255, 255, 255, 0.05)",
+                                    border: "1px solid var(--bg-glass)",
                                     width: "100%",
                                     boxSizing: "border-box",
                                     minWidth: 0
                                   }}>
-                                    <span style={{ color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", flex: "1 1 auto", minWidth: 0 }} title={pkg.name}>{pkg.name}</span>
+                                    <span style={{ color: "#fff", whiteSpace: "normal", wordBreak: "break-word", flex: "1 1 auto", minWidth: 0 }} title={pkg.name}>{pkg.name}</span>
                                     <span style={{ color: "var(--primary-color)", fontWeight: "bold", flexShrink: 0 }}>${Number(pkg.price).toFixed(2)}</span>
                                   </div>
                                 ))}

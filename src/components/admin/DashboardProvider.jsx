@@ -145,6 +145,8 @@ export default function DashboardProvider({ children }) {
   const [editBannerUploadedFile, setEditBannerUploadedFile] = useState(null);
 
   const [siteName, setSiteName] = useState("");
+  const [homeHeroTitle, setHomeHeroTitle] = useState("جميع الخدمات");
+  const [homeHeroSubtitle, setHomeHeroSubtitle] = useState("اختر الخدمة التي تناسب احتياجك من بين مجموعة واسعة من الخدمات الاحترافية الموثوقة");
   const [announcementText, setAnnouncementText] = useState("🟢 واتساب الإدارة 1: +1 (672) 897-2935 | 🟢 واتساب الإدارة 2: +249 12 366 7227");
   const [siteLogo, setSiteLogo] = useState("");
   const [siteFavicon, setSiteFavicon] = useState("");
@@ -461,6 +463,8 @@ export default function DashboardProvider({ children }) {
 
     const settingsData = await settingsRes.json();
     setSiteName(settingsData.site_name || "Arab Tech Server");
+    setHomeHeroTitle(settingsData.home_hero_title || "جميع الخدمات");
+    setHomeHeroSubtitle(settingsData.home_hero_subtitle || "اختر الخدمة التي تناسب احتياجك من بين مجموعة واسعة من الخدمات الاحترافية الموثوقة");
     setSiteLogo(settingsData.site_logo || "default");
     setSiteFavicon(settingsData.site_favicon || "default");
     setPaymentMethodsList(settingsData.payment_methods || []);
@@ -1871,6 +1875,8 @@ export default function DashboardProvider({ children }) {
         },
         body: JSON.stringify({
           site_name: siteName,
+          home_hero_title: homeHeroTitle,
+          home_hero_subtitle: homeHeroSubtitle,
           site_logo: logoUploadedFile || siteLogo,
           site_favicon: faviconUploadedFile || siteFavicon,
           payment_methods: paymentMethodsList,

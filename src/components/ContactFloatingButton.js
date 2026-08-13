@@ -122,6 +122,7 @@ export default function ContactFloatingButton() {
 
   return (
     <div
+      className="contact-floating-button"
       style={{
         position: "fixed",
         right: meta.dir === "rtl" ? "16px" : "auto",
@@ -136,6 +137,7 @@ export default function ContactFloatingButton() {
     >
       {/* Main Toggle Button */}
       <button
+        className="contact-floating-toggle"
         type="button"
         onClick={() => setOpen((prev) => !prev)}
         aria-label={t("contactUsAria")}

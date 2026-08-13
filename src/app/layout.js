@@ -1,11 +1,17 @@
 import "./globals.css";
 import NextTopLoader from 'nextjs-toploader';
 import ContactFloatingButton from "../components/ContactFloatingButton";
-import SiteLoadingScreen from "../components/SiteLoadingScreen";
 import MainLayout from "../components/MainLayout";
 import { I18nProvider } from "@/lib/i18n";
 import { API_BASE_URL, SITE_URL, fetchWithTimeout } from "../config";
 import { cache } from "react";
+import { Tajawal } from 'next/font/google';
+
+const tajawal = Tajawal({
+  subsets: ['arabic', 'latin'],
+  weight: ['300', '400', '500', '700', '800', '900'],
+  variable: '--font-tajawal',
+});
 
 // Skip API fetch during Vercel build when the API is not reachable
 const isBuildTime = typeof window === "undefined" && (API_BASE_URL.includes("localhost") || API_BASE_URL.includes("127.0.0.1"));
@@ -214,16 +220,9 @@ export default async function RootLayout({ children }) {
   return (
     <html lang="ar" dir="rtl" suppressHydrationWarning>
       <head>
-        <meta name="google-site-verification" content="BpQsEK6Xln0FauVIlj0qYpPxuzvoYrACWOehkyBc5-U" />
-        {/* PWA Settings */}
-        <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#00b4d8" />
-        <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <link rel="apple-touch-icon" href={siteLogoUrl} />
-
-        {/* Favicon / Tab Icon - Multiple sizes for Google crawler */}
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="icon" type="image/png" href="/favicon.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16.png" />
@@ -238,7 +237,6 @@ export default async function RootLayout({ children }) {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-
         {/* Anti-Flicker Theme Initialization Script */}
         <script
           dangerouslySetInnerHTML={{
@@ -260,29 +258,38 @@ export default async function RootLayout({ children }) {
           }}
         />
 
-        {/* Service Worker Registration */}
+        {/* Service Worker Unregistration & Cache Busting */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
               if ('serviceWorker' in navigator) {
-                window.addEventListener('load', function() {
-                  navigator.serviceWorker.register('/sw.js').then(
-                    function(registration) {
-                      console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                    },
-                    function(err) {
-                      console.log('ServiceWorker registration failed: ', err);
-                    }
-                  );
+                navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                  for (let registration of registrations) {
+                    registration.unregister().then(function(boolean) {
+                      if(boolean) {
+                        console.log('Successfully unregistered old service worker.');
+                        // Force clear all caches to remove the bad CSS MIME type cache
+                        caches.keys().then(function(names) {
+                          for (let name of names) {
+                            caches.delete(name);
+                          }
+                          // Reload once to fetch fresh assets
+                          if (!sessionStorage.getItem('sw_cache_cleared')) {
+                            sessionStorage.setItem('sw_cache_cleared', 'true');
+                            window.location.reload(true);
+                          }
+                        });
+                      }
+                    });
+                  }
                 });
               }
             `,
           }}
         />
       </head>
-      <body suppressHydrationWarning={true}>
+      <body suppressHydrationWarning={true} className="font-sans">
         <NextTopLoader color="#00b4d8" showSpinner={false} />
-        <SiteLoadingScreen />
         <I18nProvider>
           <MainLayout>
             {children}

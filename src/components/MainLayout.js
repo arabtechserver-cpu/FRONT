@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
@@ -49,7 +49,6 @@ export default function MainLayout({ children }) {
   const [menuCategories, setMenuCategories] = useState([]);
   const [showInstallBanner, setShowInstallBanner] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
-  const [pwaInstallable, setPwaInstallable] = useState(false);
   const [logoLang, setLogoLang] = useState("ar");
 
   useEffect(() => {
@@ -93,12 +92,8 @@ export default function MainLayout({ children }) {
       setCustomerUser(userStr ? JSON.parse(userStr) : null);
     } catch { }
 
-    // PWA
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches
-      || window.navigator.standalone
-      || document.referrer.includes('android-app://');
-    const isDismissed = localStorage.getItem("pwa_dismissed") === "true";
-    setShowInstallBanner(!isStandalone && !isDismissed);
+    // PWA banner is intentionally delayed so it never blocks a first purchase.
+    setShowInstallBanner(false);
 
     // Font Scale
     const savedScale = localStorage.getItem("font_scale");
@@ -258,6 +253,7 @@ export default function MainLayout({ children }) {
 
   // Sync theme and setup PWA prompt
   useEffect(() => {
+    let revealTimer;
     if (typeof window !== "undefined") {
       // Check if already running in standalone PWA mode
       const isStandalone = window.matchMedia('(display-mode: standalone)').matches
@@ -265,24 +261,25 @@ export default function MainLayout({ children }) {
         || document.referrer.includes('android-app://');
 
       const isDismissed = localStorage.getItem("pwa_dismissed") === "true";
-      setShowInstallBanner(!isStandalone && !isDismissed);
+      if (pathname === "/" && !isStandalone && !isDismissed) {
+        revealTimer = setTimeout(() => setShowInstallBanner(true), 45000);
+      } else {
+        setShowInstallBanner(false);
+      }
     }
 
     const handleBeforeInstallPrompt = (e) => {
       e.preventDefault();
       setDeferredPrompt(e);
-      const isDismissed = localStorage.getItem("pwa_dismissed") === "true";
-      if (!isDismissed) {
-        setShowInstallBanner(true);
-      }
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
     return () => {
+      if (revealTimer) clearTimeout(revealTimer);
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     };
-  }, []);
+  }, [pathname]);
 
   const toggleTheme = () => {
     const nextTheme = theme === "dark" ? "light" : "dark";
@@ -446,13 +443,13 @@ export default function MainLayout({ children }) {
               <div style={{ fontSize: '0.72rem', color: 'var(--primary-color)', fontWeight: 700, marginTop: '1px' }}>{t("secureFast")}</div>
             </div>
           </div>
-          <button type="button" aria-label={t("close")} className="mobile-drawer-close" onClick={() => setMenuOpen(false)} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)', width: '36px', height: '36px', borderRadius: '10px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', transition: 'all 0.2s' }}><X size={18} aria-hidden="true" /></button>
+          <button type="button" aria-label={t("close")} className="mobile-drawer-close" onClick={() => setMenuOpen(false)} style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', width: '36px', height: '36px', borderRadius: '10px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', transition: 'all 0.2s' }}><X size={18} aria-hidden="true" /></button>
         </div>
 
         {isCustomerLoggedIn && customerUser ? (
           <div className="mobile-drawer-user-card" style={{ marginBottom: "15px", display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "6px", padding: "16px", background: "linear-gradient(135deg, rgba(234, 179, 8, 0.1), rgba(202, 138, 4, 0.05))", borderRadius: "16px", border: "1px solid rgba(234, 179, 8, 0.2)" }}>
             <div style={{ fontSize: "1rem", fontWeight: 800, color: "var(--text-main)" }}>{t("welcomeUser", { username: customerUser.username })}</div>
-            <div style={{ fontSize: "0.9rem", color: "#eab308", fontWeight: 900, background: "rgba(255,255,255,0.05)", padding: "6px 12px", borderRadius: "8px", display: "inline-block", border: "1px solid rgba(234, 179, 8, 0.15)" }}>
+            <div style={{ fontSize: "0.9rem", color: "#eab308", fontWeight: 900, background: "var(--bg-secondary)", padding: "6px 12px", borderRadius: "8px", display: "inline-block", border: "1px solid rgba(234, 179, 8, 0.15)" }}>
               {renderBalanceDropdownAndValue(customerUser)}
             </div>
           </div>
@@ -473,7 +470,7 @@ export default function MainLayout({ children }) {
           <div className="mobile-drawer-dropdown-container" style={{ position: "relative" }}>
             <div 
               className="mobile-drawer-link" 
-              style={{ cursor: "pointer", display: "flex", justifyContent: "space-between", background: categoriesExpanded ? "rgba(255,255,255,0.05)" : "transparent" }} 
+              style={{ cursor: "pointer", display: "flex", justifyContent: "space-between", background: categoriesExpanded ? "var(--bg-secondary)" : "transparent" }} 
               onClick={() => setCategoriesExpanded(!categoriesExpanded)}
             >
               <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
@@ -486,7 +483,7 @@ export default function MainLayout({ children }) {
               style={{ 
                 display: categoriesExpanded ? "flex" : "none", 
                 flexDirection: "column", 
-                background: "rgba(0,0,0,0.1)", 
+                background: "var(--bg-secondary)", 
                 borderRadius: "8px", 
                 margin: "4px 10px", 
                 padding: "4px 0"
@@ -540,26 +537,26 @@ export default function MainLayout({ children }) {
         <LanguageSwitcher compact />
 
         {/* Premium Font Scale Toggle */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 16px", background: "rgba(255,255,255,0.03)", borderRadius: "14px", border: "1px solid rgba(255,255,255,0.05)", margin: "4px 0" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 16px", background: "var(--bg-secondary)", borderRadius: "14px", border: "1px solid var(--border-color)", margin: "4px 0" }}>
           <span style={{ fontSize: "0.95rem", fontWeight: "800", color: "var(--text-main)", display: "flex", alignItems: "center", gap: "10px" }}>
             <span style={{ fontSize: "1.2rem" }}>📝</span>
             {t("fontSize")}
           </span>
-          <div style={{ display: "flex", gap: "6px", alignItems: "center", background: "rgba(0,0,0,0.2)", padding: "4px", borderRadius: "10px" }}>
+          <div style={{ display: "flex", gap: "6px", alignItems: "center", background: "var(--bg-color)", padding: "4px", borderRadius: "10px" }}>
             <button
               onClick={() => adjustFontScale(-0.05)}
               style={{ background: "transparent", border: "none", color: "var(--text-main)", width: "32px", height: "32px", borderRadius: "8px", cursor: "pointer", fontSize: "0.9rem", fontWeight: "bold", transition: "0.2s" }}
               title={t("decreaseFontSize")}
               type="button"
             >A-</button>
-            <div style={{ width: "1px", height: "20px", background: "rgba(255,255,255,0.1)" }}></div>
+            <div style={{ width: "1px", height: "20px", background: "var(--border-color)" }}></div>
             <button
               onClick={resetFontScale}
               style={{ background: "transparent", border: "none", color: "var(--text-main)", width: "32px", height: "32px", borderRadius: "8px", cursor: "pointer", fontSize: "1rem", fontWeight: "900", transition: "0.2s" }}
               title={t("defaultFontSize")}
               type="button"
             >A</button>
-            <div style={{ width: "1px", height: "20px", background: "rgba(255,255,255,0.1)" }}></div>
+            <div style={{ width: "1px", height: "20px", background: "var(--border-color)" }}></div>
             <button
               onClick={() => adjustFontScale(0.05)}
               style={{ background: "transparent", border: "none", color: "var(--text-main)", width: "32px", height: "32px", borderRadius: "8px", cursor: "pointer", fontSize: "1.1rem", fontWeight: "bold", transition: "0.2s" }}
@@ -570,7 +567,7 @@ export default function MainLayout({ children }) {
         </div>
 
         {/* Premium Theme Toggle */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 16px", background: "rgba(255,255,255,0.03)", borderRadius: "14px", border: "1px solid rgba(255,255,255,0.05)", margin: "4px 0" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 16px", background: "var(--bg-secondary)", borderRadius: "14px", border: "1px solid var(--border-color)", margin: "4px 0" }}>
           <span style={{ fontSize: "0.95rem", fontWeight: "800", color: "var(--text-main)", display: "flex", alignItems: "center", gap: "10px" }}>
             <span style={{ display: "inline-flex" }}>{theme === 'dark' ? <Moon size={20} aria-hidden="true" /> : <Sun size={20} aria-hidden="true" />}</span>
             {t("darkMode")}
@@ -672,17 +669,21 @@ export default function MainLayout({ children }) {
                 <line x1="4" x2="20" y1="6" y2="6"></line>
                 <line x1="4" x2="20" y1="18" y2="18"></line>
               </svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-menu w-5 h-5">
+                <line x1="4" x2="20" y1="12" y2="12"></line>
+                <line x1="4" x2="20" y1="6" y2="6"></line>
+                <line x1="4" x2="20" y1="18" y2="18"></line>
+              </svg>
             </button>
             <Link className="flex items-center gap-2" style={{ textDecoration: 'none', minWidth: 0 }} href="/">
               {settings.site_logo && settings.site_logo !== 'default' && !logoFailed ? (
-                <img src={settings.site_logo.startsWith('http') || settings.site_logo.startsWith('data:') ? settings.site_logo : (settings.site_logo.includes('uploads') ? `${API_BASE_URL}${settings.site_logo.startsWith('/') ? '' : '/'}${settings.site_logo}` : settings.site_logo)} alt={settings.site_name} onError={() => setLogoFailed(true)} fetchpriority="high" style={{ width: '40px', height: '40px', borderRadius: '8px', objectFit: 'contain', flexShrink: 0, filter: 'drop-shadow(0 2px 5px rgba(234,179,8,0.2))' }} />
+                <img src={settings.site_logo.startsWith('http') || settings.site_logo.startsWith('data:') ? settings.site_logo : (settings.site_logo.includes('uploads') ? `${API_BASE_URL}${settings.site_logo.startsWith('/') ? '' : '/'}${settings.site_logo}` : settings.site_logo)} alt={settings.site_name} onError={() => setLogoFailed(true)} fetchPriority="high" style={{ width: '40px', height: '40px', borderRadius: '8px', objectFit: 'contain', flexShrink: 0, filter: 'drop-shadow(0 2px 5px rgba(234,179,8,0.2))' }} />
               ) : (
-                <img src="/logo.jpg" alt={settings.site_name || "Logo"} fetchpriority="high" style={{ width: '40px', height: '40px', borderRadius: '8px', objectFit: 'contain', flexShrink: 0, filter: 'drop-shadow(0 2px 5px rgba(234,179,8,0.2))' }} />
+                <img src="/logo.jpg" alt={settings.site_name || "Logo"} fetchPriority="high" style={{ width: '40px', height: '40px', borderRadius: '8px', objectFit: 'contain', flexShrink: 0, filter: 'drop-shadow(0 2px 5px rgba(234,179,8,0.2))' }} />
               )}
               <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', height: '24px', overflowY: 'hidden', minWidth: '180px' }}>
                 <span className={`font-black absolute transition-all duration-700 ease-in-out ${logoLang === 'ar' ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full'}`} style={{ color: '#eab308', whiteSpace: 'nowrap', fontSize: 'clamp(0.9rem, 3vw, 1.15rem)', letterSpacing: '0.5px', textShadow: '0 2px 10px rgba(234, 179, 8, 0.4)' }}>
                   عرب تك سيرفر
-                </span>
                 <span translate="no" className={`font-black absolute transition-all duration-700 ease-in-out ${logoLang === 'en' ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-full'}`} style={{ color: '#eab308', whiteSpace: 'nowrap', fontSize: 'clamp(0.85rem, 2.5vw, 1rem)', letterSpacing: '0.5px', textShadow: '0 2px 10px rgba(234, 179, 8, 0.4)' }}>
                   Arab Tech Server
                 </span>
@@ -722,7 +723,7 @@ export default function MainLayout({ children }) {
             </div>
             <Link href="/orders" className={`desktop-link hidden lg-block ${pathname.startsWith('/orders') ? 'active' : ''}`} style={{ fontWeight: 'bold' }}>{t("orders")}</Link>
             <Link href="/wallet" className={`desktop-link hidden lg-block ${pathname.startsWith('/wallet') ? 'active' : ''}`} style={{ fontWeight: 'bold' }}>{t("wallet")}</Link>
-            <button onClick={toggleTheme} className="theme-toggle-btn header-btn hidden lg-block" aria-label={t("toggleTheme")} style={{ padding: '6px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', cursor: 'pointer' }}>
+            <button onClick={toggleTheme} className="theme-toggle-btn header-btn hidden lg-block" aria-label={t("toggleTheme")} style={{ padding: '6px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--bg-secondary)', cursor: 'pointer' }}>
               {theme === 'dark' ? <Moon size={18} aria-hidden="true" /> : <Sun size={18} aria-hidden="true" />}
             </button>
             
@@ -740,7 +741,7 @@ export default function MainLayout({ children }) {
                   {/* Dropdown */}
                   {profileMenuOpen && (
                     <div className="header-profile-dropdown" style={{ position: 'absolute', top: '100%', left: 0, marginTop: '8px', width: '220px', background: 'var(--bg-glass)', border: 'var(--border-glass)', borderRadius: '12px', padding: '8px', boxShadow: '0 10px 25px rgba(0,0,0,0.5)', zIndex: 1000 }}>
-                      <div style={{ padding: '8px', borderBottom: '1px solid rgba(255,255,255,0.05)', marginBottom: '4px' }}>
+                      <div style={{ padding: '8px', borderBottom: '1px solid var(--border-color)', marginBottom: '4px' }}>
                         <div style={{ color: 'var(--primary-color)', fontWeight: 800, fontSize: '0.85rem', marginTop: '2px' }}>
                           {renderBalanceDropdownAndValue(customerUser)}
                         </div>

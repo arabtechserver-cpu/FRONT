@@ -21,6 +21,7 @@ export default function AdminSidebar() {
     { tab: "services", icon: "⚡", label: "إدارة الخدمات" },
     { tab: "categories", icon: "📁", label: "إدارة الأقسام" },
     { tab: "customers", icon: "👥", label: "إدارة المستخدمين" },
+    { tab: "analytics", icon: "📊", label: "تحويلات المبيعات" },
     { tab: "menu-drawer", icon: "📱", label: "قائمة الموبايل الجانبية" },
     { tab: "exchange-rates", icon: "💱", label: "سعر صرف الجنيه السوداني" },
     { tab: "api-providers", icon: "🔌", label: "مزودو الخدمات" },

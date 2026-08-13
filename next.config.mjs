@@ -56,11 +56,18 @@ const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   cacheMaxMemorySize: 5 * 1024 * 1024, // 5 MB
+  experimental: {
+    scrollRestoration: true,
+  },
   images: {
     remotePatterns: [buildRemotePattern(apiUrl)],
   },
   async rewrites() {
     return [
+      {
+        source: '/api/:path*',
+        destination: `${apiUrl}/api/:path*`,
+      },
       {
         source: '/uploads/:path*',
         destination: `${apiUrl}/uploads/:path*`,
