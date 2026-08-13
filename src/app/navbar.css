@@ -918,6 +918,28 @@ select:-webkit-autofill:focus {
   width: 100%;
   cursor: pointer;
 }
+
+/* Light theme dropdowns need dark readable labels. */
+[data-theme="light"] .services-dropdown,
+[data-theme="light"] .services-dropdown .header-dropdown-item,
+[data-theme="light"] .header-profile-dropdown .header-dropdown-item {
+  color: #0f172a !important;
+}
+[data-theme="light"] .services-dropdown .header-dropdown-item:hover,
+[data-theme="light"] .header-profile-dropdown .header-dropdown-item:hover {
+  background: rgba(23, 105, 232, .10) !important;
+  color: #0b1b3a !important;
+}
+
+/* Native select: closed value is white; opened light-theme options are black. */
+[data-theme="light"] .language-switcher-select {
+  color: #ffffff !important;
+  background: #1769e8 !important;
+}
+[data-theme="light"] .language-switcher-select option {
+  color: #0f172a !important;
+  background: #eef3f9 !important;
+}
 /* Language selector: white text and dark popup for readable options. */
 .language-switcher-select,
 .language-switcher-select option {
