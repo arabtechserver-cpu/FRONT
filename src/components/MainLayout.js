@@ -9,6 +9,7 @@ import TransactionPasswordModal from "./TransactionPasswordModal";
 import ProtectionModal from "./ProtectionModal";
 import Footer from "./Footer";
 import LanguageSwitcher from "./LanguageSwitcher";
+import AiChatWidget from "./AiChatWidget";
 import { FEATURES } from "@/features";
 import { useI18n } from "@/lib/i18n";
 import { Moon, Sun, X } from "lucide-react";
@@ -1184,8 +1185,8 @@ export default function MainLayout({ children }) {
           </div>
         </div>
       )}
+      
+      <AiChatWidget />
     </div>
   );
 }
-
-
