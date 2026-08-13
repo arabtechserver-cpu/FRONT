@@ -14,6 +14,9 @@ export const LANGUAGES = [
 
 const dictionary = {
   ar: {
+    heroWelcome: "أهلاً بك في خدماتنا!",
+    heroLoginDesc: "سجل دخولك لتتمكن من شحن رصيدك وتنفيذ الطلبات فوراً",
+    chargeWalletNow: "أضف رصيدك الآن واستمتع بتنفيذ فوري بدون تأخير",
     language: "اللغة",
     account: "حسابي",
     home: "الرئيسية",
@@ -258,6 +261,9 @@ const dictionary = {
     seoDesc: "سيرفر عرب تك لخدمات وبرامج السوفت وير. شحن وتفعيل تلقائي فوري بأفضل الأسعار."
   },
   en: {
+    heroWelcome: "Welcome to our services!",
+    heroLoginDesc: "Log in to recharge your balance and place orders instantly",
+    chargeWalletNow: "Add balance now and enjoy instant processing without delay",
     language: "Language",
     account: "Account",
     home: "Home",
@@ -502,6 +508,9 @@ const dictionary = {
     seoDesc: "Arab Tech Server for software services. Instant activation, GSM tools, server unlock, and best prices."
   },
   ru: {
+    heroWelcome: "Добро пожаловать в наши услуги!",
+    heroLoginDesc: "Войдите в систему, чтобы пополнить баланс и мгновенно размещать заказы",
+    chargeWalletNow: "Пополните баланс сейчас и наслаждайтесь мгновенной обработкой без задержек",
     language: "Язык",
     account: "Аккаунт",
     home: "Главная",
@@ -727,6 +736,9 @@ const dictionary = {
     seoDesc: "Arab Tech Server для программных услуг. Мгновенная активация, GSM инструменты, разблокировка серверов и лучшие цены."
   },
   zh: {
+    heroWelcome: "欢迎使用我们的服务！",
+    heroLoginDesc: "登录即可充值余额并立即下单",
+    chargeWalletNow: "立即充值，享受零延迟的即时处理",
     language: "语言",
     account: "账户",
     home: "首页",
@@ -939,6 +951,9 @@ const dictionary = {
     seoDesc: "Arab Tech Server提供软件服务。即时激活，GSM工具，服务器解锁，以及最优价格。"
   },
   hi: {
+    heroWelcome: "हमारी सेवाओं में आपका स्वागत है!",
+    heroLoginDesc: "अपना बैलेंस रिचार्ज करने और तुरंत ऑर्डर देने के लिए लॉग इन करें",
+    chargeWalletNow: "अभी बैलेंस जोड़ें और बिना किसी देरी के त्वरित प्रसंस्करण का आनंद लें",
     language: "भाषा",
     account: "अकाउंट",
     home: "होम",

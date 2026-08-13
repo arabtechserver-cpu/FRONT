@@ -299,7 +299,7 @@ export default function ServicesClient({ initialCategories = [], initialServices
                             رصيدك الحالي: <span style={{ color: "var(--primary-color)" }}>${Number(customer.balance || 0).toFixed(2)}</span>
                           </div>
                           <div style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>
-                            أضف رصيدك الآن واستمتع بتنفيذ فوري بدون تأخير
+                            {t("chargeWalletNow", "أضف رصيدك الآن واستمتع بتنفيذ فوري بدون تأخير")}
                           </div>
                         </div>
                         <div style={{ width: "50px", height: "50px", background: "rgba(0, 180, 216, 0.1)", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.5rem", color: "var(--primary-color)" }}>
@@ -315,10 +315,10 @@ export default function ServicesClient({ initialCategories = [], initialServices
                       <div style={{ display: "flex", alignItems: "center", gap: "15px", textAlign: "right" }}>
                         <div>
                           <div style={{ fontSize: "1.2rem", fontWeight: "900" }}>
-                            أهلاً بك في خدماتنا!
+                            {t("heroWelcome", "أهلاً بك في خدماتنا!")}
                           </div>
                           <div style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>
-                            سجل دخولك لتتمكن من شحن رصيدك وتنفيذ الطلبات فوراً
+                            {t("heroLoginDesc", "سجل دخولك لتتمكن من شحن رصيدك وتنفيذ الطلبات فوراً")}
                           </div>
                         </div>
                         <div style={{ width: "50px", height: "50px", background: "rgba(0, 180, 216, 0.1)", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.5rem", color: "var(--primary-color)" }}>
