@@ -492,58 +492,45 @@ export default function OrdersHistory() {
         )}
 
       {/* ── Bottom Server Stats Banner (Orders Page Mockup) ── */}
-      <div style={{ marginTop: "50px", marginBottom: "40px", position: "relative", padding: "40px 20px", borderRadius: "24px", background: "var(--bg-glass-deep)", border: "1px solid var(--border-glass)", overflow: "hidden", display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: "20px" }}>
+      <div className="server-stats-banner" style={{ marginTop: "50px", marginBottom: "40px", position: "relative", padding: "40px", borderRadius: "24px", background: "var(--bg-glass-deep)", border: "1px solid var(--border-glass)", overflow: "hidden", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "30px", zIndex: 1 }}>
         
-        {/* Glow & Graphic */}
-        <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "300px", height: "100%", background: "radial-gradient(circle, rgba(22, 119, 238, 0.15) 0%, transparent 60%)", pointerEvents: "none", zIndex: 0 }}></div>
-        <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", zIndex: 1, pointerEvents: "none", opacity: 0.9 }}>
-           {/* Fallback server icon if no image */}
-           <div style={{ fontSize: "8rem", filter: "drop-shadow(0 10px 20px rgba(22,119,238,0.4))" }}>🗄️</div>
+        {/* Glow & Graphic Background */}
+        <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "100%", height: "100%", background: "radial-gradient(circle, rgba(22, 119, 238, 0.05) 0%, transparent 70%)", pointerEvents: "none", zIndex: -1 }}></div>
+        <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", zIndex: -1, pointerEvents: "none", opacity: 0.15 }}>
+           <div style={{ fontSize: "12rem", filter: "drop-shadow(0 0px 30px rgba(22,119,238,0.3))" }}>🗄️</div>
         </div>
 
-        {/* Right side items (in RTL) */}
-        <div style={{ display: "flex", flex: 1, gap: "20px", zIndex: 2, justifyContent: "flex-start", flexWrap: "wrap" }}>
-          
-          <div style={{ display: "flex", gap: "15px", alignItems: "center" }}>
-            <div style={{ color: "var(--brand-blue)", fontSize: "2rem" }}>🛡️</div>
-            <div>
-              <h4 style={{ margin: "0 0 5px 0", fontSize: "1.1rem", fontWeight: 800 }}>أمان وموثوقية</h4>
-              <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--text-muted)", maxWidth: "160px" }}>حماية متقدمة لبياناتك على مدار الساعة</p>
-            </div>
+        {/* Stat Items */}
+        <div style={{ display: "flex", gap: "16px", alignItems: "center", zIndex: 2 }}>
+          <div style={{ color: "var(--brand-blue)", fontSize: "2.5rem", flexShrink: 0, textShadow: "0 0 15px rgba(22,119,238,0.4)" }}>🛡️</div>
+          <div>
+            <h4 style={{ margin: "0 0 6px 0", fontSize: "1.1rem", fontWeight: 900, color: "var(--text-main)" }}>أمان وموثوقية</h4>
+            <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--text-muted)", lineHeight: "1.5" }}>حماية متقدمة لبياناتك على مدار الساعة بأحدث تقنيات التشفير.</p>
           </div>
-
-          <div style={{ display: "flex", gap: "15px", alignItems: "center" }}>
-            <div style={{ color: "var(--brand-blue)", fontSize: "2rem" }}>⏱️</div>
-            <div>
-              <h4 style={{ margin: "0 0 5px 0", fontSize: "1.1rem", fontWeight: 800 }}>أداء عالي</h4>
-              <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--text-muted)", maxWidth: "160px" }}>بنية تحتية قوية وسرعة استجابة فائقة</p>
-            </div>
-          </div>
-
         </div>
 
-        {/* Center Spacer for Graphic */}
-        <div style={{ flex: "0 1 200px" }}></div>
-
-        {/* Left side items (in RTL) */}
-        <div style={{ display: "flex", flex: 1, gap: "20px", zIndex: 2, justifyContent: "flex-end", flexWrap: "wrap" }}>
-          
-          <div style={{ display: "flex", gap: "15px", alignItems: "center" }}>
-            <div style={{ color: "var(--brand-blue)", fontSize: "2rem" }}>🎧</div>
-            <div>
-              <h4 style={{ margin: "0 0 5px 0", fontSize: "1.1rem", fontWeight: 800 }}>دعم فني متخصص</h4>
-              <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--text-muted)", maxWidth: "160px" }}>فريق محترف جاهز لمساعدتك دائماً</p>
-            </div>
+        <div style={{ display: "flex", gap: "16px", alignItems: "center", zIndex: 2 }}>
+          <div style={{ color: "var(--brand-blue)", fontSize: "2.5rem", flexShrink: 0, textShadow: "0 0 15px rgba(22,119,238,0.4)" }}>⏱️</div>
+          <div>
+            <h4 style={{ margin: "0 0 6px 0", fontSize: "1.1rem", fontWeight: 900, color: "var(--text-main)" }}>أداء عالي</h4>
+            <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--text-muted)", lineHeight: "1.5" }}>بنية تحتية قوية وسرعة استجابة فائقة لمعالجة طلباتك فوراً.</p>
           </div>
+        </div>
 
-          <div style={{ display: "flex", gap: "15px", alignItems: "center" }}>
-            <div style={{ color: "var(--brand-blue)", fontSize: "2rem" }}>🎛️</div>
-            <div>
-              <h4 style={{ margin: "0 0 5px 0", fontSize: "1.1rem", fontWeight: 800 }}>إدارة سهلة</h4>
-              <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--text-muted)", maxWidth: "160px" }}>لوحة تحكم متقدمة تجربة سلسة ومرنة</p>
-            </div>
+        <div style={{ display: "flex", gap: "16px", alignItems: "center", zIndex: 2 }}>
+          <div style={{ color: "var(--brand-blue)", fontSize: "2.5rem", flexShrink: 0, textShadow: "0 0 15px rgba(22,119,238,0.4)" }}>🎧</div>
+          <div>
+            <h4 style={{ margin: "0 0 6px 0", fontSize: "1.1rem", fontWeight: 900, color: "var(--text-main)" }}>دعم فني متخصص</h4>
+            <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--text-muted)", lineHeight: "1.5" }}>فريق محترف جاهز لمساعدتك دائماً وتلبية كافة استفساراتك.</p>
           </div>
+        </div>
 
+        <div style={{ display: "flex", gap: "16px", alignItems: "center", zIndex: 2 }}>
+          <div style={{ color: "var(--brand-blue)", fontSize: "2.5rem", flexShrink: 0, textShadow: "0 0 15px rgba(22,119,238,0.4)" }}>🎛️</div>
+          <div>
+            <h4 style={{ margin: "0 0 6px 0", fontSize: "1.1rem", fontWeight: 900, color: "var(--text-main)" }}>إدارة سهلة</h4>
+            <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--text-muted)", lineHeight: "1.5" }}>لوحة تحكم متقدمة تضمن لك تجربة سلسة ومرنة بالكامل.</p>
+          </div>
         </div>
 
       </div>
