@@ -370,22 +370,6 @@ export default function ServiceDetail({ params, initialService = null }) {
 
   // Parse dynamic fields from service
   const serviceFields = useMemo(() => {
-    if (!service) return null;
-    if (service.is_bundle && service.bundle_services_data && selectedSubServiceId) {
-      return service.bundle_services_data.find(s => s.id.toString() === selectedSubServiceId.toString()) || service;
-    }
-    return service;
-  }, [service, selectedSubServiceId]);
-
-  const hasImage = useMemo(() => {
-    if (!activeService?.image) return false;
-    const img = activeService.image.trim();
-    if (img === "" || img === "default" || img.endsWith("/default")) return false;
-    return !imageError;
-  }, [activeService?.image, imageError]);
-
-  // Parse dynamic fields from service
-  const serviceFields = useMemo(() => {
     if (!activeService) return [];
 
     let sFields = [];
