@@ -387,12 +387,14 @@ export default function ServiceDetail({ params, initialService = null }) {
   const activeFields = useMemo(() => {
     let rawFields = [];
 
-    if (selectedPackage && Array.isArray(selectedPackage.fields)) {
-      // A package with an explicit empty fields list must not inherit fields from the group.
-      rawFields = [...selectedPackage.fields];
-    } else if (Array.isArray(serviceFields)) {
-      // Services without package metadata still use their service-level fields.
+    // Always inherit fields from the parent service (e.g., IMEI requirement)
+    if (Array.isArray(serviceFields)) {
       rawFields = [...serviceFields];
+    }
+
+    // Append any package-specific custom fields
+    if (selectedPackage && Array.isArray(selectedPackage.fields)) {
+      rawFields = [...rawFields, ...selectedPackage.fields];
     }
 
     const seen = new Set();
