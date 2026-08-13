@@ -733,6 +733,14 @@ export default function WalletPage() {
                     </div>
                     <div className="form-group" style={{ flex: "2 1 300px", marginBottom: 0 }}>
                       <input type="number" min="0.01" step="0.01" placeholder="المبلغ المطلوب شحنه (USD)" value={amount} onChange={(e) => setAmount(e.target.value)} required style={{ width: "100%", padding: "14px", background: "var(--bg-color)", border: "1px solid var(--border-color)", borderRadius: "12px", color: "var(--text-main)", outline: "none" }} />
+                      
+                      {pm && (pm.name.includes('الخرطوم') || pm.name.includes('سودان') || pm.name.includes('SDG')) && sdgRate && amount > 0 && (
+                        <div style={{ marginTop: "10px", padding: "12px", background: "rgba(22,119,238,0.1)", border: "1px solid var(--primary-color)", borderRadius: "10px", fontSize: "0.9rem", color: "var(--text-main)", display: "flex", flexDirection: "column", gap: "4px" }}>
+                          <strong style={{ color: "var(--primary-color)" }}>المبلغ المطلوب تحويله بالجنيه السوداني:</strong>
+                          <span style={{ fontSize: "1.1rem", fontWeight: "bold" }}>{(amount * sdgRate).toLocaleString()} SDG</span>
+                          <span style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>سعر الصرف الحالي: 1 دولار = {sdgRate} جنيه سوداني</span>
+                        </div>
+                      )}
                     </div>
                   </div>
 

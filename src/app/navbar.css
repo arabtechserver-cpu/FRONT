@@ -143,7 +143,13 @@
   white-space: nowrap;
 }
 
-.services-dropdown .header-dropdown-item:hover {
+.services-dropdown   to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.header-dropdown-item:hover {
   padding-inline-start: 14px;
 }
 
@@ -167,29 +173,6 @@ html[dir="ltr"] .services-dropdown {
     transform: translateY(-8px);
   }
 
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.header-dropdown-item {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 10px;
-  padding: 10px 12px;
-  border-radius: 10px;
-  color: var(--text-main);
-  text-decoration: none;
-  font-size: 0.88rem;
-  font-weight: 700;
-  transition: all 0.2s ease;
-  background: transparent;
-  border: none;
-  width: 100%;
-  cursor: pointer;
-}
 
 .header-dropdown-item:hover {
   background: var(--bg-glass-hover);
@@ -975,4 +958,27 @@ select:-webkit-autofill:focus {
 .premium-overlay textarea::placeholder,
 .white-text-input::placeholder {
   color: rgba(255, 255, 255, 0.4) !important;
+}
+
+/* User requested override for dropdown item color */
+.header-dropdown-item, .services-dropdown .header-dropdown-item {
+  color: #ffffff !important;
+}
+
+.header-dropdown-item {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  color: #ffffff !important;
+  text-decoration: none;
+  font-size: 0.88rem;
+  font-weight: 700;
+  transition: all 0.2s ease;
+  background: transparent;
+  border: none;
+  width: 100%;
+  cursor: pointer;
 }
