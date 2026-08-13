@@ -35,6 +35,19 @@ export default function HeroSlider({ customSlides = [] }) {
           }
         }
       } catch(e) {}
+
+      // Fetch fresh banners from API
+      fetch(`${API_BASE_URL}/api/banners`)
+        .then(res => res.ok ? res.json() : null)
+        .then(data => {
+          if (data && Array.isArray(data) && data.length > 0) {
+            setSlides(data);
+            try {
+              localStorage.setItem("arabtech_cached_banners", JSON.stringify(data));
+            } catch(e) {}
+          }
+        })
+        .catch(err => console.error("Error fetching banners:", err));
     }
   }, [JSON.stringify(customSlides)]);
 

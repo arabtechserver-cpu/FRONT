@@ -519,7 +519,6 @@ export default function WalletPage() {
               <span style={{ fontSize: '0.9rem', color: 'var(--text-main)', fontWeight: 'bold', background: 'var(--bg-hover)', padding: '2px 8px', borderRadius: '8px', border: '1px solid var(--border-color)', marginBottom: '4px' }}>
                 {baseCurrency || 'SAR'}
               </span>
-              <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>ريال سعودي</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '45px', height: '45px', borderRadius: '50%', border: '2px solid var(--border-color)', marginLeft: '10px' }}>
               <span style={{ fontSize: '1.4rem', color: 'var(--text-muted)', opacity: 0.5 }}>✓</span>
