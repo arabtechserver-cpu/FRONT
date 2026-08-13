@@ -491,48 +491,59 @@ export default function OrdersHistory() {
           </div>
         )}
 
-      {/* ── Bottom Server Stats Banner (Orders Page Mockup) ── */}
-      <div className="server-stats-banner" style={{ marginTop: "50px", marginBottom: "40px", position: "relative", padding: "40px", borderRadius: "24px", background: "var(--bg-glass-deep)", border: "1px solid var(--border-glass)", overflow: "hidden", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "30px", zIndex: 1 }}>
+      {/* ── Premium Server Stats Banner (Bento Grid) ── */}
+      <div style={{ marginTop: "60px", marginBottom: "50px" }}>
         
-        {/* Glow & Graphic Background */}
-        <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "100%", height: "100%", background: "radial-gradient(circle, rgba(22, 119, 238, 0.05) 0%, transparent 70%)", pointerEvents: "none", zIndex: -1 }}></div>
-        <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", zIndex: -1, pointerEvents: "none", opacity: 0.15 }}>
-           <div style={{ fontSize: "12rem", filter: "drop-shadow(0 0px 30px rgba(22,119,238,0.3))" }}>🗄️</div>
+        {/* Title Section */}
+        <div style={{ textAlign: "center", marginBottom: "35px" }}>
+          <h2 style={{ fontSize: "1.8rem", fontWeight: 900, margin: "0 0 10px 0", color: "var(--text-main)", letterSpacing: "-0.5px" }}>لماذا تختار <span style={{ color: "var(--brand-blue)" }}>عرب تك</span>؟</h2>
+          <p style={{ color: "var(--text-muted)", fontSize: "0.95rem", maxWidth: "400px", margin: "0 auto", lineHeight: "1.6" }}>نقدم لك أفضل الخدمات التقنية مع ضمان الجودة، الأمان، والسرعة الفائقة.</p>
         </div>
 
-        {/* Stat Items */}
-        <div style={{ display: "flex", gap: "16px", alignItems: "center", zIndex: 2 }}>
-          <div style={{ color: "var(--brand-blue)", fontSize: "2.5rem", flexShrink: 0, textShadow: "0 0 15px rgba(22,119,238,0.4)" }}>🛡️</div>
-          <div>
-            <h4 style={{ margin: "0 0 6px 0", fontSize: "1.1rem", fontWeight: 900, color: "var(--text-main)" }}>أمان وموثوقية</h4>
-            <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--text-muted)", lineHeight: "1.5" }}>حماية متقدمة لبياناتك على مدار الساعة بأحدث تقنيات التشفير.</p>
+        {/* Bento Grid Layout */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "24px" }}>
+          
+          {/* Card 1: Security */}
+          <div className="glass-panel" style={{ padding: "26px", borderRadius: "24px", display: "flex", flexDirection: "column", gap: "18px", background: "linear-gradient(145deg, var(--bg-glass-deep), transparent)", border: "1px solid var(--border-glass)", transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)", position: "relative", overflow: "hidden", cursor: "default" }} onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-6px)"; e.currentTarget.style.borderColor = "rgba(22, 119, 238, 0.5)"; e.currentTarget.style.boxShadow = "0 12px 30px -10px rgba(22, 119, 238, 0.25)"; e.currentTarget.style.background = "linear-gradient(145deg, var(--bg-glass), transparent)"; }} onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.borderColor = "var(--border-glass)"; e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.background = "linear-gradient(145deg, var(--bg-glass-deep), transparent)"; }}>
+            <div style={{ position: "absolute", top: "-30px", right: "-30px", width: "120px", height: "120px", background: "radial-gradient(circle, rgba(22,119,238,0.15) 0%, transparent 70%)", borderRadius: "50%", pointerEvents: "none" }}></div>
+            <div style={{ width: "54px", height: "54px", background: "rgba(22, 119, 238, 0.1)", borderRadius: "16px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.6rem", border: "1px solid rgba(22, 119, 238, 0.2)", color: "#3b82f6", flexShrink: 0, boxShadow: "inset 0 0 10px rgba(22,119,238,0.05)" }}>🛡️</div>
+            <div>
+              <h4 style={{ margin: "0 0 10px 0", fontSize: "1.15rem", fontWeight: 900, color: "var(--text-main)" }}>أمان وموثوقية</h4>
+              <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--text-muted)", lineHeight: "1.7" }}>حماية متقدمة لبياناتك على مدار الساعة بأحدث تقنيات التشفير لضمان سرية معلوماتك بالكامل.</p>
+            </div>
           </div>
-        </div>
 
-        <div style={{ display: "flex", gap: "16px", alignItems: "center", zIndex: 2 }}>
-          <div style={{ color: "var(--brand-blue)", fontSize: "2.5rem", flexShrink: 0, textShadow: "0 0 15px rgba(22,119,238,0.4)" }}>⏱️</div>
-          <div>
-            <h4 style={{ margin: "0 0 6px 0", fontSize: "1.1rem", fontWeight: 900, color: "var(--text-main)" }}>أداء عالي</h4>
-            <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--text-muted)", lineHeight: "1.5" }}>بنية تحتية قوية وسرعة استجابة فائقة لمعالجة طلباتك فوراً.</p>
+          {/* Card 2: Performance */}
+          <div className="glass-panel" style={{ padding: "26px", borderRadius: "24px", display: "flex", flexDirection: "column", gap: "18px", background: "linear-gradient(145deg, var(--bg-glass-deep), transparent)", border: "1px solid var(--border-glass)", transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)", position: "relative", overflow: "hidden", cursor: "default" }} onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-6px)"; e.currentTarget.style.borderColor = "rgba(34, 197, 94, 0.5)"; e.currentTarget.style.boxShadow = "0 12px 30px -10px rgba(34, 197, 94, 0.25)"; e.currentTarget.style.background = "linear-gradient(145deg, var(--bg-glass), transparent)"; }} onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.borderColor = "var(--border-glass)"; e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.background = "linear-gradient(145deg, var(--bg-glass-deep), transparent)"; }}>
+            <div style={{ position: "absolute", top: "-30px", right: "-30px", width: "120px", height: "120px", background: "radial-gradient(circle, rgba(34,197,94,0.15) 0%, transparent 70%)", borderRadius: "50%", pointerEvents: "none" }}></div>
+            <div style={{ width: "54px", height: "54px", background: "rgba(34, 197, 94, 0.1)", borderRadius: "16px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.6rem", border: "1px solid rgba(34, 197, 94, 0.2)", color: "#10b981", flexShrink: 0, boxShadow: "inset 0 0 10px rgba(34,197,94,0.05)" }}>⏱️</div>
+            <div>
+              <h4 style={{ margin: "0 0 10px 0", fontSize: "1.15rem", fontWeight: 900, color: "var(--text-main)" }}>أداء عالي وسريع</h4>
+              <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--text-muted)", lineHeight: "1.7" }}>بنية تحتية قوية وسرعة استجابة فائقة لمعالجة جميع طلباتك في لمح البصر وبدون تأخير.</p>
+            </div>
           </div>
-        </div>
 
-        <div style={{ display: "flex", gap: "16px", alignItems: "center", zIndex: 2 }}>
-          <div style={{ color: "var(--brand-blue)", fontSize: "2.5rem", flexShrink: 0, textShadow: "0 0 15px rgba(22,119,238,0.4)" }}>🎧</div>
-          <div>
-            <h4 style={{ margin: "0 0 6px 0", fontSize: "1.1rem", fontWeight: 900, color: "var(--text-main)" }}>دعم فني متخصص</h4>
-            <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--text-muted)", lineHeight: "1.5" }}>فريق محترف جاهز لمساعدتك دائماً وتلبية كافة استفساراتك.</p>
+          {/* Card 3: Support */}
+          <div className="glass-panel" style={{ padding: "26px", borderRadius: "24px", display: "flex", flexDirection: "column", gap: "18px", background: "linear-gradient(145deg, var(--bg-glass-deep), transparent)", border: "1px solid var(--border-glass)", transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)", position: "relative", overflow: "hidden", cursor: "default" }} onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-6px)"; e.currentTarget.style.borderColor = "rgba(168, 85, 247, 0.5)"; e.currentTarget.style.boxShadow = "0 12px 30px -10px rgba(168, 85, 247, 0.25)"; e.currentTarget.style.background = "linear-gradient(145deg, var(--bg-glass), transparent)"; }} onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.borderColor = "var(--border-glass)"; e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.background = "linear-gradient(145deg, var(--bg-glass-deep), transparent)"; }}>
+            <div style={{ position: "absolute", top: "-30px", right: "-30px", width: "120px", height: "120px", background: "radial-gradient(circle, rgba(168,85,247,0.15) 0%, transparent 70%)", borderRadius: "50%", pointerEvents: "none" }}></div>
+            <div style={{ width: "54px", height: "54px", background: "rgba(168, 85, 247, 0.1)", borderRadius: "16px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.6rem", border: "1px solid rgba(168, 85, 247, 0.2)", color: "#a855f7", flexShrink: 0, boxShadow: "inset 0 0 10px rgba(168,85,247,0.05)" }}>🎧</div>
+            <div>
+              <h4 style={{ margin: "0 0 10px 0", fontSize: "1.15rem", fontWeight: 900, color: "var(--text-main)" }}>دعم فني متواصل</h4>
+              <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--text-muted)", lineHeight: "1.7" }}>فريق محترف جاهز لمساعدتك دائماً وتلبية كافة استفساراتك وحل المشاكل بأسرع وقت.</p>
+            </div>
           </div>
-        </div>
 
-        <div style={{ display: "flex", gap: "16px", alignItems: "center", zIndex: 2 }}>
-          <div style={{ color: "var(--brand-blue)", fontSize: "2.5rem", flexShrink: 0, textShadow: "0 0 15px rgba(22,119,238,0.4)" }}>🎛️</div>
-          <div>
-            <h4 style={{ margin: "0 0 6px 0", fontSize: "1.1rem", fontWeight: 900, color: "var(--text-main)" }}>إدارة سهلة</h4>
-            <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--text-muted)", lineHeight: "1.5" }}>لوحة تحكم متقدمة تضمن لك تجربة سلسة ومرنة بالكامل.</p>
+          {/* Card 4: Management */}
+          <div className="glass-panel" style={{ padding: "26px", borderRadius: "24px", display: "flex", flexDirection: "column", gap: "18px", background: "linear-gradient(145deg, var(--bg-glass-deep), transparent)", border: "1px solid var(--border-glass)", transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)", position: "relative", overflow: "hidden", cursor: "default" }} onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-6px)"; e.currentTarget.style.borderColor = "rgba(245, 158, 11, 0.5)"; e.currentTarget.style.boxShadow = "0 12px 30px -10px rgba(245, 158, 11, 0.25)"; e.currentTarget.style.background = "linear-gradient(145deg, var(--bg-glass), transparent)"; }} onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.borderColor = "var(--border-glass)"; e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.background = "linear-gradient(145deg, var(--bg-glass-deep), transparent)"; }}>
+            <div style={{ position: "absolute", top: "-30px", right: "-30px", width: "120px", height: "120px", background: "radial-gradient(circle, rgba(245,158,11,0.15) 0%, transparent 70%)", borderRadius: "50%", pointerEvents: "none" }}></div>
+            <div style={{ width: "54px", height: "54px", background: "rgba(245, 158, 11, 0.1)", borderRadius: "16px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.6rem", border: "1px solid rgba(245, 158, 11, 0.2)", color: "#f59e0b", flexShrink: 0, boxShadow: "inset 0 0 10px rgba(245,158,11,0.05)" }}>🎛️</div>
+            <div>
+              <h4 style={{ margin: "0 0 10px 0", fontSize: "1.15rem", fontWeight: 900, color: "var(--text-main)" }}>إدارة سهلة ومرنة</h4>
+              <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--text-muted)", lineHeight: "1.7" }}>لوحة تحكم متقدمة ومريحة تضمن لك تجربة سلسة بالكامل بدون أي تعقيد فني.</p>
+            </div>
           </div>
-        </div>
 
+        </div>
       </div>
 
       </div>
