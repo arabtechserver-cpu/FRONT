@@ -23,6 +23,7 @@ export default function OrdersHistory() {
   const [trackError, setTrackError] = useState("");
   const [trackLoading, setTrackLoading] = useState(false);
   const [filterTab, setFilterTab] = useState("all");
+  const [selectedOrderDetails, setSelectedOrderDetails] = useState(null);
 
   const customer = useMemo(() => {
     try {
@@ -426,7 +427,7 @@ export default function OrdersHistory() {
 
                       {/* Action button */}
                       <button
-                        onClick={() => { alert(`تفاصيل الطلب: \n${order.code ? 'الكود: '+order.code : 'لا توجد تفاصيل إضافية'}`); }}
+                        onClick={() => setSelectedOrderDetails(order)}
                         className="glass-btn"
                         style={{ padding: "10px 14px", fontSize: "0.9rem", background: "rgba(22, 119, 238, 0.1)", color: "var(--brand-blue)", border: "1px solid rgba(22, 119, 238, 0.3)", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", marginTop: "5px" }}
                         onMouseEnter={(e) => { e.currentTarget.style.background = "var(--brand-blue)"; e.currentTarget.style.color = "#fff"; }}
@@ -549,6 +550,101 @@ export default function OrdersHistory() {
 
       </div>
 
+      {/* Order Details Modal (Glassmorphism, Dark/Light Mode Supported) */}
+      {selectedOrderDetails && (
+        <div style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", background: "rgba(0, 0, 0, 0.6)", backdropFilter: "blur(8px)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999, padding: "20px" }} onClick={() => setSelectedOrderDetails(null)}>
+          <div className="glass-panel" style={{ width: "100%", maxWidth: "500px", padding: "30px", borderRadius: "24px", position: "relative", display: "flex", flexDirection: "column", gap: "20px", background: "var(--bg-glass-deep)", border: "1px solid var(--border-glass)", boxShadow: "0 25px 50px -12px rgba(0,0,0,0.5)", maxHeight: "90vh", overflowY: "auto" }} onClick={e => e.stopPropagation()}>
+            
+            {/* Header */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border-glass)", paddingBottom: "15px" }}>
+              <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+                <div style={{ width: "45px", height: "45px", background: "var(--primary-glow)", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <img src="/services-icon.png" alt="" style={{ width: "24px", height: "24px", objectFit: "contain", filter: "invert(1)" }} onError={(e) => e.target.style.display="none"} />
+                </div>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: "1.2rem", fontWeight: "900", color: "var(--text-main)" }}>تفاصيل الطلب</h3>
+                  <p style={{ margin: "4px 0 0", fontSize: "0.85rem", color: "var(--text-muted)", direction: "ltr" }}>
+                    #ATS-{new Date().getFullYear()}-{selectedOrderDetails.id.toString().padStart(4, '0')}
+                  </p>
+                </div>
+              </div>
+              <button onClick={() => setSelectedOrderDetails(null)} style={{ background: "rgba(244, 63, 94, 0.1)", color: "var(--danger-color)", border: "none", width: "36px", height: "36px", borderRadius: "10px", fontSize: "1.2rem", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.background="rgba(244, 63, 94, 0.2)"} onMouseLeave={(e) => e.currentTarget.style.background="rgba(244, 63, 94, 0.1)"}>
+                ✕
+              </button>
+            </div>
+
+            {/* Main Info */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", padding: "12px 16px", background: "var(--bg-glass)", borderRadius: "12px", border: "1px solid var(--border-glass)" }}>
+                <span style={{ color: "var(--text-muted)", fontWeight: "bold" }}>الخدمة</span>
+                <span style={{ color: "var(--text-main)", fontWeight: "900", textAlign: "left", maxWidth: "60%" }}>{selectedOrderDetails.service_name}</span>
+              </div>
+              
+              {selectedOrderDetails.package_name && (
+                <div style={{ display: "flex", justifyContent: "space-between", padding: "12px 16px", background: "var(--bg-glass)", borderRadius: "12px", border: "1px solid var(--border-glass)" }}>
+                  <span style={{ color: "var(--text-muted)", fontWeight: "bold" }}>الباقة</span>
+                  <span style={{ color: "var(--text-main)", fontWeight: "bold", textAlign: "left", maxWidth: "70%" }}>{selectedOrderDetails.package_name}</span>
+                </div>
+              )}
+
+              <div style={{ display: "flex", justifyContent: "space-between", padding: "12px 16px", background: "var(--bg-glass)", borderRadius: "12px", border: "1px solid var(--border-glass)" }}>
+                <span style={{ color: "var(--text-muted)", fontWeight: "bold" }}>السعر</span>
+                <span style={{ color: "var(--primary-color)", fontWeight: "900", direction: "ltr" }}>{Number(selectedOrderDetails.package_price || 0).toFixed(2)} {baseCurrency}</span>
+              </div>
+
+              <div style={{ display: "flex", justifyContent: "space-between", padding: "12px 16px", background: "var(--bg-glass)", borderRadius: "12px", border: "1px solid var(--border-glass)" }}>
+                <span style={{ color: "var(--text-muted)", fontWeight: "bold" }}>الحالة</span>
+                <span className={`badge badge-${selectedOrderDetails.status}`} style={{ fontSize: "0.85rem", padding: "4px 10px", borderRadius: "8px" }}>
+                  {selectedOrderDetails.status === "completed" ? "مكتمل" : selectedOrderDetails.status === "processing" ? "قيد التنفيذ" : selectedOrderDetails.status === "pending" ? "قيد المراجعة" : "ملغي"}
+                </span>
+              </div>
+
+              <div style={{ display: "flex", justifyContent: "space-between", padding: "12px 16px", background: "var(--bg-glass)", borderRadius: "12px", border: "1px solid var(--border-glass)" }}>
+                <span style={{ color: "var(--text-muted)", fontWeight: "bold" }}>تاريخ الطلب</span>
+                <span style={{ color: "var(--text-main)", fontWeight: "bold", direction: "ltr" }}>{selectedOrderDetails.created_at.replace('T', ' ').substring(0, 16)}</span>
+              </div>
+            </div>
+
+            {/* Custom Fields (Player ID, etc) */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+              <h4 style={{ margin: "10px 0 5px", fontSize: "1rem", color: "var(--text-main)" }}>معلومات إضافية</h4>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+                {renderOrderFields(selectedOrderDetails)}
+                {/* Fallback if no fields are rendered but there's a player_id just in case */}
+                {selectedOrderDetails.player_id && renderOrderFields(selectedOrderDetails).every(item => item === null) && (
+                   <div style={{ background: "var(--primary-light)", padding: "6px 12px", borderRadius: "8px", border: "1px solid var(--border-glass)", fontSize: "0.82rem" }}>
+                     <span style={{ color: "var(--text-muted)" }}>معرّف الحساب (ID):</span> <span style={{ direction: "ltr", display: "inline-block", fontWeight: "bold", color: "var(--text-main)" }}>{selectedOrderDetails.player_id}</span>
+                   </div>
+                )}
+              </div>
+            </div>
+
+            {/* Code Result (If any) */}
+            {selectedOrderDetails.code && (
+              <div style={{ marginTop: "10px" }}>
+                <h4 style={{ margin: "0 0 10px 0", fontSize: "1rem", color: "#10b981", display: "flex", alignItems: "center", gap: "6px" }}>
+                  <span>✅</span> النتيجة / الكود
+                </h4>
+                <div style={{ padding: "16px", background: "rgba(16, 185, 129, 0.05)", borderRadius: "12px", border: "1px solid rgba(16, 185, 129, 0.2)", color: "var(--text-main)", fontFamily: "monospace", fontSize: "1.1rem", fontWeight: "bold", textAlign: "center", wordBreak: "break-all", userSelect: "all" }}>
+                  {selectedOrderDetails.code}
+                </div>
+              </div>
+            )}
+
+            {/* Action Buttons */}
+            <div style={{ display: "flex", gap: "12px", marginTop: "10px" }}>
+              {selectedOrderDetails.status !== "completed" && selectedOrderDetails.status !== "cancelled" && (
+                <a href={getSpeedUpWhatsAppUrl("+201019080766", selectedOrderDetails, customer?.username)} target="_blank" rel="noopener noreferrer" className="glass-btn glass-btn-primary" style={{ flex: 1, padding: "12px", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", textDecoration: "none", background: "#25D366", color: "#fff", border: "none" }}>
+                  تسريع الطلب عبر واتساب
+                </a>
+              )}
+              <button onClick={() => setSelectedOrderDetails(null)} className="glass-btn" style={{ flex: selectedOrderDetails.status === "completed" ? 1 : "0 0 100px", padding: "12px", borderRadius: "12px", fontWeight: "bold", background: "var(--bg-glass)", color: "var(--text-main)", border: "1px solid var(--border-glass)", cursor: "pointer" }}>
+                إغلاق
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
