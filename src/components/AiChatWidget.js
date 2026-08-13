@@ -166,13 +166,13 @@ export default function AiChatWidget() {
               value={input}
               onChange={e => setInput(e.target.value)}
               placeholder="اكتب رسالتك هنا..."
+              className="ai-chat-input"
               style={{
                 flex: 1,
                 background: 'rgba(0, 0, 0, 0.2)',
                 border: '1px solid rgba(255, 255, 255, 0.1)',
                 borderRadius: '999px',
                 padding: '10px 15px',
-                color: '#fff',
                 outline: 'none',
                 direction: 'rtl',
                 fontFamily: 'inherit'
@@ -248,6 +248,14 @@ export default function AiChatWidget() {
           .ai-chat-widget-container {
             bottom: 90px;
           }
+        }
+        .ai-chat-input {
+          color: #ffffff !important;
+          -webkit-text-fill-color: #ffffff !important;
+        }
+        .ai-chat-input::placeholder {
+          color: rgba(255, 255, 255, 0.6) !important;
+          -webkit-text-fill-color: rgba(255, 255, 255, 0.6) !important;
         }
       `}</style>
     </div>
