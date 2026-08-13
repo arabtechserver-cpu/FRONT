@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { API_BASE_URL } from "@/config";
 import { useI18n } from "@/lib/i18n";
+import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 
 const WalletPayPalButtons = dynamic(() => import("@/components/WalletPayPalButtons"), {
   ssr: false,
@@ -633,6 +634,97 @@ export default function WalletPage() {
                     ))}
                   </div>
 
+                  {selectedMethodId && (() => {
+                    const pm = allMethods.find(m => m.id === selectedMethodId);
+                    if (!pm) return null;
+                    const isPaypal = pm.isDirectPaypal || pm.name.toLowerCase().includes("paypal") || pm.name.includes("باي بال");
+
+                    if (isPaypal) {
+                      return (
+                        <div style={{ padding: "24px", background: "rgba(255,255,255,0.02)", borderRadius: "16px", border: "1px solid var(--primary-color)", marginTop: "20px", marginBottom: "20px" }}>
+                          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: "14px", flexWrap: "wrap" }}>
+                              <div style={{ background: "linear-gradient(135deg, #003087, #009cde)", borderRadius: "12px", padding: "10px 18px", fontWeight: 900, color: "white", fontSize: "1rem", letterSpacing: "1px", display: "flex", alignItems: "center", gap: "6px" }}>
+                                <span style={{ fontSize: "1.3rem" }}>🅿️</span> PayPal
+                              </div>
+                              <div>
+                                <div style={{ fontWeight: 900, fontSize: "1.1rem", color: "var(--text-main)" }}>الدفع المباشر بـ PayPal</div>
+                                <div style={{ color: "#60a5fa", fontSize: "0.83rem", marginTop: "2px" }}>دفع في نفس الصفحة (In-Context) • فوري</div>
+                              </div>
+                            </div>
+                            <div>
+                              <input
+                                id="paypal-amount-input"
+                                type="number"
+                                min="1"
+                                step="0.01"
+                                placeholder="أدخل المبلغ بالدولار USD (مثال: 10)"
+                                value={paypalAmount}
+                                onChange={(e) => setPaypalAmount(e.target.value)}
+                                style={{
+                                  width: "100%", padding: "15px 18px", fontSize: "1.1rem", borderRadius: "14px",
+                                  background: "var(--bg-color)", border: "2px solid rgba(255,255,255,0.15)",
+                                  color: "var(--text-main)", outline: "none", boxSizing: "border-box",
+                                  transition: "border-color 0.2s", marginBottom: "16px"
+                                }}
+                              />
+                            </div>
+                            {paypalAmount && Number(paypalAmount) >= 1 ? (
+                              <div style={{ background: "#fff", borderRadius: "8px", padding: "10px 10px 0 10px" }}>
+                                <PayPalScriptProvider options={{ "client-id": process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "BAA8Rt-IgLlxgkq8MZ8oiOOqDhFqy92HBS9sxJzeYASwt8YU9Lz7GXrMAiACDFotqS5LlCxBsRISofo6n8", currency: "USD" }}>
+                                  <PayPalButtons 
+                                    forceReRender={[paypalAmount]}
+                                    style={{ layout: "vertical", shape: "rect", color: "gold", label: "paypal" }}
+                                    createOrder={createPaypalOrder}
+                                    onApprove={onPaypalApprove}
+                                    onError={(err) => setPaypalError("تعذر إكمال عملية الدفع عبر PayPal.")}
+                                  />
+                                </PayPalScriptProvider>
+                              </div>
+                            ) : (
+                              <div style={{ color: "var(--text-muted)", fontSize: "0.95rem" }}>يرجى إدخال مبلغ 1 دولار أو أكثر لإظهار أزرار الدفع.</div>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    }
+
+                    return (
+                      <div style={{ marginTop: "20px", marginBottom: "20px", padding: "24px", background: "var(--bg-glass)", borderRadius: "16px", border: "1px solid var(--border-color)" }}>
+                        <div style={{ marginBottom: "24px" }}>
+                          <p style={{ color: "var(--text-main)", fontSize: "1rem", lineHeight: 1.7, marginBottom: "16px", background: "rgba(139, 92, 246, 0.1)", padding: "16px", borderRadius: "10px", borderRight: "4px solid var(--primary-color)" }}>
+                            {pm.description}
+                          </p>
+                          
+                          {pm.image && (
+                            <div style={{ textAlign: "center", marginBottom: "16px" }}>
+                              <div style={{ fontWeight: 800, marginBottom: "10px", color: "var(--text-muted)" }}>باركود (QR Code) الدفع:</div>
+                              <img src={pm.image.startsWith("data:image") ? pm.image : `${API_BASE_URL}${pm.image}`} alt="QR Code / Barcode" style={{ maxWidth: "200px", borderRadius: "12px", border: "1px solid var(--border-color)", background: "white", padding: "10px", boxShadow: "0 4px 15px rgba(0,0,0,0.2)" }} />
+                            </div>
+                          )}
+                          
+                          <div style={{ padding: "16px", borderRadius: "16px", background: "rgba(59, 130, 246, 0.08)", border: "1px solid rgba(59, 130, 246, 0.2)", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "10px" }}>
+                            <div style={{ flex: 1 }}>
+                              <div style={{ fontWeight: 800, marginBottom: "6px", color: "var(--text-muted)" }}>رقم أو عنوان التحويل:</div>
+                              <div style={{ fontSize: "1.3rem", fontWeight: 900, color: "var(--text-main)", direction: "ltr", userSelect: "all", wordBreak: "break-all" }}>{pm.value}</div>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                navigator.clipboard.writeText(pm.value);
+                                setCopied(true);
+                                setTimeout(() => setCopied(false), 2000);
+                              }}
+                              style={{ background: copied ? "#10b981" : "#3b82f6", color: "white", border: "none", borderRadius: "10px", padding: "10px 20px", fontSize: "1rem", cursor: "pointer", fontWeight: "bold", transition: "all 0.2s", display: "flex", alignItems: "center", gap: "6px" }}
+                            >
+                              {copied ? "تم النسخ ✓" : "نسخ العنوان 📋"}
+                            </button>
+                          </div>
+                        </div>
+
+                        <div style={{ borderTop: "1px solid var(--border-color)", paddingTop: "24px", marginTop: "24px" }}>
+                          <h3 style={{ fontSize: "1.2rem", fontWeight: "bold", marginBottom: "16px", color: "var(--text-main)" }}>تأكيد عملية الدفع وإرسال الوصل</h3>
+
                   <div style={{ display: "flex", gap: "15px", flexWrap: "wrap" }}>
                     <div className="form-group" style={{ flex: "1 1 200px", marginBottom: 0 }}>
                       <select value={selectedCurrency} onChange={(e) => setSelectedCurrency(e.target.value)} style={{ width: "100%", padding: "14px", background: "var(--bg-color)", border: "1px solid var(--border-color)", borderRadius: "12px", color: "var(--text-main)", outline: "none" }}>
@@ -680,6 +772,10 @@ export default function WalletPage() {
                   <button type="submit" disabled={submitting} className="glass-btn glass-btn-primary" style={{ padding: "16px", borderRadius: "14px", fontSize: "1.1rem", fontWeight: "bold", marginTop: "10px", width: "100%" }}>
                     {submitting ? "جاري الإرسال..." : "إرسال الطلب"}
                   </button>
+                        </div>
+                      </div>
+                    );
+                  })()}
                 </form>
               );
             })()}
