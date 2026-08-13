@@ -143,12 +143,6 @@
   white-space: nowrap;
 }
 
-.services-dropdown   to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 .header-dropdown-item:hover {
   padding-inline-start: 14px;
 }
@@ -165,64 +159,6 @@ html[dir="ltr"] .services-dropdown {
   left: 0 !important;
   text-align: left;
   direction: ltr;
-}
-
-@keyframes fadeInDropdown {
-  from {
-    opacity: 0;
-    transform: translateY(-8px);
-  }
-
-
-.header-dropdown-item:hover {
-  background: var(--bg-glass-hover);
-  padding-right: 16px;
-}
-
-/* Notification Toast */
-.notification-toast {
-  position: fixed;
-  top: 70px;
-  left: 20px;
-  background: rgba(79, 70, 229, 0.95);
-  color: #ffffff;
-  padding: 12px 20px;
-  border-radius: 12px;
-  font-weight: 700;
-  font-size: 0.9rem;
-  box-shadow: 0 10px 25px rgba(79, 70, 229, 0.3);
-  z-index: 2000;
-  animation: toastSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-[data-theme="dark"] .notification-toast {
-  background: rgba(139, 92, 246, 0.95);
-  box-shadow: 0 10px 25px rgba(139, 92, 246, 0.3);
-}
-
-@keyframes toastSlideIn {
-  from {
-    transform: translateX(-30px);
-    opacity: 0;
-  }
-
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-/* Responsive visibility utilities */
-.lg-hidden {
-  display: inline-flex !important;
-}
-
-.lg-block {
-  display: none !important;
-}
-
-.lg-flex {
-  display: none !important;
 }
 
 /* Special rules for links inside headers */
