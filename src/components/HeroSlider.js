@@ -60,7 +60,7 @@ export default function HeroSlider({ customSlides = [] }) {
   }, [slides.length]);
 
   return (
-    <section className="hero-section" style={{ position: "relative", minHeight: "450px", borderRadius: "16px", overflow: "hidden", marginBottom: "30px", padding: 0 }}>
+    <section className="hero-section" style={{ position: "relative", minHeight: "450px", borderRadius: "16px", overflow: "hidden", marginBottom: "15px", padding: 0 }}>
       <div className="hero-slides-area">
         {slides.map((slide, idx) => {
           const isImage = slide.icon && (slide.icon.startsWith("data:") || slide.icon.startsWith("http") || slide.icon.startsWith("/uploads"));

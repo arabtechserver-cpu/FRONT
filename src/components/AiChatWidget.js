@@ -54,7 +54,7 @@ export default function AiChatWidget() {
   };
 
   return (
-    <div style={{ position: 'fixed', bottom: '20px', left: '20px', zIndex: 9999, display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+    <div className="ai-chat-widget-container">
       
       {/* Chat Window */}
       {isOpen && (
@@ -234,6 +234,20 @@ export default function AiChatWidget() {
           0% { opacity: 0.2; }
           20% { opacity: 1; }
           100% { opacity: 0.2; }
+        }
+        .ai-chat-widget-container {
+          position: fixed;
+          bottom: 20px;
+          left: 20px;
+          z-index: 9999;
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        @media (max-width: 768px) {
+          .ai-chat-widget-container {
+            bottom: 90px;
+          }
         }
       `}</style>
     </div>
