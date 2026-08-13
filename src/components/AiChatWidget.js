@@ -1,6 +1,5 @@
 'use client';
 import React, { useState, useRef, useEffect } from 'react';
-import { sendAuthRequest } from '../lib/api'; // Or use native fetch if sendAuthRequest doesn't exist, we will use native fetch with token if we can.
 
 export default function AiChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
