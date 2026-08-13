@@ -62,7 +62,7 @@ export default function AiChatWidget() {
           width: '350px',
           height: '500px',
           maxHeight: '80vh',
-          background: 'var(--bg-glass-deep, rgba(20, 20, 30, 0.85))',
+          background: 'rgba(10, 10, 15, 0.95)',
           backdropFilter: 'blur(15px)',
           WebkitBackdropFilter: 'blur(15px)',
           border: '1px solid var(--border-glass, rgba(255, 255, 255, 0.1))',
@@ -222,7 +222,7 @@ export default function AiChatWidget() {
           transform: isOpen ? 'scale(0.9)' : 'scale(1)'
         }}
       >
-        {isOpen ? '×' : '💬'}
+        {isOpen ? '×' : '🤖'}
       </button>
       
       <style>{`
