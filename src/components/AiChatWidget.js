@@ -24,6 +24,17 @@ export default function AiChatWidget() {
     return () => window.removeEventListener('storage', syncAuth);
   }, []);
 
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('arab_tech_server_ai_history') || '[]');
+      if (Array.isArray(saved)) setMessages(saved.slice(-50));
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    if (messages.length) localStorage.setItem('arab_tech_server_ai_history', JSON.stringify(messages.slice(-50)));
+  }, [messages]);
+
   const handleSend = async (e) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
