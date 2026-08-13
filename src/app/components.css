@@ -692,3 +692,20 @@
   .scc-img-ring { width: 44px; height: 44px; }
   .cc-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
 }
+.success-order-modal {
+  background: var(--bg-glass-deep, #111827) !important;
+  color: var(--text-main) !important;
+  border: 1px solid var(--border-glass) !important;
+}
+.success-order-modal h2,
+.success-order-modal strong { color: var(--text-main) !important; }
+.success-order-modal p,
+.success-order-modal span { color: var(--text-muted) !important; }
+.success-order-modal .success-order-invoice {
+  background: var(--bg-glass, rgba(255,255,255,.06)) !important;
+  border-color: var(--border-glass) !important;
+}
+.success-order-modal [style*="color: rgb(56, 189, 248)"],
+.success-order-modal [style*="color: #38bdf8"] { color: var(--primary-color) !important; }
+[data-theme="light"] .success-order-modal { box-shadow: 0 24px 60px rgba(30,60,110,.18) !important; }
+[data-theme="light"] .success-order-modal .success-order-invoice { background: rgba(255,255,255,.58) !important; }

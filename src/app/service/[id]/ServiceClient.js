@@ -1969,7 +1969,7 @@ export default function ServiceDetail({ params, initialService = null }) {
       {/* Success Modal */}
       {successData && (
         <div className="overlay" style={{ display: "flex", alignItems: "center", justifyContent: "center", position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.85)", zIndex: 1000, padding: "20px", backdropFilter: "blur(8px)" }}>
-          <div className="modal-content" style={{
+          <div className="modal-content success-order-modal" style={{
             textAlign: "center",
             padding: "30px clamp(12px, 5vw, 24px)",
             width: "95%",
@@ -1991,7 +1991,7 @@ export default function ServiceDetail({ params, initialService = null }) {
               شكراً لثقتك بـ <strong style={{ color: "#38bdf8" }}>عرب تك</strong>. تم استلام وتسجيل طلب الخدمة الخاص بك وهو الآن قيد التنفيذ التلقائي الفوري.
             </p>
 
-            <div style={{
+            <div className="success-order-invoice" style={{
               background: "linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.8))",
               border: "1px solid var(--bg-glass)",
               padding: "24px",
