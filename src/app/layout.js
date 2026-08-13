@@ -17,7 +17,7 @@ const tajawal = Tajawal({
 const isBuildTime = typeof window === "undefined" && (API_BASE_URL.includes("localhost") || API_BASE_URL.includes("127.0.0.1"));
 
 const getSiteSettings = cache(async () => {
-  let siteName = "عرب تك سيرفر";
+  let siteName = "Arab Tech Server";
   let siteLogo = "/logo.jpg";
   let siteFavicon = "/favicon.png";
 
@@ -34,176 +34,55 @@ const getSiteSettings = cache(async () => {
       // Keep metadata rendering resilient during build or temporary API downtime.
     }
   }
-
   return { siteName, siteLogo, siteFavicon };
 });
 
 export async function generateMetadata() {
-  const { siteName, siteLogo, siteFavicon } = await getSiteSettings();
-
-  const siteLogoUrl = siteLogo.startsWith("http") || siteLogo.startsWith("data:")
-    ? siteLogo
-    : (siteLogo.includes("uploads")
-        ? `${API_BASE_URL}${siteLogo.startsWith("/") ? siteLogo : `/${siteLogo}`}`
-        : `${SITE_URL}${siteLogo.startsWith("/") ? siteLogo : `/${siteLogo}`}`);
-
-  const siteFaviconUrl = siteFavicon.startsWith("http") || siteFavicon.startsWith("data:")
-    ? siteFavicon
-    : (siteFavicon.includes("uploads")
-        ? `${API_BASE_URL}${siteFavicon.startsWith("/") ? siteFavicon : `/${siteFavicon}`}`
-        : `${SITE_URL}${siteFavicon.startsWith("/") ? siteFavicon : `/${siteFavicon}`}`);
-
-  const titleText = `${siteName} | لخدمات وبرامج السوفت وير`;
-  const descText = `سيرفر ${siteName} لخدمات وبرامج السوفت وير. شحن وتفعيل تلقائي فوري بأفضل الأسعار.`;
-
+  const { siteName, siteFavicon } = await getSiteSettings();
+  const siteUrl = SITE_URL || "https://arab-tech1.online";
+  
   return {
-    metadataBase: new URL(SITE_URL),
-    title: titleText,
-    description: descText,
-    verification: {
-      google: "BpQsEK6Xln0FauVIlj0qYpPxuzvoYrACWOehkyBc5-U",
+    title: {
+      default: siteName,
+      template: `%s | ${siteName}`,
     },
+    description: "Arab Tech Server - أفضل سيرفر تقني لخدمات السيرفرات والتطبيقات. متجرنا يضمن لك أفضل تجربة. Арабский Технический Сервер, 阿拉伯技术服务器, अरब टेक सर्वर.",
     keywords: [
-      siteName,
-      `${siteName} سوفت وير`,
-      `سيرفر ${siteName}`,
-      "تفعيل برامج سوفت وير",
-      "خدمات سوفت وير",
-      "تفعيل دونجلات سوفت وير",
-      "تفعيل بوكسات سوفت وير",
-      "شحن USDT",
-      "تفعيل كانفا برو",
-      "تفعيل نتفليكس",
-      "سيرفر خدمات رقمية"
+      "عرب تيك سيرفر", 
+      "Arab Tech Server", 
+      "Арабский Технический Сервер", 
+      "阿拉伯技术服务器", 
+      "अरब टेक सर्वर", 
+      "عرب تيك", 
+      "Arab Tech",
+      "تفعيل برامج",
+      "خدمات سيرفر"
     ],
+    metadataBase: new URL(siteUrl),
     alternates: {
-      canonical: SITE_URL,
-    },
-    openGraph: {
-      title: titleText,
-      description: descText,
-      url: SITE_URL,
-      siteName: siteName,
-      images: [
-        {
-          url: siteLogoUrl,
-          width: 1200,
-          height: 630,
-          alt: `${siteName} - لخدمات وبرامج السوفت وير`
-        }
-      ],
-      locale: "ar_EG",
-      type: "website",
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: titleText,
-      description: descText,
-      images: [siteLogoUrl],
+      canonical: "/",
     },
     icons: {
-      icon: [
-        { url: "/favicon.ico", sizes: "any" },
-        { url: "/favicon.png", type: "image/png" },
-        { url: "/icons/icon-16.png", sizes: "16x16", type: "image/png" },
-        { url: "/icons/icon-32.png", sizes: "32x32", type: "image/png" },
-        { url: "/icons/icon-48.png", sizes: "48x48", type: "image/png" },
-        { url: "/icons/icon-96.png", sizes: "96x96", type: "image/png" },
-        { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
-        { url: siteFaviconUrl, type: "image/png" }
-      ],
-      apple: [
-        { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" }
-      ],
-      shortcut: ["/favicon.ico"],
-    }
+      icon: siteFavicon,
+      shortcut: siteFavicon,
+      apple: siteFavicon,
+    },
   };
 }
 
-export const viewport = {
-  width: "device-width",
-  initialScale: 1,
-};
-
 export default async function RootLayout({ children }) {
-  const { siteName, siteLogo, siteFavicon } = await getSiteSettings();
-
-  const siteLogoUrl = siteLogo.startsWith("http") || siteLogo.startsWith("data:")
-    ? siteLogo
-    : (siteLogo.includes("uploads")
-        ? `${API_BASE_URL}${siteLogo.startsWith("/") ? siteLogo : `/${siteLogo}`}`
-        : `${SITE_URL}${siteLogo.startsWith("/") ? siteLogo : `/${siteLogo}`}`);
-
-  const siteFaviconUrl = siteFavicon.startsWith("http") || siteFavicon.startsWith("data:")
-    ? siteFavicon
-    : (siteFavicon.includes("uploads")
-        ? `${API_BASE_URL}${siteFavicon.startsWith("/") ? siteFavicon : `/${siteFavicon}`}`
-        : `${SITE_URL}${siteFavicon.startsWith("/") ? siteFavicon : `/${siteFavicon}`}`);
+  const { siteName, siteLogo } = await getSiteSettings();
+  const siteLogoUrl = siteLogo;
 
   const jsonLd = {
     "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "Organization",
-        "@id": `${SITE_URL}/#organization`,
-        "name": siteName,
-        "alternateName": [siteName],
-        "url": SITE_URL,
-        "logo": {
-          "@type": "ImageObject",
-          "@id": `${SITE_URL}/#logo`,
-          "url": siteLogoUrl,
-          "caption": `${siteName} Logo`
-        },
-        "description": `سيرفر ${siteName} لخدمات وبرامج السوفت وير. شحن وتفعيل تلقائي فوري بأفضل الأسعار.`
-      },
-      {
-        "@type": "WebSite",
-        "@id": `${SITE_URL}/#website`,
-        "url": SITE_URL,
-        "name": `${siteName} | لخدمات وبرامج السوفت وير`,
-        "description": `سيرفر ${siteName} لخدمات وبرامج السوفت وير. شحن وتفعيل تلقائي فوري بأفضل الأسعار.`,
-        "publisher": {
-          "@id": `${SITE_URL}/#organization`
-        },
-        "potentialAction": {
-          "@type": "SearchAction",
-          "target": {
-            "@type": "EntryPoint",
-            "urlTemplate": `${SITE_URL}/?search={search_term_string}`
-          },
-          "query-input": "required name=search_term_string"
-        },
-        "inLanguage": "ar"
-      },
+    "@type": "WebSite",
+    "name": siteName,
+    "url": SITE_URL || "https://arab-tech1.online",
+    "mainEntity": [
       {
         "@type": "FAQPage",
-        "@id": `${SITE_URL}/#faq`,
         "mainEntity": [
-          {
-            "@type": "Question",
-            "name": `ما هو متجر ${siteName}؟`,
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": `سيرفر ${siteName} هو منصة متكاملة لخدمات وبرامج السوفت وير بأسرع تنفيذ تلقائي وأفضل الأسعار.`
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "كيف يمكنني تفعيل البرامج وتجديد اشتراكات الأدوات؟",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "يمكنك تفعيل وتجديد اشتراكات البرامج والخدمات مباشرة عبر إدخال البيانات المطلوبة للخدمة، وتحديد الباقة المناسبة، وإتمام الدفع لتبدأ عملية التفعيل التلقائي فوراً."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": `ما هي طرق الدفع المتاحة في متجر ${siteName}؟`,
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "يدعم المتجر الدفع الإلكتروني المباشر، الدفع عبر رصيد المحفظة الخاص بك، وطرق الدفع المحلية مثل فودافون كاش ومحافظ الهاتف الذكي في مصر."
-            }
-          },
           {
             "@type": "Question",
             "name": "كيف أضمن أمان تفعيل البرامج والخدمات؟",

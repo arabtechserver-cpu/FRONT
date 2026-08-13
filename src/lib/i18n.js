@@ -253,7 +253,9 @@ const dictionary = {
     faqSafeQuestion: "هل الموقع آمن؟",
     faqSafeAnswer: "نعم، نستخدم حماية للبيانات ونتابع الطلبات حتى اكتمالها أو استرجاع الرصيد عند وجود مشكلة مؤكدة.",
     faqWholesaleQuestion: "كيف أحصل على أسعار الجملة؟",
-    faqWholesaleAnswer: "تواصل معنا عبر واتساب للحصول على تسعيرة الجملة والخصومات الخاصة."
+    faqWholesaleAnswer: "تواصل معنا عبر واتساب للحصول على تسعيرة الجملة والخصومات الخاصة.",
+    seoTitle: "عرب تك سيرفر | لخدمات وبرامج السوفت وير",
+    seoDesc: "سيرفر عرب تك لخدمات وبرامج السوفت وير. شحن وتفعيل تلقائي فوري بأفضل الأسعار."
   },
   en: {
     language: "Language",
@@ -495,7 +497,9 @@ const dictionary = {
     faqSafeQuestion: "Is the website safe?",
     faqSafeAnswer: "Yes. We protect your data and follow orders until completion or wallet refund when a verified issue occurs.",
     faqWholesaleQuestion: "How can I get wholesale prices?",
-    faqWholesaleAnswer: "Contact us on WhatsApp to get wholesale pricing and special discounts."
+    faqWholesaleAnswer: "Contact us on WhatsApp to get wholesale pricing and special discounts.",
+    seoTitle: "Arab Tech Server | Software & Server Services",
+    seoDesc: "Arab Tech Server for software services. Instant activation, GSM tools, server unlock, and best prices."
   },
   ru: {
     language: "Язык",
@@ -718,7 +722,9 @@ const dictionary = {
     faqSafeQuestion: "Сайт безопасен?",
     faqSafeAnswer: "Да. Мы защищаем данные и отслеживаем заказы до завершения или возврата средств при подтвержденной проблеме.",
     faqWholesaleQuestion: "Как получить оптовые цены?",
-    faqWholesaleAnswer: "Свяжитесь с нами в WhatsApp, чтобы получить оптовые цены и специальные скидки."
+    faqWholesaleAnswer: "Свяжитесь с нами в WhatsApp, чтобы получить оптовые цены и специальные скидки.",
+    seoTitle: "Arab Tech Server | Программные и Серверные Услуги",
+    seoDesc: "Arab Tech Server для программных услуг. Мгновенная активация, GSM инструменты, разблокировка серверов и лучшие цены."
   },
   zh: {
     language: "语言",
@@ -908,19 +914,6 @@ const dictionary = {
     support247: "24/7 技术支持",
     support247Desc: "全天候支持团队",
     dailyUpdate: "每日更新",
-    dailyUpdateDesc: "每天添加新服务",
-    satisfiedCustomer: "满意客户",
-    serviceAvailable: "可用服务",
-    successRate: "成功率",
-    continuousSupport: "持续支持",
-    faq: "常见问题",
-    serviceDetailsLoading: "正在加载服务详情...",
-    selectBundleServiceStep: "1. 从套餐中选择服务：",
-    selectRequiredService: "-- 选择所需服务 --",
-    selectPackageStepTwo: "2. 选择套餐：",
-    selectPackageStepOne: "1. 选择所需套餐：",
-    executionTime: "处理时间",
-    executionStartsAfterPayment: "付款后立即开始处理订单。",
     guarantee: "服务保障",
     orderReviewGuarantee: "订单会在处理前审核。如资料或付款有问题，我们会联系你解决。",
     requiredData: "所需资料",
@@ -941,7 +934,9 @@ const dictionary = {
     faqSafeQuestion: "网站安全吗？",
     faqSafeAnswer: "是的。我们保护你的数据，并跟进订单直到完成；如确认存在问题，将退回到钱包。",
     faqWholesaleQuestion: "如何获得批发价格？",
-    faqWholesaleAnswer: "请通过 WhatsApp 联系我们，获取批发价格和专属折扣。"
+    faqWholesaleAnswer: "请通过 WhatsApp 联系我们，获取批发价格和专属折扣。",
+    seoTitle: "Arab Tech Server | 软件与服务器服务",
+    seoDesc: "Arab Tech Server提供软件服务。即时激活，GSM工具，服务器解锁，以及最优价格。"
   },
   hi: {
     language: "भाषा",
@@ -2203,7 +2198,38 @@ export function I18nProvider({ children }) {
     t: (key, values) => translate(key, language, values)
   }), [language]);
 
-  return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
+  return (
+    <I18nContext.Provider value={value}>
+      <ClientSEOUpdater />
+      {children}
+    </I18nContext.Provider>
+  );
+}
+
+function ClientSEOUpdater() {
+  const { t } = useI18n();
+
+  useEffect(() => {
+    const seoTitle = t("seoTitle");
+    if (seoTitle) {
+      document.title = seoTitle;
+    }
+
+    const seoDesc = t("seoDesc");
+    if (seoDesc) {
+      let metaDesc = document.querySelector('meta[name="description"]');
+      if (metaDesc) {
+        metaDesc.setAttribute("content", seoDesc);
+      } else {
+        metaDesc = document.createElement("meta");
+        metaDesc.name = "description";
+        metaDesc.content = seoDesc;
+        document.head.appendChild(metaDesc);
+      }
+    }
+  }, [t]);
+
+  return null;
 }
 
 export function useI18n() {

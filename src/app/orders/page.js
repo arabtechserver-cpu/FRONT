@@ -253,7 +253,7 @@ export default function OrdersHistory() {
 
             {/* Top Cards */}
             <div className="orders-top-cards" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "20px", marginBottom: "30px" }}>
-              <div className="glass-panel" style={{ padding: "20px", display: "flex", alignItems: "center", justifyContent: "space-between", borderRadius: "20px" }}>
+              <div className="glass-panel" onClick={() => setFilterTab("pending")} style={{ padding: "20px", display: "flex", alignItems: "center", justifyContent: "space-between", borderRadius: "20px", cursor: "pointer" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
                   <div style={{ width: "50px", height: "50px", background: "rgba(22, 119, 238, 0.1)", borderRadius: "14px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.5rem", color: "var(--brand-blue)" }}>
                     👜
@@ -263,10 +263,12 @@ export default function OrdersHistory() {
                     <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", margin: 0 }}>عرض الطلبات النشطة</p>
                   </div>
                 </div>
-                <div style={{ background: "var(--bg-glass)", borderRadius: "10px", padding: "4px 8px", fontSize: "1.2rem", color: "var(--text-main)" }}>❮</div>
+                <div style={{ background: "var(--bg-glass)", borderRadius: "10px", padding: "6px 14px", fontSize: "1.3rem", color: "var(--text-main)", fontWeight: "bold" }}>
+                  {orders.filter(o => o.status === "pending" || o.status === "processing").length}
+                </div>
               </div>
 
-              <div className="glass-panel" style={{ padding: "20px", display: "flex", alignItems: "center", justifyContent: "space-between", borderRadius: "20px" }}>
+              <div className="glass-panel" onClick={() => setFilterTab("completed")} style={{ padding: "20px", display: "flex", alignItems: "center", justifyContent: "space-between", borderRadius: "20px", cursor: "pointer" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
                   <div style={{ width: "50px", height: "50px", background: "rgba(34, 197, 94, 0.1)", borderRadius: "14px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.5rem", color: "#22c55e" }}>
                     🛡️
@@ -276,21 +278,25 @@ export default function OrdersHistory() {
                     <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", margin: 0 }}>عرض الطلبات المكتملة</p>
                   </div>
                 </div>
-                <div style={{ background: "var(--bg-glass)", borderRadius: "10px", padding: "4px 8px", fontSize: "1.2rem", color: "var(--text-main)" }}>❮</div>
+                <div style={{ background: "var(--bg-glass)", borderRadius: "10px", padding: "6px 14px", fontSize: "1.3rem", color: "var(--text-main)", fontWeight: "bold" }}>
+                  {orders.filter(o => o.status === "completed").length}
+                </div>
               </div>
 
-              <div className="glass-panel" style={{ padding: "20px", display: "flex", alignItems: "center", justifyContent: "space-between", borderRadius: "20px" }}>
+              <Link href="/wallet" className="glass-panel" style={{ padding: "20px", display: "flex", alignItems: "center", justifyContent: "space-between", borderRadius: "20px", textDecoration: "none" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
                   <div style={{ width: "50px", height: "50px", background: "rgba(56, 189, 248, 0.1)", borderRadius: "14px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.5rem", color: "#38bdf8" }}>
                     💳
                   </div>
                   <div>
-                    <h3 style={{ fontSize: "1.1rem", fontWeight: "900", margin: "0 0 4px 0" }}>المحفظة</h3>
+                    <h3 style={{ fontSize: "1.1rem", fontWeight: "900", margin: "0 0 4px 0", color: "var(--text-main)" }}>المحفظة</h3>
                     <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", margin: 0 }}>عرض الرصيد والمعاملات</p>
                   </div>
                 </div>
-                <div style={{ background: "var(--bg-glass)", borderRadius: "10px", padding: "4px 8px", fontSize: "1.2rem", color: "var(--text-main)" }}>❮</div>
-              </div>
+                <div style={{ background: "var(--bg-glass)", borderRadius: "10px", padding: "6px 14px", fontSize: "1.1rem", color: "var(--text-main)", fontWeight: "bold", direction: "ltr" }}>
+                  {customer ? Number(customer.balance || 0).toFixed(2) : "0.00"} {baseCurrency}
+                </div>
+              </Link>
             </div>
 
             {/* Filter Tabs */}
@@ -326,7 +332,7 @@ export default function OrdersHistory() {
               })}
             </div>
 
-            {/* Data Table */}
+            {/* Data Cards (Replaced Table to remove mobile scroll) */}
             {loading ? (
               <div style={{ textAlign: "center", padding: "40px", fontWeight: "bold" }}>جاري تحميل طلباتك...</div>
             ) : orders.length === 0 ? (
@@ -336,106 +342,103 @@ export default function OrdersHistory() {
                 <Link href="/" className="glass-btn glass-btn-primary">قم بطلب خدمة</Link>
               </div>
             ) : (
-              <div className="glass-panel" style={{ overflowX: "auto", borderRadius: "16px", padding: "0" }}>
-                <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "900px" }}>
-                  <thead>
-                    <tr style={{ background: "var(--primary-light)", borderBottom: "1px solid var(--border-glass)" }}>
-                      <th style={{ padding: "16px", textAlign: "right", color: "var(--text-muted)", fontWeight: "bold", fontSize: "0.9rem" }}>الخدمة</th>
-                      <th style={{ padding: "16px", textAlign: "right", color: "var(--text-muted)", fontWeight: "bold", fontSize: "0.9rem" }}>الباقة</th>
-                      <th style={{ padding: "16px", textAlign: "right", color: "var(--text-muted)", fontWeight: "bold", fontSize: "0.9rem" }}>رقم الطلب</th>
-                      <th style={{ padding: "16px", textAlign: "right", color: "var(--text-muted)", fontWeight: "bold", fontSize: "0.9rem" }}>السعر</th>
-                      <th style={{ padding: "16px", textAlign: "right", color: "var(--text-muted)", fontWeight: "bold", fontSize: "0.9rem" }}>التاريخ</th>
-                      <th style={{ padding: "16px", textAlign: "center", color: "var(--text-muted)", fontWeight: "bold", fontSize: "0.9rem", minWidth: "250px" }}>حالة الطلب</th>
-                      <th style={{ padding: "16px", textAlign: "left", color: "var(--text-muted)", fontWeight: "bold", fontSize: "0.9rem" }}>الإجراء</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {orders.filter(o => {
-                      if (filterTab === "all") return true;
-                      if (filterTab === "pending" && o.status === "pending") return true;
-                      if (filterTab === "processing" && o.status === "processing") return true;
-                      if (filterTab === "completed" && o.status === "completed") return true;
-                      return false;
-                    }).map((order) => {
-                      
-                      // Calculate Stepper State
-                      const statusSteps = [
-                        { key: "received", label: "تم الاستلام" },
-                        { key: "pending", label: "قيد المراجعة" },
-                        { key: "processing", label: "قيد التنفيذ" },
-                        { key: "completed", label: "مكتمل" }
-                      ];
-                      
-                      let currentIndex = 1; // default to pending
-                      if (order.status === "processing") currentIndex = 2;
-                      if (order.status === "completed") currentIndex = 3;
-                      if (order.status === "cancelled") currentIndex = -1; // handle cancelled if needed
+              <div style={{ display: "grid", gap: "16px", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))" }}>
+                {orders.filter(o => {
+                  if (filterTab === "all") return true;
+                  if (filterTab === "pending" && o.status === "pending") return true;
+                  if (filterTab === "processing" && o.status === "processing") return true;
+                  if (filterTab === "completed" && o.status === "completed") return true;
+                  return false;
+                }).map((order) => {
+                  
+                  // Calculate Stepper State
+                  const statusSteps = [
+                    { key: "received", label: "الاستلام" },
+                    { key: "pending", label: "مراجعة" },
+                    { key: "processing", label: "تنفيذ" },
+                    { key: "completed", label: "مكتمل" }
+                  ];
+                  
+                  let currentIndex = 1; // default to pending
+                  if (order.status === "processing") currentIndex = 2;
+                  if (order.status === "completed") currentIndex = 3;
+                  if (order.status === "cancelled") currentIndex = -1; // handle cancelled if needed
 
-                      return (
-                        <tr key={order.id} style={{ borderBottom: "1px solid var(--border-glass)", transition: "background 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.background = "var(--primary-light)"} onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}>
-                          <td style={{ padding: "16px", color: "var(--text-main)", fontWeight: "bold", display: "flex", alignItems: "center", gap: "10px" }}>
-                            <div style={{ width: "36px", height: "36px", background: "var(--primary-glow)", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                              <img src="/services-icon.png" alt="" style={{ width: "20px", height: "20px", objectFit: "contain", filter: "invert(1)" }} onError={(e) => e.target.style.display="none"} />
-                            </div>
-                            {order.service_name}
-                          </td>
-                          <td style={{ padding: "16px", color: "var(--text-muted)", fontSize: "0.9rem" }}>
-                            {order.package_name || "—"}
-                          </td>
-                          <td style={{ padding: "16px", color: "var(--text-muted)", fontSize: "0.9rem", direction: "ltr", textAlign: "right" }}>
-                            #ATS-{new Date().getFullYear()}-{order.id.toString().padStart(4, '0')}
-                          </td>
-                          <td style={{ padding: "16px", color: "var(--text-main)", fontWeight: "bold" }}>
-                            {Number(order.package_price || 0).toFixed(2)} {baseCurrency}
-                          </td>
-                          <td style={{ padding: "16px", color: "var(--text-muted)", fontSize: "0.9rem", direction: "ltr", textAlign: "right" }}>
-                            {order.created_at.split('T')[0].replace(/-/g, '/')}
-                          </td>
-                          
-                          {/* STATUS STEPPER */}
-                          <td style={{ padding: "16px" }}>
-                            {order.status === "cancelled" ? (
-                              <div style={{ color: "var(--danger-color)", fontWeight: "bold", textAlign: "center" }}>ملغي</div>
-                            ) : (
-                              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", position: "relative", width: "100%", margin: "0 auto", maxWidth: "220px" }}>
-                                {/* connecting line */}
-                                <div style={{ position: "absolute", top: "24px", left: "10px", right: "10px", height: "2px", background: "var(--border-glass)", zIndex: 0 }}></div>
-                                <div style={{ position: "absolute", top: "24px", right: "10px", width: `${(currentIndex / (statusSteps.length - 1)) * 100}%`, height: "2px", background: "var(--brand-blue)", zIndex: 1, transition: "width 0.4s ease" }}></div>
-                                
-                                {statusSteps.map((step, idx) => {
-                                  const isPast = idx <= currentIndex;
-                                  const isCurrent = idx === currentIndex;
-                                  return (
-                                    <div key={step.key} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "6px", zIndex: 2 }}>
-                                      <div style={{ fontSize: "0.65rem", color: isPast ? "var(--text-main)" : "var(--text-muted)", fontWeight: "bold" }}>{step.label}</div>
-                                      <div style={{
-                                        width: "12px", height: "12px", borderRadius: "50%",
-                                        background: isCurrent ? "var(--brand-blue)" : (isPast ? "var(--brand-cyan)" : "var(--border-glass)"),
-                                        boxShadow: isCurrent ? "0 0 8px var(--brand-blue)" : "none",
-                                        border: isPast ? "none" : "2px solid var(--bg-secondary)"
-                                      }}></div>
-                                    </div>
-                                  )
-                                })}
-                              </div>
-                            )}
-                          </td>
-                          
-                          <td style={{ padding: "16px", textAlign: "left" }}>
-                            <button
-                              onClick={() => { alert(`تفاصيل الطلب: \n${order.code ? 'الكود: '+order.code : 'لا يوجد كود'}`); }}
-                              className="glass-btn"
-                              style={{ padding: "6px 14px", fontSize: "0.85rem", background: "var(--brand-blue)", borderRadius: "8px", display: "inline-flex", alignItems: "center", gap: "6px" }}
-                            >
-                              متابعة الطلب
-                              <span style={{ fontSize: "1rem" }}>❮</span>
-                            </button>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+                  return (
+                    <div key={order.id} className="glass-panel" style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "16px", borderRadius: "16px", position: "relative" }}>
+                      
+                      {/* Header: Service Name & Order ID */}
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "10px" }}>
+                        <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+                          <div style={{ width: "40px", height: "40px", background: "var(--primary-glow)", borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                            <img src="/services-icon.png" alt="" style={{ width: "24px", height: "24px", objectFit: "contain", filter: "invert(1)" }} onError={(e) => e.target.style.display="none"} />
+                          </div>
+                          <div>
+                            <h4 style={{ margin: 0, fontSize: "1rem", fontWeight: "bold", color: "var(--text-main)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                              {order.service_name}
+                            </h4>
+                            <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", direction: "ltr", display: "inline-block", marginTop: "4px" }}>
+                              #ATS-{new Date().getFullYear()}-{order.id.toString().padStart(4, '0')}
+                            </span>
+                          </div>
+                        </div>
+                        <div style={{ textAlign: "left", flexShrink: 0 }}>
+                          <div style={{ fontWeight: "900", color: "var(--primary-color)", direction: "ltr" }}>{Number(order.package_price || 0).toFixed(2)} {baseCurrency}</div>
+                          <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginTop: "4px" }}>{order.created_at.split('T')[0].replace(/-/g, '/')}</div>
+                        </div>
+                      </div>
+
+                      {/* Package info */}
+                      {order.package_name && (
+                        <div style={{ fontSize: "0.85rem", color: "var(--text-muted)", background: "var(--bg-glass-deep)", padding: "10px 14px", borderRadius: "8px", border: "1px solid var(--border-glass)" }}>
+                          <strong>الباقة:</strong> {order.package_name}
+                        </div>
+                      )}
+
+                      {/* STATUS STEPPER */}
+                      <div style={{ padding: "10px 0", marginTop: "auto" }}>
+                        {order.status === "cancelled" ? (
+                          <div style={{ color: "var(--danger-color)", fontWeight: "bold", textAlign: "center", padding: "10px", background: "rgba(244, 63, 94, 0.1)", borderRadius: "8px" }}>طلب ملغي</div>
+                        ) : (
+                          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", position: "relative", width: "100%", margin: "0 auto", maxWidth: "100%" }}>
+                            {/* connecting line */}
+                            <div style={{ position: "absolute", top: "14px", left: "10px", right: "10px", height: "3px", background: "var(--border-glass)", zIndex: 0, borderRadius: "10px" }}></div>
+                            <div style={{ position: "absolute", top: "14px", right: "10px", width: `calc(${(currentIndex / (statusSteps.length - 1)) * 100}% - 20px)`, height: "3px", background: "var(--brand-blue)", zIndex: 1, transition: "width 0.4s ease", borderRadius: "10px" }}></div>
+                            
+                            {statusSteps.map((step, idx) => {
+                              const isPast = idx <= currentIndex;
+                              const isCurrent = idx === currentIndex;
+                              return (
+                                <div key={step.key} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", zIndex: 2 }}>
+                                  <div style={{
+                                    width: "16px", height: "16px", borderRadius: "50%",
+                                    background: isCurrent ? "var(--brand-blue)" : (isPast ? "var(--brand-cyan)" : "var(--bg-glass-deep)"),
+                                    boxShadow: isCurrent ? "0 0 10px var(--brand-blue)" : "none",
+                                    border: isPast ? "none" : "2px solid var(--border-glass)"
+                                  }}></div>
+                                  <div style={{ fontSize: "0.65rem", color: isPast ? "var(--text-main)" : "var(--text-muted)", fontWeight: "bold" }}>{step.label}</div>
+                                </div>
+                              )
+                            })}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Action button */}
+                      <button
+                        onClick={() => { alert(`تفاصيل الطلب: \n${order.code ? 'الكود: '+order.code : 'لا توجد تفاصيل إضافية'}`); }}
+                        className="glass-btn"
+                        style={{ padding: "10px 14px", fontSize: "0.9rem", background: "rgba(22, 119, 238, 0.1)", color: "var(--brand-blue)", border: "1px solid rgba(22, 119, 238, 0.3)", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", marginTop: "5px" }}
+                        onMouseEnter={(e) => { e.currentTarget.style.background = "var(--brand-blue)"; e.currentTarget.style.color = "#fff"; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(22, 119, 238, 0.1)"; e.currentTarget.style.color = "var(--brand-blue)"; }}
+                      >
+                        <span style={{ fontWeight: "bold" }}>تفاصيل الطلب</span>
+                        <span style={{ fontSize: "1rem" }}>❮</span>
+                      </button>
+
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>

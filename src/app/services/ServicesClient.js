@@ -241,10 +241,10 @@ export default function ServicesClient({ initialCategories = [], initialServices
           <input
             type="text"
             className="search-input-center"
-            placeholder="ابحث عن خدمة..."
+            placeholder={t("searchServices") || "ابحث عن خدمة..."}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            dir="rtl"
+            dir={meta?.dir || "rtl"}
             style={{ width: '100%', padding: '12px 40px 12px 15px', borderRadius: '12px', background: 'var(--bg-glass-deep)', border: '1px solid var(--border-glass)', color: 'var(--text-main)' }}
           />
           <span style={{ position: 'absolute', right: '15px', top: '50%', transform: 'translateY(-50%)', opacity: 0.5 }}>🔍</span>
@@ -253,11 +253,11 @@ export default function ServicesClient({ initialCategories = [], initialServices
         {/* Sort/Filter Dropdowns */}
         <div style={{ display: 'flex', gap: '10px', flex: '0 0 auto' }}>
           <div className="glass-panel" style={{ padding: '8px 15px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-             <span>السعر</span>
+             <span>{t("price") || "السعر"}</span>
              <span>🔽</span>
           </div>
           <div className="glass-panel" style={{ padding: '8px 15px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-             <span>التصنيف</span>
+             <span>{t("categories") || "التصنيف"}</span>
              <span>🔽</span>
           </div>
         </div>
