@@ -26,12 +26,20 @@ export default function AiChatWidget() {
     setIsLoading(true);
 
     try {
-      const token = localStorage.getItem('token'); // Assuming JWT is stored here
+      const token = localStorage.getItem('customer_token');
+
+      if (!token) {
+        setMessages(prev => [...prev, {
+          role: 'assistant',
+          content: 'يرجى تسجيل الدخول أولاً لاستخدام المساعد الذكي.'
+        }]);
+        return;
+      }
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://api.arab-tech1.online'}/api/ai/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
           message: userMsg,
