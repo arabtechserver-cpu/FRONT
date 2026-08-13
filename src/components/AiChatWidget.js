@@ -6,6 +6,7 @@ export default function AiChatWidget() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -15,6 +16,13 @@ export default function AiChatWidget() {
   useEffect(() => {
     scrollToBottom();
   }, [messages, isLoading]);
+
+  useEffect(() => {
+    const syncAuth = () => setIsLoggedIn(Boolean(localStorage.getItem('customer_token')));
+    syncAuth();
+    window.addEventListener('storage', syncAuth);
+    return () => window.removeEventListener('storage', syncAuth);
+  }, []);
 
   const handleSend = async (e) => {
     e.preventDefault();
@@ -105,6 +113,16 @@ export default function AiChatWidget() {
               &times;
             </button>
           </div>
+
+          {!isLoggedIn && (
+            <div style={{ margin: '12px 15px 0', padding: '12px', borderRadius: '12px', background: 'rgba(0,180,216,0.12)', color: '#fff', textAlign: 'center', direction: 'rtl' }}>
+              سجّل حساباً مجانياً للوصول إلى الرصيد والطلبات وطلب الخدمات.
+              <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', marginTop: '9px' }}>
+                <a href="/login" style={{ background: '#00b4d8', color: '#fff', padding: '7px 12px', borderRadius: '8px', textDecoration: 'none', fontWeight: 700 }}>تسجيل الدخول</a>
+                <a href="/login?mode=register" style={{ background: '#334155', color: '#fff', padding: '7px 12px', borderRadius: '8px', textDecoration: 'none', fontWeight: 700 }}>إنشاء حساب</a>
+              </div>
+            </div>
+          )}
 
           {/* Messages Area */}
           <div style={{
