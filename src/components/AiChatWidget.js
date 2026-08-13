@@ -113,7 +113,7 @@ export default function AiChatWidget() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <div style={{ fontSize: '1.5rem' }}>🤖</div>
               <div>
-                <h3 style={{ margin: 0, fontSize: '1.1rem', color: '#fff' }}>المساعد الذكي</h3>
+                <h3 className="ai-chat-title" style={{ margin: 0, fontSize: '1.1rem', color: '#fff' }}>المساعد الذكي</h3>
                 <span style={{ fontSize: '0.8rem', color: '#00b4d8' }}>متصل</span>
               </div>
             </div>
@@ -300,6 +300,7 @@ export default function AiChatWidget() {
         .ai-chat-message.user { color: #fff !important; }
         [data-theme="light"] .ai-chat-window { background: #ffffff !important; color: #0f172a; box-shadow: 0 18px 55px rgba(15,23,42,.18); }
         [data-theme="light"] .ai-chat-header { background: #ecfeff !important; }
+        [data-theme="light"] .ai-chat-title { color: #0f172a !important; }
         [data-theme="light"] .ai-chat-form { background: #f8fafc; }
         [data-theme="light"] .ai-chat-input { background: #fff !important; color: #0f172a !important; -webkit-text-fill-color: #0f172a !important; border-color: #cbd5e1 !important; }
         [data-theme="light"] .ai-chat-input::placeholder { color: #64748b !important; -webkit-text-fill-color: #64748b !important; }

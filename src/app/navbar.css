@@ -918,3 +918,9 @@ select:-webkit-autofill:focus {
   width: 100%;
   cursor: pointer;
 }
+/* Language selector: white text and dark popup for readable options. */
+.language-switcher-select,
+.language-switcher-select option {
+  color: #ffffff !important;
+  background-color: #0d1224 !important;
+}

@@ -264,12 +264,12 @@ export default function ServicesClient({ initialCategories = [], initialServices
       </div>
 
       {/* Category Pills */}
-      <nav aria-label="تصفية الخدمات" style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "25px" }}>
+      <nav aria-label={t("filterServices", "تصفية الخدمات")} style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "25px" }}>
         {[
-          { href: isHome ? "/" : "/services", value: null, label: "الكل", icon: "🔗" },
-          { href: (isHome ? "/" : "/services") + "?type=server", value: "server", label: "سيرفر", icon: "🖥️" },
-          { href: (isHome ? "/" : "/services") + "?type=imei", value: "imei", label: "IMEI", icon: "📱" },
-          { href: (isHome ? "/" : "/services") + "?type=remote", value: "remote", label: "ريموت", icon: "🎮" }
+          { href: isHome ? "/" : "/services", value: null, label: t("allServices", "الكل"), icon: "🔗" },
+          { href: (isHome ? "/" : "/services") + "?type=server", value: "server", label: t("serverServices", "سيرفر"), icon: "🖥️" },
+          { href: (isHome ? "/" : "/services") + "?type=imei", value: "imei", label: t("imeiServices", "IMEI"), icon: "📱" },
+          { href: (isHome ? "/" : "/services") + "?type=remote", value: "remote", label: t("remoteServices", "ريموت"), icon: "🎮" }
         ].map((item) => {
           const active = (typeFilter || null) === item.value;
           return (
