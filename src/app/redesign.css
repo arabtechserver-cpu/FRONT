@@ -47,7 +47,7 @@ body {
 }
 
 [data-theme="light"] {
-  --bg-color: #f4f8ff;
+  --bg-color: #e7eef7;
   --primary-color: #1769e8;
   --primary-hover: #0f56c7;
   --primary-dark: #16439a;
@@ -62,11 +62,13 @@ body {
   --text-main: #0b1b3a;
   --text-muted: #5e6f8a;
   --text-faint: #8b9bb4;
-  --bg-secondary: #edf4ff;
-  --bg-glass-deep: rgba(255,255,255,.95);
-  --border-glass: 1px solid rgba(23,105,232,.15);
+  --bg-secondary: #dce7f3;
+  --bg-glass: rgba(255,255,255,.68);
+  --bg-glass-hover: rgba(255,255,255,.86);
+  --bg-glass-deep: rgba(248,251,255,.88);
+  --border-glass: 1px solid rgba(30, 60, 110, .16);
   --border-glow: 1px solid rgba(23,105,232,.30);
-  --navbar-bg-ref: rgba(255,255,255,.95);
+  --navbar-bg-ref: rgba(242,247,253,.92);
   --navbar-border-ref: rgba(23,105,232,.12);
   --navbar-shadow-ref: 0 8px 26px rgba(50,96,160,.08);
 }
