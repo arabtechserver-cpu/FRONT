@@ -100,6 +100,7 @@ export default async function RootLayout({ children }) {
     <html lang="ar" dir="rtl" suppressHydrationWarning>
       <head>
         <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <link rel="apple-touch-icon" href={siteLogoUrl} />
         <link rel="icon" href="/favicon.ico" sizes="any" />
