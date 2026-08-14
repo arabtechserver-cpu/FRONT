@@ -557,10 +557,7 @@ export default function CustomerLogin() {
                 style={{ width: "64px", height: "64px", borderRadius: "16px", objectFit: "cover" }}
               />
             </div>
-            <h2 style={{ fontWeight: 900, display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}>
-              الملف
-              <img src="/icons/icon-128.png" alt="عرب تك سيرفر online" fetchPriority="high" style={{width: "40px", height: "40px", borderRadius: "8px", objectFit: "contain", flexShrink: 0, filter: "drop-shadow(0 2px 5px rgba(234,179,8,0.2))"}} />
-            </h2>
+            <h2 style={{ fontWeight: 900 }}>الملف الشخصي</h2>
             <p style={{ color: "var(--text-muted)", fontSize: "0.82rem", marginTop: "4px" }}>بيانات حسابك الشخصي والتحكم بالرصيد</p>
           </div>
 

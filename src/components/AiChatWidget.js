@@ -153,7 +153,10 @@ export default function AiChatWidget() {
             </div>
             <button className="ai-chat-new" onClick={startNewChat} title="محادثة جديدة" type="button">＋ جديد</button>
             <button 
+              className="ai-chat-close"
               onClick={() => setIsOpen(false)}
+              type="button"
+              aria-label="إغلاق المحادثة / Close chat"
               style={{ background: 'transparent', border: 'none', color: '#fff', fontSize: '1.5rem', cursor: 'pointer', padding: 0 }}
             >
               &times;
@@ -354,6 +357,7 @@ export default function AiChatWidget() {
         [data-theme="light"] .ai-chat-window { background: #ffffff !important; color: #0f172a; box-shadow: 0 18px 55px rgba(15,23,42,.18); }
         [data-theme="light"] .ai-chat-header { background: #ecfeff !important; }
         [data-theme="light"] .ai-chat-title { color: #0f172a !important; }
+        [data-theme="light"] .ai-chat-close { color: #0f172a !important; }
         [data-theme="light"] .ai-chat-form { background: #f8fafc; }
         [data-theme="light"] .ai-chat-input { background: #fff !important; color: #0f172a !important; -webkit-text-fill-color: #0f172a !important; border-color: #cbd5e1 !important; }
         [data-theme="light"] .ai-chat-input::placeholder { color: #64748b !important; -webkit-text-fill-color: #64748b !important; }
