@@ -116,9 +116,9 @@ export default function AiChatWidget() {
       {/* Chat Window */}
       {isOpen && (
         <div className="ai-chat-window" style={{
-          width: '350px',
-          height: '500px',
-          maxHeight: '80vh',
+          width: 'min(560px, calc(100vw - 48px))',
+          height: 'min(720px, calc(100vh - 110px))',
+          maxHeight: 'calc(100vh - 110px)',
           background: 'rgba(10, 10, 15, 0.95)',
           backdropFilter: 'blur(15px)',
           WebkitBackdropFilter: 'blur(15px)',
@@ -313,6 +313,7 @@ export default function AiChatWidget() {
           align-items: flex-start;
         }
         @media (max-width: 768px) {
+          .ai-chat-window { width: min(430px, calc(100vw - 24px)) !important; height: min(650px, calc(100vh - 150px)) !important; }
           .ai-chat-widget-container {
             bottom: 90px;
           }
