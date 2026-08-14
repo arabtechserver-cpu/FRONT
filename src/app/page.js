@@ -44,13 +44,16 @@ export async function generateMetadata() {
   const metadata = await getSiteMetadata();
   const siteName = metadata.site_name || "عرب تك سيرفر";
 
-  const title = `${siteName} | الصفحة الرئيسية`;
-  const description = `الرئيسية في ${siteName} - كافة خدمات السوفت وير والاشتراكات المتاحة.`;
+  const title = `${siteName} (Arab Tech Server) | خدمات السوفت وير والسيرفر`;
+  const description = `${siteName}، المعروف أيضاً باسم Arab Tech Server أو Ared Tech، يقدم خدمات السوفت وير والاشتراكات وأدوات GSM وخدمات IMEI والسيرفر.`;
 
   return {
     title,
     description,
     keywords: [
+      "Arab Tech Server",
+      "Ared Tech",
+      "Arab Tech",
       "خدمات السوفت وير",
       "تفعيل دونجلات وبوكسات",
       siteName

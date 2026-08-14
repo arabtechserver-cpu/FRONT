@@ -59,10 +59,12 @@ export async function generateMetadata() {
       default: siteName,
       template: `%s | ${siteName}`,
     },
-    description: "Arab Tech Server - أفضل سيرفر تقني لخدمات السيرفرات والتطبيقات. متجرنا يضمن لك أفضل تجربة. Арабский Технический Сервер, 阿拉伯技术服务器, अरब टेक सर्वर.",
+    description: "Arab Tech Server (Ared Tech) — عرب تك سيرفر لخدمات السوفت وير، تفعيل البرامج، أدوات GSM، وخدمات السيرفر وIMEI بأسعار مناسبة.",
     keywords: [
       "عرب تيك سيرفر", 
       "Arab Tech Server", 
+      "Ared Tech",
+      "ArabTech Server",
       "Арабский Технический Сервер", 
       "阿拉伯技术服务器", 
       "अरब टेक सर्वर", 
@@ -91,10 +93,12 @@ export default async function RootLayout({ children }) {
     "@context": "https://schema.org",
     "@type": "WebSite",
     "name": siteName,
+    "alternateName": ["Arab Tech Server", "Arab Tech", "Ared Tech", "ArabTech Server", "عرب تك سيرفر"],
     "url": SITE_URL || "https://arab-tech1.online",
     "publisher": {
       "@type": "Organization",
       "name": "Arab Tech Server",
+      "alternateName": ["Arab Tech", "Ared Tech", "عرب تك سيرفر"],
       "url": "https://arab-tech1.online",
       "logo": `${SITE_URL || "https://arab-tech1.online"}/logo.jpg`,
       "sameAs": ["https://t.me/arabtechserveronline", "https://www.facebook.com/ARABTECHSERVEROnline"]
