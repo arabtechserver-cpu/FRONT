@@ -553,7 +553,7 @@ export default function WalletPage() {
         <section className="glass-panel" style={{ flex: "1 1 300px", padding: "40px 30px", borderRadius: "24px", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", height: "fit-content" }}>
           <h3 style={{ fontSize: "1.4rem", fontWeight: 900, marginBottom: "30px" }}>أمان محفظتك</h3>
           
-          <div style={{ width: "160px", height: "160px", background: "url('/images/shield-3d.png') center/contain no-repeat", borderRadius: "30px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "5rem", marginBottom: "30px", border: "1px solid rgba(56, 189, 248, 0.25)", filter: "drop-shadow(0 15px 25px rgba(56,189,248,0.2))" }}>
+          <div style={{ width: "160px", height: "160px", background: "linear-gradient(145deg, rgba(14,165,233,.18), rgba(99,102,241,.12))", borderRadius: "30px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "5rem", marginBottom: "30px", border: "1px solid rgba(56, 189, 248, 0.25)", filter: "drop-shadow(0 15px 25px rgba(56,189,248,0.2))" }}>
             {/* Fallback if no image */}
             <span style={{opacity: 0.8}}>🛡️</span>
           </div>

@@ -16,6 +16,15 @@ const tajawal = Tajawal({
 // Skip API fetch during Vercel build when the API is not reachable
 const isBuildTime = typeof window === "undefined" && (API_BASE_URL.includes("localhost") || API_BASE_URL.includes("127.0.0.1"));
 
+const resolveMediaUrl = (value, fallback) => {
+  if (!value || value === "default") return fallback;
+  if (value.startsWith("http://") || value.startsWith("https://") || value.startsWith("data:")) return value;
+  if (value.startsWith("/uploads/") || value.startsWith("uploads/")) {
+    return `${API_BASE_URL}${value.startsWith("/") ? "" : "/"}${value}`;
+  }
+  return value.startsWith("/") ? value : `/${value}`;
+};
+
 const getSiteSettings = cache(async () => {
   let siteName = "Arab Tech Server";
   let siteLogo = "/logo.jpg";
@@ -34,7 +43,11 @@ const getSiteSettings = cache(async () => {
       // Keep metadata rendering resilient during build or temporary API downtime.
     }
   }
-  return { siteName, siteLogo, siteFavicon };
+  return {
+    siteName,
+    siteLogo: resolveMediaUrl(siteLogo, "/logo.jpg"),
+    siteFavicon: resolveMediaUrl(siteFavicon, "/favicon.png"),
+  };
 });
 
 export async function generateMetadata() {
