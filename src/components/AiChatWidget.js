@@ -17,7 +17,7 @@ function renderAssistantContent(content) {
     return <div className="ai-result-cards">{rows.map((row, index) => (
       <div className="ai-result-card" key={index}>
         <div className="ai-result-title">{renderInline(row[1] || row[0])}</div>
-        <div className="ai-result-meta">{row.slice(2, -1).filter(Boolean).join(' · ')}</div>
+        <div className="ai-result-meta">{row.slice(2, -1).filter(Boolean).join(' · ').replace(/[₱₽€£]/g, 'USD').replace(/\b(USD)\s*(USD)+\b/g, '$1')}</div>
         {row[row.length - 1] && <div className="ai-result-action">{renderInline(row[row.length - 1])}</div>}
       </div>
     ))}</div>;
