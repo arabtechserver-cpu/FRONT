@@ -5,11 +5,15 @@ function renderAssistantContent(content) {
   const lines = String(content || '').split(/\r?\n/).map(line => line.trim()).filter(Boolean);
   const tableLines = lines.filter(line => line.startsWith('|') && line.endsWith('|') && !/^\|\s*:?-+/.test(line));
   const renderInline = (value) => {
-    const parts = String(value).split(/(\[[^\]]+\]\([^\)]+\))/g);
+    const parts = String(value).split(/(\[[^\]]+\]\([^\)]+\)|https?:\/\/[^\s]+)/g);
     return parts.map((part, index) => {
       const match = part.match(/^\[([^\]]+)\]\(([^\)]+)\)$/);
-      if (!match) return <React.Fragment key={index}>{part.replace(/\*\*/g, '')}</React.Fragment>;
-      return <a key={index} href={match[2]} target="_blank" rel="noreferrer" className="ai-chat-link">{match[1]}</a>;
+      if (match) return <a key={index} href={match[2]} target="_blank" rel="noreferrer" className="ai-chat-link">{match[1]}</a>;
+      if (/^https?:\/\//.test(part)) {
+        const isServiceLink = /\/service\/\d+\/?(?:[?#].*)?$/.test(part);
+        return <a key={index} href={part} target="_blank" rel="noreferrer" className="ai-chat-link">{isServiceLink ? 'عرض وشراء الخدمة' : 'فتح الرابط'}</a>;
+      }
+      return <React.Fragment key={index}>{part.replace(/\*\*/g, '')}</React.Fragment>;
     });
   };
   if (tableLines.length >= 2) {
@@ -272,6 +276,7 @@ export default function AiChatWidget() {
 
       {/* Floating Button */}
       <button 
+        className="ai-chat-toggle"
         onClick={() => setIsOpen(!isOpen)}
         aria-label={isOpen ? 'إغلاق Ared AI / Close Ared AI' : 'فتح Ared AI / Open Ared AI'}
         title="Ared AI"
@@ -309,13 +314,15 @@ export default function AiChatWidget() {
         }
         .ai-chat-widget-container {
           position: fixed;
-           bottom: 48px;
+          bottom: 48px;
           left: 20px;
           z-index: 9999;
           display: flex;
           flex-direction: column;
           align-items: flex-start;
+          pointer-events: none;
         }
+        .ai-chat-widget-container > * { pointer-events: auto; }
         @media (max-width: 768px) {
           .ai-chat-window { width: min(430px, calc(100vw - 24px)) !important; height: min(650px, calc(100vh - 150px)) !important; }
           .ai-chat-widget-container {
@@ -352,7 +359,9 @@ export default function AiChatWidget() {
         [data-theme="light"] .ai-chat-input::placeholder { color: #64748b !important; -webkit-text-fill-color: #64748b !important; }
         @media (max-width: 560px) {
           .ai-chat-window { width: min(390px, calc(100vw - 24px)) !important; height: min(620px, calc(100vh - 150px)) !important; border-radius: 18px !important; }
-          .ai-chat-widget-container { left: 12px; right: 12px; bottom: 14px; align-items: flex-start; }
+          .ai-chat-widget-container { left: 12px; right: auto; bottom: calc(82px + env(safe-area-inset-bottom, 0px)); align-items: flex-start; }
+          .ai-chat-toggle { width: 54px !important; height: 54px !important; border-radius: 17px !important; }
+          .arab-ai-logo { font-size: .69rem; }
           .ai-chat-form { padding: 10px !important; gap: 7px !important; }
           .ai-chat-message { max-width: 92% !important; font-size: .9rem !important; }
         }
