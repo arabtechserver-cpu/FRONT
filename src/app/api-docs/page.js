@@ -179,6 +179,7 @@ export default function ApiDocsPage() {
                     <code style={{ background: "rgba(128,128,128,0.1)", padding: "6px 10px", borderRadius: "6px", color: "var(--accent-color)", direction: "ltr", wordBreak: "break-all" }}>
                       {apiData.api_key || "لا يوجد مفتاح (قم بالتوليد الآن)"}
                     </code>
+                    {apiData.api_key && <button type="button" className="glass-btn" onClick={() => navigator.clipboard.writeText(apiData.api_key).then(() => alert("تم نسخ مفتاح API بنجاح."))} style={{ padding: "7px 12px" }}>📋 نسخ المفتاح</button>}
                     <button 
                       onClick={handleRegenerateKey}
                       className="glass-btn"
