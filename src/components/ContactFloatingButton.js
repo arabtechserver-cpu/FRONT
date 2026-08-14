@@ -125,8 +125,8 @@ export default function ContactFloatingButton() {
       className="contact-floating-button"
       style={{
         position: "fixed",
-        right: meta.dir === "rtl" ? "16px" : "auto",
-        left: meta.dir === "ltr" ? "16px" : "auto",
+        right: "16px",
+        left: "auto",
         bottom: "100px",
         zIndex: 9999,
         display: "flex",
@@ -219,8 +219,8 @@ export default function ContactFloatingButton() {
                   <div
                     style={{
                       position: "absolute",
-                      left: meta.dir === "rtl" ? "56px" : "auto",
-                      right: meta.dir === "ltr" ? "56px" : "auto",
+                      left: "auto",
+                      right: "56px",
                       whiteSpace: "nowrap",
                       background: "rgba(15, 23, 42, 0.92)",
                       color: "#ffffff",

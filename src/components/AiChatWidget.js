@@ -273,8 +273,8 @@ export default function AiChatWidget() {
       {/* Floating Button */}
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        aria-label={isOpen ? 'إغلاق عرب / Close Arab' : 'فتح عرب / Open Arab'}
-        title="عرب | Arab AI"
+        aria-label={isOpen ? 'إغلاق Ared AI / Close Ared AI' : 'فتح Ared AI / Open Ared AI'}
+        title="Ared AI"
         style={{
            width: '68px',
            height: '68px',
@@ -293,11 +293,11 @@ export default function AiChatWidget() {
           transform: isOpen ? 'scale(0.9)' : 'scale(1)'
         }}
       >
-        {isOpen ? '×' : <span className="arab-ai-logo">عرب</span>}
+        {isOpen ? '×' : <span className="arab-ai-logo">Ared AI</span>}
       </button>
       
       <style>{`
-        .arab-ai-logo { font-family: var(--font-tajawal, sans-serif); letter-spacing: -2px; text-shadow: 0 2px 8px rgba(0,0,0,.35); }
+        .arab-ai-logo { font-family: var(--font-tajawal, sans-serif); font-size: .82rem; line-height: 1; letter-spacing: -.35px; text-shadow: 0 2px 8px rgba(0,0,0,.35); }
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(10px); }
           to { opacity: 1; transform: translateY(0); }
