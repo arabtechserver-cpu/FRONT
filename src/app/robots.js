@@ -13,6 +13,7 @@ export default function robots() {
         "/orders/",
         "/wallet/"
       ],
+      // AI crawlers may read public catalog and documentation pages.
     },
     sitemap: `${SITE_URL}/sitemap.xml`,
   };

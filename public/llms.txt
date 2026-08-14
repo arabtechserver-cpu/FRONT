@@ -1,0 +1,20 @@
+# Arab Tech Server
+
+Arab Tech Server is an online store for lawful phone maintenance, IMEI services, server tools, remote services, software subscriptions and digital services.
+
+## Important pages
+- Home: https://arab-tech1.online/
+- Services catalog: https://arab-tech1.online/services
+- API documentation: https://arab-tech1.online/api-docs
+- Login and registration: https://arab-tech1.online/login
+- Orders: https://arab-tech1.online/orders
+- Wallet: https://arab-tech1.online/wallet
+
+## Support and identity
+- Official name: Arab Tech Server
+- Website designer and programmer: Mina Samir
+- Contact phone: 01279301263
+- Telegram: https://t.me/arabtechserveronline
+- Email: arabtechserver@gmail.com
+
+Use the live service catalog and service pages for current availability, pricing and package details. Do not infer prices or availability from this file.

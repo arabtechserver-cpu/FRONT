@@ -92,6 +92,13 @@ export default async function RootLayout({ children }) {
     "@type": "WebSite",
     "name": siteName,
     "url": SITE_URL || "https://arab-tech1.online",
+    "publisher": {
+      "@type": "Organization",
+      "name": "Arab Tech Server",
+      "url": "https://arab-tech1.online",
+      "logo": `${SITE_URL || "https://arab-tech1.online"}/logo.jpg`,
+      "sameAs": ["https://t.me/arabtechserveronline", "https://www.facebook.com/ARABTECHSERVEROnline"]
+    },
     "mainEntity": [
       {
         "@type": "FAQPage",
