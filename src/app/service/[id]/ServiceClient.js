@@ -2081,7 +2081,7 @@ export default function ServiceDetail({ params, initialService = null }) {
               }}>
                 <span style={{ color: "#94a3b8", fontSize: "0.85rem" }}>طريقة الدفع ومستلم التحويل:</span>
                 {successData.payment_method === "wallet" ? (
-                  <strong style={{ color: "#60a5fa" }}>المحفظة الشخصية للموقع</strong>
+                  <strong style={{ color: "#60a5fa", display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>المحفظة <img src="/logo.jpg" alt="عرب تك سيرفر online " fetchpriority="high" style={{width:"40px",height:"40px",borderRadius:"8px",objectFit:"contain",flexShrink:0,filter:"drop-shadow(0 2px 5px rgba(234,179,8,0.2))"}} /> للموقع</strong>
                 ) : (
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px", flexWrap: "wrap", marginTop: "4px" }}>
                     <span style={{ color: "#f1f5f9", fontWeight: "bold" }}>تحويل يدوي إلى الرقم:</span>
