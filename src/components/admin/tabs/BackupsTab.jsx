@@ -62,6 +62,25 @@ export default function BackupsTab({ token, API_BASE_URL }) {
     }
   };
 
+  const handleSendLatestToTelegram = async () => {
+    setActionLoading("send-telegram");
+    setErrorMsg("");
+    setSuccessMsg("");
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/backups/send-latest-telegram`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || "فشل إرسال أحدث نسخة إلى تيليجرام.");
+      setSuccessMsg(`✓ ${data.message}${data.filename ? ` (${data.filename})` : ""}`);
+    } catch (err) {
+      setErrorMsg(err.message || "حدث خطأ أثناء إرسال أحدث نسخة إلى تيليجرام.");
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
   const handleDownloadBackup = (filename) => {
     setErrorMsg("");
     setSuccessMsg("");
@@ -265,30 +284,24 @@ export default function BackupsTab({ token, API_BASE_URL }) {
             يقوم النظام بحفظ جميع جداول قاعدة البيانات (العملاء والطلبات والخدمات والأرصدة والمعاملات والبانرات) بالإضافة إلى جميع الصور والملفات المرفوعة على الموقع وتجميعها بالكامل في ملف واحد جاهز للتنزيل أو الاستعادة المباشرة.
           </p>
         </div>
-        <button
-          onClick={handleCreateBackup}
-          disabled={actionLoading !== null}
-          className="btn-add-premium"
-          style={{
-            background: "linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)",
-            boxShadow: "0 6px 20px rgba(59, 130, 246, 0.25)",
-            padding: "14px 28px",
-            fontSize: "0.95rem",
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            minWidth: "220px",
-            justifyContent: "center",
-            cursor: "pointer",
-            border: "none",
-            borderRadius: "12px",
-            color: "white",
-            fontWeight: "bold",
-            transition: "all 0.3s"
-          }}
-        >
-          {actionLoading === "create" ? "⏳ جاري إنشاء النسخة..." : "+ إنشاء نسخة احتياطية فورية"}
-        </button>
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px", minWidth: "240px" }}>
+          <button
+            onClick={handleCreateBackup}
+            disabled={actionLoading !== null}
+            className="btn-add-premium"
+            style={{ background: "linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)", boxShadow: "0 6px 20px rgba(59, 130, 246, 0.25)", padding: "14px 28px", fontSize: "0.95rem", display: "flex", alignItems: "center", gap: "8px", justifyContent: "center", cursor: "pointer", border: "none", borderRadius: "12px", color: "white", fontWeight: "bold", transition: "all 0.3s" }}
+          >
+            {actionLoading === "create" ? "⏳ جاري إنشاء النسخة..." : "+ إنشاء نسخة احتياطية فورية"}
+          </button>
+          <button
+            onClick={handleSendLatestToTelegram}
+            disabled={actionLoading !== null || backups.length === 0}
+            className="btn-add-premium"
+            style={{ background: "linear-gradient(135deg, #0284c7 0%, #2563eb 100%)", boxShadow: "0 6px 20px rgba(2, 132, 199, 0.22)", padding: "13px 22px", fontSize: "0.92rem", display: "flex", alignItems: "center", gap: "8px", justifyContent: "center", cursor: backups.length ? "pointer" : "not-allowed", border: "none", borderRadius: "12px", color: "white", fontWeight: "bold", opacity: backups.length ? 1 : .55 }}
+          >
+            {actionLoading === "send-telegram" ? "⏳ جاري الإرسال..." : "✈️ إرسال آخر نسخة إلى تيليجرام"}
+          </button>
+        </div>
       </div>
 
       {/* Restore from Uploaded File Card */}

@@ -44,7 +44,7 @@ const SOCIAL_LINKS = [
   {
     id: "yt",
     title: "قناة اليوتيوب",
-    url: "https://youtube.com/@arab-tech-server?si=1L5yUgv_jlCk3Vez",
+    url: "https://www.youtube.com/@ARABTECHSERVER",
     color: "#FF0000",
     bg: "linear-gradient(135deg, #FF0000 0%, #CC0000 100%)",
     icon: (
