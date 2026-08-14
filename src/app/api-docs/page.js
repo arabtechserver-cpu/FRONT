@@ -262,6 +262,12 @@ export default function ApiDocsPage() {
             </div>
           </div>
 
+          <div style={{ padding: "20px", background: "rgba(14, 165, 233, 0.08)", borderRadius: "8px", border: "1px solid rgba(14, 165, 233, 0.25)", color: "var(--text-main)", lineHeight: 1.7 }}>
+            <h3 style={{ margin: "0 0 10px", color: "var(--primary-color)" }}>أمثلة الربط باللغات</h3>
+            <p>استخدم اسم المستخدم ومفتاح API الظاهرين أعلى الصفحة، وتأكد من إضافة IP الخادم في قائمة IP المسموحة.</p>
+            <pre style={{ direction: "ltr", textAlign: "left", overflowX: "auto", background: "#0f172a", color: "#e2e8f0", padding: "14px", borderRadius: "8px", fontSize: "0.8rem" }}>{"POST /api/v1\nusername=YOUR_USERNAME&api_key=YOUR_API_KEY&action=accountinfo\n\nJavaScript: fetch(url, { method: 'POST', body: new URLSearchParams(data) })\nPython: requests.post(url, data=data)\nPHP: curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));"}</pre>
+          </div>
+
           <div style={{ padding: "20px", background: "rgba(245, 158, 11, 0.1)", borderRadius: "8px", border: "1px solid rgba(245, 158, 11, 0.3)" }}>
             <h3 style={{ margin: "0 0 10px", color: "var(--accent-color)" }}>⚠️ ملاحظات هامة</h3>
             <ul style={{ margin: 0, paddingInlineStart: "20px", color: "var(--text-main)", lineHeight: 1.6 }}>
