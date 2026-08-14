@@ -551,19 +551,16 @@ export default function CustomerLogin() {
           {/* Header */}
           <div style={{ textAlign: "center" }}>
             <div style={{ display: "inline-flex", justifyContent: "center", marginBottom: "10px" }}>
-              {settings.site_logo && settings.site_logo !== "default" ? (
-                <img 
-                  src={settings.site_logo.startsWith("http") || settings.site_logo.startsWith("data:") ? settings.site_logo : (settings.site_logo.includes("uploads") ? `${API_BASE_URL}${settings.site_logo.startsWith("/") ? "" : "/"}${settings.site_logo}` : settings.site_logo)} 
-                  alt={settings.site_name} 
-                  style={{ width: "64px", height: "64px", borderRadius: "16px", objectFit: "cover" }} 
-                />
-              ) : (
-                <div className="logo-circle" style={{ width: "64px", height: "64px", fontSize: "1.8rem", borderRadius: "16px" }}>
-                  {settings.site_name ? settings.site_name.charAt(0) : "ع"}
-                </div>
-              )}
+              <img
+                src="/icons/icon-128.png"
+                alt="عرب تك سيرفر online"
+                style={{ width: "64px", height: "64px", borderRadius: "16px", objectFit: "cover" }}
+              />
             </div>
-            <h2 style={{ fontWeight: 900 }}>الملف الشخصي</h2>
+            <h2 style={{ fontWeight: 900, display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}>
+              الملف
+              <img src="/icons/icon-128.png" alt="عرب تك سيرفر online" fetchPriority="high" style={{width: "40px", height: "40px", borderRadius: "8px", objectFit: "contain", flexShrink: 0, filter: "drop-shadow(0 2px 5px rgba(234,179,8,0.2))"}} />
+            </h2>
             <p style={{ color: "var(--text-muted)", fontSize: "0.82rem", marginTop: "4px" }}>بيانات حسابك الشخصي والتحكم بالرصيد</p>
           </div>
 

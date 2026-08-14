@@ -275,10 +275,10 @@ export default function AiChatWidget() {
       )}
 
       {/* Floating Button */}
-      <button 
+      {!isOpen && <button
         className="ai-chat-toggle"
-        onClick={() => setIsOpen(!isOpen)}
-        aria-label={isOpen ? 'إغلاق Ared AI / Close Ared AI' : 'فتح Ared AI / Open Ared AI'}
+        onClick={() => setIsOpen(true)}
+        aria-label="فتح Ared AI / Open Ared AI"
         title="Ared AI"
         style={{
            width: '68px',
@@ -295,11 +295,11 @@ export default function AiChatWidget() {
           alignItems: 'center',
           justifyContent: 'center',
           transition: 'transform 0.3s ease',
-          transform: isOpen ? 'scale(0.9)' : 'scale(1)'
+          transform: 'scale(1)'
         }}
       >
-        {isOpen ? '×' : <span className="arab-ai-logo">Ared AI</span>}
-      </button>
+        <span className="arab-ai-logo">Ared AI</span>
+      </button>}
       
       <style>{`
         .arab-ai-logo { font-family: var(--font-tajawal, sans-serif); font-size: .82rem; line-height: 1; letter-spacing: -.35px; text-shadow: 0 2px 8px rgba(0,0,0,.35); }
