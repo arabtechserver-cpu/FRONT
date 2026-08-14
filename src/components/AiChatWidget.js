@@ -309,7 +309,7 @@ export default function AiChatWidget() {
         }
         .ai-chat-widget-container {
           position: fixed;
-          bottom: 20px;
+           bottom: 48px;
           left: 20px;
           z-index: 9999;
           display: flex;
@@ -319,7 +319,7 @@ export default function AiChatWidget() {
         @media (max-width: 768px) {
           .ai-chat-window { width: min(430px, calc(100vw - 24px)) !important; height: min(650px, calc(100vh - 150px)) !important; }
           .ai-chat-widget-container {
-            bottom: 90px;
+             bottom: 112px;
           }
         }
         .ai-chat-input {
