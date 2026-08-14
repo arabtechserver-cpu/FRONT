@@ -35,6 +35,12 @@ export default function AiChatWidget() {
     if (messages.length) localStorage.setItem('arab_tech_server_ai_history', JSON.stringify(messages.slice(-50)));
   }, [messages]);
 
+  const startNewChat = () => {
+    setMessages([]);
+    setInput('');
+    localStorage.removeItem('arab_tech_server_ai_history');
+  };
+
   const handleSend = async (e) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
@@ -66,11 +72,11 @@ export default function AiChatWidget() {
         })
       });
 
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (res.ok && data.reply) {
         setMessages(prev => [...prev, { role: 'assistant', content: data.reply }]);
       } else {
-        setMessages(prev => [...prev, { role: 'assistant', content: data.reply || 'حدث خطأ أثناء الاتصال بالخادم.' }]);
+        setMessages(prev => [...prev, { role: 'assistant', content: data.reply || data.message || `تعذر الرد من الخادم (HTTP ${res.status}).` }]);
       }
     } catch (error) {
       console.error('Chat error:', error);
@@ -117,6 +123,7 @@ export default function AiChatWidget() {
                 <span style={{ fontSize: '0.8rem', color: '#00b4d8' }}>متصل</span>
               </div>
             </div>
+            <button className="ai-chat-new" onClick={startNewChat} title="محادثة جديدة" type="button">＋ جديد</button>
             <button 
               onClick={() => setIsOpen(false)}
               style={{ background: 'transparent', border: 'none', color: '#fff', fontSize: '1.5rem', cursor: 'pointer', padding: 0 }}
@@ -298,6 +305,8 @@ export default function AiChatWidget() {
         .ai-chat-header, .ai-chat-form { border-color: var(--border-glass, rgba(148,163,184,.25)) !important; }
         .ai-chat-message.assistant { background: var(--bg-glass, rgba(255,255,255,.07)) !important; color: var(--text-main, #f8fafc) !important; border-color: var(--border-glass, rgba(148,163,184,.25)) !important; }
         .ai-chat-message.user { color: #fff !important; }
+        .ai-chat-new { border: 1px solid rgba(0,180,216,.35); background: transparent; color: var(--text-main,#fff); border-radius: 8px; padding: 5px 8px; cursor: pointer; font-size: .75rem; }
+        [data-theme="light"] .ai-chat-new { color: #0f172a; border-color: rgba(23,105,232,.3); }
         [data-theme="light"] .ai-chat-window { background: #ffffff !important; color: #0f172a; box-shadow: 0 18px 55px rgba(15,23,42,.18); }
         [data-theme="light"] .ai-chat-header { background: #ecfeff !important; }
         [data-theme="light"] .ai-chat-title { color: #0f172a !important; }
