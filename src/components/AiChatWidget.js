@@ -1,6 +1,30 @@
 'use client';
 import React, { useState, useRef, useEffect } from 'react';
 
+function renderAssistantContent(content) {
+  const lines = String(content || '').split(/\r?\n/).map(line => line.trim()).filter(Boolean);
+  const tableLines = lines.filter(line => line.startsWith('|') && line.endsWith('|') && !/^\|\s*:?-+/.test(line));
+  const renderInline = (value) => {
+    const parts = String(value).split(/(\[[^\]]+\]\([^\)]+\))/g);
+    return parts.map((part, index) => {
+      const match = part.match(/^\[([^\]]+)\]\(([^\)]+)\)$/);
+      if (!match) return <React.Fragment key={index}>{part.replace(/\*\*/g, '')}</React.Fragment>;
+      return <a key={index} href={match[2]} target="_blank" rel="noreferrer" className="ai-chat-link">{match[1]}</a>;
+    });
+  };
+  if (tableLines.length >= 2) {
+    const rows = tableLines.slice(1, 6).map(line => line.split('|').slice(1, -1).map(cell => cell.trim()));
+    return <div className="ai-result-cards">{rows.map((row, index) => (
+      <div className="ai-result-card" key={index}>
+        <div className="ai-result-title">{renderInline(row[1] || row[0])}</div>
+        <div className="ai-result-meta">{row.slice(2, -1).filter(Boolean).join(' · ')}</div>
+        {row[row.length - 1] && <div className="ai-result-action">{renderInline(row[row.length - 1])}</div>}
+      </div>
+    ))}</div>;
+  }
+  return <div className="ai-chat-rich-text">{lines.map((line, index) => <div key={index} className={/^[-•]/.test(line) ? 'ai-chat-line' : 'ai-chat-paragraph'}>{renderInline(line.replace(/^[-•]\s*/, ''))}</div>)}</div>;
+}
+
 export default function AiChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -173,7 +197,7 @@ export default function AiChatWidget() {
                 whiteSpace: 'pre-wrap',
                 direction: 'rtl'
               }}>
-                {msg.content}
+                 {msg.role === 'assistant' ? renderAssistantContent(msg.content) : msg.content}
               </div>
             ))}
             
@@ -305,6 +329,14 @@ export default function AiChatWidget() {
         .ai-chat-header, .ai-chat-form { border-color: var(--border-glass, rgba(148,163,184,.25)) !important; }
         .ai-chat-message.assistant { background: var(--bg-glass, rgba(255,255,255,.07)) !important; color: var(--text-main, #f8fafc) !important; border-color: var(--border-glass, rgba(148,163,184,.25)) !important; }
         .ai-chat-message.user { color: #fff !important; }
+        .ai-chat-rich-text { display: flex; flex-direction: column; gap: 7px; }
+        .ai-chat-line { padding: 7px 9px; border-radius: 9px; background: rgba(14,165,233,.08); }
+        .ai-result-cards { display: grid; gap: 9px; width: min(100%, 330px); }
+        .ai-result-card { padding: 11px; border: 1px solid rgba(56,189,248,.24); border-radius: 12px; background: rgba(15,23,42,.45); }
+        .ai-result-title { font-weight: 800; color: #38bdf8; line-height: 1.4; }
+        .ai-result-meta { margin-top: 5px; color: var(--text-muted,#94a3b8); font-size: .82rem; }
+        .ai-result-action { margin-top: 8px; }
+        .ai-chat-link { display: inline-flex; color: #22d3ee; font-weight: 800; text-decoration: none; border: 1px solid rgba(34,211,238,.3); padding: 4px 9px; border-radius: 7px; }
         .ai-chat-new { border: 1px solid rgba(0,180,216,.35); background: transparent; color: var(--text-main,#fff); border-radius: 8px; padding: 5px 8px; cursor: pointer; font-size: .75rem; }
         [data-theme="light"] .ai-chat-new { color: #0f172a; border-color: rgba(23,105,232,.3); }
         [data-theme="light"] .ai-chat-window { background: #ffffff !important; color: #0f172a; box-shadow: 0 18px 55px rgba(15,23,42,.18); }
