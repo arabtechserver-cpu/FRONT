@@ -11,6 +11,9 @@ export default function ApiDocsPage() {
   const [allowedIpsText, setAllowedIpsText] = useState("");
   const [loading, setLoading] = useState(true);
   const [savingIps, setSavingIps] = useState(false);
+  const [testAction, setTestAction] = useState("accountinfo");
+  const [testResult, setTestResult] = useState(null);
+  const [testing, setTesting] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("customer_token");
@@ -109,6 +112,18 @@ export default function ApiDocsPage() {
     }
   };
 
+  const handleTestApi = async () => {
+    const token = localStorage.getItem("customer_token");
+    if (!token) return;
+    setTesting(true); setTestResult(null);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/customer/dev-settings/test`, { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }, body: JSON.stringify({ action: testAction }) });
+      const data = await res.json();
+      setTestResult(data);
+    } catch { setTestResult({ success: false, message: "تعذر الاتصال بالخادم." }); }
+    finally { setTesting(false); }
+  };
+
   return (
       <div className="container" dir={meta.dir} style={{ padding: "40px 20px", textAlign: meta.dir === "rtl" ? "right" : "left" }}>
         <h1 style={{ fontSize: "2.5rem", fontWeight: 800, textAlign: "center", marginBottom: "20px", color: "var(--primary-color)" }}>
@@ -193,6 +208,15 @@ export default function ApiDocsPage() {
                     >
                       {savingIps ? "جاري الحفظ..." : "حفظ الـ IPs"}
                     </button>
+                  </div>
+                  <div style={{ marginTop: "18px", padding: "15px", borderRadius: "10px", background: "rgba(34,197,94,.08)", border: "1px solid rgba(34,197,94,.25)" }}>
+                    <h3 style={{ margin: "0 0 8px", color: "var(--success-color,#22c55e)" }}>اختبار API من الموقع</h3>
+                    <p style={{ margin: "0 0 10px", color: "var(--text-muted)" }}>اختبر بيانات الربط مباشرة بدون مغادرة الصفحة.</p>
+                    <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                      <select value={testAction} onChange={e => setTestAction(e.target.value)} className="form-input-premium" style={{ flex: 1, minWidth: "180px" }}><option value="accountinfo">Account Info / الرصيد</option><option value="imeiservicelist">Service List / الخدمات</option></select>
+                      <button type="button" onClick={handleTestApi} disabled={testing} className="glass-btn glass-btn-primary">{testing ? "جاري الاختبار..." : "اختبار الاتصال"}</button>
+                    </div>
+                    {testResult && <pre style={{ direction: "ltr", textAlign: "left", whiteSpace: "pre-wrap", maxHeight: "220px", overflow: "auto", marginTop: "12px", padding: "12px", borderRadius: "8px", background: "#0f172a", color: "#dbeafe" }}>{JSON.stringify(testResult, null, 2)}</pre>}
                   </div>
                 </>
               ) : apiData.api_requested ? (
