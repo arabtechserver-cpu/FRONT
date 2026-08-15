@@ -356,6 +356,8 @@ export default function ServiceDetail({ params, initialService = null }) {
   const activeService = useMemo(() => {
     if (!service) return null;
     if (service.is_bundle && service.bundle_services_data && selectedSubServiceId) {
+    if (!service) return null;
+    if (service.is_bundle && service.bundle_services_data && selectedSubServiceId) {
       return service.bundle_services_data.find(s => s.id.toString() === selectedSubServiceId.toString()) || service;
     }
     return service;
@@ -402,25 +404,47 @@ export default function ServiceDetail({ params, initialService = null }) {
 
     for (const f of rawFields) {
       if (!f) continue;
-      // Support both 'name' and 'id' as field identifier
-      const fieldId = String(f.name || f.id || "").toLowerCase().trim();
-      const fieldLabel = String(f.label || "").toLowerCase().trim();
+      const rawName = String(f.name || f.id || f.api_name || "").trim();
+      const rawLabel = String(f.label || "").trim();
+      const fieldId = rawName.toLowerCase();
+      const fieldLabel = rawLabel.toLowerCase();
+
       if (!fieldId && !fieldLabel) continue;
 
-      // Make IMEI optional as requested by the user
-      if (fieldId === 'imei' || fieldId === 'sn' || fieldId === 'ecid') {
-        f.required = false;
-      }
-      
-      const idKey = fieldId ? `id_${fieldId}` : null;
-      const labelKey = fieldLabel ? `lbl_${fieldLabel}` : null;
-
-      if ((idKey && seen.has(idKey)) || (labelKey && seen.has(labelKey))) {
+      // Filter out internal provider fields that are not meant for customers (e.g. Order Code)
+      if (
+        fieldId.includes("order_code") ||
+        fieldId.includes("ordercode") ||
+        fieldId.includes("order code") ||
+        fieldLabel.includes("order code") ||
+        fieldLabel.includes("order_code") ||
+        fieldLabel.includes("أدخل order code") ||
+        fieldId === "ref_code" ||
+        fieldId === "refcode" ||
+        fieldId === "supplier_code" ||
+        fieldId === "provider_code" ||
+        fieldId === "txn_id" ||
+        fieldId === "transaction_id" ||
+        fieldId === "code_id"
+      ) {
         continue;
       }
 
-      if (idKey) seen.add(idKey);
-      if (labelKey) seen.add(labelKey);
+      // Make IMEI / SN optional as requested
+      if (fieldId === 'imei' || fieldId === 'sn' || fieldId === 'ecid' || fieldId.includes('sn')) {
+        f.required = false;
+      }
+
+      // Deduplicate by stripped base key (e.g. custom_sn vs sn)
+      const baseKey = fieldId.replace(/^custom_/, '');
+      const baseLabelKey = fieldLabel.replace(/^custom_/, '').replace(/^أدخل\s*/, '');
+
+      if (seen.has(baseKey) || (baseLabelKey && seen.has(`lbl_${baseLabelKey}`))) {
+        continue;
+      }
+
+      seen.add(baseKey);
+      if (baseLabelKey) seen.add(`lbl_${baseLabelKey}`);
       uniqueFields.push(f);
     }
 
@@ -432,11 +456,6 @@ export default function ServiceDetail({ params, initialService = null }) {
       .filter(f => {
         const fid = (f.name || f.id || "").toLowerCase().trim();
         if ((activeServiceType === "server" || activeServiceType === "remote") && (fid === "imei" || fid === "custom_imei")) {
-          return false;
-        }
-        // Hide standalone phone/tel fields (they are collected separately in payment section)
-        // Also hide provider quantity fields because they are collected via customQuantity
-        if (fid === "phone" || fid === "tel" || fid === "quantity" || fid === "qty" || fid === "qnt") {
           return false;
         }
 
@@ -984,203 +1003,7 @@ export default function ServiceDetail({ params, initialService = null }) {
             {(() => {
               const usdPrice = ((Number(customQuantity) || 0) / 1000) * (service.price_per_thousand || 0);
               if (baseCurrency === 'USD' || baseCurrency === 'USDT') {
-                return `$ ${usdPrice.toFixed(2)}`;
-              }
-              if (service.category_currency === 'USD' || service.category_currency === 'USDT') {
-                const egpPrice = usdPrice * Number(exchangeRates?.["USD"] || 50);
-                return `$ ${usdPrice.toFixed(2)} (ما يعادل ${egpPrice.toFixed(2)} ${baseCurrency})`;
-              } else {
-                return `${Number(usdPrice).toFixed(2)} ${baseCurrency}`;
-              }
-            })()}
-          </strong>
-        </div>
-      </div>
-    </div>
-  );
-
-  const isContinueEnabled = (service?.price_type === "dynamic" || (service?.price_type === "both" && customerPricingMode === "dynamic"))
-    ? (Number(customQuantity) >= (service?.min_quantity || 100))
-    : (selectedPackage !== null && (!selectedPackage.requires_quantity || Number(customQuantity) >= (selectedPackage.min_quantity || 1)));
-
-  const checkoutPage = (
-    <div className="glass-panel" style={{
-      background: "var(--bg-glass)",
-      border: "var(--border-glass)",
-      borderRadius: "20px",
-      padding: "clamp(16px, 4vw, 28px)",
-      boxShadow: "var(--shadow-glass)",
-      color: "var(--text-main)",
-      width: "100%",
-      maxWidth: "1050px",
-      margin: "0 auto",
-      backdropFilter: "blur(24px)",
-      WebkitBackdropFilter: "blur(24px)"
-    }}>
-      {/* Back button */}
-      <button
-        type="button"
-        onClick={() => setStep(1)}
-        style={{
-          color: "var(--primary-color)",
-          fontWeight: "bold",
-          background: "none",
-          border: "none",
-          cursor: "pointer",
-          display: "inline-flex",
-          alignItems: "center",
-          gap: "8px",
-          fontSize: "0.9rem",
-          marginBottom: "18px",
-          padding: "6px 12px",
-          borderRadius: "8px",
-          border: "1px solid var(--bg-glass)",
-          background: "var(--bg-glass)",
-          transition: "all 0.2s"
         }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.background = "var(--bg-glass)";
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.background = "var(--bg-glass)";
-        }}
-      >
-        <span>← العودة لتعديل الباقة</span>
-      </button>
-
-      {/* Header */}
-      <div style={{ marginBottom: "24px", borderBottom: "1px solid var(--bg-glass)", paddingBottom: "16px" }}>
-        <h2 style={{ fontSize: "1.5rem", fontWeight: "900", color: "var(--text-main)", margin: 0 }}>
-          {fieldsSectionTitle}
-        </h2>
-        <p style={{ fontSize: "0.95rem", color: "var(--text-muted)", marginTop: "6px", marginBottom: 0 }}>
-          الخدمة المختارة: <strong style={{ color: "var(--primary-color)", fontWeight: "800" }}>{service.name}</strong>
-        </p>
-      </div>
-
-      <form onSubmit={handleSubmit} className="service-details-layout">
-
-        {/* Main section: Col 1 */}
-        <div className="checkout-main-section" style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-
-          {/* Step 1: Account Details */}
-          {(activeFields.length > 0 || selectedPackage?.requires_quantity) && (
-            <div className="glass-panel" style={{
-              background: "rgba(255, 255, 255, 0.01)",
-              padding: "20px",
-              borderRadius: "16px",
-              border: "1px solid var(--bg-glass)",
-              display: "flex",
-              flexDirection: "column",
-              gap: "14px"
-            }}>
-              <h3 style={{ fontWeight: 800, margin: 0, fontSize: "1.1rem", color: "var(--text-main)", display: "flex", alignItems: "center", gap: "10px" }}>
-                <span style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "26px", height: "26px", borderRadius: "50%", background: "var(--primary-color)", color: "#fff", fontSize: "0.9rem", fontWeight: "bold" }}>١</span>
-                البيانات المطلوبة:
-              </h3>
-              {activeFields.map((field, idx) => (
-                <div className="form-group" key={field.name || idx} style={{ marginBottom: "0px" }}>
-                  <label htmlFor={`field_${field.name}`} style={{ display: "block", marginBottom: "6px", fontSize: "0.85rem", fontWeight: "bold", color: "var(--text-muted)" }}>
-                    {field.label}:
-                  </label>
-                  {field.type === "select" && field.options ? (
-                    <select
-                      id={`field_${field.name}`}
-                      value={formData[field.name] || ""}
-                      onChange={(e) => handleFieldChange(field.name, e.target.value)}
-                      required={field.required !== false}
-                      style={{
-                        width: "100%",
-                        padding: "12px 14px",
-                        fontSize: "0.9rem",
-                        borderRadius: "10px",
-                        border: "1px solid var(--border-color)",
-                        background: "var(--input-bg)",
-                        color: "var(--text-main)",
-                        outline: "none",
-                        cursor: "pointer",
-                        transition: "all 0.2s ease"
-                      }}
-                      onFocus={(e) => {
-                        e.target.style.borderColor = "var(--primary-color)";
-                        e.target.style.background = "var(--bg-glass)";
-                      }}
-                      onBlur={(e) => {
-                        e.target.style.borderColor = "var(--border-color)";
-                        e.target.style.background = "var(--input-bg)";
-                      }}
-                    >
-                      <option value="" style={{ color: "var(--text-main)", background: "var(--bg-color)" }}>-- اختر --</option>
-                      {(typeof field.options === 'string' ? field.options.split(',') : field.options).map((opt, i) => (
-                        <option key={i} value={opt.trim()} style={{ color: "var(--text-main)", background: "var(--bg-color)" }}>{opt.trim()}</option>
-                      ))}
-                    </select>
-                  ) : (field.name || "").toLowerCase().includes("imei") ? (
-                    <div style={{ display: "flex", gap: "10px" }}>
-                      <input
-                        id={`field_${field.name}`}
-                        type="text"
-                        maxLength="30"
-                        placeholder="IMEI / SN / ECID"
-                        value={formData[field.name] || ""}
-                        onChange={(e) => {
-                          const val = e.target.value.replace(/[^a-zA-Z0-9\s-]/g, '').toUpperCase();
-                          handleFieldChange(field.name, val);
-                        }}
-                        required={field.required !== false}
-                        style={{
-                          flex: 1,
-                          padding: "12px 14px",
-                          fontSize: "1rem",
-                          letterSpacing: "2px",
-                          fontFamily: "monospace",
-                          borderRadius: "10px",
-                          border: "1px solid var(--border-color)",
-                          background: "var(--input-bg)",
-                          color: "var(--text-main)",
-                          outline: "none",
-                          transition: "all 0.2s ease",
-                          textAlign: "center"
-                        }}
-                        onFocus={(e) => {
-                          e.target.style.borderColor = "var(--primary-color)";
-                          e.target.style.background = "var(--bg-glass)";
-                        }}
-                        onBlur={(e) => {
-                          e.target.style.borderColor = "var(--border-color)";
-                          e.target.style.background = "var(--input-bg)";
-                        }}
-                      />
-                    </div>
-                  ) : field.type === "textarea" ? (
-                    <textarea
-                      id={`field_${field.name}`}
-                      placeholder={field.placeholder || ""}
-                      value={formData[field.name] || ""}
-                      onChange={(e) => handleFieldChange(field.name, e.target.value)}
-                      required={field.required !== false}
-                      rows={3}
-                      style={{
-                        width: "100%",
-                        padding: "12px 14px",
-                        fontSize: "0.9rem",
-                        borderRadius: "10px",
-                        border: "1px solid var(--border-color)",
-                        background: "var(--input-bg)",
-                        color: "var(--text-main)",
-                        outline: "none",
-                        transition: "all 0.2s ease",
-                        resize: "vertical"
-                      }}
-                      onFocus={(e) => {
-                        e.target.style.borderColor = "var(--primary-color)";
-                        e.target.style.background = "var(--bg-glass)";
-                      }}
-                      onBlur={(e) => {
-                        e.target.style.borderColor = "var(--border-color)";
-                        e.target.style.background = "var(--input-bg)";
-                      }}
-                    />
                   ) : (
                     <input
                       id={`field_${field.name}`}

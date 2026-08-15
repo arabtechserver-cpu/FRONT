@@ -41,6 +41,8 @@ export default function ServicesClient({ initialCategories = [], initialServices
   }, [isHome]);
   const [loading, setLoading] = useState(initialServices.length === 0);
   const [searchTerm, setSearchTerm] = useState("");
+  const [priceSort, setPriceSort] = useState("default"); // "default", "asc", "desc"
+  const [selectedCategory, setSelectedCategory] = useState("all");
   const [visibleCategories, setVisibleCategories] = useState(5);
   const [settings, setSettings] = useState({ announcement_text: "🟢 واتساب الإدارة 1: +1 (672) 897-2935 | 🟢 واتساب الإدارة 2: +249 12 366 7227" });
   
@@ -200,34 +202,42 @@ export default function ServicesClient({ initialCategories = [], initialServices
       });
     }
     return serviceTypes.includes(targetType);
-  }, [typeFilter]);
-
-  const typeFilteredServices = useMemo(
-    () => services.filter(serviceMatchesType),
-    [services, serviceMatchesType]
-  );
-
-  const catalogCategories = useMemo(() => {
-    if (!typeFilter) return categories;
-    return categories.filter(cat => {
+  },  const catalogCategories = useMemo(() => {
+    let cats = categories;
+    if (selectedCategory && selectedCategory !== "all") {
+      cats = cats.filter(cat => Number(cat.id) === Number(selectedCategory));
+    }
+    if (!typeFilter) return cats;
+    return cats.filter(cat => {
       const catServices = typeFilteredServices.filter(s => Number(s.category_id) === Number(cat.id));
       const assignedType = String(cat.menu_service_type || "").trim().toLowerCase();
       return assignedType === typeFilter.toLowerCase() ||
         catServices.length > 0;
     });
-  }, [categories, typeFilteredServices, typeFilter]);
+  }, [categories, typeFilteredServices, typeFilter, selectedCategory]);
 
   const catalogServices = typeFilteredServices;
 
-
   const filteredServices = catalogServices.filter((s) =>
     s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    s.description.toLowerCase().includes(searchTerm.toLowerCase())
+    (s.description && s.description.toLowerCase().includes(searchTerm.toLowerCase()))
   );
+
+  const getMinServicePrice = (service) => {
+    if (Array.isArray(service.packages) && service.packages.length > 0) {
+      const prices = service.packages.map(p => Number(p.price || 0)).filter(p => p > 0);
+      if (prices.length > 0) return Math.min(...prices);
+    }
+    return Number(service.price || 0);
+  };
 
   const uncategorizedServices = filteredServices
     .filter((s) => !catalogCategories.some((c) => Number(c.id) === Number(s.category_id)))
-    .sort((a, b) => a.name.localeCompare(b.name, 'en'));
+    .sort((a, b) => {
+      if (priceSort === "asc") return getMinServicePrice(a) - getMinServicePrice(b);
+      if (priceSort === "desc") return getMinServicePrice(b) - getMinServicePrice(a);
+      return a.name.localeCompare(b.name, 'en');
+    });
 
   return (
     <>
@@ -241,22 +251,102 @@ export default function ServicesClient({ initialCategories = [], initialServices
           <input
             type="text"
             className="search-input-center"
-            placeholder={t("searchServices") || "ابحث عن خدمة..."}
+            placeholder={t("searchServices") || "ابحث عن خدمة، تفعيلات، أدوات..."}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             dir={meta?.dir || "rtl"}
-            style={{ width: '100%', padding: '12px 40px 12px 15px', borderRadius: '12px', background: 'var(--bg-glass-deep)', border: '1px solid var(--border-glass)', color: 'var(--text-main)' }}
+            autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="none"
+            spellCheck={false}
+            data-lpignore="true"
+            style={{ width: '100%', padding: meta?.dir === 'ltr' ? '12px 40px 12px 38px' : '12px 38px 12px 40px', borderRadius: '12px', background: 'var(--bg-glass-deep)', border: '1px solid var(--border-glass)', color: 'var(--text-main)' }}
           />
-          <span style={{ position: 'absolute', right: '15px', top: '50%', transform: 'translateY(-50%)', opacity: 0.5 }}>🔍</span>
+          <span style={{ position: 'absolute', right: meta?.dir === 'ltr' ? 'auto' : '15px', left: meta?.dir === 'ltr' ? '15px' : 'auto', top: '50%', transform: 'translateY(-50%)', opacity: 0.5 }}>🔍</span>
+          {searchTerm && (
+            <button
+              type="button"
+              onClick={() => setSearchTerm("")}
+              title="مسح"
+              style={{
+                position: 'absolute',
+                left: meta?.dir === 'ltr' ? 'auto' : '12px',
+                right: meta?.dir === 'ltr' ? '12px' : 'auto',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                background: 'rgba(255,255,255,0.18)',
+                border: 'none',
+                borderRadius: '50%',
+                width: '22px',
+                height: '22px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'var(--text-main)',
+                fontSize: '0.75rem',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                padding: 0
+              }}
+            >
+              ✕
+            </button>
+          )}
         </div>
 
         {/* Sort/Filter Dropdowns */}
-        <div style={{ display: 'flex', gap: '10px', flex: '0 0 auto' }}>
-          <div className="glass-panel" style={{ padding: '8px 15px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-             <span>{t("price") || "السعر"}</span>
-             <span>🔽</span>
+        <div style={{ display: 'flex', gap: '10px', flex: '0 0 auto', flexWrap: 'wrap' }}>
+          {/* Price Dropdown */}
+          <div className="glass-panel" style={{ padding: '6px 12px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '6px', background: 'var(--bg-glass-deep)', border: '1px solid var(--border-glass)' }}>
+            <span style={{ fontSize: '0.85rem' }}>💰</span>
+            <select
+              value={priceSort}
+              onChange={(e) => setPriceSort(e.target.value)}
+              aria-label="ترتيب حسب السعر"
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: 'var(--text-main)',
+                fontSize: '0.9rem',
+                fontWeight: '600',
+                outline: 'none',
+                cursor: 'pointer'
+              }}
+            >
+              <option value="default" style={{ background: 'var(--bg-color)', color: 'var(--text-main)' }}>السعر: الافتراضي 🔽</option>
+              <option value="asc" style={{ background: 'var(--bg-color)', color: 'var(--text-main)' }}>السعر: من الأقل للأعلى 📈</option>
+              <option value="desc" style={{ background: 'var(--bg-color)', color: 'var(--text-main)' }}>السعر: من الأعلى للأقل 📉</option>
+            </select>
           </div>
-          <div className="glass-panel" style={{ padding: '8px 15px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+
+          {/* Category Dropdown */}
+          <div className="glass-panel" style={{ padding: '6px 12px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '6px', background: 'var(--bg-glass-deep)', border: '1px solid var(--border-glass)' }}>
+            <span style={{ fontSize: '0.85rem' }}>📁</span>
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              aria-label="تصفية حسب القسم"
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: 'var(--text-main)',
+                fontSize: '0.9rem',
+                fontWeight: '600',
+                outline: 'none',
+                cursor: 'pointer',
+                maxWidth: '170px'
+              }}
+            >
+              <option value="all" style={{ background: 'var(--bg-color)', color: 'var(--text-main)' }}>جميع الأقسام 🔽</option>
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id} style={{ background: 'var(--bg-color)', color: 'var(--text-main)' }}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </div>', gap: '8px', cursor: 'pointer' }}>
              <span>{t("categories") || "التصنيف"}</span>
              <span>🔽</span>
           </div>
@@ -347,7 +437,13 @@ export default function ServicesClient({ initialCategories = [], initialServices
             if (searchTerm.trim().length > 0) return true;
             return true;
           }).slice(0, searchTerm.trim().length > 0 ? catalogCategories.length : visibleCategories).map((cat) => {
-            const catServices = filteredServices.filter(s => Number(s.category_id) === Number(cat.id)).sort((a, b) => a.name.localeCompare(b.name, 'en'));
+            const catServices = filteredServices
+              .filter(s => Number(s.category_id) === Number(cat.id))
+              .sort((a, b) => {
+                if (priceSort === "asc") return getMinServicePrice(a) - getMinServicePrice(b);
+                if (priceSort === "desc") return getMinServicePrice(b) - getMinServicePrice(a);
+                return a.name.localeCompare(b.name, 'en');
+              });
             if (catServices.length === 0) return null;
 
             return (
