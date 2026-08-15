@@ -202,7 +202,14 @@ export default function ServicesClient({ initialCategories = [], initialServices
       });
     }
     return serviceTypes.includes(targetType);
-  },  const catalogCategories = useMemo(() => {
+  }, [typeFilter]);
+
+  const typeFilteredServices = useMemo(
+    () => services.filter(serviceMatchesType),
+    [services, serviceMatchesType]
+  );
+
+  const catalogCategories = useMemo(() => {
     let cats = categories;
     if (selectedCategory && selectedCategory !== "all") {
       cats = cats.filter(cat => Number(cat.id) === Number(selectedCategory));
@@ -344,11 +351,6 @@ export default function ServicesClient({ initialCategories = [], initialServices
                 </option>
               ))}
             </select>
-          </div>
-        </div>
-      </div>', gap: '8px', cursor: 'pointer' }}>
-             <span>{t("categories") || "التصنيف"}</span>
-             <span>🔽</span>
           </div>
         </div>
       </div>
