@@ -19,6 +19,8 @@ export default function AnalyticsTab({ token }) {
   // Daily Report State
   const [showDailyReport, setShowDailyReport] = useState(false);
   const [dailyOrders, setDailyOrders] = useState([]);
+  const [allFetchedOrders, setAllFetchedOrders] = useState([]);
+  const [reportPeriod, setReportPeriod] = useState("today");
   const [loadingDaily, setLoadingDaily] = useState(false);
   const printRef = useRef(null);
 
@@ -32,14 +34,18 @@ export default function AnalyticsTab({ token }) {
       });
       if (!response.ok) throw new Error("تعذر جلب الطلبات");
       const allOrders = await response.json();
+      const completed = allOrders.filter(o => o.status === 'completed');
+      setAllFetchedOrders(completed);
       
+      // Auto-detect best default (if today is 0, default to latest 50)
       const todayStr = new Date().toDateString();
-      const completedToday = allOrders.filter(o => 
-        o.status === 'completed' && 
-        new Date(o.created_at).toDateString() === todayStr
-      );
+      const completedToday = completed.filter(o => new Date(o.created_at).toDateString() === todayStr);
       
-      setDailyOrders(completedToday);
+      if (completedToday.length === 0 && completed.length > 0) {
+        setReportPeriod("latest50");
+      } else {
+        setReportPeriod("today");
+      }
     } catch (err) {
       console.error(err);
       alert("حدث خطأ أثناء تحميل التقرير اليومي.");
@@ -73,6 +79,36 @@ export default function AnalyticsTab({ token }) {
   const valueFor = (key) => key === "uniqueSessions"
     ? summary?.uniqueSessions || 0
     : summary?.counts?.[key] || 0;
+
+  // Effect to filter orders when reportPeriod or allFetchedOrders changes
+  useEffect(() => {
+    if (!allFetchedOrders || allFetchedOrders.length === 0) {
+      setDailyOrders([]);
+      return;
+    }
+    
+    const today = new Date();
+    const todayStr = today.toDateString();
+    
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayStr = yesterday.toDateString();
+    
+    let filtered = [];
+    if (reportPeriod === "today") {
+      filtered = allFetchedOrders.filter(o => new Date(o.created_at).toDateString() === todayStr);
+    } else if (reportPeriod === "yesterday") {
+      filtered = allFetchedOrders.filter(o => new Date(o.created_at).toDateString() === yesterdayStr);
+    } else if (reportPeriod === "last7days") {
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      filtered = allFetchedOrders.filter(o => new Date(o.created_at) >= sevenDaysAgo);
+    } else if (reportPeriod === "latest50") {
+      filtered = allFetchedOrders.slice(0, 50);
+    }
+    
+    setDailyOrders(filtered);
+  }, [reportPeriod, allFetchedOrders]);
 
   return (
     <div className="tab-content" dir="rtl">
@@ -130,11 +166,21 @@ export default function AnalyticsTab({ token }) {
         <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(15,23,42,0.95)", zIndex: 99999, display: "flex", flexDirection: "column", padding: "20px" }}>
           <div style={{ maxWidth: 900, margin: "0 auto", width: "100%", background: "#1e293b", borderRadius: 20, display: "flex", flexDirection: "column", maxHeight: "100%", overflow: "hidden" }}>
             
-            <div style={{ padding: "20px 24px", borderBottom: "1px solid rgba(255,255,255,0.1)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div style={{ padding: "20px 24px", borderBottom: "1px solid rgba(255,255,255,0.1)", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
               <h2 style={{ margin: 0, color: "#fff", display: "flex", alignItems: "center", gap: 10 }}>
-                <span>📊</span> تقرير الإنجاز اليومي ({new Date().toLocaleDateString('ar-EG')})
+                <span>📊</span> تقرير الإنجاز
               </h2>
-              <div style={{ display: "flex", gap: 12 }}>
+              <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+                <select 
+                  value={reportPeriod}
+                  onChange={(e) => setReportPeriod(e.target.value)}
+                  style={{ padding: "8px 12px", borderRadius: 8, background: "rgba(15,23,42,0.8)", color: "#fff", border: "1px solid rgba(148,163,184,0.2)", outline: "none" }}
+                >
+                  <option value="today">اليوم ({new Date().toLocaleDateString('ar-EG')})</option>
+                  <option value="yesterday">الأمس</option>
+                  <option value="last7days">آخر 7 أيام</option>
+                  <option value="latest50">أحدث 50 طلب منجز</option>
+                </select>
                 <button 
                   onClick={() => {
                     const printContent = printRef.current;
@@ -160,14 +206,20 @@ export default function AnalyticsTab({ token }) {
 
             <div ref={printRef} style={{ padding: "24px", overflowY: "auto", flex: 1, backgroundColor: "#fff", color: "#000" }}>
               <div style={{ textAlign: "center", marginBottom: 24 }}>
-                <h1 style={{ margin: "0 0 10px 0", fontSize: 24, color: "#111" }}>تقرير الطلبات المنجزة - {new Date().toLocaleDateString('ar-EG')}</h1>
-                <p style={{ margin: 0, color: "#555", fontSize: 16 }}>إجمالي الطلبات المنجزة اليوم: {dailyOrders.length} طلب</p>
+                <h1 style={{ margin: "0 0 10px 0", fontSize: 24, color: "#111" }}>
+                  تقرير الطلبات المنجزة 
+                  {reportPeriod === "today" ? ` - ${new Date().toLocaleDateString('ar-EG')}` : ''}
+                  {reportPeriod === "yesterday" ? ` - الأمس` : ''}
+                  {reportPeriod === "last7days" ? ` - آخر 7 أيام` : ''}
+                  {reportPeriod === "latest50" ? ` - أحدث الطلبات` : ''}
+                </h1>
+                <p style={{ margin: 0, color: "#555", fontSize: 16 }}>إجمالي الطلبات المنجزة المحددة: {dailyOrders.length} طلب</p>
               </div>
 
               {loadingDaily ? (
                 <div style={{ textAlign: "center", padding: 40, color: "#666" }}>جاري تحميل الطلبات...</div>
               ) : dailyOrders.length === 0 ? (
-                <div style={{ textAlign: "center", padding: 40, color: "#666" }}>لا يوجد طلبات منجزة هذا اليوم حتى الآن.</div>
+                <div style={{ textAlign: "center", padding: 40, color: "#666" }}>لا يوجد طلبات منجزة في هذه الفترة.</div>
               ) : (
                 <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
                   <thead>
