@@ -302,10 +302,10 @@ export default function ServicesClient({ initialCategories = [], initialServices
         </div>
 
         {/* Sort/Filter Dropdowns */}
-        <div style={{ display: 'flex', gap: '10px', flex: '0 0 auto', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: '10px', flex: '1 1 auto', flexWrap: 'wrap', maxWidth: '100%', justifyContent: 'flex-start' }}>
           {/* Price Dropdown */}
-          <div className="glass-panel" style={{ padding: '6px 12px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '6px', background: 'var(--bg-glass-deep)', border: '1px solid var(--border-glass)' }}>
-            <span style={{ fontSize: '0.85rem' }}>💰</span>
+          <div className="glass-panel" style={{ padding: '8px 14px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--bg-glass-deep)', border: '1px solid var(--border-glass)', flex: '1 1 calc(50% - 10px)', minWidth: '140px', maxWidth: '100%' }}>
+            <span style={{ fontSize: '0.9rem' }}>💰</span>
             <select
               value={priceSort}
               onChange={(e) => setPriceSort(e.target.value)}
@@ -317,18 +317,22 @@ export default function ServicesClient({ initialCategories = [], initialServices
                 fontSize: '0.9rem',
                 fontWeight: '600',
                 outline: 'none',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                width: '100%',
+                textOverflow: 'ellipsis',
+                overflow: 'hidden',
+                whiteSpace: 'nowrap'
               }}
             >
               <option value="default" style={{ background: 'var(--bg-color)', color: 'var(--text-main)' }}>السعر: الافتراضي 🔽</option>
-              <option value="asc" style={{ background: 'var(--bg-color)', color: 'var(--text-main)' }}>السعر: من الأقل للأعلى 📈</option>
-              <option value="desc" style={{ background: 'var(--bg-color)', color: 'var(--text-main)' }}>السعر: من الأعلى للأقل 📉</option>
+              <option value="asc" style={{ background: 'var(--bg-color)', color: 'var(--text-main)' }}>السعر: تصاعدي 📈</option>
+              <option value="desc" style={{ background: 'var(--bg-color)', color: 'var(--text-main)' }}>السعر: تنازلي 📉</option>
             </select>
           </div>
 
           {/* Category Dropdown */}
-          <div className="glass-panel" style={{ padding: '6px 12px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '6px', background: 'var(--bg-glass-deep)', border: '1px solid var(--border-glass)' }}>
-            <span style={{ fontSize: '0.85rem' }}>📁</span>
+          <div className="glass-panel" style={{ padding: '8px 14px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--bg-glass-deep)', border: '1px solid var(--border-glass)', flex: '1 1 calc(50% - 10px)', minWidth: '140px', maxWidth: '100%' }}>
+            <span style={{ fontSize: '0.9rem' }}>📁</span>
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
@@ -341,7 +345,10 @@ export default function ServicesClient({ initialCategories = [], initialServices
                 fontWeight: '600',
                 outline: 'none',
                 cursor: 'pointer',
-                maxWidth: '170px'
+                width: '100%',
+                textOverflow: 'ellipsis',
+                overflow: 'hidden',
+                whiteSpace: 'nowrap'
               }}
             >
               <option value="all" style={{ background: 'var(--bg-color)', color: 'var(--text-main)' }}>جميع الأقسام 🔽</option>

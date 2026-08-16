@@ -387,18 +387,30 @@ export default function ServiceDetail({ params, initialService = null }) {
   const activeFields = useMemo(() => {
     let rawFields = [];
 
-    // Always inherit fields from the parent service (e.g., IMEI requirement)
-    if (Array.isArray(serviceFields)) {
-      rawFields = [...serviceFields];
-    }
+    const isApiService = !!activeService?.api_source || !!activeService?.api_service_id;
+    const hasPackageFields = selectedPackage && Array.isArray(selectedPackage.fields) && selectedPackage.fields.length > 0;
 
-    // Append any package-specific custom fields
-    if (selectedPackage && Array.isArray(selectedPackage.fields)) {
-      rawFields = [...rawFields, ...selectedPackage.fields];
+    if (isApiService && hasPackageFields) {
+      // For API services, packages contain all necessary fields.
+      // Inheriting from the parent service causes duplicates because parent fields in grouped API services are a union of ALL packages.
+      rawFields = [...selectedPackage.fields];
+    } else {
+      // Always inherit fields from the parent service (e.g., manual services)
+      if (Array.isArray(serviceFields)) {
+        rawFields = [...serviceFields];
+      }
+
+      // Append any package-specific custom fields
+      if (hasPackageFields) {
+        rawFields = [...rawFields, ...selectedPackage.fields];
+      }
     }
 
     const seen = new Set();
     const uniqueFields = [];
+
+    // Track if we already added a field that serves as IMEI or SN to prevent redundant ones
+    let hasImeiField = false;
 
     for (const f of rawFields) {
       if (!f) continue;
@@ -428,9 +440,21 @@ export default function ServiceDetail({ params, initialService = null }) {
         continue;
       }
 
+      const isImeiOrSn = fieldId === 'imei' || fieldId === 'custom_imei' || fieldId === 'sn' || fieldId === 'custom_sn' || fieldId.includes('sn') || fieldId.includes('imei');
+
       // Make IMEI / SN optional as requested
-      if (fieldId === 'imei' || fieldId === 'sn' || fieldId === 'ecid' || fieldId.includes('sn')) {
+      if (isImeiOrSn || fieldId === 'ecid') {
         f.required = false;
+      }
+
+      // Deduplicate redundant IMEI/SN fields that providers sometimes send together (e.g. "SN Or IMEI", "IMEI", "SN")
+      if (isImeiOrSn) {
+         if (hasImeiField && (fieldId === 'imei' || fieldId === 'custom_imei' || fieldId === 'sn' || fieldId === 'custom_sn')) {
+            // If we already have a combined or generic IMEI/SN field, skip redundant plain IMEI/SN fields.
+            // This fixes providers sending "SN Or IMEI" alongside plain "IMEI".
+            continue;
+         }
+         hasImeiField = true;
       }
 
       // Deduplicate by stripped base key (e.g. custom_sn vs sn)
