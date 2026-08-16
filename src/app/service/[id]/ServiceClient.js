@@ -474,6 +474,18 @@ export default function ServiceDetail({ params, initialService = null }) {
       selectedPackage?.api_service_type || activeService?.api_service_type || ''
     ).toLowerCase();
 
+    // Ensure API IMEI services ALWAYS have an IMEI field, even if the package didn't explicitly provide one
+    if (isApiService && !hasImeiField && activeServiceType !== 'server' && activeServiceType !== 'remote') {
+      uniqueFields.unshift({
+        id: 'imei',
+        name: 'imei',
+        label: 'IMEI / SN / ECID',
+        placeholder: 'أدخل رقم IMEI أو الرقم التسلسلي (SN) أو ECID',
+        type: 'text',
+        required: true
+      });
+    }
+
     return uniqueFields
       .filter(f => {
         const fid = (f.name || f.id || "").toLowerCase().trim();
