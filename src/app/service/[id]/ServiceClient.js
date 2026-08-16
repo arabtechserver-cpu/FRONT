@@ -471,11 +471,11 @@ export default function ServiceDetail({ params, initialService = null }) {
     }
 
     const activeServiceType = String(
-      selectedPackage?.api_service_type || activeService?.api_service_type || ''
+      selectedPackage?.api_service_type || activeService?.api_service_type || activeService?.type || ''
     ).toLowerCase();
 
-    // Ensure API IMEI services ALWAYS have an IMEI field, even if the package didn't explicitly provide one
-    if (isApiService && !hasImeiField && activeServiceType !== 'server' && activeServiceType !== 'remote') {
+    // Ensure ALL IMEI services ALWAYS have an IMEI field, even if the package didn't explicitly provide one
+    if (!hasImeiField && activeServiceType !== 'server' && activeServiceType !== 'remote') {
       uniqueFields.unshift({
         id: 'imei',
         name: 'imei',
