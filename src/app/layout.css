@@ -710,12 +710,11 @@
     font-size: 1.15rem !important;
   }
 }
-
 @media (min-width: 993px) {
   .pwa-install-banner {
     bottom: 25px;
-    left: 25px;
-    right: auto;
+    left: auto;
+    right: 50px;
     max-width: 380px;
     margin: 0;
   }
