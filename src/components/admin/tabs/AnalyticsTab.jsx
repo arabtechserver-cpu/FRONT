@@ -63,23 +63,156 @@ export default function AnalyticsTab({ token }) {
       });
       if (!response.ok) throw new Error("تعذر جلب الطلبات");
       const allOrders = await response.json();
-      const completed = allOrders.filter(o => o.status === "completed");
-      setAllFetchedOrders(completed);
-      
-      const todayStr = new Date().toDateString();
-      const completedToday = completed.filter(o => new Date(o.created_at).toDateString() === todayStr);
-      
-      if (completedToday.length === 0 && completed.length > 0) {
-        setReportPeriod("latest50");
-      } else {
-        setReportPeriod("today");
-      }
+      const list = Array.isArray(allOrders) ? allOrders : [];
+      const completed = list.filter(o => o.status === "completed");
+      setAllFetchedOrders(completed.length > 0 ? completed : list);
     } catch (err) {
-      console.error(err);
+      console.error("Daily report fetch error:", err);
       alert("حدث خطأ أثناء تحميل التقرير اليومي.");
     } finally {
       setLoadingDaily(false);
     }
+  };
+
+  // Compute dailyOrders whenever reportPeriod or allFetchedOrders changes
+  useEffect(() => {
+    if (!allFetchedOrders || allFetchedOrders.length === 0) {
+      setDailyOrders([]);
+      return;
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    const sevenDaysAgo = new Date(today);
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    let filtered = [];
+    if (reportPeriod === "today") {
+      filtered = allFetchedOrders.filter(o => new Date(o.created_at) >= today);
+    } else if (reportPeriod === "yesterday") {
+      filtered = allFetchedOrders.filter(o => {
+        const d = new Date(o.created_at);
+        return d >= yesterday && d < today;
+      });
+    } else if (reportPeriod === "last7days") {
+      filtered = allFetchedOrders.filter(o => new Date(o.created_at) >= sevenDaysAgo);
+    } else if (reportPeriod === "latest50") {
+      filtered = allFetchedOrders.slice(0, 50);
+    } else {
+      filtered = allFetchedOrders;
+    }
+
+    // If today has no orders, auto-fallback to latest 50 to avoid blank screen
+    if (reportPeriod === "today" && filtered.length === 0 && allFetchedOrders.length > 0) {
+      setReportPeriod("latest50");
+      setDailyOrders(allFetchedOrders.slice(0, 50));
+      return;
+    }
+
+    setDailyOrders(filtered);
+  }, [reportPeriod, allFetchedOrders]);
+
+  // Clean Native Print Handler (No DOM destruction)
+  const handlePrintReport = () => {
+    const printContent = printRef.current;
+    if (!printContent) return;
+
+    const printWindow = window.open("", "_blank", "width=1050,height=800");
+    if (!printWindow) {
+      window.print();
+      return;
+    }
+
+    const totalAmount = dailyOrders.reduce((sum, o) => sum + Number(o.package_price || 0) * (o.quantity || 1), 0);
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html dir="rtl" lang="ar">
+      <head>
+        <meta charset="utf-8">
+        <title>تقرير إنجاز الطلبات - Arab Tech Server</title>
+        <style>
+          @page { size: A4; margin: 12mm; }
+          body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 24px;
+            direction: rtl;
+            color: #0f172a;
+            background: #ffffff;
+          }
+          .header-box { text-align: center; margin-bottom: 24px; border-bottom: 2px solid #e2e8f0; padding-bottom: 16px; }
+          .header-box h1 { margin: 0 0 6px 0; font-size: 22px; color: #0f172a; font-weight: 800; }
+          .header-box p { margin: 0; color: #64748b; font-size: 14px; }
+          .stats-bar { display: flex; justify-content: space-around; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px; margin-bottom: 20px; font-weight: bold; }
+          table { width: 100%; border-collapse: collapse; font-size: 13px; }
+          th { background: #f1f5f9; color: #1e293b; font-weight: 700; border: 1px solid #cbd5e1; padding: 10px 12px; text-align: right; }
+          td { border: 1px solid #cbd5e1; padding: 9px 12px; text-align: right; }
+          tr:nth-child(even) { background-color: #f8fafc; }
+          .price-col { color: #16a34a; font-weight: bold; direction: ltr; text-align: left; }
+          .status-col { color: #16a34a; font-weight: bold; text-align: center; }
+          .footer-note { margin-top: 30px; text-align: center; font-size: 12px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 12px; }
+          @media print {
+            body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header-box">
+          <div style="font-size: 18px; font-weight: 900; color: #0284c7; margin-bottom: 4px;">⚡ Arab Tech Server</div>
+          <h1>تقرير إنجاز ومبيعات الطلبات</h1>
+          <p>تاريخ الطباعة: ${new Date().toLocaleString('ar-EG')} | الفترة المحددة: ${
+            reportPeriod === 'today' ? 'اليوم' : reportPeriod === 'yesterday' ? 'الأمس' : reportPeriod === 'last7days' ? 'آخر 7 أيام' : 'أحدث الطلبات المنجزة'
+          }</p>
+        </div>
+
+        <div class="stats-bar">
+          <div>إجمالي عدد الطلبات: <span style="color: #0284c7;">${dailyOrders.length} طلب</span></div>
+          <div>إجمالي الإيرادات: <span style="color: #16a34a;">$${totalAmount.toFixed(2)} USD</span></div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 70px;">رقم الطلب</th>
+              <th>الخدمة / القسم</th>
+              <th>الباقة / التفاصيل</th>
+              <th>العميل / الحساب</th>
+              <th style="width: 100px;">السعر</th>
+              <th style="width: 90px; text-align: center;">الحالة</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${dailyOrders.map(o => `
+              <tr>
+                <td><strong>#${o.id}</strong></td>
+                <td><strong>${o.service_name || o.category_name || 'خدمة'}</strong></td>
+                <td>${o.package_name || (o.quantity ? `الكمية: ${o.quantity}` : '-')}</td>
+                <td>${o.customer_username || 'عميل'}</td>
+                <td class="price-col">$${Number(o.package_price || 0).toFixed(2)}</td>
+                <td class="status-col">${o.status === 'completed' ? 'منجز ✅' : o.status === 'pending' ? 'قيد التنفيذ ⏳' : 'مرفوض ❌'}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+
+        <div class="footer-note">
+          تم استخراج هذا التقرير رسمياً من نظام إدارة Arab Tech Server — https://arab-tech1.online
+        </div>
+      </body>
+      </html>
+    `);
+
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => {
+      printWindow.print();
+      printWindow.close();
+    }, 450);
   };
 
   useEffect(() => {
@@ -141,7 +274,7 @@ export default function AnalyticsTab({ token }) {
             <button 
               onClick={fetchDailyReport}
               className="glass-btn" 
-              style={{ padding: "8px 16px", borderRadius: 12, background: "rgba(16,185,129,0.15)", color: "#10b981", border: "1px solid rgba(16,185,129,0.3)", display: "flex", gap: 8, alignItems: "center", fontWeight: "bold" }}
+              style={{ padding: "8px 16px", borderRadius: 12, background: "rgba(16,185,129,0.15)", color: "#10b981", border: "1px solid rgba(16,185,129,0.3)", display: "flex", gap: 8, alignItems: "center", fontWeight: "bold", cursor: "pointer" }}
             >
               <span>📄</span>
               تقرير إنجاز اليوم
@@ -281,81 +414,83 @@ export default function AnalyticsTab({ token }) {
       {/* ── DAILY REPORT MODAL ── */}
       {showDailyReport && (
         <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(15,23,42,0.95)", zIndex: 99999, display: "flex", flexDirection: "column", padding: "20px" }}>
-          <div style={{ maxWidth: 900, margin: "0 auto", width: "100%", background: "var(--bg-secondary)", borderRadius: 20, display: "flex", flexDirection: "column", maxHeight: "100%", overflow: "hidden" }}>
+          <div style={{ maxWidth: 950, margin: "0 auto", width: "100%", background: "var(--bg-secondary)", borderRadius: 20, display: "flex", flexDirection: "column", maxHeight: "100%", overflow: "hidden", boxShadow: "0 25px 60px rgba(0,0,0,0.5)" }}>
             
+            {/* Modal Header */}
             <div style={{ padding: "20px 24px", borderBottom: "1px solid var(--border-color)", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
-              <h2 style={{ margin: 0, color: "var(--text-main)", display: "flex", alignItems: "center", gap: 10 }}>
-                <span>📊</span> تقرير الإنجاز
+              <h2 style={{ margin: 0, color: "var(--text-main)", display: "flex", alignItems: "center", gap: 10, fontSize: "1.25rem", fontWeight: 800 }}>
+                <span>📊</span> تقرير الإنجاز والمبيعات
               </h2>
               <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
                 <select 
                   value={reportPeriod}
                   onChange={(e) => setReportPeriod(e.target.value)}
-                  style={{ padding: "8px 12px", borderRadius: 8, background: "var(--bg-color)", color: "var(--text-main)", border: "1px solid var(--border-color)", outline: "none" }}
+                  style={{ padding: "8px 12px", borderRadius: 8, background: "var(--bg-color)", color: "var(--text-main)", border: "1px solid var(--border-color)", outline: "none", fontWeight: "bold" }}
                 >
                   <option value="today">اليوم ({new Date().toLocaleDateString('ar-EG')})</option>
                   <option value="yesterday">الأمس</option>
                   <option value="last7days">آخر 7 أيام</option>
-                  <option value="latest50">أحدث 50 طلب منجز</option>
+                  <option value="latest50">أحدث الطلبات المنجزة</option>
                 </select>
                 <button 
-                  onClick={() => {
-                    const printContent = printRef.current;
-                    const originalContent = document.body.innerHTML;
-                    document.body.innerHTML = printContent.innerHTML;
-                    window.print();
-                    document.body.innerHTML = originalContent;
-                    window.location.reload();
-                  }}
+                  onClick={handlePrintReport}
                   className="glass-btn glass-btn-primary"
-                  style={{ padding: "8px 16px", borderRadius: 8, display: "flex", gap: 8 }}
+                  style={{ padding: "8px 16px", borderRadius: 8, display: "flex", gap: 8, alignItems: "center", fontWeight: "bold", background: "linear-gradient(135deg, #0284c7, #2563eb)", color: "#fff", border: "none", cursor: "pointer" }}
                 >
-                  <span>🖨️</span> طباعة / تصوير
+                  <span>🖨️</span> طباعة / PDF
                 </button>
                 <button 
                   onClick={() => setShowDailyReport(false)}
-                  style={{ padding: "8px 16px", borderRadius: 8, background: "transparent", color: "#fca5a5", border: "1px solid #fca5a5", cursor: "pointer" }}
+                  style={{ padding: "8px 16px", borderRadius: 8, background: "transparent", color: "#fca5a5", border: "1px solid #fca5a5", cursor: "pointer", fontWeight: "bold" }}
                 >
                   إغلاق
                 </button>
               </div>
             </div>
 
-            <div ref={printRef} style={{ padding: "24px", overflowY: "auto", flex: 1, backgroundColor: "#fff", color: "#000" }}>
-              <div style={{ textAlign: "center", marginBottom: 24 }}>
-                <h1 style={{ margin: "0 0 10px 0", fontSize: 24, color: "#111" }}>
-                  تقرير الطلبات المنجزة 
-                  {reportPeriod === "today" ? ` - ${new Date().toLocaleDateString('ar-EG')}` : ''}
+            {/* Printable Area */}
+            <div ref={printRef} style={{ padding: "24px", overflowY: "auto", flex: 1, backgroundColor: "#fff", color: "#0f172a" }}>
+              <div style={{ textAlign: "center", marginBottom: 20 }}>
+                <h1 style={{ margin: "0 0 8px 0", fontSize: 22, color: "#0f172a", fontWeight: 800 }}>
+                  تقرير إنجاز ومبيعات الطلبات
+                  {reportPeriod === "today" ? ` - اليوم (${new Date().toLocaleDateString('ar-EG')})` : ''}
                   {reportPeriod === "yesterday" ? ` - الأمس` : ''}
                   {reportPeriod === "last7days" ? ` - آخر 7 أيام` : ''}
-                  {reportPeriod === "latest50" ? ` - أحدث الطلبات` : ''}
+                  {reportPeriod === "latest50" ? ` - أحدث الطلبات المنجزة` : ''}
                 </h1>
-                <p style={{ margin: 0, color: "#555", fontSize: 16 }}>إجمالي الطلبات المنجزة المحددة: {dailyOrders.length} طلب</p>
+                <div style={{ display: "flex", justifyContent: "center", gap: "20px", marginTop: "10px", fontSize: 14, fontWeight: "bold", color: "#475569" }}>
+                  <span>عدد الطلبات: <strong style={{ color: "#0284c7" }}>{dailyOrders.length}</strong></span>
+                  <span>إجمالي القيمة: <strong style={{ color: "#16a34a" }}>${dailyOrders.reduce((sum, o) => sum + Number(o.package_price || 0) * (o.quantity || 1), 0).toFixed(2)} USD</strong></span>
+                </div>
               </div>
 
               {loadingDaily ? (
-                <div style={{ textAlign: "center", padding: 40, color: "#666" }}>جاري تحميل الطلبات...</div>
+                <div style={{ textAlign: "center", padding: 40, color: "#64748b" }}>جاري تحميل التقرير وتجهيز البيانات...</div>
               ) : dailyOrders.length === 0 ? (
-                <div style={{ textAlign: "center", padding: 40, color: "#666" }}>لا يوجد طلبات منجزة في هذه الفترة.</div>
+                <div style={{ textAlign: "center", padding: 40, color: "#64748b" }}>لا توجد طلبات مسجلة في هذه الفترة المحددة.</div>
               ) : (
-                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
+                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
                   <thead>
-                    <tr style={{ background: "#f8fafc", borderBottom: "2px solid #e2e8f0" }}>
-                      <th style={{ padding: "12px 8px", textAlign: "right", border: "1px solid #e2e8f0" }}>رقم الطلب</th>
-                      <th style={{ padding: "12px 8px", textAlign: "right", border: "1px solid #e2e8f0" }}>الخدمة</th>
-                      <th style={{ padding: "12px 8px", textAlign: "right", border: "1px solid #e2e8f0" }}>الباقة / الكمية</th>
-                      <th style={{ padding: "12px 8px", textAlign: "right", border: "1px solid #e2e8f0" }}>السعر</th>
-                      <th style={{ padding: "12px 8px", textAlign: "center", border: "1px solid #e2e8f0" }}>الحالة</th>
+                    <tr style={{ background: "#f8fafc", borderBottom: "2px solid #cbd5e1" }}>
+                      <th style={{ padding: "10px 8px", textAlign: "right", border: "1px solid #e2e8f0" }}>رقم الطلب</th>
+                      <th style={{ padding: "10px 8px", textAlign: "right", border: "1px solid #e2e8f0" }}>الخدمة / القسم</th>
+                      <th style={{ padding: "10px 8px", textAlign: "right", border: "1px solid #e2e8f0" }}>الباقة / الكمية</th>
+                      <th style={{ padding: "10px 8px", textAlign: "right", border: "1px solid #e2e8f0" }}>العميل</th>
+                      <th style={{ padding: "10px 8px", textAlign: "left", border: "1px solid #e2e8f0", direction: "ltr" }}>السعر</th>
+                      <th style={{ padding: "10px 8px", textAlign: "center", border: "1px solid #e2e8f0" }}>الحالة</th>
                     </tr>
                   </thead>
                   <tbody>
                     {dailyOrders.map(order => (
                       <tr key={order.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
-                        <td style={{ padding: "10px 8px", border: "1px solid #e2e8f0" }}>#{order.id}</td>
-                        <td style={{ padding: "10px 8px", border: "1px solid #e2e8f0", fontWeight: "bold" }}>{order.category_name} - {order.service_name}</td>
-                        <td style={{ padding: "10px 8px", border: "1px solid #e2e8f0" }}>{order.package_name || `كمية: ${order.quantity}`}</td>
-                        <td style={{ padding: "10px 8px", border: "1px solid #e2e8f0", color: "#16a34a", fontWeight: "bold", direction: "ltr", textAlign: "right" }}>${Number(order.package_price || 0).toFixed(2)}</td>
-                        <td style={{ padding: "10px 8px", border: "1px solid #e2e8f0", textAlign: "center", color: "#16a34a" }}>منجز ✅</td>
+                        <td style={{ padding: "9px 8px", border: "1px solid #e2e8f0", fontWeight: "bold" }}>#{order.id}</td>
+                        <td style={{ padding: "9px 8px", border: "1px solid #e2e8f0", fontWeight: "bold" }}>{order.service_name || order.category_name}</td>
+                        <td style={{ padding: "9px 8px", border: "1px solid #e2e8f0" }}>{order.package_name || (order.quantity ? `كمية: ${order.quantity}` : '-')}</td>
+                        <td style={{ padding: "9px 8px", border: "1px solid #e2e8f0" }}>{order.customer_username || 'عميل'}</td>
+                        <td style={{ padding: "9px 8px", border: "1px solid #e2e8f0", color: "#16a34a", fontWeight: "bold", direction: "ltr", textAlign: "left" }}>${(Number(order.package_price || 0) * (order.quantity || 1)).toFixed(2)}</td>
+                        <td style={{ padding: "9px 8px", border: "1px solid #e2e8f0", textAlign: "center", color: order.status === 'completed' ? '#16a34a' : order.status === 'pending' ? '#eab308' : '#ef4444', fontWeight: "bold" }}>
+                          {order.status === 'completed' ? 'منجز ✅' : order.status === 'pending' ? 'قيد التنفيذ ⏳' : 'مرفوض ❌'}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
