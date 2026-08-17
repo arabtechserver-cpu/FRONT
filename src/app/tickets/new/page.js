@@ -336,7 +336,7 @@ export default function NewTicketPage() {
                   </h3>
                   <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "0.8rem", color: "#10b981", fontWeight: "bold" }}>
                     <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#10b981" }}></span>
-                    <span>متصل الآن ويرسل البلاغات لتيليجرام</span>
+                    <span>متصل الآن</span>
                   </div>
                 </div>
               </div>
@@ -422,12 +422,12 @@ export default function NewTicketPage() {
                   borderBottomLeftRadius: "4px",
                   display: "flex",
                   alignItems: "center",
-                  gap: "8px",
+                  gap: "6px",
                   fontSize: "0.9rem",
-                  color: "var(--brand-blue, #0284c7)",
+                  color: "var(--text-muted, #94a3b8)",
                   fontWeight: "bold"
                 }}>
-                  <span>جاري التواصل وتجهيز إشعار تيليجرام</span>
+                  <span>جاري الرد</span>
                   <span style={{ animation: "blink 1.4s infinite both" }}>.</span>
                   <span style={{ animation: "blink 1.4s infinite both 0.2s" }}>.</span>
                   <span style={{ animation: "blink 1.4s infinite both 0.4s" }}>.</span>
