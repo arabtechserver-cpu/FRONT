@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { API_BASE_URL } from "@/config";
+import OrderInspectionView from "../OrderInspectionView";
 
 const metricDefinitions = [
   ["uniqueSessions", "الزيارات الفريدة", "👥"],
@@ -16,6 +17,12 @@ export default function AnalyticsTab({ token }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   
+  // Orders Analytics & Inspection State
+  const [orders, setOrders] = useState([]);
+  const [ordersLoading, setOrdersLoading] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [orderSearchQuery, setOrderSearchQuery] = useState("");
+
   // Daily Report State
   const [showDailyReport, setShowDailyReport] = useState(false);
   const [dailyOrders, setDailyOrders] = useState([]);
@@ -24,20 +31,41 @@ export default function AnalyticsTab({ token }) {
   const [loadingDaily, setLoadingDaily] = useState(false);
   const printRef = useRef(null);
 
+  const fetchOrdersForInspection = async () => {
+    setOrdersLoading(true);
+    const authToken = token || (typeof window !== "undefined" ? localStorage.getItem("admin_token") : "") || "";
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/orders?limit=150`, {
+        headers: { Authorization: `Bearer ${authToken}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        const list = Array.isArray(data) ? data : [];
+        setOrders(list);
+        if (list.length > 0 && !selectedOrder) {
+          setSelectedOrder(list[0]);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to load orders for analytics:", err);
+    } finally {
+      setOrdersLoading(false);
+    }
+  };
+
   const fetchDailyReport = async () => {
     setShowDailyReport(true);
     setLoadingDaily(true);
-    const authToken = token || localStorage.getItem("admin_token") || "";
+    const authToken = token || (typeof window !== "undefined" ? localStorage.getItem("admin_token") : "") || "";
     try {
       const response = await fetch(`${API_BASE_URL}/api/orders?limit=500`, {
         headers: { Authorization: `Bearer ${authToken}` }
       });
       if (!response.ok) throw new Error("تعذر جلب الطلبات");
       const allOrders = await response.json();
-      const completed = allOrders.filter(o => o.status === 'completed');
+      const completed = allOrders.filter(o => o.status === "completed");
       setAllFetchedOrders(completed);
       
-      // Auto-detect best default (if today is 0, default to latest 50)
       const todayStr = new Date().toDateString();
       const completedToday = completed.filter(o => new Date(o.created_at).toDateString() === todayStr);
       
@@ -56,7 +84,7 @@ export default function AnalyticsTab({ token }) {
 
   useEffect(() => {
     let active = true;
-    const authToken = token || localStorage.getItem("admin_token") || "";
+    const authToken = token || (typeof window !== "undefined" ? localStorage.getItem("admin_token") : "") || "";
     setLoading(true);
     setError("");
 
@@ -73,6 +101,8 @@ export default function AnalyticsTab({ token }) {
       .catch((requestError) => { if (active) setError(requestError.message); })
       .finally(() => { if (active) setLoading(false); });
 
+    fetchOrdersForInspection();
+
     return () => { active = false; };
   }, [days, token]);
 
@@ -80,54 +110,43 @@ export default function AnalyticsTab({ token }) {
     ? summary?.uniqueSessions || 0
     : summary?.counts?.[key] || 0;
 
-  // Effect to filter orders when reportPeriod or allFetchedOrders changes
-  useEffect(() => {
-    if (!allFetchedOrders || allFetchedOrders.length === 0) {
-      setDailyOrders([]);
-      return;
-    }
-    
-    const today = new Date();
-    const todayStr = today.toDateString();
-    
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayStr = yesterday.toDateString();
-    
-    let filtered = [];
-    if (reportPeriod === "today") {
-      filtered = allFetchedOrders.filter(o => new Date(o.created_at).toDateString() === todayStr);
-    } else if (reportPeriod === "yesterday") {
-      filtered = allFetchedOrders.filter(o => new Date(o.created_at).toDateString() === yesterdayStr);
-    } else if (reportPeriod === "last7days") {
-      const sevenDaysAgo = new Date();
-      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-      filtered = allFetchedOrders.filter(o => new Date(o.created_at) >= sevenDaysAgo);
-    } else if (reportPeriod === "latest50") {
-      filtered = allFetchedOrders.slice(0, 50);
-    }
-    
-    setDailyOrders(filtered);
-  }, [reportPeriod, allFetchedOrders]);
+  // Filter orders for search
+  const filteredOrders = orders.filter(o => {
+    if (!orderSearchQuery.trim()) return true;
+    const q = orderSearchQuery.toLowerCase();
+    return (
+      String(o.id).includes(q) ||
+      (o.player_id && String(o.player_id).toLowerCase().includes(q)) ||
+      (o.service_name && o.service_name.toLowerCase().includes(q)) ||
+      (o.customer_username && o.customer_username.toLowerCase().includes(q)) ||
+      (o.api_order_id && String(o.api_order_id).toLowerCase().includes(q))
+    );
+  });
 
   return (
-    <div className="tab-content" dir="rtl">
+    <div className="tab-content" dir="rtl" style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+      
+      {/* ── TOP CONVERSION SUMMARY PANEL ── */}
       <div className="glass-panel" style={{ padding: 24, borderRadius: 20 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16, flexWrap: "wrap", marginBottom: 24 }}>
           <div>
-            <h2 style={{ color: "#fff", margin: 0 }}>تحويلات المبيعات</h2>
-            <p style={{ color: "#94a3b8", margin: "8px 0 0" }}>قياس مجهول من زيارة الخدمة حتى إتمام الطلب، بدون تخزين بيانات العميل.</p>
+            <h2 style={{ color: "var(--text-main)", margin: 0, fontSize: "1.4rem", fontWeight: 900 }}>
+              تحليلات المبيعات ونشاط الطلبات
+            </h2>
+            <p style={{ color: "var(--text-muted)", margin: "6px 0 0", fontSize: "0.95rem" }}>
+              إحصائيات دقيقة وفحص كامل لبيانات الطلبات ومعدلات الإنجاز عبر السيرفر والـ API.
+            </p>
           </div>
           <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
             <button 
               onClick={fetchDailyReport}
               className="glass-btn" 
-              style={{ padding: "8px 16px", borderRadius: 12, background: "rgba(16,185,129,0.15)", color: "#34d399", border: "1px solid rgba(16,185,129,0.3)", display: "flex", gap: 8, alignItems: "center" }}
+              style={{ padding: "8px 16px", borderRadius: 12, background: "rgba(16,185,129,0.15)", color: "#10b981", border: "1px solid rgba(16,185,129,0.3)", display: "flex", gap: 8, alignItems: "center", fontWeight: "bold" }}
             >
               <span>📄</span>
               تقرير إنجاز اليوم
             </button>
-            <select value={days} onChange={(event) => setDays(Number(event.target.value))} style={{ width: 150, padding: "8px 12px", borderRadius: 12, background: "rgba(15,23,42,0.8)", color: "#fff", border: "1px solid rgba(148,163,184,0.2)" }}>
+            <select value={days} onChange={(event) => setDays(Number(event.target.value))} style={{ width: 150, padding: "8px 12px", borderRadius: 12, background: "var(--bg-secondary)", color: "var(--text-main)", border: "1px solid var(--border-color)" }}>
               <option value={7}>آخر 7 أيام</option>
               <option value={30}>آخر 30 يومًا</option>
               <option value={90}>آخر 90 يومًا</option>
@@ -135,46 +154,144 @@ export default function AnalyticsTab({ token }) {
           </div>
         </div>
 
-        {loading && <div style={{ color: "#cbd5e1", padding: 24 }}>جاري تحميل التقرير...</div>}
+        {loading && <div style={{ color: "var(--text-muted)", padding: 24 }}>جاري تحميل الإحصائيات...</div>}
         {error && <div style={{ color: "#fca5a5", background: "rgba(239,68,68,.12)", padding: 14, borderRadius: 12 }}>{error}</div>}
 
         {!loading && !error && summary && (
           <>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 14 }}>
               {metricDefinitions.map(([key, label, icon]) => (
-                <div key={key} style={{ padding: 18, borderRadius: 16, background: "rgba(15,23,42,.72)", border: "1px solid rgba(148,163,184,.16)" }}>
-                  <div style={{ color: "#94a3b8", fontSize: 14 }}>{icon} {label}</div>
-                  <div style={{ color: "#fff", fontSize: 30, fontWeight: 800, marginTop: 8 }}>{valueFor(key).toLocaleString("ar-EG")}</div>
+                <div key={key} style={{ padding: 18, borderRadius: 16, background: "var(--bg-glass)", border: "1px solid var(--border-color)" }}>
+                  <div style={{ color: "var(--text-muted)", fontSize: 14, fontWeight: 700 }}>{icon} {label}</div>
+                  <div style={{ color: "var(--text-main)", fontSize: 30, fontWeight: 900, marginTop: 8 }}>{valueFor(key).toLocaleString("ar-EG")}</div>
                 </div>
               ))}
             </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))", gap: 14, marginTop: 18 }}>
-              <RateCard label="من مشاهدة الخدمة إلى بدء الطلب" value={summary.rates.serviceToCheckout} />
-              <RateCard label="من بدء الطلب إلى الإتمام" value={summary.rates.checkoutToOrder} />
-              <RateCard label="من مشاهدة الخدمة إلى البيع" value={summary.rates.serviceToOrder} />
+              <RateCard label="من مشاهدة الخدمة إلى بدء الطلب" value={summary.rates?.serviceToCheckout} />
+              <RateCard label="من بدء الطلب إلى الإتمام" value={summary.rates?.checkoutToOrder} />
+              <RateCard label="من مشاهدة الخدمة إلى البيع" value={summary.rates?.serviceToOrder} />
             </div>
-
-            <p style={{ color: "#64748b", margin: "18px 0 0", fontSize: 13 }}>
-              يبدأ التقرير في تجميع البيانات بعد نشر هذا التحديث، ولا يعرض أرقامًا قديمة تقديرية.
-            </p>
           </>
         )}
       </div>
 
+      {/* ── GSM SERVER / DHRU ORDER INSPECTION & ANALYTICS SECTION ── */}
+      <div className="glass-panel" style={{ padding: 24, borderRadius: 20 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "16px", marginBottom: "20px" }}>
+          <div>
+            <h3 style={{ margin: 0, fontSize: "1.25rem", fontWeight: 900, color: "var(--text-main)", display: "flex", alignItems: "center", gap: "8px" }}>
+              <span>🔍</span>
+              <span>فحص وتحليل تفاصيل الطلبات (DHRU / GSM Order Analytics)</span>
+            </h3>
+            <p style={{ margin: "4px 0 0", color: "var(--text-muted)", fontSize: "0.9rem" }}>
+              عرض بيانات الطلب الدقيقة وحساب الوقت وتكاليف الـ API وتعديل الردود وإرجاع الرصيد.
+            </p>
+          </div>
+
+          <div style={{ display: "flex", gap: "10px", alignItems: "center", flex: "1 1 300px", maxWidth: "450px" }}>
+            <input
+              type="text"
+              value={orderSearchQuery}
+              onChange={(e) => setOrderSearchQuery(e.target.value)}
+              placeholder="ابحث برقم الطلب أو الـ IMEI أو اسم الخدمة أو العميل..."
+              style={{
+                width: "100%", padding: "10px 14px", borderRadius: "10px",
+                border: "1px solid var(--border-color)", background: "var(--bg-secondary)",
+                color: "var(--text-main)", outline: "none", fontSize: "0.9rem"
+              }}
+            />
+            {orderSearchQuery && (
+              <button
+                onClick={() => setOrderSearchQuery("")}
+                style={{ padding: "8px 12px", background: "transparent", border: "none", color: "var(--text-muted)", cursor: "pointer" }}
+              >
+                ✕
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Orders Selector Grid (Quick Tabs) */}
+        <div style={{
+          display: "flex", gap: "8px", overflowX: "auto", paddingBottom: "12px", marginBottom: "20px",
+          borderBottom: "1px solid var(--border-color)"
+        }}>
+          {ordersLoading ? (
+            <div style={{ color: "var(--text-muted)", padding: "10px" }}>جاري تحميل قائمة الطلبات...</div>
+          ) : filteredOrders.length === 0 ? (
+            <div style={{ color: "var(--text-muted)", padding: "10px" }}>لا توجد طلبات مطابقة للبحث.</div>
+          ) : (
+            filteredOrders.slice(0, 20).map((ord) => {
+              const isSelected = selectedOrder && selectedOrder.id === ord.id;
+              const badgeBg = ord.status === "completed" ? "rgba(16, 185, 129, 0.15)" : ord.status === "pending" ? "rgba(234, 179, 8, 0.15)" : "rgba(239, 68, 68, 0.15)";
+              const badgeColor = ord.status === "completed" ? "#10b981" : ord.status === "pending" ? "#eab308" : "#ef4444";
+
+              return (
+                <button
+                  key={ord.id}
+                  onClick={() => setSelectedOrder(ord)}
+                  style={{
+                    padding: "8px 14px",
+                    borderRadius: "10px",
+                    cursor: "pointer",
+                    whiteSpace: "nowrap",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    border: isSelected ? "2px solid #00b4d8" : "1px solid var(--border-color)",
+                    background: isSelected ? "rgba(0, 180, 216, 0.2)" : "var(--bg-glass)",
+                    color: "var(--text-main)",
+                    fontWeight: isSelected ? 800 : 500,
+                    fontSize: "0.88rem",
+                    transition: "all 0.2s ease"
+                  }}
+                >
+                  <span style={{ fontWeight: 900 }}>#{ord.id}</span>
+                  <span style={{ maxWidth: "120px", overflow: "hidden", textOverflow: "ellipsis" }}>{ord.service_name}</span>
+                  <span style={{ padding: "2px 6px", borderRadius: "4px", fontSize: "0.75rem", background: badgeBg, color: badgeColor, fontWeight: "bold" }}>
+                    {ord.status === "completed" ? "Replied" : ord.status === "pending" ? "Pending" : "Rejected"}
+                  </span>
+                </button>
+              );
+            })
+          )}
+        </div>
+
+        {/* Active Order Full Inspection View */}
+        {selectedOrder ? (
+          <div style={{ marginTop: "10px" }}>
+            <OrderInspectionView
+              order={selectedOrder}
+              token={token}
+              onOrderUpdated={(updated) => {
+                setSelectedOrder(updated);
+                setOrders(prev => prev.map(o => o.id === updated.id ? updated : o));
+              }}
+            />
+          </div>
+        ) : (
+          <div style={{ padding: "40px", textAlign: "center", color: "var(--text-muted)" }}>
+            اختر طلباً من القائمة بالأعلى لعرض بياناته وتحليله الكامل.
+          </div>
+        )}
+      </div>
+
+      {/* ── DAILY REPORT MODAL ── */}
       {showDailyReport && (
         <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(15,23,42,0.95)", zIndex: 99999, display: "flex", flexDirection: "column", padding: "20px" }}>
-          <div style={{ maxWidth: 900, margin: "0 auto", width: "100%", background: "#1e293b", borderRadius: 20, display: "flex", flexDirection: "column", maxHeight: "100%", overflow: "hidden" }}>
+          <div style={{ maxWidth: 900, margin: "0 auto", width: "100%", background: "var(--bg-secondary)", borderRadius: 20, display: "flex", flexDirection: "column", maxHeight: "100%", overflow: "hidden" }}>
             
-            <div style={{ padding: "20px 24px", borderBottom: "1px solid rgba(255,255,255,0.1)", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
-              <h2 style={{ margin: 0, color: "#fff", display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{ padding: "20px 24px", borderBottom: "1px solid var(--border-color)", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
+              <h2 style={{ margin: 0, color: "var(--text-main)", display: "flex", alignItems: "center", gap: 10 }}>
                 <span>📊</span> تقرير الإنجاز
               </h2>
               <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
                 <select 
                   value={reportPeriod}
                   onChange={(e) => setReportPeriod(e.target.value)}
-                  style={{ padding: "8px 12px", borderRadius: 8, background: "rgba(15,23,42,0.8)", color: "#fff", border: "1px solid rgba(148,163,184,0.2)", outline: "none" }}
+                  style={{ padding: "8px 12px", borderRadius: 8, background: "var(--bg-color)", color: "var(--text-main)", border: "1px solid var(--border-color)", outline: "none" }}
                 >
                   <option value="today">اليوم ({new Date().toLocaleDateString('ar-EG')})</option>
                   <option value="yesterday">الأمس</option>
@@ -244,15 +361,6 @@ export default function AnalyticsTab({ token }) {
                   </tbody>
                 </table>
               )}
-              
-              <style dangerouslySetInnerHTML={{__html: `
-                @media print {
-                  body * { visibility: hidden; }
-                  h1, p, table, th, td, tr, div { visibility: visible; }
-                  table { width: 100% !important; border-collapse: collapse !important; }
-                  th, td { border: 1px solid #ccc !important; padding: 8px !important; }
-                }
-              `}} />
             </div>
           </div>
         </div>
@@ -264,8 +372,8 @@ export default function AnalyticsTab({ token }) {
 function RateCard({ label, value }) {
   return (
     <div style={{ padding: 18, borderRadius: 16, background: "rgba(16,185,129,.08)", border: "1px solid rgba(16,185,129,.2)" }}>
-      <div style={{ color: "#a7f3d0", fontSize: 14 }}>{label}</div>
-      <div style={{ color: "#34d399", fontSize: 28, fontWeight: 800, marginTop: 8 }}>{Number(value || 0).toLocaleString("ar-EG")}%</div>
+      <div style={{ color: "var(--brand-cyan, #10b981)", fontSize: 14, fontWeight: 700 }}>{label}</div>
+      <div style={{ color: "#10b981", fontSize: 28, fontWeight: 900, marginTop: 8 }}>{Number(value || 0).toLocaleString("ar-EG")}%</div>
     </div>
   );
 }
