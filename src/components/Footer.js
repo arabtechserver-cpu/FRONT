@@ -76,6 +76,7 @@ export default function Footer({ siteName = "Arab Tech Server", showServices = f
                 <li><Link href="/services" style={linkStyle} onMouseEnter={(e) => setHover(e, "#fff")} onMouseLeave={(e) => setHover(e, "#94a3b8")}>{t("services")}</Link></li>
               )}
               <li><Link href="/wallet" style={linkStyle} onMouseEnter={(e) => setHover(e, "#fff")} onMouseLeave={(e) => setHover(e, "#94a3b8")}>{t("chargeBalance")}</Link></li>
+              <li><Link href="/tickets/new" style={linkStyle} onMouseEnter={(e) => setHover(e, "#fff")} onMouseLeave={(e) => setHover(e, "#94a3b8")}>تذاكر الدعم الفني 🤖</Link></li>
             </ul>
           </div>
 

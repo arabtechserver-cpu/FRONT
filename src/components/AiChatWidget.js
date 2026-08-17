@@ -1,5 +1,6 @@
 'use client';
 import React, { useState, useRef, useEffect } from 'react';
+import Link from 'next/link';
 
 function renderAssistantContent(content) {
   const lines = String(content || '').split(/\r?\n/).map(line => line.trim()).filter(Boolean);
@@ -35,6 +36,7 @@ export default function AiChatWidget() {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -42,10 +44,15 @@ export default function AiChatWidget() {
   };
 
   useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
     scrollToBottom();
   }, [messages, isLoading]);
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     const syncAuth = () => setIsLoggedIn(Boolean(localStorage.getItem('customer_token')));
     syncAuth();
     window.addEventListener('storage', syncAuth);
@@ -53,6 +60,7 @@ export default function AiChatWidget() {
   }, []);
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     try {
       const saved = JSON.parse(localStorage.getItem('arab_tech_server_ai_history') || '[]');
       if (Array.isArray(saved)) setMessages(saved.slice(-50));
@@ -60,13 +68,16 @@ export default function AiChatWidget() {
   }, []);
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     if (messages.length) localStorage.setItem('arab_tech_server_ai_history', JSON.stringify(messages.slice(-50)));
   }, [messages]);
 
   const startNewChat = () => {
     setMessages([]);
     setInput('');
-    localStorage.removeItem('arab_tech_server_ai_history');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('arab_tech_server_ai_history');
+    }
   };
 
   const handleSend = async (e) => {
@@ -79,21 +90,15 @@ export default function AiChatWidget() {
     setIsLoading(true);
 
     try {
-      const token = localStorage.getItem('customer_token');
-
-      if (!token) {
-        setMessages(prev => [...prev, {
-          role: 'assistant',
-          content: 'يرجى تسجيل الدخول أولاً لاستخدام المساعد الذكي.'
-        }]);
-        return;
+      const token = typeof window !== 'undefined' ? localStorage.getItem('customer_token') : null;
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
       }
+
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://api.arab-tech1.online'}/api/ai/chat`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
+        headers,
         body: JSON.stringify({
           message: userMsg,
           history: messages.map(m => ({ role: m.role, content: m.content }))
@@ -108,11 +113,13 @@ export default function AiChatWidget() {
       }
     } catch (error) {
       console.error('Chat error:', error);
-      setMessages(prev => [...prev, { role: 'assistant', content: 'حدث خطأ في الشبكة، يرجى المحاولة لاحقاً.' }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: 'حدث خطأ في الاتصال، يرجى المحاولة لاحقاً أو مراسلتنا على تليجرام: https://t.me/arabtechserveronline' }]);
     } finally {
       setIsLoading(false);
     }
   };
+
+  if (!isMounted) return null;
 
   return (
     <div className="ai-chat-widget-container">
@@ -147,28 +154,33 @@ export default function AiChatWidget() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <div style={{ fontSize: '1.5rem' }}>🤖</div>
               <div>
-                <h3 className="ai-chat-title" style={{ margin: 0, fontSize: '1.1rem', color: '#fff' }}>المساعد الذكي</h3>
-                <span style={{ fontSize: '0.8rem', color: '#00b4d8' }}>متصل</span>
+                <h3 className="ai-chat-title" style={{ margin: 0, fontSize: '1.1rem', color: '#fff' }}>Ared AI — الدعم الذكي</h3>
+                <span style={{ fontSize: '0.8rem', color: '#00b4d8' }}>متصل • يرسل الشكاوى لتيليجرام</span>
               </div>
             </div>
-            <button className="ai-chat-new" onClick={startNewChat} title="محادثة جديدة" type="button">＋ جديد</button>
-            <button 
-              className="ai-chat-close"
-              onClick={() => setIsOpen(false)}
-              type="button"
-              aria-label="إغلاق المحادثة / Close chat"
-              style={{ background: 'transparent', border: 'none', color: '#fff', fontSize: '1.5rem', cursor: 'pointer', padding: 0 }}
-            >
-              &times;
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Link href="/tickets/new" style={{ fontSize: '0.75rem', color: '#38bdf8', textDecoration: 'none', border: '1px solid rgba(56, 189, 248, 0.3)', padding: '4px 8px', borderRadius: '6px' }}>
+                فتح تذكرة 🎫
+              </Link>
+              <button className="ai-chat-new" onClick={startNewChat} title="محادثة جديدة" type="button">＋ جديد</button>
+              <button 
+                className="ai-chat-close"
+                onClick={() => setIsOpen(false)}
+                type="button"
+                aria-label="إغلاق المحادثة / Close chat"
+                style={{ background: 'transparent', border: 'none', color: '#fff', fontSize: '1.5rem', cursor: 'pointer', padding: 0 }}
+              >
+                &times;
+              </button>
+            </div>
           </div>
 
           {!isLoggedIn && (
-            <div style={{ margin: '12px 15px 0', padding: '12px', borderRadius: '12px', background: 'rgba(0,180,216,0.12)', color: '#fff', textAlign: 'center', direction: 'rtl' }}>
-              سجّل حساباً مجانياً للوصول إلى الرصيد والطلبات وطلب الخدمات.
-              <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', marginTop: '9px' }}>
-                <a href="/login" style={{ background: '#00b4d8', color: '#fff', padding: '7px 12px', borderRadius: '8px', textDecoration: 'none', fontWeight: 700 }}>تسجيل الدخول</a>
-                <a href="/login?mode=register" style={{ background: '#334155', color: '#fff', padding: '7px 12px', borderRadius: '8px', textDecoration: 'none', fontWeight: 700 }}>إنشاء حساب</a>
+            <div style={{ margin: '10px 15px 0', padding: '10px', borderRadius: '12px', background: 'rgba(0,180,216,0.12)', color: '#fff', textAlign: 'center', direction: 'rtl', fontSize: '0.85rem' }}>
+              أنت تتحدث كزائر. يمكنك تسجيل الدخول للوصول السريع إلى رصيدك وطلباتك.
+              <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', marginTop: '6px' }}>
+                <a href="/login" style={{ background: '#00b4d8', color: '#fff', padding: '5px 10px', borderRadius: '6px', textDecoration: 'none', fontWeight: 700, fontSize: '0.8rem' }}>تسجيل الدخول</a>
+                <a href="/login?mode=register" style={{ background: '#334155', color: '#fff', padding: '5px 10px', borderRadius: '6px', textDecoration: 'none', fontWeight: 700, fontSize: '0.8rem' }}>إنشاء حساب</a>
               </div>
             </div>
           )}
@@ -184,7 +196,7 @@ export default function AiChatWidget() {
           }}>
             {messages.length === 0 && (
               <div className="ai-chat-empty" style={{ textAlign: 'center', color: 'var(--text-muted, #aaa)', marginTop: '20px', fontSize: '0.9rem' }}>
-                مرحباً! أنا المساعد الذكي، يمكنني مساعدتك في البحث عن الخدمات ومعرفة رصيدك وطلباتك. تفضل بسؤالي!
+                مرحباً! أنا المساعد الذكي، يمكنني مساعدتك في البحث عن الخدمات ومعرفة رصيدك وطلباتك أو رفع شكوى فورية للإدارة على تيليجرام. تفضل بسؤالي!
               </div>
             )}
             
@@ -240,7 +252,7 @@ export default function AiChatWidget() {
               type="text" 
               value={input}
               onChange={e => setInput(e.target.value)}
-              placeholder="اكتب رسالتك هنا..."
+              placeholder="اكتب رسالتك أو استفسارك هنا..."
               className="ai-chat-input"
               style={{
                 flex: 1,
