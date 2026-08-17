@@ -261,14 +261,14 @@ export default function TermsPage() {
         }}>
           <div className="glass-panel" style={{
             maxWidth: "750px", width: "100%", maxHeight: "90vh", overflowY: "auto",
-            borderRadius: "24px", padding: "30px", background: "var(--bg-secondary, #0f172a)",
+            borderRadius: "24px", padding: "30px", background: "var(--bg-secondary)",
             border: "1px solid rgba(250, 204, 21, 0.4)", position: "relative"
           }}>
             <button
               onClick={() => setShowRefundModal(false)}
               style={{
                 position: "absolute", top: "20px", left: "20px", background: "transparent",
-                border: "none", color: "#fff", fontSize: "1.8rem", cursor: "pointer"
+                border: "none", color: "var(--text-main)", fontSize: "1.8rem", cursor: "pointer"
               }}
             >
               &times;

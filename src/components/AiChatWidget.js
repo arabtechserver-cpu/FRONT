@@ -365,7 +365,9 @@ export default function AiChatWidget() {
         .ai-result-meta { margin-top: 5px; color: var(--text-muted,#94a3b8); font-size: .82rem; }
         .ai-result-action { margin-top: 8px; }
         .ai-chat-link { display: inline-flex; color: #22d3ee; font-weight: 800; text-decoration: none; border: 1px solid rgba(34,211,238,.3); padding: 4px 9px; border-radius: 7px; }
-        .ai-chat-new { border: 1px solid rgba(0,180,216,.35); background: transparent; color: var(--text-main,#fff); border-radius: 8px; padding: 5px 8px; cursor: pointer; font-size: .75rem; }
+        [data-theme="light"] .ai-chat-message.assistant { background: #f1f5f9 !important; color: #0f172a !important; border: 1px solid #cbd5e1 !important; font-weight: 500 !important; }
+        [data-theme="light"] .ai-result-card { background: #f8fafc !important; border-color: #bae6fd !important; color: #0f172a !important; }
+        [data-theme="light"] .ai-result-meta { color: #475569 !important; }
         [data-theme="light"] .ai-chat-new { color: #0f172a; border-color: rgba(23,105,232,.3); }
         [data-theme="light"] .ai-chat-window { background: #ffffff !important; color: #0f172a; box-shadow: 0 18px 55px rgba(15,23,42,.18); }
         [data-theme="light"] .ai-chat-header { background: #ecfeff !important; }

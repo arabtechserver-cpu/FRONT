@@ -5,23 +5,19 @@ import Link from "next/link";
 import { useI18n } from "@/lib/i18n";
 
 const QUICK_PROMPTS = [
-  { label: "🔄 طلب استرجاع رصيد لطلب معلق", text: "أريد طلب استرجاع رصيد لطلبي المعلق الذي لم يكتمل." },
-  { label: "⏳ تأخر في تنفيذ طلبي", text: "طلبي تأخر عن المدة المحددة وأريد متابعة حالته أو تسريعه." },
-  { label: "🔑 كود التفعيل المستلم لا يعمل", text: "استلمت كود التفعيل لكنه لم يعمل معي، أحتاج مساعدة فورية." },
-  { label: "💳 استفسار حول شحن المحفظة", text: "قمت بتحويل مبلغ لشحن المحفظة ولم ينزل الرصيد بعد." },
-  { label: "🛠️ استفسار فني عام", text: "لدي مشكلة فنية وأحتاج التحدث مع الدعم الفني." }
+  { label: "🔄 استرجاع رصيد لطلب", text: "أريد طلب استرجاع رصيد لطلب متأخر أو ملغي" },
+  { label: "📦 فحص حالة طلب", text: "أريد الاستفسار عن حالة طلبي وسرعة تنفيذه" },
+  { label: "⚠️ كود التفعيل لا يعمل", text: "وصلني كود تفعيل لكنه لا يعمل أو يظهر خطأ" },
+  { label: "💳 مشكلة في شحن المحفظة", text: "قمت بتحويل مبلغ لشحن المحفظة ولم يصل بعد" },
+  { label: "🛡️ الاستفسار عن الضمان", text: "ما هي شروط وضمانات استرجاع الرصيد لديكم؟" }
 ];
 
 export default function NewTicketPage() {
-  const { t, language } = useI18n();
+  const { t } = useI18n();
   const [isMounted, setIsMounted] = useState(false);
   const [activeTab, setActiveTab] = useState("chat"); // 'chat' | 'form'
-  
-  // Auth & User Profile State
-  const [token, setToken] = useState("");
-  const [userData, setUserData] = useState({ name: "", email: "", phone: "" });
 
-  // AI Chat State
+  // Chat State
   const [messages, setMessages] = useState([
     {
       role: "assistant",
@@ -33,7 +29,7 @@ export default function NewTicketPage() {
   const [lastCreatedTicket, setLastCreatedTicket] = useState(null);
   const messagesEndRef = useRef(null);
 
-  // Form Mode State
+  // Form State
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -48,47 +44,46 @@ export default function NewTicketPage() {
   const [formSuccess, setFormSuccess] = useState(null);
   const [formError, setFormError] = useState("");
 
+  // Customer Data (If logged in)
+  const [token, setToken] = useState("");
+  const [currentUser, setCurrentUser] = useState(null);
+
   useEffect(() => {
     setIsMounted(true);
     if (typeof window !== "undefined") {
-      const savedToken = localStorage.getItem("customer_token") || "";
-      setToken(savedToken);
-
-      // Try reading user info from storage or token
-      try {
-        const storedUser = localStorage.getItem("customer_user");
-        if (storedUser) {
-          const parsed = JSON.parse(storedUser);
-          setUserData({
-            name: parsed.username || parsed.name || "",
-            email: parsed.email || "",
-            phone: parsed.phone || ""
-          });
+      const savedToken = localStorage.getItem("customer_token");
+      const savedUserStr = localStorage.getItem("customer_user");
+      if (savedToken) setToken(savedToken);
+      if (savedUserStr) {
+        try {
+          const u = JSON.parse(savedUserStr);
+          setCurrentUser(u);
           setFormData(prev => ({
             ...prev,
-            name: parsed.username || parsed.name || "",
-            email: parsed.email || "",
-            phone: parsed.phone || ""
+            name: u.username || u.name || "",
+            email: u.email || "",
+            phone: u.phone || ""
           }));
-        }
-      } catch (e) {}
+        } catch {}
+      }
     }
   }, []);
 
   useEffect(() => {
-    if (activeTab === "chat") {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, isAiLoading]);
+
+  // Send message to AI & Auto-Telegram integration
+  const handleSendChatMessage = async (presetText) => {
+    const textToSend = (presetText || inputMessage).trim();
+    if (!textToSend || isAiLoading) return;
+
+    if (!presetText) {
+      setInputMessage("");
     }
-  }, [messages, isAiLoading, activeTab]);
 
-  // Send message to AI Support Chat
-  const handleSendChatMessage = async (msgText) => {
-    const textToSend = msgText || inputMessage;
-    if (!textToSend.trim() || isAiLoading) return;
-
-    const newMessages = [...messages, { role: "user", content: textToSend }];
-    setMessages(newMessages);
-    setInputMessage("");
+    const updatedHistory = [...messages, { role: "user", content: textToSend }];
+    setMessages(updatedHistory);
     setIsAiLoading(true);
 
     try {
@@ -104,33 +99,29 @@ export default function NewTicketPage() {
         body: JSON.stringify({
           message: textToSend,
           history: messages.map(m => ({ role: m.role, content: m.content })),
-          guest_name: userData.name || formData.name,
-          guest_email: userData.email || formData.email,
-          guest_phone: userData.phone || formData.phone
+          contact_info: currentUser ? {
+            username: currentUser.username,
+            email: currentUser.email,
+            phone: currentUser.phone
+          } : null
         })
       });
 
       const data = await res.json().catch(() => ({}));
 
-      if (data && data.reply) {
+      if (res.ok && data.reply) {
         setMessages(prev => [...prev, { role: "assistant", content: data.reply }]);
-
-        // Extract ticket number if created
-        const match = data.reply.match(/#(\d{3,8})/);
-        if (match) {
+        
+        // If the AI triggered a complaint submission or returned a ticket ID
+        if (data.ticket_id || data.complaint_id) {
           setLastCreatedTicket({
-            id: match[1],
-            text: `تم إرسال تذكرتك #${match[1]} بنجاح إلى تيليجرام الإدارة 🚀`
+            id: data.ticket_id || data.complaint_id,
+            text: `تم فتح التذكرة رقم ${data.ticket_id || `#${data.complaint_id}`} وإرسالها فوراً إلى تيليجرام الإدارة!`
           });
         }
       } else {
-        setMessages(prev => [
-          ...prev,
-          {
-            role: "assistant",
-            content: data.message || "تم استلام رسالتك. إذا كانت لديك مشكلة مستعجلة، يمكنك أيضاً مراسلتنا مباشرة على واتساب أو تيليجرام."
-          }
-        ]);
+        const errorReply = data.reply || data.message || "عذراً، حدث خطأ مؤقت في التواصل مع المساعد الذكي. يمكنك أيضاً استخدام نموذج التذاكر السريع أو مراسلتنا على تيليجرام: https://t.me/arabtechserveronline";
+        setMessages(prev => [...prev, { role: "assistant", content: errorReply }]);
       }
     } catch (err) {
       console.error("AI Ticket Chat Error:", err);
@@ -138,7 +129,7 @@ export default function NewTicketPage() {
         ...prev,
         {
           role: "assistant",
-          content: "تعذر الاتصال بالمساعد الذكي مؤقتاً. تم حفظ رسالتك، ويمكنك التواصل مباشرة مع الدعم عبر تيليجرام: https://t.me/arabtechserveronline"
+          content: "حدث خطأ في الاتصال بالسيرفر. يرجى التأكد من اتصال الإنترنت أو استخدام النموذج السريع للتذاكر المرفق بالأعلى، أو مراسلتنا على تليجرام: https://t.me/arabtechserveronline"
         }
       ]);
     } finally {
@@ -146,7 +137,7 @@ export default function NewTicketPage() {
     }
   };
 
-  // Submit direct ticket form
+  // Submit Direct Ticket Form
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     setFormError("");
@@ -211,8 +202,8 @@ export default function NewTicketPage() {
       <div style={{ textAlign: "center", marginBottom: "35px", marginTop: "10px" }}>
         <div style={{
           display: "inline-flex", alignItems: "center", gap: "8px",
-          background: "rgba(56, 189, 248, 0.1)", border: "1px solid rgba(56, 189, 248, 0.25)",
-          padding: "8px 18px", borderRadius: "999px", color: "#38bdf8", fontSize: "0.9rem",
+          background: "rgba(56, 189, 248, 0.12)", border: "1px solid rgba(56, 189, 248, 0.3)",
+          padding: "8px 18px", borderRadius: "999px", color: "var(--brand-blue, #0284c7)", fontSize: "0.9rem",
           fontWeight: "bold", marginBottom: "15px"
         }}>
           <span>🤖</span>
@@ -245,7 +236,7 @@ export default function NewTicketPage() {
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
             <span style={{ fontSize: "1.8rem" }}>✅</span>
             <div>
-              <div style={{ color: "#34d399", fontWeight: "900", fontSize: "1.1rem" }}>
+              <div style={{ color: "#10b981", fontWeight: "900", fontSize: "1.1rem" }}>
                 {lastCreatedTicket.text}
               </div>
               <div style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>
@@ -272,15 +263,13 @@ export default function NewTicketPage() {
       <div style={{ display: "flex", justifyContent: "center", gap: "12px", marginBottom: "30px" }}>
         <button
           onClick={() => setActiveTab("chat")}
+          className={`ticket-nav-tab ${activeTab === "chat" ? "active" : ""}`}
           style={{
             padding: "12px 26px",
             borderRadius: "14px",
             fontWeight: "bold",
             fontSize: "1rem",
             cursor: "pointer",
-            border: activeTab === "chat" ? "2px solid #00b4d8" : "1px solid var(--border-glass, rgba(255,255,255,0.1))",
-            background: activeTab === "chat" ? "linear-gradient(135deg, rgba(0, 180, 216, 0.25), rgba(37, 99, 235, 0.25))" : "var(--bg-glass, rgba(255,255,255,0.03))",
-            color: activeTab === "chat" ? "#38bdf8" : "var(--text-muted)",
             display: "flex",
             alignItems: "center",
             gap: "8px",
@@ -293,15 +282,13 @@ export default function NewTicketPage() {
 
         <button
           onClick={() => setActiveTab("form")}
+          className={`ticket-nav-tab ${activeTab === "form" ? "active" : ""}`}
           style={{
             padding: "12px 26px",
             borderRadius: "14px",
             fontWeight: "bold",
             fontSize: "1rem",
             cursor: "pointer",
-            border: activeTab === "form" ? "2px solid #00b4d8" : "1px solid var(--border-glass, rgba(255,255,255,0.1))",
-            background: activeTab === "form" ? "linear-gradient(135deg, rgba(0, 180, 216, 0.25), rgba(37, 99, 235, 0.25))" : "var(--bg-glass, rgba(255,255,255,0.03))",
-            color: activeTab === "form" ? "#38bdf8" : "var(--text-muted)",
             display: "flex",
             alignItems: "center",
             gap: "8px",
@@ -318,21 +305,18 @@ export default function NewTicketPage() {
         <div style={{ display: "grid", gridTemplateColumns: "1fr 340px", gap: "25px" }} className="ticket-chat-layout">
           
           {/* Main Chat Box */}
-          <div className="glass-panel" style={{
+          <div className="glass-panel ticket-chat-box" style={{
             borderRadius: "24px",
-            border: "1px solid var(--border-glass, rgba(255, 255, 255, 0.1))",
-            background: "var(--bg-secondary, rgba(15, 23, 42, 0.7))",
             display: "flex",
             flexDirection: "column",
             height: "650px",
             overflow: "hidden",
-            boxShadow: "0 10px 30px rgba(0, 0, 0, 0.25)"
+            boxShadow: "0 10px 30px rgba(0, 0, 0, 0.15)"
           }}>
             {/* Chat Header */}
-            <div style={{
+            <div className="ticket-chat-header" style={{
               padding: "16px 20px",
               borderBottom: "1px solid var(--border-glass, rgba(255, 255, 255, 0.1))",
-              background: "rgba(0, 180, 216, 0.08)",
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center"
@@ -350,7 +334,7 @@ export default function NewTicketPage() {
                   <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: 800, color: "var(--text-main)" }}>
                     مساعد الدعم الفني الذكي — Ared AI
                   </h3>
-                  <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "0.8rem", color: "#10b981" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "0.8rem", color: "#10b981", fontWeight: "bold" }}>
                     <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#10b981" }}></span>
                     <span>متصل الآن ويرسل البلاغات لتيليجرام</span>
                   </div>
@@ -362,10 +346,10 @@ export default function NewTicketPage() {
                   role: "assistant",
                   content: "مرحباً بك مجدداً! كيف يمكنني مساعدتك اليوم؟ اذكر لي المشكلة أو رقم الطلب لرفع تذكرة فورية للإدارة."
                 }])}
+                className="ticket-refresh-btn"
                 style={{
-                  background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)",
-                  color: "var(--text-muted)", padding: "6px 12px", borderRadius: "8px",
-                  fontSize: "0.8rem", cursor: "pointer"
+                  padding: "6px 12px", borderRadius: "8px",
+                  fontSize: "0.8rem", cursor: "pointer", fontWeight: 600
                 }}
               >
                 🔄 محادثة جديدة
@@ -373,9 +357,8 @@ export default function NewTicketPage() {
             </div>
 
             {/* Quick Prompt Chips */}
-            <div style={{
+            <div className="ticket-quick-prompts" style={{
               padding: "10px 15px",
-              background: "rgba(0,0,0,0.15)",
               borderBottom: "1px solid var(--border-glass, rgba(255,255,255,0.05))",
               display: "flex",
               gap: "8px",
@@ -386,15 +369,13 @@ export default function NewTicketPage() {
                 <button
                   key={idx}
                   onClick={() => handleSendChatMessage(p.text)}
+                  className="ticket-chip"
                   style={{
-                    background: "rgba(56, 189, 248, 0.08)",
-                    border: "1px solid rgba(56, 189, 248, 0.25)",
-                    color: "#38bdf8",
-                    padding: "6px 12px",
+                    padding: "6px 14px",
                     borderRadius: "999px",
-                    fontSize: "0.8rem",
+                    fontSize: "0.82rem",
                     cursor: "pointer",
-                    fontWeight: 600,
+                    fontWeight: 700,
                     transition: "all 0.2s ease"
                   }}
                 >
@@ -404,7 +385,7 @@ export default function NewTicketPage() {
             </div>
 
             {/* Messages Scroll Area */}
-            <div style={{
+            <div className="ticket-messages-scroll" style={{
               flex: 1,
               padding: "20px",
               overflowY: "auto",
@@ -415,20 +396,16 @@ export default function NewTicketPage() {
               {messages.map((msg, index) => (
                 <div
                   key={index}
+                  className={`ticket-bubble ${msg.role === "user" ? "ticket-user-bubble" : "ticket-assistant-bubble"}`}
                   style={{
                     alignSelf: msg.role === "user" ? "flex-end" : "flex-start",
                     maxWidth: "85%",
-                    background: msg.role === "user"
-                      ? "linear-gradient(135deg, #0284c7, #2563eb)"
-                      : "rgba(255, 255, 255, 0.05)",
-                    color: "#ffffff",
                     padding: "12px 18px",
                     borderRadius: "18px",
                     borderBottomLeftRadius: msg.role === "assistant" ? "4px" : "18px",
                     borderBottomRightRadius: msg.role === "user" ? "4px" : "18px",
-                    border: msg.role === "assistant" ? "1px solid rgba(255, 255, 255, 0.1)" : "none",
                     fontSize: "0.98rem",
-                    lineHeight: "1.6",
+                    lineHeight: "1.65",
                     whiteSpace: "pre-wrap",
                     direction: "rtl"
                   }}
@@ -438,20 +415,19 @@ export default function NewTicketPage() {
               ))}
 
               {isAiLoading && (
-                <div style={{
+                <div className="ticket-bubble ticket-assistant-bubble" style={{
                   alignSelf: "flex-start",
-                  background: "rgba(255, 255, 255, 0.05)",
-                  color: "#38bdf8",
                   padding: "12px 18px",
                   borderRadius: "18px",
                   borderBottomLeftRadius: "4px",
-                  border: "1px solid rgba(255, 255, 255, 0.1)",
                   display: "flex",
                   alignItems: "center",
                   gap: "8px",
-                  fontSize: "0.9rem"
+                  fontSize: "0.9rem",
+                  color: "var(--brand-blue, #0284c7)",
+                  fontWeight: "bold"
                 }}>
-                  <span>جاري التواصل ومعالجة طلبك وإرساله لتيليجرام</span>
+                  <span>جاري التواصل وتجهيز إشعار تيليجرام</span>
                   <span style={{ animation: "blink 1.4s infinite both" }}>.</span>
                   <span style={{ animation: "blink 1.4s infinite both 0.2s" }}>.</span>
                   <span style={{ animation: "blink 1.4s infinite both 0.4s" }}>.</span>
@@ -463,10 +439,10 @@ export default function NewTicketPage() {
             {/* Input Footer */}
             <form
               onSubmit={(e) => { e.preventDefault(); handleSendChatMessage(); }}
+              className="ticket-chat-form"
               style={{
                 padding: "15px 20px",
                 borderTop: "1px solid var(--border-glass, rgba(255, 255, 255, 0.1))",
-                background: "rgba(0, 0, 0, 0.2)",
                 display: "flex",
                 gap: "12px"
               }}
@@ -476,16 +452,15 @@ export default function NewTicketPage() {
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
                 placeholder="اكتب مشكلتك، استفسارك، أو رقم الطلب هنا..."
+                className="ticket-chat-input"
                 style={{
                   flex: 1,
-                  background: "rgba(255, 255, 255, 0.06)",
-                  border: "1px solid rgba(255, 255, 255, 0.15)",
                   borderRadius: "14px",
                   padding: "12px 18px",
-                  color: "#ffffff",
                   fontSize: "0.98rem",
                   outline: "none",
-                  direction: "rtl"
+                  direction: "rtl",
+                  fontFamily: "inherit"
                 }}
               />
               <button
@@ -519,7 +494,7 @@ export default function NewTicketPage() {
             <div className="glass-panel" style={{
               padding: "24px", borderRadius: "20px",
               border: "1px solid rgba(56, 189, 248, 0.3)",
-              background: "rgba(56, 189, 248, 0.04)"
+              background: "rgba(56, 189, 248, 0.05)"
             }}>
               <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
                 <span style={{ fontSize: "1.8rem" }}>⚡</span>
@@ -535,8 +510,8 @@ export default function NewTicketPage() {
             {/* Policy & Guarantee Box */}
             <div className="glass-panel" style={{
               padding: "24px", borderRadius: "20px",
-              border: "1px solid rgba(250, 204, 21, 0.3)",
-              background: "rgba(250, 204, 21, 0.04)"
+              border: "1px solid rgba(250, 204, 21, 0.35)",
+              background: "rgba(250, 204, 21, 0.05)"
             }}>
               <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
                 <span style={{ fontSize: "1.8rem" }}>🛡️</span>
@@ -550,7 +525,7 @@ export default function NewTicketPage() {
               <Link
                 href="/terms#refund-policy"
                 style={{
-                  color: "#facc15", textDecoration: "none", fontWeight: "bold", fontSize: "0.85rem",
+                  color: "#eab308", textDecoration: "none", fontWeight: "bold", fontSize: "0.88rem",
                   display: "inline-flex", alignItems: "center", gap: "6px"
                 }}
               >
@@ -605,26 +580,26 @@ export default function NewTicketPage() {
           {formSuccess && (
             <div style={{
               background: "rgba(16, 185, 129, 0.15)", border: "1px solid #10b981", borderRadius: "16px",
-              padding: "20px", marginBottom: "25px", color: "#fff", textAlign: "center"
+              padding: "20px", marginBottom: "25px", color: "var(--text-main)", textAlign: "center"
             }}>
               <div style={{ fontSize: "2rem", marginBottom: "8px" }}>🎉</div>
-              <h3 style={{ margin: "0 0 8px", color: "#34d399", fontSize: "1.3rem" }}>
+              <h3 style={{ margin: "0 0 8px", color: "#10b981", fontSize: "1.3rem", fontWeight: 900 }}>
                 تم فتح التذكرة بنجاح ({formSuccess.ticket_id})
               </h3>
-              <p style={{ margin: 0, color: "#e2e8f0" }}>{formSuccess.message}</p>
+              <p style={{ margin: 0, color: "var(--text-main)" }}>{formSuccess.message}</p>
             </div>
           )}
 
           {formError && (
             <div style={{
               background: "rgba(239, 68, 68, 0.15)", border: "1px solid #ef4444", borderRadius: "16px",
-              padding: "15px 20px", marginBottom: "25px", color: "#fca5a5"
+              padding: "15px 20px", marginBottom: "25px", color: "#ef4444", fontWeight: "bold"
             }}>
               ⚠️ {formError}
             </div>
           )}
 
-          <form onSubmit={handleFormSubmit} className="glass-panel" style={{
+          <form onSubmit={handleFormSubmit} className="glass-panel ticket-form-panel" style={{
             padding: "35px", borderRadius: "24px", display: "flex", flexDirection: "column", gap: "20px"
           }}>
             <h2 style={{ fontSize: "1.4rem", fontWeight: 800, margin: "0 0 10px", color: "var(--text-main)" }}>
@@ -641,10 +616,10 @@ export default function NewTicketPage() {
                   value={formData.name}
                   onChange={e => setFormData({ ...formData, name: e.target.value })}
                   placeholder="مثال: أحمد محمد"
+                  className="ticket-form-input"
                   style={{
                     width: "100%", padding: "12px 14px", borderRadius: "12px",
-                    background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-glass)",
-                    color: "var(--text-main)", outline: "none"
+                    outline: "none"
                   }}
                 />
               </div>
@@ -658,10 +633,10 @@ export default function NewTicketPage() {
                   value={formData.phone}
                   onChange={e => setFormData({ ...formData, phone: e.target.value })}
                   placeholder="مثال: +249123456789"
+                  className="ticket-form-input"
                   style={{
                     width: "100%", padding: "12px 14px", borderRadius: "12px",
-                    background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-glass)",
-                    color: "var(--text-main)", outline: "none"
+                    outline: "none"
                   }}
                 />
               </div>
@@ -677,10 +652,10 @@ export default function NewTicketPage() {
                   value={formData.email}
                   onChange={e => setFormData({ ...formData, email: e.target.value })}
                   placeholder="name@gmail.com"
+                  className="ticket-form-input"
                   style={{
                     width: "100%", padding: "12px 14px", borderRadius: "12px",
-                    background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-glass)",
-                    color: "var(--text-main)", outline: "none"
+                    outline: "none"
                   }}
                 />
               </div>
@@ -694,10 +669,10 @@ export default function NewTicketPage() {
                   value={formData.order_id}
                   onChange={e => setFormData({ ...formData, order_id: e.target.value })}
                   placeholder="مثال: 1042"
+                  className="ticket-form-input"
                   style={{
                     width: "100%", padding: "12px 14px", borderRadius: "12px",
-                    background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-glass)",
-                    color: "var(--text-main)", outline: "none"
+                    outline: "none"
                   }}
                 />
               </div>
@@ -711,10 +686,10 @@ export default function NewTicketPage() {
                 <select
                   value={formData.category}
                   onChange={e => setFormData({ ...formData, category: e.target.value })}
+                  className="ticket-form-select"
                   style={{
                     width: "100%", padding: "12px 14px", borderRadius: "12px",
-                    background: "var(--bg-secondary, #0f172a)", border: "1px solid var(--border-glass)",
-                    color: "var(--text-main)", outline: "none"
+                    outline: "none"
                   }}
                 >
                   <option value="استرجاع رصيد">استرجاع رصيد (Refund)</option>
@@ -732,10 +707,10 @@ export default function NewTicketPage() {
                 <select
                   value={formData.urgency}
                   onChange={e => setFormData({ ...formData, urgency: e.target.value })}
+                  className="ticket-form-select"
                   style={{
                     width: "100%", padding: "12px 14px", borderRadius: "12px",
-                    background: "var(--bg-secondary, #0f172a)", border: "1px solid var(--border-glass)",
-                    color: "var(--text-main)", outline: "none"
+                    outline: "none"
                   }}
                 >
                   <option value="عادية">🟢 عادية</option>
@@ -755,10 +730,10 @@ export default function NewTicketPage() {
                 value={formData.subject}
                 onChange={e => setFormData({ ...formData, subject: e.target.value })}
                 placeholder="مثال: طلب إلغاء واسترجاع رصيد للطلب #1042"
+                className="ticket-form-input"
                 style={{
                   width: "100%", padding: "12px 14px", borderRadius: "12px",
-                  background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-glass)",
-                  color: "var(--text-main)", outline: "none"
+                  outline: "none"
                 }}
               />
             </div>
@@ -773,10 +748,10 @@ export default function NewTicketPage() {
                 value={formData.details}
                 onChange={e => setFormData({ ...formData, details: e.target.value })}
                 placeholder="اشرح المشكلة بالتفصيل واذكر أي تفاصيل إضافية للمساعدة في حلها سريعاً..."
+                className="ticket-form-textarea"
                 style={{
                   width: "100%", padding: "14px", borderRadius: "14px",
-                  background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-glass)",
-                  color: "var(--text-main)", outline: "none", resize: "vertical", fontFamily: "inherit"
+                  outline: "none", resize: "vertical", fontFamily: "inherit"
                 }}
               />
             </div>
@@ -799,7 +774,147 @@ export default function NewTicketPage() {
         </div>
       )}
 
+      {/* ── STYLES with Strict Light/Dark Mode Handlers ── */}
       <style>{`
+        /* Default Dark Mode Styles */
+        .ticket-chat-box {
+          background: rgba(11, 29, 56, 0.75) !important;
+          border: 1px solid rgba(93, 157, 236, 0.25) !important;
+        }
+        .ticket-chat-header {
+          background: rgba(0, 180, 216, 0.08);
+        }
+        .ticket-refresh-btn {
+          background: rgba(255,255,255,0.06);
+          border: 1px solid rgba(255,255,255,0.12);
+          color: var(--text-muted);
+        }
+        .ticket-quick-prompts {
+          background: rgba(0,0,0,0.2);
+        }
+        .ticket-chip {
+          background: rgba(56, 189, 248, 0.08);
+          border: 1px solid rgba(56, 189, 248, 0.25);
+          color: #38bdf8;
+        }
+        .ticket-assistant-bubble {
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          color: #f8fafc;
+        }
+        .ticket-user-bubble {
+          background: linear-gradient(135deg, #0284c7, #2563eb);
+          color: #ffffff;
+        }
+        .ticket-chat-form {
+          background: rgba(0, 0, 0, 0.2);
+        }
+        .ticket-chat-input {
+          background: rgba(255, 255, 255, 0.06);
+          border: 1px solid rgba(255, 255, 255, 0.15);
+          color: #ffffff;
+        }
+        .ticket-chat-input::placeholder {
+          color: rgba(255, 255, 255, 0.55);
+        }
+        .ticket-nav-tab {
+          border: 1px solid var(--border-glass, rgba(255,255,255,0.1));
+          background: var(--bg-glass, rgba(255,255,255,0.03));
+          color: var(--text-muted);
+        }
+        .ticket-nav-tab.active {
+          border: 2px solid #00b4d8 !important;
+          background: linear-gradient(135deg, rgba(0, 180, 216, 0.25), rgba(37, 99, 235, 0.25)) !important;
+          color: #38bdf8 !important;
+        }
+        .ticket-form-input, .ticket-form-select, .ticket-form-textarea {
+          background: rgba(255, 255, 255, 0.05) !important;
+          border: 1px solid var(--border-glass) !important;
+          color: #ffffff !important;
+        }
+
+        /* ── LIGHT MODE OVERRIDES: Strict Black Text & High Contrast ── */
+        [data-theme="light"] .ticket-chat-box {
+          background: #ffffff !important;
+          border: 1px solid rgba(96, 145, 210, 0.25) !important;
+          box-shadow: 0 14px 35px rgba(30, 60, 110, 0.08) !important;
+        }
+        [data-theme="light"] .ticket-chat-header {
+          background: #f0f9ff !important;
+          border-bottom-color: rgba(96, 145, 210, 0.15) !important;
+        }
+        [data-theme="light"] .ticket-refresh-btn {
+          background: #ffffff !important;
+          border: 1px solid #cbd5e1 !important;
+          color: #1e293b !important;
+        }
+        [data-theme="light"] .ticket-quick-prompts {
+          background: #f8fafc !important;
+          border-bottom-color: #e2e8f0 !important;
+        }
+        [data-theme="light"] .ticket-chip {
+          background: #ffffff !important;
+          border: 1px solid #bae6fd !important;
+          color: #0284c7 !important;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
+        }
+        [data-theme="light"] .ticket-chip:hover {
+          background: #e0f2fe !important;
+        }
+        [data-theme="light"] .ticket-assistant-bubble {
+          background: #f8fafc !important;
+          border: 1px solid #cbd5e1 !important;
+          color: #0f172a !important; /* STRICT BLACK / DARK SLATE FOR READABILITY */
+          font-weight: 500 !important;
+          box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05) !important;
+        }
+        [data-theme="light"] .ticket-user-bubble {
+          background: linear-gradient(135deg, #0284c7, #2563eb) !important;
+          color: #ffffff !important;
+          box-shadow: 0 3px 8px rgba(2, 132, 199, 0.25) !important;
+        }
+        [data-theme="light"] .ticket-chat-form {
+          background: #f8fafc !important;
+          border-top-color: #e2e8f0 !important;
+        }
+        [data-theme="light"] .ticket-chat-input {
+          background: #ffffff !important;
+          border: 1px solid #cbd5e1 !important;
+          color: #0f172a !important;
+          -webkit-text-fill-color: #0f172a !important;
+        }
+        [data-theme="light"] .ticket-chat-input::placeholder {
+          color: #64748b !important;
+          -webkit-text-fill-color: #64748b !important;
+        }
+        [data-theme="light"] .ticket-nav-tab {
+          background: #ffffff !important;
+          border-color: #cbd5e1 !important;
+          color: #475569 !important;
+        }
+        [data-theme="light"] .ticket-nav-tab.active {
+          background: #e0f2fe !important;
+          border-color: #0284c7 !important;
+          color: #0284c7 !important;
+        }
+        [data-theme="light"] .ticket-form-panel {
+          background: #ffffff !important;
+          border-color: rgba(96, 145, 210, 0.25) !important;
+        }
+        [data-theme="light"] .ticket-form-input,
+        [data-theme="light"] .ticket-form-select,
+        [data-theme="light"] .ticket-form-textarea {
+          background: #ffffff !important;
+          border: 1px solid #cbd5e1 !important;
+          color: #0f172a !important;
+          -webkit-text-fill-color: #0f172a !important;
+        }
+        [data-theme="light"] .ticket-form-input::placeholder,
+        [data-theme="light"] .ticket-form-textarea::placeholder {
+          color: #64748b !important;
+          -webkit-text-fill-color: #64748b !important;
+        }
+
         @media (max-width: 860px) {
           .ticket-chat-layout {
             grid-template-columns: 1fr !important;
