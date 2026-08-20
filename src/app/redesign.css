@@ -173,8 +173,14 @@ input, select, textarea {
   margin: 8px 0 26px !important;
   box-shadow: 0 24px 60px rgba(0,35,90,.22);
 }
-.banner-info { border-radius: 18px !important; }
-[data-theme="light"] .banner-info { background: rgba(255,255,255,.74) !important; border-color: rgba(70,130,210,.18) !important; }
+
+.banner-info {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
 
 .bottom-nav {
   border-top: 1px solid rgba(48,139,245,.25) !important;
@@ -191,12 +197,10 @@ input, select, textarea {
 }
 @media (max-width: 560px) {
   .hero-banner { min-height: 390px !important; }
-  .banner-info { padding: 16px 18px !important; }
   .banner-title { font-size: 1.55rem !important; }
   .section-title { font-size: 1.35rem; }
   .glass-panel { border-radius: 16px !important; }
 }
-
 
 /* Dark Mode Borders for Sections */
 [data-theme="dark"] .glass-panel,
@@ -211,6 +215,9 @@ input, select, textarea {
 
 /* Light Mode Banner Text and Select Options Fixes */
 [data-theme="light"] .banner-info {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
   color: #111827 !important;
 }
 [data-theme="light"] .banner-info .banner-title {
@@ -228,4 +235,5 @@ input, select, textarea {
   background-color: #0b1d38 !important;
   color: #f0f6fc !important;
 }
+
 
