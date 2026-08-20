@@ -101,9 +101,9 @@ export default function HeroSlider({ customSlides = [] }) {
 
               <div className="banner-info" style={{ flex: "1 1 50%", minWidth: "300px", zIndex: 3 }}>
                 {slide.badge && <span className="banner-badge" style={{ display: "inline-block", padding: "6px 12px", borderRadius: "30px", fontSize: "0.85rem", fontWeight: "bold", marginBottom: "15px", borderColor: accentColor, color: accentColor, background: `${accentColor}22`, border: `1px solid ${accentColor}` }}>{slide.badge}</span>}
-                <h1 className="banner-title" style={{ fontSize: "2.5rem", fontWeight: "900", color: "#fff", marginBottom: "10px", lineHeight: "1.2" }}>
+                <h1 className="banner-title" style={{ fontSize: "2.5rem", fontWeight: "900", color: "var(--text-main)", marginBottom: "10px", lineHeight: "1.2" }}>
                   {slide.title}<br />
-                  <span style={{ backgroundImage: `linear-gradient(135deg,#fff 0%,${accentColor} 100%)`, WebkitBackgroundClip: "text", backgroundClip: "text", WebkitTextFillColor: "transparent" }}>{slide.highlight}</span>
+                  <span style={{ backgroundImage: `linear-gradient(135deg, var(--text-main) 0%, ${accentColor} 100%)`, WebkitBackgroundClip: "text", backgroundClip: "text", WebkitTextFillColor: "transparent" }}>{slide.highlight}</span>
                 </h1>
                 <p className="banner-desc" style={{ color: "var(--text-muted)", fontSize: "1.1rem", marginBottom: "25px", maxWidth: "80%" }}>{slide.desc}</p>
 
