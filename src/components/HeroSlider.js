@@ -101,11 +101,11 @@ export default function HeroSlider({ customSlides = [] }) {
 
               <div className="banner-info" style={{ flex: "1 1 50%", minWidth: "300px", zIndex: 3 }}>
                 {slide.badge && <span className="banner-badge" style={{ display: "inline-block", padding: "6px 12px", borderRadius: "30px", fontSize: "0.85rem", fontWeight: "bold", marginBottom: "15px", borderColor: accentColor, color: accentColor, background: `${accentColor}22`, border: `1px solid ${accentColor}` }}>{slide.badge}</span>}
-                <h1 className="banner-title" style={{ fontSize: "2.5rem", fontWeight: "900", color: "var(--text-main)", marginBottom: "10px", lineHeight: "1.2" }}>
+                <h1 className="banner-title" style={{ fontSize: "2.5rem", fontWeight: "900", color: "#ffffff", marginBottom: "10px", lineHeight: "1.2", textShadow: "0 2px 10px rgba(0,0,0,0.6)" }}>
                   {slide.title}<br />
-                  <span style={{ backgroundImage: `linear-gradient(135deg, var(--text-main) 0%, ${accentColor} 100%)`, WebkitBackgroundClip: "text", backgroundClip: "text", WebkitTextFillColor: "transparent" }}>{slide.highlight}</span>
+                  <span style={{ backgroundImage: `linear-gradient(135deg, #ffffff 0%, ${accentColor} 100%)`, WebkitBackgroundClip: "text", backgroundClip: "text", WebkitTextFillColor: "transparent" }}>{slide.highlight}</span>
                 </h1>
-                <p className="banner-desc" style={{ color: "var(--text-muted)", fontSize: "1.1rem", marginBottom: "25px", maxWidth: "80%" }}>{slide.desc}</p>
+                <p className="banner-desc" style={{ color: "rgba(255, 255, 255, 0.9)", fontSize: "1.1rem", marginBottom: "25px", maxWidth: "80%", textShadow: "0 1px 6px rgba(0,0,0,0.6)" }}>{slide.desc}</p>
 
                 {slide.link && (
                   <Link href={slide.link} className="hero-cta-btn" style={{ "--cta-color": accentColor, display: "inline-block", padding: "12px 30px", borderRadius: "8px", fontWeight: "bold", color: "#fff", background: accentColor, textDecoration: "none", boxShadow: `0 4px 15px ${accentColor}40` }}>

@@ -213,20 +213,7 @@ input, select, textarea {
   border: 1px solid rgba(255, 255, 255, 0.12) !important;
 }
 
-/* Light Mode Banner Text and Select Options Fixes */
-[data-theme="light"] .banner-info {
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  color: #111827 !important;
-}
-[data-theme="light"] .banner-info .banner-title {
-  color: #111827 !important;
-}
-[data-theme="light"] .banner-info .banner-desc {
-  color: #374151 !important;
-}
-
+/* Select Options Theming Fixes */
 [data-theme="light"] select option {
   background-color: #ffffff !important;
   color: #111827 !important;
@@ -235,5 +222,6 @@ input, select, textarea {
   background-color: #0b1d38 !important;
   color: #f0f6fc !important;
 }
+
 
 
