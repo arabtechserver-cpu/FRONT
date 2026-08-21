@@ -8,7 +8,8 @@ import PasswordChangeModal from "./PasswordChangeModal";
 import TransactionPasswordModal from "./TransactionPasswordModal";
 import ProtectionModal from "./ProtectionModal";
 import Footer from "./Footer";
-import LanguageSwitcher from "./LanguageSwitcher";
+import LanguageSwitcher from './LanguageSwitcher';
+import ReferralModal from './ReferralModal';
 import AiChatWidget from "./AiChatWidget";
 import { FEATURES } from "@/features";
 import { useI18n } from "@/lib/i18n";
@@ -80,6 +81,11 @@ export default function MainLayout({ children }) {
   }, [isCustomerLoggedIn]);
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const refCode = urlParams.get('ref');
+      if (refCode) localStorage.setItem('ref_code', refCode);
+    }
     setIsMounted(true);
 
     // Theme
@@ -800,6 +806,7 @@ export default function MainLayout({ children }) {
         </div>
 
         {/* Child Pages Content */}
+        <ReferralModal customerUser={customerUser} API_BASE_URL={API_BASE_URL} />
         <main className="main-content-inner">
           {children}
           <PasswordChangeModal />
@@ -1186,3 +1193,7 @@ export default function MainLayout({ children }) {
     </div>
   );
 }
+
+
+
+

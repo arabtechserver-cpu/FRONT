@@ -628,7 +628,7 @@ export default function ServiceDetail({ params, initialService = null }) {
         computedPrice = Number(((selectedPackage.price ?? 0) * multiplier).toFixed(2));
       }
     }
-    const computedPackageName = isDynamic
+      const computedPackageName = isDynamic
       ? `كمية: ${customQuantity}`
       : (selectedPackage?.requires_quantity ? `${selectedPackage.name} (الكمية: ${customQuantity || 1})` : selectedPackage.name);
 
@@ -2252,3 +2252,5 @@ export default function ServiceDetail({ params, initialService = null }) {
     </>
   );
 }
+
+

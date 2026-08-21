@@ -20,7 +20,9 @@ export default function OrdersTab({
   deleteOrder,
   walletTransactions,
   filteredWalletTransactions,
-  apiProviders = []
+  apiProviders = [],
+  apiAutoSubmit,
+  handleToggleAutoSubmit
 }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(25);
@@ -96,6 +98,17 @@ export default function OrdersTab({
         </div>
 
         <div className="status-tabs-wrapper">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(99, 102, 241, 0.1)', padding: '6px 12px', borderRadius: '12px', border: '1px solid rgba(99, 102, 241, 0.2)' }}>
+            <label style={{ color: '#818cf8', fontSize: '0.85rem', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span>🤖 الموافقة التلقائية بالذكاء الاصطناعي (API)</span>
+              <input
+                type="checkbox"
+                checked={apiAutoSubmit === true}
+                onChange={(e) => handleToggleAutoSubmit(e.target.checked)}
+                style={{ width: '18px', height: '18px', cursor: 'pointer', accentColor: '#4f46e5' }}
+              />
+            </label>
+          </div>
           <button
             className={`status-tab-btn ${orderFilter === "all" ? "active" : ""}`}
             onClick={() => setOrderFilter("all")}
@@ -127,7 +140,7 @@ export default function OrdersTab({
       <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
         {filteredOrders.length === 0 ? (
           <div style={{ textAlign: "center", padding: "48px", color: "#64748b", fontSize: "1rem", fontWeight: 600, background: "rgba(255,255,255,0.02)", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.04)" }}>
-            لا توجد طلبات مطابقة للفلتر الحالي.
+            لا توجد أي طلبات شحن تطابق معايير البحث.
           </div>
         ) : (
           paginatedOrders.map((order) => (
@@ -198,7 +211,7 @@ export default function OrdersTab({
                   )}
 {order.api_provider_id && (
                     <div style={{ fontSize: "0.75rem", background: "rgba(34, 211, 238, 0.12)", color: "#22d3ee", padding: "4px 10px", borderRadius: "8px", display: "inline-flex", gap: "6px", alignItems: "center", marginTop: "6px", fontWeight: "bold" }}>
-                      <span>🔗 مرتبط بمزود: {order.api_provider_name || apiProviders.find(p => Number(p.id) === Number(order.api_provider_id))?.name || `مجهول (${order.api_provider_id})`}</span>
+                      <span>🔗 مرتبط بمزود: {apiProviders.find(p => p.id === order.api_provider_id)?.name || `مجهول (${order.api_provider_id})`}</span>
                     </div>
                   )}
                   {order.api_order_id && (
@@ -407,7 +420,7 @@ export default function OrdersTab({
               {filteredWalletTransactions.length === 0 ? (
                 <tr>
                   <td colSpan="8" style={{ textAlign: "center", padding: "36px", color: "#64748b" }}>
-                    لا توجد حركات محفظة مطابقة للفلتر الحالي.
+                    لا توجد حركات محفظة مطابقة للبحث.
                   </td>
                 </tr>
               ) : (
