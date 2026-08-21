@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { API_BASE_URL } from "@/config";
 import { useI18n } from "@/lib/i18n";
+import { formatWalletTransaction } from "@/lib/walletTransactions.mjs";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 
 const WalletPayPalButtons = dynamic(() => import("@/components/WalletPayPalButtons"), {
@@ -42,6 +43,7 @@ export default function WalletPage() {
   const [token, setToken] = useState("");
   const [customer, setCustomer] = useState(null);
   const [requests, setRequests] = useState([]);
+  const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [amount, setAmount] = useState("");
@@ -235,15 +237,17 @@ export default function WalletPage() {
       try {
         const headers = { Authorization: `Bearer ${token}` };
 
-        const [meRes, requestsRes] = await Promise.all([
+        const [meRes, requestsRes, transactionsRes] = await Promise.all([
           fetch(`${API_BASE_URL}/api/customer/me`, { headers }),
-          fetch(`${API_BASE_URL}/api/customer/wallet-requests`, { headers })
+          fetch(`${API_BASE_URL}/api/customer/wallet-requests`, { headers }),
+          fetch(`${API_BASE_URL}/api/customer/wallet-transactions?limit=100`, { headers })
         ]);
         if (!meRes.ok) throw new Error("فشل تحميل بيانات المحفظة.");
         if (!requestsRes.ok) throw new Error("فشل تحميل الطلبات.");
-        const [meData, requestsData] = await Promise.all([meRes.json(), requestsRes.json()]);
+        const [meData, requestsData, transactionsData] = await Promise.all([meRes.json(), requestsRes.json(), transactionsRes.ok ? transactionsRes.json() : Promise.resolve([])]);
         setCustomer(meData);
         setRequests(requestsData);
+        setTransactions(Array.isArray(transactionsData) ? transactionsData : []);
       } catch (err) {
         setError(err.message || "تعذر تحميل بيانات المحفظة.");
       } finally {
@@ -809,33 +813,23 @@ export default function WalletPage() {
                 </tr>
               </thead>
               <tbody>
-                <tr style={{ borderBottom: "1px solid var(--border-color)", transition: "background 0.2s" }} onMouseEnter={(e)=>e.currentTarget.style.background="var(--bg-hover)"} onMouseLeave={(e)=>e.currentTarget.style.background="transparent"}>
-                  <td style={{ padding: "16px 20px", fontSize: "0.95rem" }}>2024-05-20 14:35</td>
-                  <td style={{ padding: "16px 20px", fontSize: "0.95rem" }}>شحن رصيد</td>
-                  <td style={{ padding: "16px 20px", fontSize: "0.95rem", color: "var(--text-muted)" }}>إيداع عبر تحويل بنكي</td>
-                  <td style={{ padding: "16px 20px", fontSize: "0.95rem", fontWeight: "bold", color: "#10b981", direction: "ltr", textAlign: "right" }}>+500.00 SAR</td>
-                  <td style={{ padding: "16px 20px" }}><span style={{ background: "rgba(16, 185, 129, 0.1)", color: "#10b981", padding: "4px 12px", borderRadius: "8px", fontSize: "0.85rem", fontWeight: "bold", border: "1px solid rgba(16, 185, 129, 0.2)" }}>تم الشحن</span></td>
-                </tr>
-                <tr style={{ borderBottom: "1px solid var(--border-color)", transition: "background 0.2s" }} onMouseEnter={(e)=>e.currentTarget.style.background="var(--bg-hover)"} onMouseLeave={(e)=>e.currentTarget.style.background="transparent"}>
-                  <td style={{ padding: "16px 20px", fontSize: "0.95rem" }}>2024-05-18 10:22</td>
-                  <td style={{ padding: "16px 20px", fontSize: "0.95rem" }}>شحن رصيد</td>
-                  <td style={{ padding: "16px 20px", fontSize: "0.95rem", color: "var(--text-muted)" }}>إيداع عبر تحويل بنكي</td>
-                  <td style={{ padding: "16px 20px", fontSize: "0.95rem", fontWeight: "bold", color: "#10b981", direction: "ltr", textAlign: "right" }}>+300.00 SAR</td>
-                  <td style={{ padding: "16px 20px" }}><span style={{ background: "rgba(16, 185, 129, 0.1)", color: "#10b981", padding: "4px 12px", borderRadius: "8px", fontSize: "0.85rem", fontWeight: "bold", border: "1px solid rgba(16, 185, 129, 0.2)" }}>تم الشحن</span></td>
-                </tr>
-                <tr style={{ borderBottom: "1px solid var(--border-color)", transition: "background 0.2s" }} onMouseEnter={(e)=>e.currentTarget.style.background="var(--bg-hover)"} onMouseLeave={(e)=>e.currentTarget.style.background="transparent"}>
-                  <td style={{ padding: "16px 20px", fontSize: "0.95rem" }}>2024-05-15 16:40</td>
-                  <td style={{ padding: "16px 20px", fontSize: "0.95rem" }}>استخدام</td>
-                  <td style={{ padding: "16px 20px", fontSize: "0.95rem", color: "var(--text-muted)" }}>سداد فاتورة خدمة</td>
-                  <td style={{ padding: "16px 20px", fontSize: "0.95rem", fontWeight: "bold", color: "var(--text-main)", direction: "ltr", textAlign: "right" }}>-150.00 SAR</td>
-                  <td style={{ padding: "16px 20px" }}><span style={{ background: "rgba(59, 130, 246, 0.1)", color: "var(--primary-color)", padding: "4px 12px", borderRadius: "8px", fontSize: "0.85rem", fontWeight: "bold", border: "1px solid rgba(59, 130, 246, 0.2)" }}>مكتمل</span></td>
-                </tr>
+                {transactions.length === 0 ? (
+                  <tr><td colSpan="5" style={{ padding: "28px 20px", textAlign: "center", color: "var(--text-muted)" }}>لا توجد معاملات مسجلة حتى الآن.</td></tr>
+                ) : transactions.map((transaction) => {
+                  const row = formatWalletTransaction(transaction);
+                  const typeLabel = row.isCredit ? "شحن رصيد" : "استخدام";
+                  return <tr key={row.id} style={{ borderBottom: "1px solid var(--border-color)", transition: "background 0.2s" }} onMouseEnter={(e)=>e.currentTarget.style.background="var(--bg-hover)"} onMouseLeave={(e)=>e.currentTarget.style.background="transparent"}>
+                    <td style={{ padding: "16px 20px", fontSize: "0.95rem" }}>{row.created_at ? new Date(row.created_at).toLocaleString("ar-EG") : "-"}</td>
+                    <td style={{ padding: "16px 20px", fontSize: "0.95rem" }}>{typeLabel}</td>
+                    <td style={{ padding: "16px 20px", fontSize: "0.95rem", color: "var(--text-muted)" }}>{row.description || "-"}</td>
+                    <td style={{ padding: "16px 20px", fontSize: "0.95rem", fontWeight: "bold", color: row.isCredit ? "#10b981" : "var(--text-main)", direction: "ltr", textAlign: "right" }}>{row.signedAmount} {baseCurrency}</td>
+                    <td style={{ padding: "16px 20px" }}><span style={{ background: row.isCredit ? "rgba(16, 185, 129, 0.1)" : "rgba(59, 130, 246, 0.1)", color: row.isCredit ? "#10b981" : "var(--primary-color)", padding: "4px 12px", borderRadius: "8px", fontSize: "0.85rem", fontWeight: "bold" }}>{row.statusLabel}</span></td>
+                  </tr>;
+                })}
               </tbody>
             </table>
           </div>
-          <div style={{ textAlign: "center", padding: "15px", borderTop: "1px solid var(--border-color)", background: "var(--bg-color)" }}>
-            <button style={{ background: "none", border: "none", color: "var(--primary-color)", fontWeight: "bold", cursor: "pointer" }}>عرض جميع المعاملات &lt;</button>
-          </div>
+          {transactions.length >= 100 && <div style={{ textAlign: "center", padding: "15px", borderTop: "1px solid var(--border-color)", background: "var(--bg-color)", color: "var(--text-muted)", fontSize: "0.85rem" }}>يتم عرض أحدث 100 معاملة.</div>}
         </div>
       </div>
 

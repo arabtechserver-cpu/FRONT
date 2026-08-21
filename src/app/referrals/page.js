@@ -23,6 +23,7 @@ export default function ReferralsPage() {
       <div className="referral-icon"><Share2 size={30} color="white" /></div>
       <h1>برنامج الإحالة</h1><p>ادعُ أصدقاءك واحصل على مكافأة عند تسجيل 30 مستخدمًا عبر رابطك.</p>
       <div className="referral-progress-box"><span>المستخدمون عبر رابطك</span><strong>{count} <small>/ 30</small></strong><div className="referral-progress-track"><div style={{ width: `${percent}%` }} /></div></div>
+      <div className="referral-reward-card"><strong>🎁 الهدية</strong><span>5 USD تضاف إلى محفظتك عند كل 30 إحالة مكتملة.</span><small>{data?.earnedUsd ? `إجمالي الهدايا المضافة إلى المحفظة: ${Number(data.earnedUsd).toFixed(2)} USD` : `متبقي ${data?.referralsUntilReward || 30} إحالة للهدية القادمة`}</small></div>
       <label>رابط الإحالة</label><div className="referral-link-row"><input readOnly value={link || "جاري تحميل الرابط..."} /><button onClick={copy} disabled={!link}>{copied ? <Check size={18} /> : <Copy size={18} />}</button></div>
     </div>
   </div>;

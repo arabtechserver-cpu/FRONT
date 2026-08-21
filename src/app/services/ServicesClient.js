@@ -209,27 +209,6 @@ export default function ServicesClient({ initialCategories = [], initialServices
     [services, serviceMatchesType]
   );
 
-  const catalogCategories = useMemo(() => {
-    let cats = categories;
-    if (selectedCategory && selectedCategory !== "all") {
-      cats = cats.filter(cat => Number(cat.id) === Number(selectedCategory));
-    }
-    if (!typeFilter) return cats;
-    return cats.filter(cat => {
-      const catServices = typeFilteredServices.filter(s => Number(s.category_id) === Number(cat.id));
-      const assignedType = String(cat.menu_service_type || "").trim().toLowerCase();
-      return assignedType === typeFilter.toLowerCase() ||
-        catServices.length > 0;
-    });
-  }, [categories, typeFilteredServices, typeFilter, selectedCategory]);
-
-  const catalogServices = typeFilteredServices;
-
-  const filteredServices = catalogServices.filter((s) =>
-    s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (s.description && s.description.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
-
   const getMinServicePrice = (service) => {
     if (Array.isArray(service.packages) && service.packages.length > 0) {
       const prices = service.packages.map(p => Number(p.price || 0)).filter(p => p > 0);
@@ -237,6 +216,38 @@ export default function ServicesClient({ initialCategories = [], initialServices
     }
     return Number(service.price || 0);
   };
+
+  const catalogCategories = useMemo(() => {
+    let cats = categories;
+    if (selectedCategory && selectedCategory !== "all") {
+      cats = cats.filter(cat => Number(cat.id) === Number(selectedCategory));
+    }
+    if (typeFilter) {
+      cats = cats.filter(cat => {
+      const catServices = typeFilteredServices.filter(s => Number(s.category_id) === Number(cat.id));
+      const assignedType = String(cat.menu_service_type || "").trim().toLowerCase();
+      return assignedType === typeFilter.toLowerCase() ||
+        catServices.length > 0;
+      });
+    }
+    if (priceSort === "asc" || priceSort === "desc") {
+      cats = [...cats].sort((a, b) => {
+        const aPrices = typeFilteredServices.filter(s => Number(s.category_id) === Number(a.id)).map(getMinServicePrice);
+        const bPrices = typeFilteredServices.filter(s => Number(s.category_id) === Number(b.id)).map(getMinServicePrice);
+        const aPrice = aPrices.length ? Math.min(...aPrices) : Number.POSITIVE_INFINITY;
+        const bPrice = bPrices.length ? Math.min(...bPrices) : Number.POSITIVE_INFINITY;
+        return priceSort === "asc" ? aPrice - bPrice : bPrice - aPrice;
+      });
+    }
+    return cats;
+  }, [categories, typeFilteredServices, typeFilter, selectedCategory, priceSort]);
+
+  const catalogServices = typeFilteredServices;
+
+  const filteredServices = catalogServices.filter((s) =>
+    s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (s.description && s.description.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
 
   const uncategorizedServices = filteredServices
     .filter((s) => !catalogCategories.some((c) => Number(c.id) === Number(s.category_id)))

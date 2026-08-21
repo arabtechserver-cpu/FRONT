@@ -36,6 +36,7 @@ export default function ReferralModal({ customerUser, API_BASE_URL, enabled = tr
       <h2>اربح 5 دولار مجانًا!</h2>
       <p>شارك رابطك مع أصدقائك. عند تسجيل 30 مستخدمًا تحصل على مكافأة 5 دولار.</p>
       <div className="referral-progress-box"><span>عدد المستخدمين الذين استخدموا رابطك</span><strong>{referralCount} <small>/ {GOAL}</small></strong><div className="referral-progress-track"><div style={{ width: `${percent}%` }} /></div></div>
+      <div className="referral-reward-card"><strong>🎁 الهدية: 5 USD</strong><span>تضاف إلى محفظتك عند كل 30 إحالة مكتملة.</span></div>
       <label>رابط الإحالة الخاص بك</label>
       <div className="referral-link-row"><input readOnly value={referralLink || "جاري إنشاء الرابط..."} aria-label="رابط الإحالة" /><button onClick={handleCopy} disabled={!referralLink} aria-label="نسخ الرابط">{copied ? <Check size={18} /> : <Copy size={18} />}</button></div>
     </div>

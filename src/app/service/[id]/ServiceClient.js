@@ -390,10 +390,10 @@ export default function ServiceDetail({ params, initialService = null }) {
     const isApiService = !!activeService?.api_source || !!activeService?.api_service_id;
     const hasPackageFields = selectedPackage && Array.isArray(selectedPackage.fields) && selectedPackage.fields.length > 0;
 
-    if (isApiService && hasPackageFields) {
-      // For API services, packages contain all necessary fields.
-      // Inheriting from the parent service causes duplicates because parent fields in grouped API services are a union of ALL packages.
-      rawFields = [...selectedPackage.fields];
+    if (isApiService) {
+      // Provider services must use only the selected package fields. The
+      // parent service can contain a union of fields from unrelated packages.
+      rawFields = hasPackageFields ? [...selectedPackage.fields] : [];
     } else {
       // Always inherit fields from the parent service (e.g., manual services)
       if (Array.isArray(serviceFields)) {
@@ -475,7 +475,7 @@ export default function ServiceDetail({ params, initialService = null }) {
     ).toLowerCase();
 
     // Ensure ALL IMEI services ALWAYS have an IMEI field, even if the package didn't explicitly provide one
-    if (!hasImeiField && activeServiceType !== 'server' && activeServiceType !== 'remote') {
+    if (!isApiService && !hasImeiField && activeServiceType !== 'server' && activeServiceType !== 'remote') {
       uniqueFields.unshift({
         id: 'imei',
         name: 'imei',
