@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import React, { useState, useEffect } from "react";
 import { Copy, Check, Share2, X } from "lucide-react";
 
@@ -14,7 +14,7 @@ export default function ReferralModal({ customerUser, API_BASE_URL }) {
     }
 
     if (customerUser) {
-      fetch(`${API_BASE_URL}/api/customer/referral-info`, {
+      fetch(`${API_BASE_URL}/api/customer/referral-info?t=${Date.now()}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('customer_token')}` }
       })
       .then(res => res.json())
@@ -37,7 +37,7 @@ export default function ReferralModal({ customerUser, API_BASE_URL }) {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const shareText = "سجل عبر رابطي في سيرفر عرب تك واحصل على مكافآت رائعة!";
+  const shareText = "??? ??? ????? ?? ????? ??? ?? ????? ??? ?????? ?????!";
 
   return (
     <div style={{
@@ -70,15 +70,15 @@ export default function ReferralModal({ customerUser, API_BASE_URL }) {
         </div>
 
         <h2 style={{ fontSize: "1.7rem", fontWeight: "900", color: "#fbbf24", marginBottom: "12px", textShadow: "0 2px 10px rgba(245, 158, 11, 0.3)" }}>
-          مكافأة 5 دولار مجاناً! 🎁
+          ?????? 5 ????? ??????! ??
         </h2>
         
         <p style={{ color: "var(--text-main, #fff)", fontSize: "1.05rem", lineHeight: "1.6", marginBottom: "24px" }}>
-          شارك الموقع مع <strong style={{ color: '#10b981' }}>30 شخص</strong> للحصول على مكافأة <strong style={{ color: '#fbbf24' }}>5 دولار</strong> تضاف لمحفظتك تلقائياً بمجرد تسجيلهم عبر رابطك!
+          ???? ?????? ?? <strong style={{ color: '#10b981' }}>30 ???</strong> ?????? ??? ?????? <strong style={{ color: '#fbbf24' }}>5 ?????</strong> ???? ??????? ???????? ????? ??????? ??? ?????!
         </p>
 
         <div style={{ background: 'var(--input-bg, rgba(0,0,0,0.03))', border: '1px solid var(--border-glass)', borderRadius: '16px', padding: '20px', marginBottom: '24px' }}>
-          <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '8px' }}>عدد المسجلين عبر رابطك حالياً:</div>
+          <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '8px' }}>??? ???????? ??? ????? ??????:</div>
           <div style={{ fontSize: '2.5rem', fontWeight: '900', color: '#10b981' }}>
             {referralCount} <span style={{ fontSize: '1rem', color: 'var(--text-muted)', fontWeight: 'normal' }}>/ 30</span>
           </div>
@@ -87,7 +87,7 @@ export default function ReferralModal({ customerUser, API_BASE_URL }) {
           </div>
         </div>
 
-        <div style={{ textAlign: "right", marginBottom: "8px", color: "var(--text-muted)", fontSize: "0.9rem", fontWeight: "bold" }}>رابط الدعوة الخاص بك:</div>
+        <div style={{ textAlign: "right", marginBottom: "8px", color: "var(--text-muted)", fontSize: "0.9rem", fontWeight: "bold" }}>???? ?????? ????? ??:</div>
         
         <div style={{
           display: "flex",
@@ -101,7 +101,7 @@ export default function ReferralModal({ customerUser, API_BASE_URL }) {
           <input 
             type="text" 
             readOnly 
-            value={referralCode ? referralLink : "جاري تحميل الرابط..."} 
+            value={referralCode ? referralLink : "???? ????? ??????..."} 
             style={{
               flex: 1,
               background: "transparent",
