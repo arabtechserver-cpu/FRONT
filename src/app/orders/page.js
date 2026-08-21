@@ -157,6 +157,44 @@ export default function OrdersHistory() {
     return `https://wa.me/${phoneNum}?text=${encodeURIComponent(text)}`;
   };
 
+  const downloadOrderAsImage = (order) => {
+    const canvas = document.createElement("canvas");
+    const width = 900;
+    const height = 900;
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#101c2c";
+    ctx.fillRect(0, 0, width, height);
+    ctx.direction = "rtl";
+    ctx.textAlign = "right";
+    ctx.fillStyle = "#f8fafc";
+    ctx.font = "900 34px Arial";
+    ctx.fillText("تفاصيل الطلب", width - 55, 70);
+    ctx.strokeStyle = "#334155";
+    ctx.beginPath(); ctx.moveTo(55, 95); ctx.lineTo(width - 55, 95); ctx.stroke();
+    const rows = [
+      ["رقم الطلب", `#${order.id}`],
+      ["الخدمة", order.service_name || "-"],
+      ["الباقة", order.package_name || "-"],
+      ["القيمة", `${Number(order.package_price || 0).toFixed(2)} ${baseCurrency}`],
+      ["الحالة", order.status === "completed" ? "مكتمل" : order.status === "processing" ? "قيد التنفيذ" : order.status === "pending" ? "قيد المراجعة" : "ملغي"],
+      ["التاريخ", String(order.created_at || "").replace("T", " ").substring(0, 16)]
+    ];
+    rows.forEach(([label, value], index) => {
+      const y = 155 + index * 82;
+      ctx.fillStyle = "#94a3b8"; ctx.font = "bold 24px Arial"; ctx.fillText(label, width - 70, y);
+      ctx.fillStyle = "#f8fafc"; ctx.font = "bold 25px Arial"; ctx.fillText(String(value), width - 350, y);
+      ctx.strokeStyle = "#26364d"; ctx.beginPath(); ctx.moveTo(55, y + 25); ctx.lineTo(width - 55, y + 25); ctx.stroke();
+    });
+    if (order.code) { ctx.fillStyle = "#10b981"; ctx.font = "bold 26px Arial"; ctx.fillText(`النتيجة: ${order.code}`, width - 70, 700); }
+    ctx.fillStyle = "#64748b"; ctx.font = "20px Arial"; ctx.fillText("عرب تك سيرفر", width - 70, 840);
+    const link = document.createElement("a");
+    link.download = `order-${order.id}.png`;
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  };
+
   const renderOrderFields = (order) => {
     const serviceObj = services.find(s => Number(s.id) === Number(order.service_id));
     let fieldsConfig = [];
@@ -631,6 +669,9 @@ export default function OrdersHistory() {
 
             {/* Action Buttons */}
             <div style={{ display: "flex", gap: "12px", marginTop: "10px" }}>
+              <button onClick={() => downloadOrderAsImage(selectedOrderDetails)} className="glass-btn" style={{ flex: 1, padding: "12px", borderRadius: "12px", fontWeight: "bold", background: "var(--primary-color)", color: "#fff", border: "none", cursor: "pointer" }}>
+                📥 تحميل كصورة
+              </button>
               {selectedOrderDetails.status !== "completed" && selectedOrderDetails.status !== "cancelled" && (
                 <a href={getSpeedUpWhatsAppUrl("+201019080766", selectedOrderDetails, customer?.username)} target="_blank" rel="noopener noreferrer" className="glass-btn glass-btn-primary" style={{ flex: 1, padding: "12px", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", textDecoration: "none", background: "#25D366", color: "#fff", border: "none" }}>
                   تسريع الطلب عبر واتساب

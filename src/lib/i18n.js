@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { shouldObserveDomTranslations } from "./i18nRuntime.mjs";
 
 export const LANGUAGE_STORAGE_KEY = "arabtech_user_language";
 
@@ -2151,6 +2152,12 @@ export function I18nProvider({ children }) {
 
   useEffect(() => {
     const runtimeLanguage = getRuntimeLanguage(language);
+    // Arabic is the source language. Walking the entire DOM after every React
+    // mutation is unnecessary for it and causes visible jank on large pages.
+    if (!shouldObserveDomTranslations(runtimeLanguage)) {
+      applyStaticTranslations(runtimeLanguage);
+      return undefined;
+    }
     let animationFrame = 0;
 
     const observerOptions = {

@@ -751,6 +751,7 @@ export default function MainLayout({ children }) {
                         </div>
                       </div>
                       <Link href="/orders" className="header-dropdown-item" onClick={() => setProfileMenuOpen(false)}>📦 {t("myOrders")}</Link>
+                      <Link href="/referrals" className="header-dropdown-item" onClick={() => setProfileMenuOpen(false)}>🎁 الإحالات والمكافآت</Link>
                       <Link href="/wallet" className="header-dropdown-item" onClick={() => setProfileMenuOpen(false)}>💳 {t("chargeWallet")}</Link>
                       {FEATURES.showApiDocs && (
                         <Link href="/api-docs" className="header-dropdown-item" onClick={() => setProfileMenuOpen(false)}>🔌 {t("apiDocs")}</Link>
@@ -806,7 +807,7 @@ export default function MainLayout({ children }) {
         </div>
 
         {/* Child Pages Content */}
-        <ReferralModal customerUser={customerUser} API_BASE_URL={API_BASE_URL} />
+        <ReferralModal customerUser={customerUser} API_BASE_URL={API_BASE_URL} enabled={pathname !== "/referrals"} />
         <main className="main-content-inner">
           {children}
           <PasswordChangeModal />

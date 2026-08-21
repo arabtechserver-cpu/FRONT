@@ -709,3 +709,16 @@
 .success-order-modal [style*="color: #38bdf8"] { color: var(--primary-color) !important; }
 [data-theme="light"] .success-order-modal { box-shadow: 0 24px 60px rgba(30,60,110,.18) !important; }
 [data-theme="light"] .success-order-modal .success-order-invoice { background: rgba(255,255,255,.58) !important; }
+.referral-modal-overlay{position:fixed;inset:0;z-index:999999;background:rgba(15,23,42,.86);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:12px}
+.referral-modal-card{width:min(100%,430px);padding:22px 18px;position:relative;text-align:center;border-radius:20px}
+.referral-close{position:absolute;top:10px;right:10px;background:transparent;border:0;color:var(--text-muted);cursor:pointer;padding:4px}
+.referral-icon{width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,#f59e0b,#d97706);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;box-shadow:0 8px 18px rgba(245,158,11,.35)}
+.referral-modal-card h2{font-size:1.35rem;font-weight:900;color:#fbbf24;margin:0 0 8px}
+.referral-modal-card p{color:var(--text-main,#fff);font-size:.92rem;line-height:1.5;margin:0 0 14px}
+.referral-progress-box{background:var(--input-bg,rgba(0,0,0,.08));border:1px solid var(--border-glass);border-radius:13px;padding:12px;margin-bottom:12px}
+.referral-progress-box span,.referral-modal-card label{display:block;color:var(--text-muted);font-size:.78rem;margin-bottom:5px;font-weight:700}
+.referral-progress-box strong{font-size:2rem;line-height:1;color:#10b981}.referral-progress-box small{font-size:.82rem;color:var(--text-muted);font-weight:400}
+.referral-progress-track{height:6px;background:rgba(128,128,128,.2);border-radius:6px;margin-top:9px;overflow:hidden}.referral-progress-track div{height:100%;background:#10b981;transition:width .4s ease}
+.referral-link-row{display:flex;align-items:center;gap:6px;background:var(--input-bg,rgba(0,0,0,.08));border:1px solid var(--border-glass);border-radius:10px;padding:5px}.referral-link-row input{min-width:0;flex:1;background:transparent;border:0;color:var(--text-main,#fff);outline:0;padding:7px;font-size:.78rem;direction:ltr;text-align:left}.referral-link-row button{background:var(--primary-color);color:#fff;border:0;border-radius:7px;padding:8px;display:flex;cursor:pointer}.referral-link-row button:disabled{opacity:.45;cursor:not-allowed}
+@media(max-width:480px){.referral-modal-card{padding:18px 14px}.referral-icon{width:48px;height:48px}.referral-modal-card h2{font-size:1.18rem}.referral-modal-card p{font-size:.82rem;margin-bottom:10px}.referral-progress-box{padding:10px}.referral-progress-box strong{font-size:1.75rem}}
+.referral-page-wrap{min-height:calc(100vh - 120px);display:flex;justify-content:center;align-items:flex-start;padding:18px 10px}.referral-page-card{width:min(100%,480px);padding:18px;text-align:center;position:relative}.referral-page-card h1{font-size:1.45rem;margin:8px 0;color:#fbbf24}.referral-page-card p{font-size:.9rem;line-height:1.55;color:var(--text-muted);margin:0 0 15px}.referral-back{display:block;text-align:right;color:var(--primary-color);font-size:.82rem;text-decoration:none;margin-bottom:6px}
