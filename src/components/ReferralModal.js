@@ -9,9 +9,8 @@ export default function ReferralModal({ customerUser, API_BASE_URL }) {
   const [referralCount, setReferralCount] = useState(0);
 
   useEffect(() => {
-    if (customerUser && !sessionStorage.getItem("referral_modal_shown")) {
+    if (customerUser) {
       setIsOpen(true);
-      sessionStorage.setItem("referral_modal_shown", "true");
     }
 
     if (customerUser) {
