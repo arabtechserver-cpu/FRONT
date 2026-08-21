@@ -115,7 +115,7 @@ export default function CustomerLogin() {
           const res = await fetch(`${API_BASE_URL}/api/customer/google-auth`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ credential: response.credential })
+            body: JSON.stringify({ credential: response.credential, referred_by_code: localStorage.getItem('ref_code') })
           });
           const data = await res.json();
           if (!res.ok) throw new Error(data.message || "فشل تسجيل الدخول عبر Google.");
