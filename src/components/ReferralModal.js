@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import React, { useState, useEffect } from "react";
 import { Copy, Check, Share2, X } from "lucide-react";
 
@@ -9,15 +9,12 @@ export default function ReferralModal({ customerUser, API_BASE_URL }) {
   const [referralCount, setReferralCount] = useState(0);
 
   useEffect(() => {
-    // Only show once per session or day? The prompt says "يظهر اعلان اول متفتح الموقع لازمن يكون مسجل" 
-    // Meaning it shows when the site opens and they are registered. We will show it once per session.
     if (customerUser && !sessionStorage.getItem("referral_modal_shown")) {
       setIsOpen(true);
       sessionStorage.setItem("referral_modal_shown", "true");
     }
 
     if (customerUser) {
-      // Fetch referral code if missing
       fetch(`${API_BASE_URL}/api/customer/referral-info`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('customer_token')}` }
       })
@@ -41,14 +38,14 @@ export default function ReferralModal({ customerUser, API_BASE_URL }) {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const shareText = `سجل عبر الرابط الخاص بي في الموقع واحصل على أفضل الخدمات!`;
+  const shareText = "سجل عبر رابطي في سيرفر عرب تك واحصل على مكافآت رائعة!";
 
   return (
     <div style={{
       position: "fixed",
       inset: 0,
       zIndex: 999999,
-      background: "rgba(15, 23, 42, 0.85)",
+      background: "var(--overlay-bg, rgba(15, 23, 42, 0.85))",
       backdropFilter: "blur(10px)",
       display: "flex",
       alignItems: "center",
@@ -59,11 +56,7 @@ export default function ReferralModal({ customerUser, API_BASE_URL }) {
         width: "100%",
         maxWidth: "500px",
         padding: "30px",
-        borderRadius: "24px",
-        border: "1px solid rgba(245, 158, 11, 0.5)",
-        boxShadow: "0 25px 50px rgba(0,0,0,0.5), 0 0 40px rgba(245, 158, 11, 0.2)",
         position: "relative",
-        background: "linear-gradient(180deg, var(--bg-glass-deep) 0%, rgba(20, 25, 40, 0.95) 100%)",
         textAlign: "center"
       }}>
         <button 
@@ -81,16 +74,16 @@ export default function ReferralModal({ customerUser, API_BASE_URL }) {
           مكافأة 5 دولار مجاناً! 🎁
         </h2>
         
-        <p style={{ color: "var(--text-color)", fontSize: "1.05rem", lineHeight: "1.6", marginBottom: "24px" }}>
+        <p style={{ color: "var(--text-main, #fff)", fontSize: "1.05rem", lineHeight: "1.6", marginBottom: "24px" }}>
           شارك الموقع مع <strong style={{ color: '#10b981' }}>30 شخص</strong> للحصول على مكافأة <strong style={{ color: '#fbbf24' }}>5 دولار</strong> تضاف لمحفظتك تلقائياً بمجرد تسجيلهم عبر رابطك!
         </p>
 
-        <div style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border-glass)', borderRadius: '16px', padding: '20px', marginBottom: '24px' }}>
+        <div style={{ background: 'var(--input-bg, rgba(0,0,0,0.03))', border: '1px solid var(--border-glass)', borderRadius: '16px', padding: '20px', marginBottom: '24px' }}>
           <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '8px' }}>عدد المسجلين عبر رابطك حالياً:</div>
           <div style={{ fontSize: '2.5rem', fontWeight: '900', color: '#10b981' }}>
             {referralCount} <span style={{ fontSize: '1rem', color: 'var(--text-muted)', fontWeight: 'normal' }}>/ 30</span>
           </div>
-          <div style={{ width: '100%', height: '8px', background: 'rgba(255,255,255,0.1)', borderRadius: '4px', marginTop: '12px', overflow: 'hidden' }}>
+          <div style={{ width: '100%', height: '8px', background: 'rgba(128,128,128,0.2)', borderRadius: '4px', marginTop: '12px', overflow: 'hidden' }}>
             <div style={{ width: `${Math.min(100, (referralCount / 30) * 100)}%`, height: '100%', background: '#10b981', transition: 'width 1s ease-in-out' }}></div>
           </div>
         </div>
@@ -100,7 +93,7 @@ export default function ReferralModal({ customerUser, API_BASE_URL }) {
         <div style={{
           display: "flex",
           alignItems: "center",
-          background: "rgba(0, 0, 0, 0.5)",
+          background: "var(--input-bg, rgba(0,0,0,0.03))",
           border: "1px solid var(--border-glass)",
           borderRadius: "12px",
           padding: "8px",
@@ -114,7 +107,7 @@ export default function ReferralModal({ customerUser, API_BASE_URL }) {
               flex: 1,
               background: "transparent",
               border: "none",
-              color: "var(--text-color)",
+              color: "var(--text-main, #fff)",
               outline: "none",
               padding: "8px",
               fontSize: "0.9rem",
@@ -126,7 +119,7 @@ export default function ReferralModal({ customerUser, API_BASE_URL }) {
             onClick={handleCopy}
             disabled={!referralCode}
             style={{
-              background: copied ? "#10b981" : "var(--primary-color)",
+              background: "var(--primary-color)",
               color: "#fff",
               border: "none",
               borderRadius: "8px",
@@ -134,8 +127,9 @@ export default function ReferralModal({ customerUser, API_BASE_URL }) {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              cursor: "pointer",
-              transition: "all 0.2s"
+              cursor: referralCode ? "pointer" : "not-allowed",
+              transition: "0.2s",
+              opacity: referralCode ? 1 : 0.5
             }}
           >
             {copied ? <Check size={20} /> : <Copy size={20} />}
