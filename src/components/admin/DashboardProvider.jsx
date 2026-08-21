@@ -570,7 +570,7 @@ export default function DashboardProvider({ children }) {
       }
 
       if (tab === "orders") {
-        requests.push(loadOrders(), loadWalletTransactions());
+        requests.push(loadOrders(), loadWalletTransactions(), loadApiProviders());
       } else if (tab === "categories" || tab === "menu-drawer" || tab === "featured-sections") {
         requests.push(loadCategories());
         if (tab === "menu-drawer" || tab === "featured-sections") requests.push(loadServices());
