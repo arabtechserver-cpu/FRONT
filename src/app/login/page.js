@@ -292,7 +292,7 @@ export default function CustomerLogin() {
     const endpoint = activeTab === "login" ? "login" : "register";
     const bodyObj = activeTab === "login" 
       ? { username, password, 'cf-turnstile-response': turnstileToken } 
-      : { username, email, password, phone, 'cf-turnstile-response': turnstileToken };
+      : { username, email, password, phone, 'cf-turnstile-response': turnstileToken, referred_by_code: localStorage.getItem('ref_code') };
 
     try {
       const response = await fetch(`${API_BASE_URL}/api/customer/${endpoint}`, {
