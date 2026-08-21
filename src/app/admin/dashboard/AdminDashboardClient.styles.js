@@ -1,7 +1,7 @@
 const dashboardStyles = `
         .admin-dashboard-root {
           display: grid;
-          grid-template-columns: 280px minmax(0, 1fr);
+          grid-template-columns: minmax(0, 280px) minmax(0, 1fr);
           min-height: 100vh;
           background-color: #060814;
           background-image: 
@@ -17,6 +17,8 @@ const dashboardStyles = `
         .admin-main-content {
           min-width: 0;
           width: 100%;
+          box-sizing: border-box;
+          overflow-x: hidden;
           position: relative;
           z-index: 1;
         }
@@ -24,6 +26,7 @@ const dashboardStyles = `
         .admin-scrollable-area {
           min-width: 0;
           width: 100%;
+          box-sizing: border-box;
         }
 
         .admin-mobile-topbar {
@@ -259,6 +262,8 @@ const dashboardStyles = `
           position: relative;
           min-width: 0; /* Prevents CSS Grid blowout when tables are wide */
           width: 100%;
+          max-width: 100%;
+          box-sizing: border-box;
         }
 
         /* Top Header */
