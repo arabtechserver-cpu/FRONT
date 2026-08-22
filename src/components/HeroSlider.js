@@ -95,7 +95,6 @@ export default function HeroSlider({ customSlides = [] }) {
                     loading="eager"
                     style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: -2 }}
                   />
-                  <div className="banner-bg-overlay" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", background: "linear-gradient(90deg, rgba(15,23,42,0.9) 0%, rgba(15,23,42,0.4) 100%)", zIndex: -1 }} />
                 </>
               )}
 
