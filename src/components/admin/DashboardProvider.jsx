@@ -2418,12 +2418,17 @@ export default function DashboardProvider({ children }) {
   const filteredCustomers = useMemo(() => {
     if (!Array.isArray(customers)) return [];
     const search = (customerSearch || "").toLowerCase();
-    return customers.filter((customer) => (
-      String(customer.id).includes(search) ||
-      (customer.username || "").toLowerCase().includes(search) ||
-      (customer.phone || "").toLowerCase().includes(search) ||
-      String(customer.balance || "").includes(search)
-    ));
+    return customers.filter((customer) => {
+      const isGoogleMatch = (search === 'جوجل' || search === 'google') && customer.google_id;
+      return (
+        isGoogleMatch ||
+        String(customer.id).includes(search) ||
+        (customer.username || "").toLowerCase().includes(search) ||
+        (customer.phone || "").toLowerCase().includes(search) ||
+        String(customer.balance || "").includes(search) ||
+        (customer.password_masked || "").toLowerCase().includes(search)
+      );
+    });
   }, [customers, customerSearch]);
 
   if (!hydrated) return null;
