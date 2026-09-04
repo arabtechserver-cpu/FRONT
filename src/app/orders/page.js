@@ -147,7 +147,7 @@ export default function OrdersHistory() {
 
   const getSpeedUpWhatsAppUrl = (phoneNum, orderObj, customerName = "") => {
     const custName = customerName || orderObj.customer_username || (orderObj.phone ? `زائر (${orderObj.phone})` : "عميل");
-    const text = `🟢 *طلب تسريع خدمة (عرب تك)* ⚡\n\n` +
+    const text = `🟢 *طلب تسريع خدمة (الوفاق)* ⚡\n\n` +
       `▫️ *رقم الطلب:* #${orderObj.id}\n` +
       `▫️ *اسم العميل:* ${custName}\n` +
       `▫️ *الخدمة:* ${orderObj.service_name || "خدمة"}\n` +
@@ -188,7 +188,7 @@ export default function OrdersHistory() {
       ctx.strokeStyle = "#26364d"; ctx.beginPath(); ctx.moveTo(55, y + 25); ctx.lineTo(width - 55, y + 25); ctx.stroke();
     });
     if (order.code) { ctx.fillStyle = "#10b981"; ctx.font = "bold 26px Arial"; ctx.fillText(`النتيجة: ${order.code}`, width - 70, 700); }
-    ctx.fillStyle = "#64748b"; ctx.font = "20px Arial"; ctx.fillText("عرب تك سيرفر", width - 70, 840);
+    ctx.fillStyle = "#64748b"; ctx.font = "20px Arial"; ctx.fillText("سيرفر الوفاق", width - 70, 840);
     const link = document.createElement("a");
     link.download = `order-${order.id}.png`;
     link.href = canvas.toDataURL("image/png");
@@ -534,7 +534,7 @@ export default function OrdersHistory() {
         
         {/* Title Section */}
         <div style={{ textAlign: "center", marginBottom: "35px" }}>
-          <h2 style={{ fontSize: "1.8rem", fontWeight: 900, margin: "0 0 10px 0", color: "var(--text-main)", letterSpacing: "-0.5px" }}>لماذا تختار <span style={{ color: "var(--brand-blue)" }}>عرب تك</span>؟</h2>
+          <h2 style={{ fontSize: "1.8rem", fontWeight: 900, margin: "0 0 10px 0", color: "var(--text-main)", letterSpacing: "-0.5px" }}>لماذا تختار <span style={{ color: "var(--brand-blue)" }}>الوفاق</span>؟</h2>
           <p style={{ color: "var(--text-muted)", fontSize: "0.95rem", maxWidth: "400px", margin: "0 auto", lineHeight: "1.6" }}>نقدم لك أفضل الخدمات التقنية مع ضمان الجودة، الأمان، والسرعة الفائقة.</p>
         </div>
 
@@ -673,7 +673,7 @@ export default function OrdersHistory() {
                 📥 تحميل كصورة
               </button>
               {selectedOrderDetails.status !== "completed" && selectedOrderDetails.status !== "cancelled" && (
-                <a href={getSpeedUpWhatsAppUrl("+249123667227", selectedOrderDetails, customer?.username)} target="_blank" rel="noopener noreferrer" className="glass-btn glass-btn-primary" style={{ flex: 1, padding: "12px", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", textDecoration: "none", background: "#25D366", color: "#fff", border: "none" }}>
+                <a href={getSpeedUpWhatsAppUrl("+249118100809", selectedOrderDetails, customer?.username)} target="_blank" rel="noopener noreferrer" className="glass-btn glass-btn-primary" style={{ flex: 1, padding: "12px", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", textDecoration: "none", background: "#25D366", color: "#fff", border: "none" }}>
                   تسريع الطلب عبر واتساب
                 </a>
               )}

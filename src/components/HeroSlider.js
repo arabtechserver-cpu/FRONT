@@ -27,7 +27,7 @@ export default function HeroSlider({ customSlides = [] }) {
     } else {
       // Try to load cached banners
       try {
-        const cachedBanners = localStorage.getItem("arabtech_cached_banners");
+        const cachedBanners = localStorage.getItem("Al-Wefaq_cached_banners");
         if (cachedBanners) {
           const parsed = JSON.parse(cachedBanners);
           if (Array.isArray(parsed) && parsed.length > 0) {
@@ -43,7 +43,7 @@ export default function HeroSlider({ customSlides = [] }) {
           if (data && Array.isArray(data) && data.length > 0) {
             setSlides(data);
             try {
-              localStorage.setItem("arabtech_cached_banners", JSON.stringify(data));
+              localStorage.setItem("Al-Wefaq_cached_banners", JSON.stringify(data));
             } catch(e) {}
           }
         })

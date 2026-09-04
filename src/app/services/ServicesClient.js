@@ -44,24 +44,24 @@ export default function ServicesClient({ initialCategories = [], initialServices
   const [priceSort, setPriceSort] = useState("default"); // "default", "asc", "desc"
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [visibleCategories, setVisibleCategories] = useState(5);
-  const [settings, setSettings] = useState({ announcement_text: "🟢 واتساب الإدارة 1: +1 (672) 897-2935 | 🟢 واتساب الإدارة 2: +249 12 366 7227" });
+  const [settings, setSettings] = useState({ announcement_text: "🟢 واتساب الإدارة 1: +249 11 810 0809 | 🟢 واتساب الإدارة 2: +249 92 792 2237" });
   
   // Isomorphic layout effect to avoid hydration mismatch while restoring state synchronously before paint
   const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
   useIsomorphicLayoutEffect(() => {
     try {
-      const savedSearch = sessionStorage.getItem("arabtech_services_search");
+      const savedSearch = sessionStorage.getItem("Al-Wefaq_services_search");
       if (savedSearch) setSearchTerm(savedSearch);
-      const savedLimit = sessionStorage.getItem("arabtech_services_limit");
+      const savedLimit = sessionStorage.getItem("Al-Wefaq_services_limit");
       if (savedLimit) setVisibleCategories(parseInt(savedLimit));
     } catch(e) {}
   }, []);
 
   useEffect(() => {
     try {
-      sessionStorage.setItem("arabtech_services_search", searchTerm);
-      sessionStorage.setItem("arabtech_services_limit", visibleCategories.toString());
+      sessionStorage.setItem("Al-Wefaq_services_search", searchTerm);
+      sessionStorage.setItem("Al-Wefaq_services_limit", visibleCategories.toString());
     } catch(e) {}
   }, [searchTerm, visibleCategories]);
   
@@ -74,20 +74,20 @@ export default function ServicesClient({ initialCategories = [], initialServices
   }, [typeFilter]);
 
   const getWhatsappLink = (text) => {
-    if (!text) return "https://wa.me/16728972935";
+    if (!text) return "https://wa.me/249118100809";
     const digits = text.replace(/\D/g, "");
     if (digits.length >= 8) {
       return `https://wa.me/${digits}`;
     }
-    return "https://wa.me/16728972935";
+    return "https://wa.me/249118100809";
   };
 
   useEffect(() => {
     // 1. Instant 0ms load from localStorage cache
     try {
-      const cachedCats = localStorage.getItem("arabtech_cached_categories");
-      const cachedSvcs = localStorage.getItem("arabtech_cached_services");
-      const cachedSettings = localStorage.getItem("arabtech_cached_settings");
+      const cachedCats = localStorage.getItem("Al-Wefaq_cached_categories");
+      const cachedSvcs = localStorage.getItem("Al-Wefaq_cached_services");
+      const cachedSettings = localStorage.getItem("Al-Wefaq_cached_settings");
       if (cachedCats) setCategories(JSON.parse(cachedCats));
       if (cachedSettings) setSettings(JSON.parse(cachedSettings));
       if (cachedSvcs) {
@@ -102,7 +102,7 @@ export default function ServicesClient({ initialCategories = [], initialServices
       .then((data) => {
         if (data) {
           setSettings(data);
-          try { localStorage.setItem("arabtech_cached_settings", JSON.stringify(data)); } catch(e) {}
+          try { localStorage.setItem("Al-Wefaq_cached_settings", JSON.stringify(data)); } catch(e) {}
         }
       })
       .catch(() => { });
@@ -116,7 +116,7 @@ export default function ServicesClient({ initialCategories = [], initialServices
       .then((data) => {
         const sorted = [...data].sort((a, b) => a.name.localeCompare(b.name, 'en'));
         setCategories(sorted);
-        try { localStorage.setItem("arabtech_cached_categories", JSON.stringify(sorted)); } catch(e) {}
+        try { localStorage.setItem("Al-Wefaq_cached_categories", JSON.stringify(sorted)); } catch(e) {}
       })
       .catch(() => {
         // Handled silently to avoid overriding the cache with errors
@@ -137,7 +137,7 @@ export default function ServicesClient({ initialCategories = [], initialServices
       .then((data) => {
         setServices(data);
         setLoading(false);
-        try { localStorage.setItem("arabtech_cached_services", JSON.stringify(data)); } catch(e) {}
+        try { localStorage.setItem("Al-Wefaq_cached_services", JSON.stringify(data)); } catch(e) {}
       })
       .catch(() => {
         setLoading(false);

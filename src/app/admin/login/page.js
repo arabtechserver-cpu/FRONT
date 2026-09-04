@@ -11,7 +11,7 @@ export default function AdminLogin() {
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
-  const [settings, setSettings] = useState({ site_name: "عرب تك سيرفر", site_logo: "/logo.jpg" });
+  const [settings, setSettings] = useState({ site_name: "سيرفر الوفاق", site_logo: "/logo.jpg" });
   
   // 2FA OTP state
   const [requireOtp, setRequireOtp] = useState(false);

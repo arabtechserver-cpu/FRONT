@@ -42,18 +42,23 @@ const getCategoriesAndServices = cache(async function getCategoriesAndServices()
 
 export async function generateMetadata() {
   const metadata = await getSiteMetadata();
-  const siteName = metadata.site_name || "عرب تك سيرفر";
+  const rawName = metadata?.site_name || "سيرفر الوفاق";
+  const siteName = rawName
+    .replace(/عرب\s*تك\s*برو\s*سيرفر/g, 'سيرفر الوفاق')
+    .replace(/عرب\s*تك\s*سيرفر(\s*online)?/gi, 'سيرفر الوفاق')
+    .replace(/عرب\s*تك/g, 'الوفاق')
+    .trim() || "سيرفر الوفاق";
 
-  const title = `${siteName} (Arab Tech Server) | خدمات السوفت وير والسيرفر`;
-  const description = `${siteName}، المعروف أيضاً باسم Arab Tech Server أو Ared Tech، يقدم خدمات السوفت وير والاشتراكات وأدوات GSM وخدمات IMEI والسيرفر.`;
+  const title = `${siteName} | Al-Wefaq Server - خدمات السوفت وير والسيرفر`;
+  const description = `${siteName} (Al-Wefaq Server)، يقدم خدمات السوفت وير والاشتراكات وأدوات GSM وخدمات IMEI والسيرفر.`;
 
   return {
     title,
     description,
     keywords: [
-      "Arab Tech Server",
-      "Ared Tech",
-      "Arab Tech",
+      "Al-Wefaq Server",
+      "سيرفر الوفاق",
+      "Al-Wefaq",
       "خدمات السوفت وير",
       "تفعيل دونجلات وبوكسات",
       siteName

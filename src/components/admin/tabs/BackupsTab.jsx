@@ -148,7 +148,7 @@ export default function BackupsTab({ token, API_BASE_URL }) {
   };
 
   const handleDeleteBackup = async (filename) => {
-    if (!confirm(`هل أنت متأكد من حذف نسخة الاحتياط (${filename}) نهائياً من السيرفر؟`)) return;
+    if (!confirm(`هل أنت متأكد من حذف نسخة الاحتيا (${filename}) نهائياً من السيرفر؟`)) return;
     setActionLoading(`delete-${filename}`);
     setErrorMsg("");
     setSuccessMsg("");
@@ -265,7 +265,7 @@ export default function BackupsTab({ token, API_BASE_URL }) {
 
   const executeRestoreUpload = async () => {
     if (!previewBackup || !previewBackup.data) return;
-    
+
     setActionLoading("restore-upload");
     setErrorMsg("");
     setSuccessMsg("");
@@ -330,155 +330,166 @@ export default function BackupsTab({ token, API_BASE_URL }) {
           <div style={{ display: "inline-block", background: "rgba(16, 185, 129, 0.2)", border: "1px solid rgba(16, 185, 129, 0.4)", borderRadius: "20px", padding: "4px 12px", fontSize: "0.75rem", fontWeight: "800", color: "#34d399", marginBottom: "10px" }}>
             ✨ تصدير شامل 100% (FULL JSON EXPORT)
           </div>
-          <h3 style={{ fontWeight: 800, fontSize: "1.3rem", marginBottom: "10px", color: "#10b981", display: "flex", alignItems: "center", gap: "8px" }}>
-            🚀 نسخة كاملة من قاعدة البيانات (الخدمات، الباقات، الحقول وكل شيء)
-          </h3>
-          <p style={{ color: "#cbd5e1", fontSize: "0.9rem", lineHeight: "1.6" }}>
-            اضغط هنا لتوليد وتحميل ملف <b style={{ color: "#34d399" }}>JSON</b> شامل يحتوي على جميع بيانات قاعدة البيانات بلا استثناء: (جميع الكتالوجات والخدمات، الباقات، الحقول والإدخالات، الأقسام، العملاء، الطلبات، مزودي الـ API، الإعدادات، ومعاملات المحفظة).
+          <h2 style={{ fontSize: "1.3rem", fontWeight: "800", color: "var(--text-main)", marginBottom: "8px" }}>
+            تصدير وتنزيل قاعدة البيانات بالكامل مع الخدمات والباقات
+          </h2>
+          <p style={{ color: "var(--text-muted)", fontSize: "0.9rem", lineHeight: "1.6", margin: 0 }}>
+            تتيح لك هذه الميزة تنزيل ملف <strong style={{ color: "#34d399" }}>JSON</strong> شامل ومكتمل يحتوي على كافة بيانات المتجر الحالية بما فيها (الأقسام، الخدمات بجميع تفاصيلها وباقاتها وحقولها، الطلبات، العملاء، الرصيد، الإعدادات، والبنرات).
           </p>
         </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: "12px", minWidth: "260px" }}>
+        <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
           <button
             onClick={handleDownloadFullBackup}
-            disabled={actionLoading !== null}
-            className="btn-add-premium"
-            style={{ background: "linear-gradient(135deg, #10b981 0%, #059669 100%)", boxShadow: "0 6px 20px rgba(16, 185, 129, 0.35)", padding: "16px 24px", fontSize: "0.98rem", display: "flex", alignItems: "center", gap: "10px", justifyContent: "center", cursor: "pointer", border: "none", borderRadius: "14px", color: "white", fontWeight: "800", transition: "all 0.3s" }}
+            disabled={actionLoading === "download-full"}
+            className="glass-btn"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+              color: "#fff",
+              border: "none",
+              padding: "12px 24px",
+              borderRadius: "14px",
+              fontWeight: "800",
+              cursor: actionLoading ? "not-allowed" : "pointer",
+              boxShadow: "0 4px 15px rgba(16, 185, 129, 0.3)",
+              fontSize: "0.95rem"
+            }}
           >
-            {actionLoading === "download-full" ? "⏳ جاري التجميع والتنزيل..." : "📥 تحميل نسخة كاملة كـ JSON"}
+            {actionLoading === "download-full" ? "جاري التصدير والتحميل..." : "📥 تنزيل نسخة شاملة (JSON)"}
           </button>
           <button
             onClick={handleCreateFullBackup}
-            disabled={actionLoading !== null}
-            className="btn-add-premium"
-            style={{ background: "rgba(255, 255, 255, 0.06)", border: "1px solid rgba(255, 255, 255, 0.15)", padding: "12px 20px", fontSize: "0.88rem", display: "flex", alignItems: "center", gap: "8px", justifyContent: "center", cursor: "pointer", borderRadius: "12px", color: "#e2e8f0", fontWeight: "700", transition: "all 0.3s" }}
+            disabled={actionLoading === "create-full"}
+            className="glass-btn"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              background: "rgba(16, 185, 129, 0.15)",
+              border: "1px solid rgba(16, 185, 129, 0.4)",
+              color: "#34d399",
+              padding: "12px 20px",
+              borderRadius: "14px",
+              fontWeight: "700",
+              cursor: actionLoading ? "not-allowed" : "pointer",
+              fontSize: "0.95rem"
+            }}
           >
-            {actionLoading === "create-full" ? "⏳ جاري الحفظ..." : "💾 حفظ نسخة شاملة على السيرفر"}
+            {actionLoading === "create-full" ? "جاري التخزين..." : "💾 تخزين بالسيرفر"}
           </button>
         </div>
       </div>
 
-      {/* Backup Control Card */}
-      <div style={{ background: "rgba(255, 255, 255, 0.02)", border: "1px solid rgba(255, 255, 255, 0.05)", borderRadius: "20px", padding: "30px", backdropFilter: "blur(25px)", display: "flex", flexWrap: "wrap", gap: "25px", justifyContent: "space-between", alignItems: "center" }}>
-        <div style={{ flex: "1 1 500px" }}>
-          <h3 style={{ fontWeight: 800, fontSize: "1.25rem", marginBottom: "10px", color: "#60a5fa", display: "flex", alignItems: "center", gap: "8px" }}>
-            💾 النسخ الاحتياطي القياسي والتلقائي
-          </h3>
-          <p style={{ color: "#94a3b8", fontSize: "0.88rem", lineHeight: "1.6" }}>
-            يقوم النظام بحفظ جداول المعاملات والعملاء والطلبات والأرصدة والبانرات والملفات المرفوعة دورياً وإرسالها للأدمن تلقائياً.
-          </p>
+      {/* Manual Actions Card */}
+      <div style={{ background: "var(--bg-card)", border: "1px solid var(--border-glass)", borderRadius: "20px", padding: "25px", backdropFilter: "blur(20px)", display: "flex", flexWrap: "wrap", gap: "15px", justifyContent: "space-between", alignItems: "center" }}>
+        <div>
+          <h2 style={{ fontSize: "1.2rem", fontWeight: "700", color: "var(--text-main)", marginBottom: "6px" }}>النسخ الاحتياطي اليدوي والتلقائي</h2>
+          <p style={{ color: "var(--text-muted)", fontSize: "0.85rem", margin: 0 }}>يتم أخذ نسخة تلقائياً كل 5 ساعات. يمكنك أيضاً إنشاء نسخة أو إرسالها إلى تيليجرام فوراً.</p>
         </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: "10px", minWidth: "240px" }}>
-          <button
-            onClick={handleCreateBackup}
-            disabled={actionLoading !== null}
-            className="btn-add-premium"
-            style={{ background: "linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)", boxShadow: "0 6px 20px rgba(59, 130, 246, 0.25)", padding: "14px 28px", fontSize: "0.95rem", display: "flex", alignItems: "center", gap: "8px", justifyContent: "center", cursor: "pointer", border: "none", borderRadius: "12px", color: "white", fontWeight: "bold", transition: "all 0.3s" }}
-          >
-            {actionLoading === "create" ? "⏳ جاري إنشاء النسخة..." : "+ إنشاء نسخة احتياطية فورية"}
-          </button>
+        <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
           <button
             onClick={handleSendLatestToTelegram}
-            disabled={actionLoading !== null || backups.length === 0}
-            className="btn-add-premium"
-            style={{ background: "linear-gradient(135deg, #0284c7 0%, #2563eb 100%)", boxShadow: "0 6px 20px rgba(2, 132, 199, 0.22)", padding: "13px 22px", fontSize: "0.92rem", display: "flex", alignItems: "center", gap: "8px", justifyContent: "center", cursor: backups.length ? "pointer" : "not-allowed", border: "none", borderRadius: "12px", color: "white", fontWeight: "bold", opacity: backups.length ? 1 : .55 }}
+            disabled={actionLoading === "send-telegram"}
+            className="glass-btn"
+            style={{ display: "flex", alignItems: "center", gap: "8px", background: "rgba(59, 130, 246, 0.15)", border: "1px solid rgba(59, 130, 246, 0.4)", color: "#60a5fa", padding: "10px 20px", borderRadius: "12px", fontWeight: "700", cursor: actionLoading ? "not-allowed" : "pointer" }}
           >
-            {actionLoading === "send-telegram" ? "⏳ جاري الإرسال..." : "✈️ إرسال آخر نسخة إلى تيليجرام"}
+            {actionLoading === "send-telegram" ? "جاري الإرسال..." : "✈️ إرسال النسخة لتيليجرام"}
+          </button>
+          <button
+            onClick={handleCreateBackup}
+            disabled={actionLoading === "create"}
+            className="glass-btn"
+            style={{ display: "flex", alignItems: "center", gap: "8px", background: "var(--primary-color)", color: "#fff", border: "none", padding: "10px 20px", borderRadius: "12px", fontWeight: "700", cursor: actionLoading ? "not-allowed" : "pointer", boxShadow: "0 4px 15px rgba(99, 102, 241, 0.3)" }}
+          >
+            {actionLoading === "create" ? "جاري الإنشاء..." : "⚡ إنشاء نسخة احتياطية الآن"}
           </button>
         </div>
       </div>
 
-      {/* Restore from Uploaded File Card */}
-      <div style={{ background: "rgba(255, 255, 255, 0.02)", border: "1px solid rgba(255, 255, 255, 0.05)", borderRadius: "20px", padding: "30px", backdropFilter: "blur(25px)" }}>
-        <h3 style={{ fontWeight: 800, fontSize: "1.1rem", marginBottom: "12px", color: "#f43f5e", display: "flex", alignItems: "center", gap: "8px" }}>
-          📤 استعادة نسخة احتياطية من ملف محلي (جهاز الكمبيوتر)
-        </h3>
-        <p style={{ color: "#94a3b8", fontSize: "0.85rem", marginBottom: "20px", lineHeight: "1.5" }}>
-          إذا كان لديك ملف نسخة احتياطية تم تنزيله سابقاً من هذا الموقع أو موقع آخر مطابق، يمكنك رفعه هنا لاستعادة كافة البيانات فورياً.
-        </p>
-
-        <div style={{ position: "relative", border: "2px dashed rgba(244, 63, 94, 0.25)", borderRadius: "14px", padding: "30px", textAlign: "center", background: "rgba(244, 63, 94, 0.02)", cursor: "pointer", transition: "all 0.3s" }} className="upload-zone-premium">
-          <input
-            type="file"
-            accept=".json"
-            onChange={handleLocalFileRestore}
-            disabled={actionLoading !== null}
-            style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", opacity: 0, cursor: "pointer" }}
-          />
-          <div style={{ display: "flex", flexDirection: "column", gap: "10px", alignItems: "center" }}>
-            <span style={{ fontSize: "2.5rem" }}>📄</span>
-            <span style={{ color: "#f43f5e", fontWeight: "700", fontSize: "0.95rem" }}>
-              {actionLoading === "restore-upload" ? "⏳ جاري قراءة واستعادة البيانات..." : "اختر ملف النسخة الاحتياطية الممتد بصيغة (.json) لبدء الاستعادة"}
-            </span>
-            <span style={{ color: "#64748b", fontSize: "0.78rem" }}>
-              (سيتم مسح الجداول الحالية وتعويضها بالكامل ببيانات الملف المرفوع)
-            </span>
-          </div>
-        </div>
+      {/* Upload & Restore Card */}
+      <div style={{ background: "rgba(99, 102, 241, 0.05)", border: "1px dashed rgba(99, 102, 241, 0.3)", borderRadius: "20px", padding: "25px", textAlign: "center" }}>
+        <h3 style={{ fontSize: "1.1rem", fontWeight: "700", color: "var(--text-main)", marginBottom: "8px" }}>📤 استعادة نسخة احتياطية من ملف محلي</h3>
+        <p style={{ color: "var(--text-muted)", fontSize: "0.85rem", marginBottom: "15px" }}>قم باختيار ملف نسخة احتياطية (JSON) من جهازك لاستعراض بياناتها ثم استرجاعها مباشرة إلى قاعدة البيانات.</p>
+        <label style={{ display: "inline-block", background: "var(--primary-color)", color: "#fff", padding: "10px 24px", borderRadius: "12px", fontWeight: "700", cursor: "pointer", boxShadow: "0 4px 12px rgba(99, 102, 241, 0.25)" }}>
+          <span>📂 اختيار ملف النسخة الاحتياطية</span>
+          <input type="file" accept=".json" onChange={handleLocalFileRestore} style={{ display: "none" }} />
+        </label>
       </div>
 
-      {/* Available Server Backups Card */}
-      <div style={{ background: "rgba(255, 255, 255, 0.02)", border: "1px solid rgba(255, 255, 255, 0.05)", borderRadius: "20px", padding: "30px", backdropFilter: "blur(25px)" }}>
-        <h3 style={{ fontWeight: 800, fontSize: "1.1rem", marginBottom: "20px", color: "#cbd5e1" }}>
-          🗄️ النسخ الاحتياطية المتوفرة على السيرفر
+      {/* Backups List */}
+      <div style={{ background: "var(--bg-card)", border: "1px solid var(--border-glass)", borderRadius: "20px", padding: "25px", backdropFilter: "blur(20px)" }}>
+        <h3 style={{ fontSize: "1.1rem", fontWeight: "700", color: "var(--text-main)", marginBottom: "20px", display: "flex", alignItems: "center", gap: "10px" }}>
+          <span>🗄️ النسخ الاحتياطية المحفوظة على السيرفر</span>
+          <span style={{ fontSize: "0.8rem", padding: "2px 8px", background: "rgba(255, 255, 255, 0.05)", borderRadius: "10px", color: "var(--text-muted)" }}>{backups.length} نسخة</span>
         </h3>
 
         {loading ? (
-          <div style={{ textAlign: "center", padding: "30px", color: "#94a3b8" }}>جاري تحميل النسخ الاحتياطية...</div>
+          <div style={{ textAlign: "center", padding: "40px 0", color: "var(--text-muted)" }}>جاري تحميل النسخ الاحتياطية...</div>
         ) : backups.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "30px", color: "#64748b", fontSize: "0.88rem", background: "rgba(255,255,255,0.01)", border: "1px dashed rgba(255,255,255,0.05)", borderRadius: "14px" }}>
-            لا توجد ملفات نسخ احتياطي محفوظة حالياً على السيرفر.
-          </div>
+          <div style={{ textAlign: "center", padding: "40px 0", color: "var(--text-muted)" }}>لا توجد نسخ احتياطية مسجلة حتى الآن.</div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-            {backups.map((backup) => (
+            {backups.map((b) => (
               <div
-                key={backup.filename}
+                key={b.filename}
                 style={{
-                  background: "rgba(255, 255, 255, 0.01)",
-                  border: "1px solid rgba(255, 255, 255, 0.04)",
-                  borderRadius: "14px",
-                  padding: "16px 20px",
                   display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
                   flexWrap: "wrap",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  padding: "16px 20px",
+                  background: "rgba(255, 255, 255, 0.02)",
+                  border: "1px solid rgba(255, 255, 255, 0.05)",
+                  borderRadius: "14px",
                   gap: "15px",
-                  transition: "all 0.3s",
                 }}
-                className="backup-item-row"
               >
-                <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
-                  <span style={{ fontFamily: "monospace", color: "#ffffff", fontWeight: "700", fontSize: "0.9rem", wordBreak: "break-all" }}>{backup.filename}</span>
-                  <div style={{ display: "flex", gap: "15px", fontSize: "0.78rem", color: "#94a3b8" }}>
-                    <span>📦 الحجم: <b style={{ color: "#cbd5e1" }}>{formatBytes(backup.size)}</b></span>
-                    <span>📅 التاريخ: <b style={{ color: "#cbd5e1" }}>{formatDate(backup.createdAt)}</b></span>
+                <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
+                  <div style={{ width: "42px", height: "42px", borderRadius: "12px", background: "rgba(99, 102, 241, 0.1)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.2rem", color: "var(--primary-color)" }}>
+                    📦
+                  </div>
+                  <div>
+                    <div style={{ fontWeight: "700", color: "var(--text-main)", fontSize: "0.95rem", marginBottom: "4px", direction: "ltr", textAlign: "right" }}>
+                      {b.filename}
+                    </div>
+                    <div style={{ display: "flex", gap: "15px", color: "var(--text-muted)", fontSize: "0.8rem" }}>
+                      <span>📅 {formatDate(b.createdAt)}</span>
+                      <span>⚖️ {formatBytes(b.size)}</span>
+                      {b.isFull && (
+                        <span style={{ color: "#34d399", fontWeight: "700" }}>🌟 شامل</span>
+                      )}
+                    </div>
                   </div>
                 </div>
 
-                <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
                   <button
-                    onClick={() => handleDownloadBackup(backup.filename)}
-                    disabled={actionLoading !== null}
-                    className="action-btn btn-edit-premium"
-                    style={{ padding: "8px 14px", fontSize: "0.82rem", display: "flex", alignItems: "center", gap: "4px" }}
+                    onClick={() => handleDownloadBackup(b.filename)}
+                    className="glass-btn"
+                    title="تحميل الملف للجهاز"
+                    style={{ padding: "8px 14px", background: "rgba(255, 255, 255, 0.05)", color: "var(--text-main)", borderRadius: "10px", fontSize: "0.85rem", fontWeight: "600" }}
                   >
-                    📥 تنزيل
+                    ⬇️ تحميل
                   </button>
                   <button
-                    onClick={() => handleRestoreFromBackupFile(backup.filename)}
-                    disabled={actionLoading !== null}
-                    className="action-btn btn-success-premium"
-                    style={{ padding: "8px 14px", fontSize: "0.82rem", display: "flex", alignItems: "center", gap: "4px" }}
+                    onClick={() => handleRestoreFromBackupFile(b.filename)}
+                    disabled={actionLoading === `restore-${b.filename}`}
+                    className="glass-btn"
+                    title="استعادة هذه النسخة"
+                    style={{ padding: "8px 14px", background: "rgba(16, 185, 129, 0.1)", color: "#34d399", border: "1px solid rgba(16, 185, 129, 0.2)", borderRadius: "10px", fontSize: "0.85rem", fontWeight: "700" }}
                   >
-                    {actionLoading === `restore-${backup.filename}` ? "⏳ جاري الاسترجاع..." : "🔄 استعادة"}
+                    {actionLoading === `restore-${b.filename}` ? "جاري الاسترجاع..." : "🔄 استعادة"}
                   </button>
                   <button
-                    onClick={() => handleDeleteBackup(backup.filename)}
-                    disabled={actionLoading !== null}
-                    className="action-btn btn-danger-premium"
-                    style={{ padding: "8px 14px", fontSize: "0.82rem", display: "flex", alignItems: "center", gap: "4px" }}
+                    onClick={() => handleDeleteBackup(b.filename)}
+                    disabled={actionLoading === `delete-${b.filename}`}
+                    className="glass-btn"
+                    title="حذف النسخة من السيرفر"
+                    style={{ padding: "8px 12px", background: "rgba(239, 68, 68, 0.1)", color: "#f87171", border: "1px solid rgba(239, 68, 68, 0.2)", borderRadius: "10px", fontSize: "0.85rem" }}
                   >
-                    {actionLoading === `delete-${backup.filename}` ? "⏳ حذف..." : "🗑️ حذف"}
+                    {actionLoading === `delete-${b.filename}` ? "..." : "🗑️"}
                   </button>
                 </div>
               </div>
@@ -487,72 +498,34 @@ export default function BackupsTab({ token, API_BASE_URL }) {
         )}
       </div>
 
-      {/* Backup Deletion OTP Modal */}
+      {/* OTP DELETION MODAL */}
       {backupOtpModal.isOpen && (
-        <div className="modal-overlay" style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0, 0, 0, 0.75)", backdropFilter: "blur(8px)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 9999, padding: "20px" }}>
-          <div className="glass-panel" style={{ width: "100%", maxWidth: "440px", padding: "28px", borderRadius: "20px", border: "1px solid rgba(239, 68, 68, 0.4)", boxShadow: "0 20px 50px rgba(0,0,0,0.6)" }}>
-            <div style={{ textAlign: "center", marginBottom: "20px" }}>
-              <div style={{ width: "56px", height: "56px", borderRadius: "16px", background: "rgba(239, 68, 68, 0.15)", border: "1px solid rgba(239, 68, 68, 0.3)", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "1.8rem", marginBottom: "12px" }}>
-                🔒
-              </div>
-              <h3 style={{ fontSize: "1.25rem", fontWeight: "800", color: "#fff", margin: 0 }}>تأكيد حذف النسخة الاحتياطية</h3>
-              <p style={{ color: "var(--text-muted)", fontSize: "0.85rem", marginTop: "6px" }}>حماية كود الواتساب (OTP)</p>
-            </div>
+        <div style={{ position: "fixed", inset: 0, zIndex: 99999, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.85)", backdropFilter: "blur(8px)" }}>
+          <div style={{ background: "var(--bg-secondary)", border: "1px solid rgba(239, 68, 68, 0.4)", borderRadius: "16px", padding: "28px", width: "90%", maxWidth: "460px", boxShadow: "0 20px 50px rgba(0,0,0,0.6)" }}>
+            <h3 style={{ color: "#f87171", marginBottom: "12px", textAlign: "center", fontSize: "1.2rem", fontWeight: "800" }}>
+              🔒 تأكيد الأمان والحذف
+            </h3>
 
             <div style={{ padding: "12px 14px", background: "rgba(34, 197, 94, 0.12)", border: "1px solid rgba(34, 197, 94, 0.3)", borderRadius: "10px", color: "#4ade80", fontSize: "0.86rem", lineHeight: "1.6", textAlign: "center", marginBottom: "18px" }}>
               📲 {backupOtpModal.message}
             </div>
 
-            <form onSubmit={handleConfirmBackupOtp} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-              <div>
-                <label style={{ display: "block", textAlign: "center", fontWeight: "700", marginBottom: "8px", color: "#f87171" }}>
-                  أدخل كود التحقق (6 أرقام):
-                </label>
-                <input
-                  type="text"
-                  placeholder="1 2 3 4 5 6"
-                  maxLength={6}
-                  value={backupOtpCode}
-                  onChange={(e) => setBackupOtpCode(e.target.value.replace(/\D/g, ""))}
-                  style={{
-                    width: "100%",
-                    textAlign: "center",
-                    fontSize: "1.6rem",
-                    letterSpacing: "8px",
-                    fontWeight: "800",
-                    padding: "12px",
-                    borderRadius: "12px",
-                    background: "rgba(0, 0, 0, 0.4)",
-                    border: "2px solid #f87171",
-                    color: "#fff"
-                  }}
-                  autoFocus
-                  required
-                />
-              </div>
-
-              {backupOtpError && (
-                <div style={{ padding: "10px 14px", background: "rgba(239, 68, 68, 0.15)", borderRight: "4px solid var(--danger-color)", color: "var(--danger-color)", borderRadius: "8px", fontSize: "0.85rem", fontWeight: "600" }}>
-                  ❌ {backupOtpError}
-                </div>
-              )}
-
-              <div style={{ display: "flex", gap: "10px", marginTop: "6px" }}>
-                <button
-                  type="submit"
-                  disabled={backupOtpLoading || backupOtpCode.length < 6}
-                  className="glass-btn"
-                  style={{ flex: 1, padding: "14px", background: "#ef4444", color: "#fff", fontWeight: "800", borderRadius: "12px", fontSize: "0.95rem" }}
-                >
-                  {backupOtpLoading ? "جاري التحقق والتنفيذ..." : "🚀 تأكيد وحذف الآن"}
+            <form onSubmit={handleConfirmBackupOtp}>
+              <input
+                type="text"
+                placeholder="أدخل كود 6 أرقام"
+                value={backupOtpCode}
+                onChange={(e) => setBackupOtpCode(e.target.value)}
+                maxLength={6}
+                style={{ width: "100%", padding: "12px", borderRadius: "10px", border: "1px solid #444", background: "#000", color: "#fff", textAlign: "center", fontSize: "1.2rem", marginBottom: "15px" }}
+              />
+              {backupOtpError && <div style={{ color: "#f87171", fontSize: "0.8rem", marginBottom: "10px" }}>{backupOtpError}</div>}
+              <div style={{ display: "flex", gap: "10px" }}>
+                <button type="submit" disabled={backupOtpLoading} style={{ flex: 1, padding: "12px", background: "#ef4444", color: "#fff", border: "none", borderRadius: "10px", fontWeight: "700" }}>
+                  {backupOtpLoading ? "جاري..." : "تأكيد الحذف"}
                 </button>
-                <button
-                  type="button"
-                  onClick={() => { setBackupOtpModal({ isOpen: false, filename: "", message: "" }); setBackupOtpCode(""); setBackupOtpError(""); }}
-                  className="glass-btn"
-                  style={{ padding: "14px 20px", background: "rgba(255,255,255,0.06)", color: "var(--text-muted)", fontWeight: "700", borderRadius: "12px" }}
-                >
-                  إلغاء ✕
+                <button type="button" onClick={() => setBackupOtpModal({ isOpen: false, filename: "", message: "" })} style={{ padding: "12px 20px", background: "transparent", color: "#888", border: "1px solid #444", borderRadius: "10px" }}>
+                  إلغاء
                 </button>
               </div>
             </form>
@@ -566,8 +539,8 @@ export default function BackupsTab({ token, API_BASE_URL }) {
           <div style={{ background: "var(--bg-secondary)", border: "1px solid var(--border-glass)", borderRadius: "16px", padding: "30px", width: "90%", maxWidth: "600px", boxShadow: "0 20px 50px rgba(0,0,0,0.5)", overflowY: "auto", maxHeight: "85vh" }}>
             <h2 style={{ color: "var(--primary-color)", marginBottom: "15px", textAlign: "center" }}>📊 تحليل ملف النسخة الاحتياطية</h2>
             <p style={{ textAlign: "center", marginBottom: "20px", color: "var(--text-muted)" }}>الملف المختار: <strong dir="ltr">{previewBackup.filename}</strong></p>
-            
-            <div style={{ background: "rgba(0,0,0,0.2)", borderRadius: "12px", padding: "15px", marginBottom: "20px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+
+            <div style={{ background: "rgba(0,0,0,0.2)", borderRadius: "12px", padding: "15px", marginBottom: "20px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", maxHeight: "300px", overflowY: "auto" }}>
               {previewBackup.summary.map(item => (
                 <div key={item.name} style={{ display: "flex", justifyContent: "space-between", padding: "8px 12px", background: "rgba(255,255,255,0.05)", borderRadius: "8px" }}>
                   <span style={{ fontWeight: "700", color: "var(--text-muted)", fontSize: "0.85rem" }}>{item.name}</span>
@@ -576,9 +549,9 @@ export default function BackupsTab({ token, API_BASE_URL }) {
               ))}
             </div>
 
-            <div style={{ background: "rgba(239, 68, 68, 0.15)", padding: "15px", borderRadius: "12px", border: "1px solid #ef4444", marginBottom: "20px", textAlign: "center" }}>
-              <strong style={{ color: "#ef4444", display: "block", marginBottom: "5px" }}>⚠️ تحذير خطير</strong>
-              هل أنت متأكد من مسح كافة بيانات الموقع الحالية واستبدالها بهذه البيانات؟
+            <div style={{ background: "rgba(239, 68, 68, 0.1)", padding: "15px", borderRadius: "12px", border: "1px solid var(--danger-color)", marginBottom: "20px", textAlign: "center" }}>
+              <strong style={{ color: "var(--danger-color)", display: "block", marginBottom: "5px" }}>⚠️ تنبيه استرجاع شامل</strong>
+              سيتم استبدال وحذف أي بيانات حالية في قاعدة البيانات الخاصة بهذه الجداول وكتابة البيانات المرفوعة.
             </div>
 
             <div style={{ display: "flex", gap: "15px" }}>

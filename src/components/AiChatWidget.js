@@ -113,7 +113,7 @@ export default function AiChatWidget() {
       }
     } catch (error) {
       console.error('Chat error:', error);
-      setMessages(prev => [...prev, { role: 'assistant', content: 'حدث خطأ في الاتصال، يرجى المحاولة لاحقاً أو مراسلتنا على تليجرام: https://t.me/arabtechserveronline' }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: 'حدث خطأ في الاتصال، يرجى المحاولة لاحقاً أو مراسلتنا على تليجرام: https://t.me/Elmuizabbas' }]);
     } finally {
       setIsLoading(false);
     }
@@ -154,7 +154,7 @@ export default function AiChatWidget() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <div style={{ fontSize: '1.5rem' }}>🤖</div>
               <div>
-                <h3 className="ai-chat-title" style={{ margin: 0, fontSize: '1.1rem', color: '#fff' }}>Ared AI — الدعم الذكي</h3>
+                <h3 className="ai-chat-title" style={{ margin: 0, fontSize: '1.1rem', color: '#fff' }}>سيرفر الوفاق AI — الدعم الذكي</h3>
                 <span style={{ fontSize: '0.8rem', color: '#00b4d8' }}>متصل • يرسل الشكاوى لتيليجرام</span>
               </div>
             </div>
@@ -293,8 +293,8 @@ export default function AiChatWidget() {
       {!isOpen && <button
         className="ai-chat-toggle"
         onClick={() => setIsOpen(true)}
-        aria-label="فتح Ared AI / Open Ared AI"
-        title="Ared AI"
+        aria-label="فتح سيرفر الوفاق AI / Open Al-Wefaq AI"
+        title="سيرفر الوفاق AI"
         style={{
            width: '68px',
            height: '68px',
@@ -313,7 +313,7 @@ export default function AiChatWidget() {
           transform: 'scale(1)'
         }}
       >
-        <span className="arab-ai-logo">Ared AI</span>
+        <span className="arab-ai-logo">الوفاق AI</span>
       </button>}
       
       <style>{`

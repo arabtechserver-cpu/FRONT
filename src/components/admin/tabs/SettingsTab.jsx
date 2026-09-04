@@ -129,7 +129,7 @@ export default function SettingsTab({
                 style={{ padding: "12px 16px !important" }}
                 value={siteName}
                 onChange={(e) => setSiteName(e.target.value)}
-                placeholder="مثال: عرب تك لخدمات الإلكترونية"
+                placeholder="مثال: الوفاق لخدمات الإلكترونية"
                 required
               />
             </div>

@@ -13,7 +13,7 @@ export default function PrivacyPage() {
         <div className="up-hero-text">
           <h1 className="up-hero-title">سياسة الخصوصية</h1>
           <p className="up-hero-desc">
-            نحن في عرب تك سيرفر نلتزم بحماية خصوصيتك وبياناتك الشخصية.
+            نحن في سيرفر الوفاق نلتزم بحماية خصوصيتك وبياناتك الشخصية.
             توضح هذه السياسة كيف نجمع بياناتك ونستخدمها ونحميها.
           </p>
         </div>

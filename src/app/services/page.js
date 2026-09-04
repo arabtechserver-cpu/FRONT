@@ -14,7 +14,7 @@ const getSiteName = cache(async function getSiteName() {
   } catch (err) {
     console.error("Error fetching site name in metadata:", err);
   }
-  return "عرب تك سيرفر";
+  return "سيرفر الوفاق";
 });
 
 const getCategoriesAndServices = cache(async function getCategoriesAndServices() {

@@ -20,7 +20,7 @@ export default function RefundPolicyPage() {
         </div>
 
         <h1 style={{ fontSize: "2.5rem", fontWeight: 900, color: "var(--text-main)", marginBottom: "12px" }}>
-          سياسة الاسترجاع والضمان — Arab Tech Server
+          سياسة الاسترجاع والضمان — Al-Wefaq Server
         </h1>
         <p style={{ color: "var(--text-muted)", fontSize: "1.05rem", maxWidth: "650px", margin: "0 auto", lineHeight: "1.6" }}>
           نحن نضمن حقوقك كاملة ونسعى لتقديم أعلى معايير الجودة والسرعة في تفعيل الخدمات الرقمية وأكواد السيرفرات.

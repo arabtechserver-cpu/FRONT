@@ -27,8 +27,8 @@ export default function MainLayout({ children }) {
   const servicesMenuRef = useRef(null);
   const [categoriesExpanded, setCategoriesExpanded] = useState(false);
   const [settings, setSettings] = useState({
-    site_name: "عرب تك سيرفر",
-    site_logo: "/logo.jpg",
+    site_name: "سيرفر الوفاق",
+    site_logo: "/main-logo.png",
     services_menu_placements: { desktop: true, mobile: true, footer: true }
   });
   const [logoFailed, setLogoFailed] = useState(false);
@@ -39,7 +39,22 @@ export default function MainLayout({ children }) {
       .then(res => res.ok ? res.json() : null)
       .then(data => {
         if (data) {
-          setSettings(data);
+          const cleanName = (data.site_name || "سيرفر الوفاق")
+            .replace(/عرب\s*تك\s*برو\s*سيرفر/g, 'سيرفر الوفاق')
+            .replace(/عرب\s*تك\s*سيرفر(\s*online)?/gi, 'سيرفر الوفاق')
+            .replace(/عرب\s*تك/g, 'الوفاق')
+            .trim() || "سيرفر الوفاق";
+
+          let cleanLogo = data.site_logo;
+          if (!cleanLogo || cleanLogo === "default" || cleanLogo.includes("af6e9ac5") || cleanLogo.includes("arab")) {
+            cleanLogo = "/main-logo.png";
+          }
+
+          setSettings({
+            ...data,
+            site_name: cleanName,
+            site_logo: cleanLogo
+          });
           setLogoFailed(false);
         }
       })
@@ -123,12 +138,12 @@ export default function MainLayout({ children }) {
 
   useEffect(() => {
     fetch(`${API_BASE_URL}/api/services/menu`)
-      .then(res => res.json())
+      .then(res => res.ok ? res.json() : [])
       .then(data => setMenuServices(Array.isArray(data) ? data : []))
       .catch(err => console.error("Error fetching menu services:", err));
       
     fetch(`${API_BASE_URL}/api/categories/menu`)
-      .then(res => res.json())
+      .then(res => res.ok ? res.json() : [])
       .then(data => setMenuCategories(Array.isArray(data) ? data : []))
       .catch(err => console.error("Error fetching menu categories:", err));
   }, []);
@@ -440,11 +455,20 @@ export default function MainLayout({ children }) {
       <div className={`mobile-drawer ${menuOpen ? "open" : "closed"}`} dir={meta.dir} data-i18n-skip>
         <div className="mobile-drawer-header" style={{ borderBottom: '1px solid rgba(255,255,255,0.07)', paddingBottom: '16px', marginBottom: '4px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            {settings.site_logo && settings.site_logo !== 'default' && !logoFailed ? (
-              <img src={settings.site_logo.startsWith('http') || settings.site_logo.startsWith('data:') ? settings.site_logo : (settings.site_logo.includes('uploads') ? `${API_BASE_URL}${settings.site_logo.startsWith('/') ? '' : '/'}${settings.site_logo}` : settings.site_logo)} alt={settings.site_name} onError={() => setLogoFailed(true)} loading="lazy" style={{ width: '40px', height: '40px', borderRadius: '8px', objectFit: 'contain', flexShrink: 0, filter: 'drop-shadow(0 2px 5px rgba(234,179,8,0.2))' }} />
-            ) : (
-              <img src="/logo.jpg" alt={settings.site_name || "Logo"} loading="lazy" style={{ width: '40px', height: '40px', borderRadius: '8px', objectFit: 'contain', flexShrink: 0, filter: 'drop-shadow(0 2px 5px rgba(234,179,8,0.2))' }} />
-            )}
+            <img
+              src="/main-logo.png"
+              alt={settings.site_name || "سيرفر الوفاق"}
+              loading="lazy"
+              style={{
+                width: '42px',
+                height: '42px',
+                borderRadius: '50%',
+                objectFit: 'cover',
+                flexShrink: 0,
+                border: '1.5px solid rgba(234, 179, 8, 0.4)',
+                filter: 'drop-shadow(0 2px 8px rgba(234, 179, 8, 0.35))'
+              }}
+            />
             <div>
               <div style={{ fontWeight: 900, fontSize: '1rem', color: 'var(--text-main)', letterSpacing: '-0.01em' }}>{settings.site_name}</div>
               <div style={{ fontSize: '0.72rem', color: 'var(--primary-color)', fontWeight: 700, marginTop: '1px' }}>{t("secureFast")}</div>
@@ -682,14 +706,27 @@ export default function MainLayout({ children }) {
               {settings.site_logo && settings.site_logo !== 'default' && !logoFailed ? (
                 <img src={settings.site_logo.startsWith('http') || settings.site_logo.startsWith('data:') ? settings.site_logo : (settings.site_logo.includes('uploads') ? `${API_BASE_URL}${settings.site_logo.startsWith('/') ? '' : '/'}${settings.site_logo}` : settings.site_logo)} alt={settings.site_name} onError={() => setLogoFailed(true)} fetchPriority="high" style={{ width: '40px', height: '40px', borderRadius: '8px', objectFit: 'contain', flexShrink: 0, filter: 'drop-shadow(0 2px 5px rgba(234,179,8,0.2))' }} />
               ) : (
-                <img src="/logo.jpg" alt={settings.site_name || "Logo"} fetchPriority="high" style={{ width: '40px', height: '40px', borderRadius: '8px', objectFit: 'contain', flexShrink: 0, filter: 'drop-shadow(0 2px 5px rgba(234,179,8,0.2))' }} />
+                <img
+              src="/main-logo.png"
+              alt={settings.site_name || "سيرفر الوفاق"}
+              fetchPriority="high"
+              style={{
+                width: '42px',
+                height: '42px',
+                borderRadius: '50%',
+                objectFit: 'cover',
+                flexShrink: 0,
+                border: '1.5px solid rgba(234, 179, 8, 0.4)',
+                filter: 'drop-shadow(0 2px 8px rgba(234, 179, 8, 0.35))'
+              }}
+            />
               )}
               <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', height: '24px', overflowY: 'hidden', minWidth: '180px' }}>
                 <span className={`font-black absolute transition-all duration-700 ease-in-out ${logoLang === 'ar' ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full'}`} style={{ color: '#eab308', whiteSpace: 'nowrap', fontSize: 'clamp(0.9rem, 3vw, 1.15rem)', letterSpacing: '0.5px', textShadow: '0 2px 10px rgba(234, 179, 8, 0.4)' }}>
-                  عرب تك سيرفر
+                  سيرفر الوفاق
                 </span>
                 <span translate="no" className={`font-black absolute transition-all duration-700 ease-in-out ${logoLang === 'en' ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-full'}`} style={{ color: '#eab308', whiteSpace: 'nowrap', fontSize: 'clamp(0.85rem, 2.5vw, 1rem)', letterSpacing: '0.5px', textShadow: '0 2px 10px rgba(234, 179, 8, 0.4)' }}>
-                  Arab Tech Server
+                  Al-Wefaq Server
                 </span>
               </div>
             </Link>
@@ -778,26 +815,26 @@ export default function MainLayout({ children }) {
                 <div className="notice-set" role="presentation">
                   <div className="notice-set-item">
                     <span className="notice-pill notice-pill-gold">✨ {t("announcement")}</span>
-                    <a href="https://wa.me/249123667227" target="_blank" rel="noopener noreferrer" className="notice-pill notice-pill-link">
+                    <a href="https://wa.me/249118100809" target="_blank" rel="noopener noreferrer" className="notice-pill notice-pill-link">
                       <span className="notice-pill-label">💬 {t("whatsapp1")}</span>
-                      <bdi dir="ltr" className="notice-pill-bdi">+249&nbsp;12&nbsp;366&nbsp;7227</bdi>
+                      <bdi dir="ltr" className="notice-pill-bdi">+249&nbsp;11&nbsp;810&nbsp;0809</bdi>
                     </a>
-                    <a href="https://wa.me/16728972935" target="_blank" rel="noopener noreferrer" className="notice-pill notice-pill-link">
+                    <a href="https://wa.me/249927922237" target="_blank" rel="noopener noreferrer" className="notice-pill notice-pill-link">
                       <span className="notice-pill-label">💬 {t("whatsapp2")}</span>
-                      <bdi dir="ltr" className="notice-pill-bdi">+1&nbsp;(672)&nbsp;897-2935</bdi>
+                      <bdi dir="ltr" className="notice-pill-bdi">+249&nbsp;92&nbsp;792&nbsp;2237</bdi>
                     </a>
                   </div>
                 </div>
                 <div className="notice-set" aria-hidden="true" role="presentation">
                   <div className="notice-set-item">
                     <span className="notice-pill notice-pill-gold">✨ {t("announcement")}</span>
-                    <a href="https://wa.me/249123667227" target="_blank" rel="noopener noreferrer" className="notice-pill notice-pill-link">
+                    <a href="https://wa.me/249118100809" target="_blank" rel="noopener noreferrer" className="notice-pill notice-pill-link">
                       <span className="notice-pill-label">💬 {t("whatsapp1")}</span>
-                      <bdi dir="ltr" className="notice-pill-bdi">+249&nbsp;12&nbsp;366&nbsp;7227</bdi>
+                      <bdi dir="ltr" className="notice-pill-bdi">+249&nbsp;11&nbsp;810&nbsp;0809</bdi>
                     </a>
-                    <a href="https://wa.me/16728972935" target="_blank" rel="noopener noreferrer" className="notice-pill notice-pill-link">
+                    <a href="https://wa.me/249927922237" target="_blank" rel="noopener noreferrer" className="notice-pill notice-pill-link">
                       <span className="notice-pill-label">💬 {t("whatsapp2")}</span>
-                      <bdi dir="ltr" className="notice-pill-bdi">+1&nbsp;(672)&nbsp;897-2935</bdi>
+                      <bdi dir="ltr" className="notice-pill-bdi">+249&nbsp;92&nbsp;792&nbsp;2237</bdi>
                     </a>
                   </div>
                 </div>
@@ -968,7 +1005,7 @@ export default function MainLayout({ children }) {
             <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
               {/* WhatsApp Support 1 */}
               <a
-                href="https://wa.me/249123667227"
+                href="https://wa.me/249118100809"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
@@ -990,7 +1027,7 @@ export default function MainLayout({ children }) {
                   <span style={{ fontSize: "1.2rem" }}>🟢</span>
                   <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                     <span>{t("whatsappAdmin1")}</span>
-                    <span dir="ltr" style={{ direction: "ltr", unicodeBidi: "isolate" }}>(+249 12 366 7227)</span>
+                    <span dir="ltr" style={{ direction: "ltr", unicodeBidi: "isolate" }}>(+249 11 810 0809)</span>
                   </div>
                 </div>
                 <span style={{ color: "#10b981" }}>{meta.dir === "rtl" ? "←" : "→"}</span>
@@ -998,7 +1035,7 @@ export default function MainLayout({ children }) {
 
               {/* WhatsApp Support 2 */}
               <a
-                href="https://wa.me/16728972935"
+                href="https://wa.me/249927922237"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
@@ -1020,42 +1057,15 @@ export default function MainLayout({ children }) {
                   <span style={{ fontSize: "1.2rem" }}>🟢</span>
                   <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                     <span>{t("whatsappAdmin2")}</span>
-                    <span dir="ltr" style={{ direction: "ltr", unicodeBidi: "isolate" }}>(+1 672-897-2935)</span>
+                    <span dir="ltr" style={{ direction: "ltr", unicodeBidi: "isolate" }}>(+249 92 792 2237)</span>
                   </div>
                 </div>
                 <span style={{ color: "#22d3ee" }}>{meta.dir === "rtl" ? "←" : "→"}</span>
               </a>
 
-              {/* WhatsApp Community */}
-              <a
-                href="https://chat.whatsapp.com/DINRDwU2lVjFcGRowxT3m5"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  padding: "12px 16px",
-                  background: "rgba(52, 211, 153, 0.08)",
-                  border: "1px solid rgba(52, 211, 153, 0.15)",
-                  borderRadius: "14px",
-                  color: "#34d399",
-                  textDecoration: "none",
-                  fontWeight: "bold",
-                  fontSize: "0.92rem",
-                  transition: "transform 0.2s"
-                }}
-              >
-                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  <span style={{ fontSize: "1.2rem" }}>💬</span>
-                  <span>{t("whatsappCommunity")}</span>
-                </div>
-                <span style={{ color: "#34d399" }}>{meta.dir === "rtl" ? "←" : "→"}</span>
-              </a>
-
               {/* Facebook Page */}
               <a
-                href="https://www.facebook.com/ARABTECHSERVEROnline"
+                href="https://www.facebook.com/profile.php?id=100029216807637"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
@@ -1082,7 +1092,7 @@ export default function MainLayout({ children }) {
 
               {/* TikTok Account */}
               <a
-                href="https://tiktok.com/@arabtechsuppurt"
+                href="https://tiktok.com/@249118100809elmuiz"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
@@ -1109,7 +1119,7 @@ export default function MainLayout({ children }) {
 
               {/* Telegram Channel */}
               <a
-                href="https://t.me/arabtechserveronline"
+                href="https://t.me/Elmuizabbas"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
@@ -1136,7 +1146,7 @@ export default function MainLayout({ children }) {
 
               {/* YouTube Channel */}
               <a
-                href="https://www.youtube.com/@ARABTECHSERVER"
+                href="https://www.youtube.com/@elmuizabba24"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
@@ -1163,7 +1173,7 @@ export default function MainLayout({ children }) {
 
               {/* Email Support */}
               <a
-                href="mailto:arabtechserver@gmail.com"
+                href="mailto:Al-Wefaq Server@gmail.com"
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -1181,7 +1191,7 @@ export default function MainLayout({ children }) {
               >
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                   <span style={{ fontSize: "1.2rem" }}>✉️</span>
-                  <span>{t("emailSupport")} (arabtechserver@gmail.com)</span>
+                  <span>{t("emailSupport")} (Al-Wefaq Server@gmail.com)</span>
                 </div>
                 <span style={{ color: "#ef4444" }}>{meta.dir === "rtl" ? "←" : "→"}</span>
               </a>

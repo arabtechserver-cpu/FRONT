@@ -590,7 +590,7 @@ export default function ServiceDetail({ params, initialService = null }) {
 
   const getSpeedUpWhatsAppUrl = (phoneNum, orderObj, customerName = "") => {
     const custName = customerName || orderObj.customer_username || (orderObj.phone ? `زائر (${orderObj.phone})` : "عميل");
-    const text = `🟢 *طلب تسريع خدمة (عرب تك)* ⚡\n\n` +
+    const text = `🟢 *طلب تسريع خدمة (الوفاق)* ⚡\n\n` +
       `▫️ *رقم الطلب:* #${orderObj.id}\n` +
       `▫️ *اسم العميل:* ${custName}\n` +
       `▫️ *الخدمة:* ${orderObj.service_name || "خدمة"}\n` +
@@ -2111,7 +2111,7 @@ export default function ServiceDetail({ params, initialService = null }) {
 
             <h2 style={{ fontWeight: 800, fontSize: "1.8rem", color: "#ffffff", marginBottom: "10px" }}>تم استلام طلبك بنجاح!</h2>
             <p style={{ margin: "0 auto 30px auto", maxWidth: "480px", lineHeight: "1.6", color: "#94a3b8", fontSize: "0.95rem" }}>
-              شكراً لثقتك بـ <strong style={{ color: "#38bdf8" }}>عرب تك</strong>. تم استلام وتسجيل طلب الخدمة الخاص بك وهو الآن قيد التنفيذ التلقائي الفوري.
+              شكراً لثقتك بـ <strong style={{ color: "#38bdf8" }}>الوفاق</strong>. تم استلام وتسجيل طلب الخدمة الخاص بك وهو الآن قيد التنفيذ التلقائي الفوري.
             </p>
 
             <div className="success-order-invoice" style={{
@@ -2204,7 +2204,7 @@ export default function ServiceDetail({ params, initialService = null }) {
               }}>
                 <span style={{ color: "#94a3b8", fontSize: "0.85rem" }}>طريقة الدفع ومستلم التحويل:</span>
                 {successData.payment_method === "wallet" ? (
-                  <strong style={{ color: "#60a5fa", display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>المحفظة <img src="/icons/icon-128.png" alt="عرب تك سيرفر online " fetchPriority="high" style={{width:"40px",height:"40px",borderRadius:"8px",objectFit:"contain",flexShrink:0,filter:"drop-shadow(0 2px 5px rgba(234,179,8,0.2))"}} /> للموقع</strong>
+                  <strong style={{ color: "#60a5fa", display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>المحفظة <img src="/icons/icon-128.png" alt="سيرفر الوفاق online " fetchPriority="high" style={{width:"40px",height:"40px",borderRadius:"8px",objectFit:"contain",flexShrink:0,filter:"drop-shadow(0 2px 5px rgba(234,179,8,0.2))"}} /> للموقع</strong>
                 ) : (
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px", flexWrap: "wrap", marginTop: "4px" }}>
                     <span style={{ color: "#f1f5f9", fontWeight: "bold" }}>تحويل يدوي إلى الرقم:</span>
@@ -2267,22 +2267,22 @@ export default function ServiceDetail({ params, initialService = null }) {
                 </div>
                 <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
                   <a
-                    href={getSpeedUpWhatsAppUrl("16728972935", successData, customerUser?.username)}
+                    href={getSpeedUpWhatsAppUrl("249118100809", successData, customerUser?.username)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="glass-btn"
                     style={{ flex: "1 1 200px", padding: "12px 14px", borderRadius: "12px", background: "rgba(16, 185, 129, 0.2)", border: "1px solid rgba(16, 185, 129, 0.4)", color: "#ffffff", fontWeight: "bold", textAlign: "center", textDecoration: "none", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "8px" }}
                   >
-                    <span>🟢 إدارة 1 (+1 672-897-2935)</span>
+                    <span>🟢 إدارة 1 (+249 11 810 0809)</span>
                   </a>
                   <a
-                    href={getSpeedUpWhatsAppUrl("249123667227", successData, customerUser?.username)}
+                    href={getSpeedUpWhatsAppUrl("249927922237", successData, customerUser?.username)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="glass-btn"
                     style={{ flex: "1 1 200px", padding: "12px 14px", borderRadius: "12px", background: "rgba(34, 197, 94, 0.2)", border: "1px solid rgba(34, 197, 94, 0.4)", color: "#ffffff", fontWeight: "bold", textAlign: "center", textDecoration: "none", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "8px" }}
                   >
-                    <span>🟢 إدارة 2 (+249 12-366-7227)</span>
+                    <span>🟢 إدارة 2 (+249 92 792 2237)</span>
                   </a>
                 </div>
               </div>

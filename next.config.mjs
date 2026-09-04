@@ -62,6 +62,30 @@ const nextConfig = {
   images: {
     remotePatterns: [buildRemotePattern(apiUrl)],
   },
+  async redirects() {
+    return [
+      {
+        source: '/ar',
+        destination: '/',
+        permanent: false,
+      },
+      {
+        source: '/en',
+        destination: '/',
+        permanent: false,
+      },
+      {
+        source: '/ar/:path*',
+        destination: '/:path*',
+        permanent: false,
+      },
+      {
+        source: '/en/:path*',
+        destination: '/:path*',
+        permanent: false,
+      },
+    ];
+  },
   async rewrites() {
     return [
       {

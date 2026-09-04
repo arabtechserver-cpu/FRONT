@@ -130,7 +130,7 @@ export default function TicketsIndexPage() {
           <p style={{ color: "var(--text-muted)", fontSize: "0.9rem", lineHeight: "1.6", marginBottom: "18px" }}>
             انضم لقناتنا الرسمية لمتابعة التحديثات وحالة السيرفرات والتواصل مع المشرفين.
           </p>
-          <a href="https://t.me/arabtechserveronline" target="_blank" rel="noopener noreferrer" style={{ color: "#38bdf8", fontWeight: "bold", textDecoration: "none" }}>
+          <a href="https://t.me/Elmuizabbas" target="_blank" rel="noopener noreferrer" style={{ color: "#38bdf8", fontWeight: "bold", textDecoration: "none" }}>
             فتح قناة تيليجرام ←
           </a>
         </div>
@@ -143,7 +143,7 @@ export default function TicketsIndexPage() {
           <p style={{ color: "var(--text-muted)", fontSize: "0.9rem", lineHeight: "1.6", marginBottom: "18px" }}>
             تواصل مع خدمة العملاء والإدارة عبر واتساب للطلبات العاجلة والشحن اليدوي.
           </p>
-          <a href="https://wa.me/16728972935" target="_blank" rel="noopener noreferrer" style={{ color: "#38bdf8", fontWeight: "bold", textDecoration: "none" }}>
+          <a href="https://wa.me/249118100809" target="_blank" rel="noopener noreferrer" style={{ color: "#38bdf8", fontWeight: "bold", textDecoration: "none" }}>
             مراسلة واتساب ←
           </a>
         </div>

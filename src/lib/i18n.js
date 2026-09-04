@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { shouldObserveDomTranslations } from "./i18nRuntime.mjs";
 
-export const LANGUAGE_STORAGE_KEY = "arabtech_user_language";
+export const LANGUAGE_STORAGE_KEY = "Al-Wefaq_user_language";
 
 export const LANGUAGES = [
   { code: "ar", label: "Arabic", nativeLabel: "العربية", dir: "rtl", htmlLang: "ar" },
@@ -84,18 +84,18 @@ const dictionary = {
     availablePackages: "الباقات المتوفرة:",
     viewMore: "عرض المزيد",
     clickToView: "اضغط للعرض",
-    announcement: "مرحبا بكم في Arab Tech Server، جميع الخدمات متاحة والأسعار مناسبة للجميع",
+    announcement: "مرحبا بكم في Al-Wefaq Server، جميع الخدمات متاحة والأسعار مناسبة للجميع",
     whatsapp1: "واتساب 1:",
     whatsapp2: "واتساب 2:",
     supportTitle: "الدعم الفني وتواصل الإدارة",
     supportIntro: "اختر إحدى قنوات الدعم الفني الرسمية للتواصل معنا أو الانضمام إلى مجتمعنا:",
     whatsappAdmin1: "واتساب الإدارة 1",
     whatsappAdmin2: "واتساب الإدارة 2",
-    whatsappCommunity: "مجتمع واتساب عرب تك",
-    facebookPage: "صفحة فيسبوك عرب تك",
-    tiktokAccount: "حساب تيك توك عرب تك",
-    telegramChannel: "قناة تيليجرام عرب تك",
-    youtubeChannel: "قناة يوتيوب عرب تك",
+    whatsappCommunity: "مجتمع واتساب الوفاق",
+    facebookPage: "صفحة فيسبوك الوفاق",
+    tiktokAccount: "حساب تيك توك الوفاق",
+    telegramChannel: "قناة تيليجرام الوفاق",
+    youtubeChannel: "قناة يوتيوب الوفاق",
     emailSupport: "البريد الإلكتروني",
     quickLinks: "روابط سريعة",
     policiesTerms: "السياسات والشروط",
@@ -175,7 +175,7 @@ const dictionary = {
     popular: "الأكثر طلباً",
     orderService: "طلب الخدمة",
     viewAllServices: "عرض جميع الخدمات",
-    whyChoose: "لماذا تختار عرب تك سيرفر؟",
+    whyChoose: "لماذا تختار سيرفر الوفاق؟",
     securityReliable: "أمان وموثوقية",
     dataProtection: "حماية كاملة للبيانات",
     fastExecution: "سرعة في التنفيذ",
@@ -258,8 +258,8 @@ const dictionary = {
     faqSafeAnswer: "نعم، نستخدم حماية للبيانات ونتابع الطلبات حتى اكتمالها أو استرجاع الرصيد عند وجود مشكلة مؤكدة.",
     faqWholesaleQuestion: "كيف أحصل على أسعار الجملة؟",
     faqWholesaleAnswer: "تواصل معنا عبر واتساب للحصول على تسعيرة الجملة والخصومات الخاصة.",
-    seoTitle: "عرب تك سيرفر | لخدمات وبرامج السوفت وير",
-    seoDesc: "سيرفر عرب تك لخدمات وبرامج السوفت وير. شحن وتفعيل تلقائي فوري بأفضل الأسعار."
+    seoTitle: "سيرفر الوفاق | لخدمات وبرامج السوفت وير",
+    seoDesc: "سيرفر الوفاق لخدمات وبرامج السوفت وير. شحن وتفعيل تلقائي فوري بأفضل الأسعار."
   },
   en: {
     heroWelcome: "Welcome to our services!",
@@ -331,18 +331,18 @@ const dictionary = {
     availablePackages: "Available packages:",
     viewMore: "Show more",
     clickToView: "Click to view",
-    announcement: "Welcome to Arab Tech Server. All services are available at fair prices.",
+    announcement: "Welcome to Al-Wefaq Server. All services are available at fair prices.",
     whatsapp1: "WhatsApp 1:",
     whatsapp2: "WhatsApp 2:",
     supportTitle: "Support and management contact",
     supportIntro: "Choose an official support channel to contact us or join our community:",
     whatsappAdmin1: "Management WhatsApp 1",
     whatsappAdmin2: "Management WhatsApp 2",
-    whatsappCommunity: "Arab Tech WhatsApp Community",
-    facebookPage: "Arab Tech Facebook Page",
-    tiktokAccount: "Arab Tech TikTok Account",
-    telegramChannel: "Arab Tech Telegram Channel",
-    youtubeChannel: "Arab Tech YouTube Channel",
+    whatsappCommunity: "Al-Wefaq WhatsApp Community",
+    facebookPage: "Al-Wefaq Facebook Page",
+    tiktokAccount: "Al-Wefaq TikTok Account",
+    telegramChannel: "Al-Wefaq Telegram Channel",
+    youtubeChannel: "Al-Wefaq YouTube Channel",
     emailSupport: "Email Support",
     quickLinks: "Quick Links",
     policiesTerms: "Policies & Terms",
@@ -505,8 +505,8 @@ const dictionary = {
     faqSafeAnswer: "Yes. We protect your data and follow orders until completion or wallet refund when a verified issue occurs.",
     faqWholesaleQuestion: "How can I get wholesale prices?",
     faqWholesaleAnswer: "Contact us on WhatsApp to get wholesale pricing and special discounts.",
-    seoTitle: "Arab Tech Server | Software & Server Services",
-    seoDesc: "Arab Tech Server for software services. Instant activation, GSM tools, server unlock, and best prices."
+    seoTitle: "Al-Wefaq Server | Software & Server Services",
+    seoDesc: "Al-Wefaq Server for software services. Instant activation, GSM tools, server unlock, and best prices."
   },
   ru: {
     heroWelcome: "Добро пожаловать в наши услуги!",
@@ -559,18 +559,18 @@ const dictionary = {
     availablePackages: "Доступные пакеты:",
     viewMore: "Показать еще",
     clickToView: "Нажмите для просмотра",
-    announcement: "Добро пожаловать в Arab Tech Server. Все услуги доступны по хорошим ценам.",
+    announcement: "Добро пожаловать в Al-Wefaq Server. Все услуги доступны по хорошим ценам.",
     whatsapp1: "WhatsApp 1:",
     whatsapp2: "WhatsApp 2:",
     supportTitle: "Поддержка и связь с администрацией",
     supportIntro: "Выберите официальный канал поддержки для связи с нами или вступите в сообщество:",
     whatsappAdmin1: "WhatsApp администрации 1",
     whatsappAdmin2: "WhatsApp администрации 2",
-    whatsappCommunity: "Сообщество Arab Tech в WhatsApp",
-    facebookPage: "Страница Arab Tech в Facebook",
-    tiktokAccount: "Аккаунт Arab Tech в TikTok",
-    telegramChannel: "Канал Arab Tech в Telegram",
-    youtubeChannel: "Канал Arab Tech на YouTube",
+    whatsappCommunity: "Сообщество Al-Wefaq в WhatsApp",
+    facebookPage: "Страница Al-Wefaq в Facebook",
+    tiktokAccount: "Аккаунт Al-Wefaq в TikTok",
+    telegramChannel: "Канал Al-Wefaq в Telegram",
+    youtubeChannel: "Канал Al-Wefaq на YouTube",
     emailSupport: "Email поддержка",
     quickLinks: "Быстрые ссылки",
     policiesTerms: "Политики и условия",
@@ -733,8 +733,8 @@ const dictionary = {
     faqSafeAnswer: "Да. Мы защищаем данные и отслеживаем заказы до завершения или возврата средств при подтвержденной проблеме.",
     faqWholesaleQuestion: "Как получить оптовые цены?",
     faqWholesaleAnswer: "Свяжитесь с нами в WhatsApp, чтобы получить оптовые цены и специальные скидки.",
-    seoTitle: "Arab Tech Server | Программные и Серверные Услуги",
-    seoDesc: "Arab Tech Server для программных услуг. Мгновенная активация, GSM инструменты, разблокировка серверов и лучшие цены."
+    seoTitle: "Al-Wefaq Server | Программные и Серверные Услуги",
+    seoDesc: "Al-Wefaq Server для программных услуг. Мгновенная активация, GSM инструменты, разблокировка серверов и лучшие цены."
   },
   zh: {
     heroWelcome: "欢迎使用我们的服务！",
@@ -787,18 +787,18 @@ const dictionary = {
     availablePackages: "可用套餐：",
     viewMore: "显示更多",
     clickToView: "点击查看",
-    announcement: "欢迎来到 Arab Tech Server，所有服务均可用，价格合理。",
+    announcement: "欢迎来到 Al-Wefaq Server，所有服务均可用，价格合理。",
     whatsapp1: "WhatsApp 1：",
     whatsapp2: "WhatsApp 2：",
     supportTitle: "技术支持和管理联系",
     supportIntro: "请选择官方支持渠道联系我们或加入我们的社区：",
     whatsappAdmin1: "管理 WhatsApp 1",
     whatsappAdmin2: "管理 WhatsApp 2",
-    whatsappCommunity: "Arab Tech WhatsApp 社区",
-    facebookPage: "Arab Tech Facebook 页面",
-    tiktokAccount: "Arab Tech TikTok 账号",
-    telegramChannel: "Arab Tech Telegram 频道",
-    youtubeChannel: "Arab Tech YouTube 频道",
+    whatsappCommunity: "Al-Wefaq WhatsApp 社区",
+    facebookPage: "Al-Wefaq Facebook 页面",
+    tiktokAccount: "Al-Wefaq TikTok 账号",
+    telegramChannel: "Al-Wefaq Telegram 频道",
+    youtubeChannel: "Al-Wefaq YouTube 频道",
     emailSupport: "邮件支持",
     quickLinks: "快捷链接",
     policiesTerms: "政策和条款",
@@ -948,8 +948,8 @@ const dictionary = {
     faqSafeAnswer: "是的。我们保护你的数据，并跟进订单直到完成；如确认存在问题，将退回到钱包。",
     faqWholesaleQuestion: "如何获得批发价格？",
     faqWholesaleAnswer: "请通过 WhatsApp 联系我们，获取批发价格和专属折扣。",
-    seoTitle: "Arab Tech Server | 软件与服务器服务",
-    seoDesc: "Arab Tech Server提供软件服务。即时激活，GSM工具，服务器解锁，以及最优价格。"
+    seoTitle: "Al-Wefaq Server | 软件与服务器服务",
+    seoDesc: "Al-Wefaq Server提供软件服务。即时激活，GSM工具，服务器解锁，以及最优价格。"
   },
   hi: {
     heroWelcome: "हमारी सेवाओं में आपका स्वागत है!",
@@ -1002,18 +1002,18 @@ const dictionary = {
     availablePackages: "उपलब्ध पैकेज:",
     viewMore: "और दिखाएं",
     clickToView: "देखने के लिए क्लिक करें",
-    announcement: "Arab Tech Server में आपका स्वागत है। सभी सेवाएं उचित कीमतों पर उपलब्ध हैं।",
+    announcement: "Al-Wefaq Server में आपका स्वागत है। सभी सेवाएं उचित कीमतों पर उपलब्ध हैं।",
     whatsapp1: "WhatsApp 1:",
     whatsapp2: "WhatsApp 2:",
     supportTitle: "सपोर्ट और मैनेजमेंट संपर्क",
     supportIntro: "हमसे संपर्क करने या समुदाय से जुड़ने के लिए आधिकारिक सपोर्ट चैनल चुनें:",
     whatsappAdmin1: "मैनेजमेंट WhatsApp 1",
     whatsappAdmin2: "मैनेजमेंट WhatsApp 2",
-    whatsappCommunity: "Arab Tech WhatsApp समुदाय",
-    facebookPage: "Arab Tech Facebook पेज",
-    tiktokAccount: "Arab Tech TikTok अकाउंट",
-    telegramChannel: "Arab Tech Telegram चैनल",
-    youtubeChannel: "Arab Tech YouTube चैनल",
+    whatsappCommunity: "Al-Wefaq WhatsApp समुदाय",
+    facebookPage: "Al-Wefaq Facebook पेज",
+    tiktokAccount: "Al-Wefaq TikTok अकाउंट",
+    telegramChannel: "Al-Wefaq Telegram चैनल",
+    youtubeChannel: "Al-Wefaq YouTube चैनल",
     emailSupport: "ईमेल सपोर्ट",
     quickLinks: "त्वरित लिंक",
     policiesTerms: "नीतियां और नियम",
@@ -1222,11 +1222,11 @@ const phraseKeys = {
   supportIntro: ["اختر إحدى قنوات الدعم الفني الرسمية للتواصل معنا أو الانضمام إلى مجتمعنا:"],
   whatsappAdmin1: ["واتساب الإدارة 1"],
   whatsappAdmin2: ["واتساب الإدارة 2"],
-  whatsappCommunity: ["مجتمع واتساب عرب تك"],
-  facebookPage: ["صفحة فيسبوك عرب تك", "صفحة الفيسبوك"],
-  tiktokAccount: ["حساب تيك توك عرب تك", "تيك توك"],
-  telegramChannel: ["قناة تيليجرام عرب تك", "قناة تيليجرام"],
-  youtubeChannel: ["قناة يوتيوب عرب تك", "قناة اليوتيوب"],
+  whatsappCommunity: ["مجتمع واتساب الوفاق"],
+  facebookPage: ["صفحة فيسبوك الوفاق", "صفحة الفيسبوك"],
+  tiktokAccount: ["حساب تيك توك الوفاق", "تيك توك"],
+  telegramChannel: ["قناة تيليجرام الوفاق", "قناة تيليجرام"],
+  youtubeChannel: ["قناة يوتيوب الوفاق", "قناة اليوتيوب"],
   emailSupport: ["البريد الإلكتروني"],
   quickLinks: ["روابط سريعة"],
   policiesTerms: ["السياسات والشروط"],
@@ -1294,7 +1294,7 @@ const phraseKeys = {
   popular: ["الأكثر طلباً", "الأكثر طلبا"],
   orderService: ["طلب الخدمة"],
   viewAllServices: ["عرض جميع الخدمات", "عرض جميع الخدمات ▼"],
-  whyChoose: ["لماذا تختار عرب تك سيرفر؟"],
+  whyChoose: ["لماذا تختار سيرفر الوفاق؟"],
   securityReliable: ["أمان وموثوقية"],
   dataProtection: ["حماية كاملة للبيانات", "حماية كاملة للبيانات."],
   fastExecution: ["سرعة في التنفيذ", "سرعة تنفيذ"],
@@ -1424,7 +1424,7 @@ const legacyEnglishPhrases = {
   "لا توجد بيانات كافية حتى الآن 🔄": "Not enough data yet 🔄",
   "طلب خدمة": "Order a service",
   "1 - 15 دقيقة": "1 - 15 minutes",
-  "عرب تك سيرفر online": "Arab Tech Server",
+  "سيرفر الوفاق online": "Al-Wefaq Server",
   "← العودة إلى قسم": "← Back to category",
   "قسم": "Category",
   "الأقسام الفرعية": "Subcategories",
@@ -1583,7 +1583,7 @@ const legacyEnglishPhrases = {
   "المتابعة للدفع وإتمام الطلب": "Continue to payment and complete order",
   "تم استلام طلبك بنجاح!": "Your order was received successfully!",
   "شكراً لثقتك بـ": "Thank you for choosing",
-  "عرب تك": "Arab Tech",
+  "الوفاق": "Al-Wefaq",
   ". تم استلام وتسجيل طلب الخدمة الخاص بك وهو الآن قيد التنفيذ التلقائي الفوري.": ". Your service order was received and is now queued for automatic fulfillment.",
   "تفاصيل فاتورة الخدمة": "Service invoice details",
   "الباقة / الكمية:": "Package / quantity:",
@@ -1637,10 +1637,10 @@ const legacyEnglishPhrases = {
   "جميع الطلبات القادمة من الـ API سيتم تسعيرها بناءً على نسبة المكسب (Markup) المحددة لحسابك بواسطة الإدارة.": "API orders are priced using the markup assigned to your account by the administrator.",
   "تأكد من وجود رصيد كافٍ في محفظتك لدينا، وإلا فسيتم رفض طلباتك تلقائياً.": "Keep enough balance in your wallet or orders will be rejected automatically.",
   "بعض الطلبات الخاصة عبر الـ API قد تتطلب موافقة يدوية من قبل الإدارة قبل البدء في التنفيذ.": "Some API orders may require administrator approval before fulfillment begins.",
-  "سياسة العمل الرسمية لمنصة \"عرب تك\" الخاصة بالخدمات الرقمية، تفعيلات السيرفرات، وأدوات السوفت وير.": "The official policy for Arab Tech digital services, server activations, and software tools.",
+  "سياسة العمل الرسمية لمنصة \"الوفاق\" الخاصة بالخدمات الرقمية، تفعيلات السيرفرات، وأدوات السوفت وير.": "The official policy for Al-Wefaq digital services, server activations, and software tools.",
   "أولاً: شروط الاستخدام (Terms of Use)": "First: Terms of Use",
   "1. قبول الشروط": "1. Acceptance of terms",
-  "باستخدامك لمنصة \"عرب تك\" والخدمات المقدمة فيها، فإنك توافق التزاماً كاملاً بجميع الشروط والأحكام المذكورة هنا. إذا كنت لا توافق على أي من هذه الشروط، يُرجى التوقف عن استخدام المنصة.": "By using Arab Tech and its services, you agree to all terms and conditions stated here. If you do not agree, stop using the platform.",
+  "باستخدامك لمنصة \"الوفاق\" والخدمات المقدمة فيها، فإنك توافق التزاماً كاملاً بجميع الشروط والأحكام المذكورة هنا. إذا كنت لا توافق على أي من هذه الشروط، يُرجى التوقف عن استخدام المنصة.": "By using Al-Wefaq and its services, you agree to all terms and conditions stated here. If you do not agree, stop using the platform.",
   "2. طبيعة الخدمات": "2. Nature of services",
   "نقدم خدمات رقمية تشمل تفعيلات السيرفرات، أدوات السوفت وير، تجديد الاشتراكات، وبرامج الصيانة المتقدمة. جميع هذه الأدوات موجهة للاستخدام المهني والقانوني فقط في صيانة الهواتف والأنظمة.": "We provide digital services including server activations, software tools, subscription renewals, and advanced maintenance products. These tools are intended only for professional and lawful phone and system maintenance.",
   "3. الحسابات والمحفظة الرقمية": "3. Accounts and digital wallet",
@@ -1663,7 +1663,7 @@ const legacyEnglishPhrases = {
   "4. سحب الأرصدة من المحفظة": "4. Withdrawing wallet balance",
   "في حالات خاصة ومبررة، إذا رغب العميل في سحب الرصيد المتبقي في محفظته إلى حساب خارجي بدلاً من استخدامه، قد يتم تطبيق رسوم تحويل أو اقتطاع عمولات بوابات الدفع والتحويل، ويخضع ذلك للمراجعة والموافقة من قبل الإدارة.": "In justified special cases, withdrawing the remaining wallet balance to an external account may incur transfer or payment-provider fees and requires administrator review and approval.",
   "الرجوع للرئيسية 🏠": "Back to home 🏠",
-  "نحن في منصة \"عرب تك\" نأخذ خصوصيتك بجدية تامة. توضح هذه السياسة كيف نقوم بجمع معلوماتك، استخدامها، وحمايتها.": "At Arab Tech, we take your privacy seriously. This policy explains how we collect, use, and protect your information.",
+  "نحن في منصة \"الوفاق\" نأخذ خصوصيتك بجدية تامة. توضح هذه السياسة كيف نقوم بجمع معلوماتك، استخدامها، وحمايتها.": "At Al-Wefaq, we take your privacy seriously. This policy explains how we collect, use, and protect your information.",
   "المعلومات التي نجمعها": "Information we collect",
   "نقوم بجمع المعلومات التي تقدمها لنا بشكل مباشر عند إنشاء حساب، تقديم طلب خدمة، أو التواصل مع الدعم الفني. تشمل هذه المعلومات: اسم المستخدم، عنوان البريد الإلكتروني، رقم الهاتف، ومعلومات الفواتير.": "We collect information you provide when creating an account, ordering a service, or contacting support. This includes your username, email address, phone number, and billing information.",
   "كيف نستخدم معلوماتك": "How we use your information",
@@ -1685,7 +1685,7 @@ const legacyEnglishPhrases = {
   "جاري التحقق...": "Verifying...",
   "تأكيد وفتح 🔓": "Verify and unlock 🔓",
   "مجتمع الواتساب": "WhatsApp community",
-  "عرب تك سيرفر": "Arab Tech Server",
+  "سيرفر الوفاق": "Al-Wefaq Server",
   "يجب إدخال بريد إلكتروني ينتهي بـ @gmail.com": "Enter an email address ending in @gmail.com.",
   "جاري الفحص الحي للبريد الإلكتروني...": "Checking the email address...",
   "فشل تسجيل الدخول عبر Google.": "Google sign-in failed.",
@@ -1919,7 +1919,7 @@ const legacyEnglishPhrases = {
   "تم الاعتماد ✅": "Approved ✅",
   "110 جواهر": "110 diamonds",
   "231 جواهر": "231 diamonds",
-  "🟢 *طلب تسريع خدمة (عرب تك)* ⚡\n\n": "🟢 *Service expedite request (Arab Tech)* ⚡\n\n",
+  "🟢 *طلب تسريع خدمة (الوفاق)* ⚡\n\n": "🟢 *Service expedite request (Al-Wefaq)* ⚡\n\n",
   "▫️ *اسم العميل:*": "▫️ *Customer name:*",
   "\nأرجو تسريع معالجة هذا الطلب في أسرع وقت ممكن، وشكراً لكم. 🙏": "\nPlease process this order as soon as possible. Thank you. 🙏",
   "لقد قمت بالاشتراك مؤخراً، يرجى الانتظار دقيقة واحدة قبل المحاولة مجدداً.": "You subscribed recently. Wait one minute before trying again.",
@@ -2077,8 +2077,8 @@ function applyAttributes(languageCode) {
   attrs.forEach((attr) => {
     document.querySelectorAll(`[${attr}]`).forEach((el) => {
       if (el.closest("[data-i18n-skip]")) return;
-      const cacheName = `data-arabtech-original-${attr.replaceAll("-", "_")}`;
-      const appliedName = `data-arabtech-applied-${attr.replaceAll("-", "_")}`;
+      const cacheName = `data-Al-Wefaq-original-${attr.replaceAll("-", "_")}`;
+      const appliedName = `data-Al-Wefaq-applied-${attr.replaceAll("-", "_")}`;
       const currentValue = el.getAttribute(attr) || "";
       const lastAppliedValue = el.getAttribute(appliedName);
 
@@ -2123,14 +2123,14 @@ export function applyStaticTranslations(languageCode) {
   nodes.forEach((node) => {
     const currentValue = node.nodeValue || "";
     if (
-      node.__arabtechOriginalText === undefined ||
-      (node.__arabtechAppliedText !== undefined && currentValue !== node.__arabtechAppliedText)
+      node.__AlWefaqOriginalText === undefined ||
+      (node.__AlWefaqAppliedText !== undefined && currentValue !== node.__AlWefaqAppliedText)
     ) {
-      node.__arabtechOriginalText = currentValue;
+      node.__AlWefaqOriginalText = currentValue;
     }
-    const nextValue = replaceKnownPhrases(node.__arabtechOriginalText, language);
+    const nextValue = replaceKnownPhrases(node.__AlWefaqOriginalText, language);
     if (currentValue !== nextValue) node.nodeValue = nextValue;
-    node.__arabtechAppliedText = nextValue;
+    node.__AlWefaqAppliedText = nextValue;
   });
 
   applyAttributes(language);

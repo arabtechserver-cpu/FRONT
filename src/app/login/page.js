@@ -17,7 +17,7 @@ export default function CustomerLogin() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [settings, setSettings] = useState({ site_name: "عرب تك سيرفر", site_logo: "/logo.jpg" });
+  const [settings, setSettings] = useState({ site_name: "سيرفر الوفاق", site_logo: "/logo.jpg" });
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [customer, setCustomer] = useState(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
@@ -553,7 +553,7 @@ export default function CustomerLogin() {
             <div style={{ display: "inline-flex", justifyContent: "center", marginBottom: "10px" }}>
               <img
                 src="/icons/icon-128.png"
-                alt="عرب تك سيرفر online"
+                alt="سيرفر الوفاق online"
                 style={{ width: "64px", height: "64px", borderRadius: "16px", objectFit: "cover" }}
               />
             </div>
@@ -918,7 +918,7 @@ export default function CustomerLogin() {
           <div className="animate-line line-1" style={{ display: "inline-flex", justifyContent: "center", marginBottom: "10px" }}>
             <img 
               src="/logo.jpg" 
-              alt={settings.site_name || "عرب تك سيرفر online"} 
+              alt={settings.site_name || "سيرفر الوفاق online"} 
               style={{ width: "54px", height: "54px", borderRadius: "12px", objectFit: "contain", flexShrink: 0, filter: "drop-shadow(0 2px 5px rgba(234,179,8,0.2))" }} 
             />
           </div>
@@ -938,7 +938,7 @@ export default function CustomerLogin() {
                 📢 <strong>لتلقي الأكواد عبر تيليجرام:</strong><br />
                 افتح البوت واضغط Start ثم ارسل اسم مستخدم حسابك للربط.<br />
                 <a 
-                  href="https://t.me/ArabTechOTPBot" 
+                  href="https://t.me/Al-WefaqOTPBot" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   style={{ display: "inline-block", marginTop: "8px", background: "#0088cc", color: "var(--text-main)", padding: "6px 12px", borderRadius: "8px", textDecoration: "none", fontWeight: "bold", fontSize: "0.75rem" }}
@@ -1038,7 +1038,7 @@ export default function CustomerLogin() {
                   📢 <strong>لم تستلم الكود على تيليجرام؟</strong><br />
                   تأكد من فتح البوت والضغط على Start وإرسال اسم حسابك.<br />
                   <a 
-                    href="https://t.me/ArabTechOTPBot" 
+                    href="https://t.me/Al-WefaqOTPBot" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     style={{ display: "inline-block", marginTop: "8px", background: "#0088cc", color: "var(--text-main)", padding: "6px 12px", borderRadius: "8px", textDecoration: "none", fontWeight: "bold", fontSize: "0.75rem" }}

@@ -259,7 +259,7 @@ export default function DashboardProvider({ children }) {
         options.headers["Content-Type"] = "application/json";
         options.body = JSON.stringify(body);
       }
-      
+
       const response = await fetch(url, options);
       const data = await response.json();
       if (response.status === 403 && data && data.requireOtp) {
@@ -462,7 +462,7 @@ export default function DashboardProvider({ children }) {
     if (!settingsRes.ok) return;
 
     const settingsData = await settingsRes.json();
-    setSiteName(settingsData.site_name || "Arab Tech Server");
+    setSiteName(settingsData.site_name || "Al-Wefaq Server");
     setHomeHeroTitle(settingsData.home_hero_title || "جميع الخدمات");
     setHomeHeroSubtitle(settingsData.home_hero_subtitle || "اختر الخدمة التي تناسب احتياجك من بين مجموعة واسعة من الخدمات الاحترافية الموثوقة");
     setSiteLogo(settingsData.site_logo || "default");
@@ -1160,7 +1160,7 @@ export default function DashboardProvider({ children }) {
     }
 
     setShowMergeCategoriesModal(false);
-    
+
     await secureActionFetch(
       `${API_BASE_URL}/api/categories/merge`,
       "POST",
@@ -2418,17 +2418,12 @@ export default function DashboardProvider({ children }) {
   const filteredCustomers = useMemo(() => {
     if (!Array.isArray(customers)) return [];
     const search = (customerSearch || "").toLowerCase();
-    return customers.filter((customer) => {
-      const isGoogleMatch = (search === 'جوجل' || search === 'google') && customer.google_id;
-      return (
-        isGoogleMatch ||
-        String(customer.id).includes(search) ||
-        (customer.username || "").toLowerCase().includes(search) ||
-        (customer.phone || "").toLowerCase().includes(search) ||
-        String(customer.balance || "").includes(search) ||
-        (customer.password_masked || "").toLowerCase().includes(search)
-      );
-    });
+    return customers.filter((customer) => (
+      String(customer.id).includes(search) ||
+      (customer.username || "").toLowerCase().includes(search) ||
+      (customer.phone || "").toLowerCase().includes(search) ||
+      String(customer.balance || "").includes(search)
+    ));
   }, [customers, customerSearch]);
 
   if (!hydrated) return null;
@@ -2701,12 +2696,12 @@ export default function DashboardProvider({ children }) {
             </div>
             <div className="modal-body" style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
               <p style={{ color: "var(--text-muted)" }}>سيتم تعيين الأقسام المحددة ({mergeSourceIds.length} أقسام) كأقسام فرعية داخل القسم الذي ستختاره بالأسفل، ولن يتم حذفها.</p>
-              
+
               <div className="form-group">
                 <label>اختر القسم الأب (القسم الرئيسي):</label>
-                <select 
-                  className="form-input-premium" 
-                  value={mergeTargetId} 
+                <select
+                  className="form-input-premium"
+                  value={mergeTargetId}
                   onChange={(e) => setMergeTargetId(e.target.value)}
                 >
                   <option value="">-- اختر القسم --</option>
@@ -2717,14 +2712,14 @@ export default function DashboardProvider({ children }) {
               </div>
 
               <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
-                <button 
+                <button
                   onClick={handleConfirmMergeCategories}
                   className="action-btn"
                   style={{ background: "linear-gradient(135deg, #10b981 0%, #059669 100%)", color: "white", flex: 1, padding: "12px", borderRadius: "8px", fontWeight: "bold" }}
                 >
                   تأكيد وتجميع
                 </button>
-                <button 
+                <button
                   onClick={() => setShowMergeCategoriesModal(false)}
                   className="action-btn"
                   style={{ background: "rgba(255,255,255,0.1)", color: "white", flex: 1, padding: "12px", borderRadius: "8px", fontWeight: "bold" }}

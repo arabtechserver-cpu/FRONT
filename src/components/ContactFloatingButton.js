@@ -8,7 +8,7 @@ const SOCIAL_LINKS = [
   {
     id: "wa1",
     title: "واتساب الإدارة 1",
-    url: "https://wa.me/16728972935",
+    url: "https://wa.me/249118100809",
     color: "#25D366",
     bg: "linear-gradient(135deg, #25D366 0%, #128C7E 100%)",
     icon: (
@@ -18,21 +18,9 @@ const SOCIAL_LINKS = [
     )
   },
   {
-    id: "fb",
-    title: "صفحة الفيسبوك",
-    url: "https://www.facebook.com/ARABTECHSERVEROnline",
-    color: "#1877F2",
-    bg: "linear-gradient(135deg, #1877F2 0%, #0056b3 100%)",
-    icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-      </svg>
-    )
-  },
-  {
     id: "wa2",
     title: "واتساب الإدارة 2",
-    url: "https://wa.me/249123667227",
+    url: "https://wa.me/249927922237",
     color: "#10b981",
     bg: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
     icon: (
@@ -42,9 +30,21 @@ const SOCIAL_LINKS = [
     )
   },
   {
+    id: "fb",
+    title: "صفحة الفيسبوك",
+    url: "https://www.facebook.com/profile.php?id=100029216807637",
+    color: "#1877F2",
+    bg: "linear-gradient(135deg, #1877F2 0%, #0056b3 100%)",
+    icon: (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+      </svg>
+    )
+  },
+  {
     id: "yt",
     title: "قناة اليوتيوب",
-    url: "https://www.youtube.com/@ARABTECHSERVER",
+    url: "https://www.youtube.com/@elmuizabba24",
     color: "#FF0000",
     bg: "linear-gradient(135deg, #FF0000 0%, #CC0000 100%)",
     icon: (
@@ -56,7 +56,7 @@ const SOCIAL_LINKS = [
   {
     id: "tg",
     title: "قناة تيليجرام",
-    url: "https://t.me/arabtechserveronline",
+    url: "https://t.me/Elmuizabbas",
     color: "#0088cc",
     bg: "linear-gradient(135deg, #0088cc 0%, #006699 100%)",
     icon: (
@@ -68,24 +68,12 @@ const SOCIAL_LINKS = [
   {
     id: "tt",
     title: "تيك توك",
-    url: "https://tiktok.com/@arabtechsuppurt",
+    url: "https://tiktok.com/@249118100809elmuiz",
     color: "#fe2c55",
     bg: "linear-gradient(135deg, #000000 0%, #fe2c55 100%)",
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
         <path d="M19.589 6.686a4.793 4.793 0 0 1-3.77-4.245V2h-3.445v13.672a2.896 2.896 0 0 1-5.201 1.743l-.002-.001a2.895 2.895 0 0 1 3.183-4.51v-3.5a6.329 6.329 0 0 0-5.394 2.378A6.347 6.347 0 0 0 3.5 15.672a6.35 6.35 0 0 0 10.84 4.492V12.38a8.217 8.217 0 0 0 5.25 1.862V10.8a4.79 4.79 0 0 1-3.77-4.114z"/>
-      </svg>
-    )
-  },
-  {
-    id: "comm",
-    title: "مجتمع الواتساب",
-    url: "https://chat.whatsapp.com/DINRDwU2lVjFcGRowxT3m5",
-    color: "#34d399",
-    bg: "linear-gradient(135deg, #059669 0%, #10b981 100%)",
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
       </svg>
     )
   }

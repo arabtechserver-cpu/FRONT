@@ -21,7 +21,7 @@ export default function NewTicketPage() {
   const [messages, setMessages] = useState([
     {
       role: "assistant",
-      content: "مرحباً بك في مركز الدعم الفني الذكي لمنصة Arab Tech Server! 🤖\n\nأنا المساعد الذكي المباشر المربوط بإدارة السيرفر. أخبرني بمشكلتك أو رقم طلبك، وسأقوم بفحصها فوراً وإرسال الشكوى والتذكرة مباشرة إلى فريق الإدارة على تيليجرام لمتابعتها معك!"
+      content: "مرحباً بك في مركز الدعم الفني الذكي لمنصة Al-Wefaq Server! 🤖\n\nأنا المساعد الذكي المباشر المربوط بإدارة السيرفر. أخبرني بمشكلتك أو رقم طلبك، وسأقوم بفحصها فوراً وإرسال الشكوى والتذكرة مباشرة إلى فريق الإدارة على تيليجرام لمتابعتها معك!"
     }
   ]);
   const [inputMessage, setInputMessage] = useState("");
@@ -120,7 +120,7 @@ export default function NewTicketPage() {
           });
         }
       } else {
-        const errorReply = data.reply || data.message || "عذراً، حدث خطأ مؤقت في التواصل مع المساعد الذكي. يمكنك أيضاً استخدام نموذج التذاكر السريع أو مراسلتنا على تيليجرام: https://t.me/arabtechserveronline";
+        const errorReply = data.reply || data.message || "عذراً، حدث خطأ مؤقت في التواصل مع المساعد الذكي. يمكنك أيضاً استخدام نموذج التذاكر السريع أو مراسلتنا على تيليجرام: https://t.me/Elmuizabbas";
         setMessages(prev => [...prev, { role: "assistant", content: errorReply }]);
       }
     } catch (err) {
@@ -129,7 +129,7 @@ export default function NewTicketPage() {
         ...prev,
         {
           role: "assistant",
-          content: "حدث خطأ في الاتصال بالسيرفر. يرجى التأكد من اتصال الإنترنت أو استخدام النموذج السريع للتذاكر المرفق بالأعلى، أو مراسلتنا على تليجرام: https://t.me/arabtechserveronline"
+          content: "حدث خطأ في الاتصال بالسيرفر. يرجى التأكد من اتصال الإنترنت أو استخدام النموذج السريع للتذاكر المرفق بالأعلى، أو مراسلتنا على تليجرام: https://t.me/Elmuizabbas"
         }
       ]);
     } finally {
@@ -207,7 +207,7 @@ export default function NewTicketPage() {
           fontWeight: "bold", marginBottom: "15px"
         }}>
           <span>🤖</span>
-          <span>Ared AI Smart Support & Telegram Alerts</span>
+          <span>Al-Wefaq AI Smart Support & Telegram Alerts</span>
         </div>
 
         <h1 style={{ fontSize: "2.4rem", fontWeight: 900, color: "var(--text-main)", marginBottom: "12px", letterSpacing: "-0.5px" }}>
@@ -245,7 +245,7 @@ export default function NewTicketPage() {
             </div>
           </div>
           <a
-            href="https://t.me/arabtechserveronline"
+            href="https://t.me/Elmuizabbas"
             target="_blank"
             rel="noopener noreferrer"
             style={{
@@ -332,7 +332,7 @@ export default function NewTicketPage() {
                 </div>
                 <div>
                   <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: 800, color: "var(--text-main)" }}>
-                    مساعد الدعم الفني الذكي — Ared AI
+                    مساعد الدعم الفني الذكي — سيرفر الوفاق AI
                   </h3>
                   <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "0.8rem", color: "#10b981", fontWeight: "bold" }}>
                     <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#10b981" }}></span>
@@ -541,7 +541,7 @@ export default function NewTicketPage() {
               </h3>
               <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                 <a
-                  href="https://wa.me/16728972935"
+                  href="https://wa.me/249118100809"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="glass-btn"
@@ -550,11 +550,24 @@ export default function NewTicketPage() {
                     display: "flex", alignItems: "center", justifyContent: "space-between", textDecoration: "none"
                   }}
                 >
-                  <span>واتساب الدعم الدولي</span>
+                  <span>واتساب الدعم الفني 1</span>
                   <span>🟢</span>
                 </a>
                 <a
-                  href="https://t.me/arabtechserveronline"
+                  href="https://wa.me/249927922237"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="glass-btn"
+                  style={{
+                    padding: "10px 14px", borderRadius: "10px", fontSize: "0.9rem", fontWeight: "bold",
+                    display: "flex", alignItems: "center", justifyContent: "space-between", textDecoration: "none"
+                  }}
+                >
+                  <span>واتساب الدعم الفني 2</span>
+                  <span>🟢</span>
+                </a>
+                <a
+                  href="https://t.me/Elmuizabbas"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="glass-btn"

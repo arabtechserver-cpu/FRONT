@@ -97,7 +97,7 @@ export default function AdminSidebar() {
               (siteName ? siteName[0] : "S")
             )}
           </div>
-          <span>{siteName || "عرب تك سيرفر"} المسؤول</span>
+          <span>{siteName || "سيرفر الوفاق"} المسؤول</span>
         </div>
 
         <div className="user-menu-widget" style={{ marginBottom: "18px", justifyContent: "space-between" }}>

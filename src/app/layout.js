@@ -27,27 +27,36 @@ const resolveMediaUrl = (value, fallback) => {
 };
 
 const getSiteSettings = cache(async () => {
-  let siteName = "Arab Tech Server";
-  let siteLogo = "/logo.jpg";
-  let siteFavicon = "/favicon.png";
+  let siteName = "سيرفر الوفاق - Al-Wefaq Server";
+  let siteLogo = "/images/logo_ar.png";
+  let siteFavicon = "/favicon.ico";
 
   if (!isBuildTime) {
     try {
       const res = await fetchWithTimeout(`${API_BASE_URL}/api/settings/metadata`, { next: { revalidate: 300 } });
       if (res.ok) {
         const settings = await res.json();
-        if (settings.site_name) siteName = settings.site_name;
-        if (settings.site_logo && settings.site_logo !== "default") siteLogo = settings.site_logo;
-        if (settings.site_favicon && settings.site_favicon !== "default") siteFavicon = settings.site_favicon;
+        if (settings.site_name) {
+          siteName = settings.site_name
+            .replace(/عرب\s*تك\s*برو\s*سيرفر/g, 'سيرفر الوفاق')
+            .replace(/عرب\s*تك\s*سيرفر/g, 'سيرفر الوفاق')
+            .replace(/عرب\s*تك/g, 'الوفاق')
+            .replace(/Arab\s*Tech\s*Pro\s*Server/gi, 'Al-Wefaq Server')
+            .replace(/Arab\s*Tech\s*Server/gi, 'Al-Wefaq Server')
+            .replace(/Arab\s*Tech/gi, 'Al-Wefaq')
+            .trim();
+        }
+        if (settings.site_logo && settings.site_logo !== "default" && !settings.site_logo.includes('af6e9ac5')) siteLogo = settings.site_logo;
+        if (settings.site_favicon && settings.site_favicon !== "default" && !settings.site_favicon.includes('f48ffcfd')) siteFavicon = settings.site_favicon;
       }
     } catch {
       // Keep metadata rendering resilient during build or temporary API downtime.
     }
   }
   return {
-    siteName,
-    siteLogo: resolveMediaUrl(siteLogo, "/logo.jpg"),
-    siteFavicon: resolveMediaUrl(siteFavicon, "/favicon.png"),
+    siteName: siteName || "سيرفر الوفاق - Al-Wefaq Server",
+    siteLogo: resolveMediaUrl(siteLogo, "/images/logo_ar.png"),
+    siteFavicon: resolveMediaUrl(siteFavicon, "/favicon.ico"),
   };
 });
 
@@ -60,19 +69,15 @@ export async function generateMetadata() {
       default: siteName,
       template: `%s | ${siteName}`,
     },
-    description: "Arab Tech Server (Ared Tech) — عرب تك سيرفر لخدمات السوفت وير، تفعيل البرامج، أدوات GSM، وخدمات السيرفر وIMEI بأسعار مناسبة.",
+    description: "سيرفر الوفاق (Al-Wefaq Server) — المنصة الأولى لخدمات السوفت وير، تفعيل البرامج، أدوات GSM، وخدمات السيرفر وIMEI بأسعار مناسبة.",
     keywords: [
-      "عرب تيك سيرفر", 
-      "Arab Tech Server", 
-      "Ared Tech",
-      "ArabTech Server",
-      "Арабский Технический Сервер", 
-      "阿拉伯技术服务器", 
-      "अरब टेक सर्वर", 
-      "عرب تيك", 
-      "Arab Tech",
+      "سيرفر الوفاق", 
+      "Al-Wefaq Server", 
+      "Al-Wefaq",
       "تفعيل برامج",
-      "خدمات سيرفر"
+      "خدمات سيرفر",
+      "فك شفرات",
+      "أدوات GSM"
     ],
     metadataBase: new URL(siteUrl),
     alternates: {
@@ -94,15 +99,20 @@ export default async function RootLayout({ children }) {
     "@context": "https://schema.org",
     "@type": "WebSite",
     "name": siteName,
-    "alternateName": ["Arab Tech Server", "Arab Tech", "Ared Tech", "ArabTech Server", "عرب تك سيرفر"],
+    "alternateName": ["Al-Wefaq Server", "Al-Wefaq", "سيرفر الوفاق"],
     "url": SITE_URL || "https://arab-tech1.online",
     "publisher": {
       "@type": "Organization",
-      "name": "Arab Tech Server",
-      "alternateName": ["Arab Tech", "Ared Tech", "عرب تك سيرفر"],
+      "name": "Al-Wefaq Server",
+      "alternateName": ["Al-Wefaq", "سيرفر الوفاق"],
       "url": "https://arab-tech1.online",
-      "logo": `${SITE_URL || "https://arab-tech1.online"}/logo.jpg`,
-      "sameAs": ["https://t.me/arabtechserveronline", "https://www.facebook.com/ARABTECHSERVEROnline"]
+      "logo": `${SITE_URL || "https://arab-tech1.online"}/main-logo.png`,
+      "sameAs": [
+        "https://t.me/Elmuizabbas",
+        "https://www.facebook.com/profile.php?id=100029216807637",
+        "https://www.youtube.com/@elmuizabba24",
+        "https://tiktok.com/@249118100809elmuiz"
+      ]
     },
     "mainEntity": [
       {
@@ -150,7 +160,7 @@ export default async function RootLayout({ children }) {
                 try {
                   var savedTheme = localStorage.getItem('theme') || 'dark';
                   document.documentElement.setAttribute('data-theme', savedTheme);
-                  var savedLanguage = localStorage.getItem('arabtech_user_language') || 'ar';
+                  var savedLanguage = localStorage.getItem('Al-Wefaq_user_language') || 'ar';
                   if (savedLanguage === 'zh-CN') savedLanguage = 'zh';
                   var isRtl = savedLanguage === 'ar';
                   document.documentElement.lang = savedLanguage;

@@ -90,7 +90,7 @@ const paymentMethodsList = [
   }
 ];
 
-export default function Footer({ siteName = "Arab Tech Server", showServices = false }) {
+export default function Footer({ siteName = "Al-Wefaq Server", showServices = false }) {
   const { t, meta } = useI18n();
   const underlineSide = meta.dir === "rtl" ? { right: 0 } : { left: 0 };
 
@@ -187,17 +187,17 @@ export default function Footer({ siteName = "Arab Tech Server", showServices = f
               <div style={underlineStyle}></div>
             </h4>
             <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-              <a href="https://wa.me/249123667227" target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center", gap: "10px", color: "#34d399", fontSize: "0.95rem", textDecoration: "none", transition: "opacity 0.2s" }}>
+              <a href="https://wa.me/249118100809" target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center", gap: "10px", color: "#34d399", fontSize: "0.95rem", textDecoration: "none", transition: "opacity 0.2s" }}>
                 <span style={{ background: "rgba(34, 197, 94, 0.15)", padding: "6px 10px", borderRadius: "8px" }}>💬</span>
-                <bdi dir="ltr" style={{ fontWeight: "bold" }}>+249 12 366 7227</bdi>
+                <bdi dir="ltr" style={{ fontWeight: "bold" }}>+249 11 810 0809</bdi>
               </a>
-              <a href="https://wa.me/16728972935" target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center", gap: "10px", color: "#94a3b8", fontSize: "0.95rem", textDecoration: "none", transition: "opacity 0.2s" }}>
-                <span style={{ background: "rgba(255,255,255,0.05)", padding: "6px 10px", borderRadius: "8px" }}>💬</span>
-                <bdi dir="ltr" style={{ fontWeight: "bold" }}>+1 (672) 897-2935</bdi>
+              <a href="https://wa.me/249927922237" target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center", gap: "10px", color: "#34d399", fontSize: "0.95rem", textDecoration: "none", transition: "opacity 0.2s" }}>
+                <span style={{ background: "rgba(34, 197, 94, 0.15)", padding: "6px 10px", borderRadius: "8px" }}>💬</span>
+                <bdi dir="ltr" style={{ fontWeight: "bold" }}>+249 92 792 2237</bdi>
               </a>
               <div style={{ display: "flex", alignItems: "center", gap: "10px", color: "#94a3b8", fontSize: "0.95rem", marginTop: "4px" }}>
                 <span style={{ background: "rgba(255,255,255,0.05)", padding: "6px 10px", borderRadius: "8px" }}>✉️</span>
-                <span dir="ltr">arabtechserver@gmail.com</span>
+                <span dir="ltr">Al-Wefaq Server@gmail.com</span>
               </div>
             </div>
           </div>

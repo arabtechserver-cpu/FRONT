@@ -215,7 +215,7 @@ export default function WhatsAppPortalPage() {
       const res = await fetch(`${API_BASE_URL}/api/whatsapp/test`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone: testPhone.trim(), message: "🎉 إشعار تجريبي من بوابة إدارة الواتساب الآمنة (ArabTech Server)." })
+        body: JSON.stringify({ phone: testPhone.trim(), message: "🎉 إشعار تجريبي من بوابة إدارة الواتساب الآمنة (Al-Wefaq Server)." })
       });
       const data = await res.json();
       if (res.ok) {

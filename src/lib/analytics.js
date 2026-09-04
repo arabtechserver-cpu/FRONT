@@ -1,4 +1,4 @@
-const SESSION_KEY = "arabtech_conversion_session";
+const SESSION_KEY = "Al-Wefaq_conversion_session";
 
 function getSessionId() {
   if (typeof window === "undefined") return "";

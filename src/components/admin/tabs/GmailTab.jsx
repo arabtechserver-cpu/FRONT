@@ -294,7 +294,7 @@ export default function GmailTab() {
             {
               step: "3️⃣ الخطوة الثالثة",
               title: "إنشاء كلمة مرور التطبيقات",
-              desc: "ابحث في شريط بحث إعدادات جوجل عن (كلمات مرور التطبيقات - App Passwords). اضغط إنشاء واكتب اسم التطبيق ArabTech وانسخ الـ 16 حرف هنا."
+              desc: "ابحث في شريط بحث إعدادات جوجل عن (كلمات مرور التطبيقات - App Passwords). اضغط إنشاء واكتب اسم التطبيق Al-Wefaq وانسخ الـ 16 حرف هنا."
             }
           ].map((card, idx) => (
             <div key={idx} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)", borderRadius: "16px", padding: "18px", display: "flex", flexDirection: "column", gap: "10px" }}>
