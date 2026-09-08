@@ -87,7 +87,7 @@ export default function NewTicketPage() {
     setIsAiLoading(true);
 
     try {
-      const apiBase = process.env.NEXT_PUBLIC_API_URL || "https://api.arab-tech1.online";
+      const apiBase = process.env.NEXT_PUBLIC_API_URL || "https://api.al-wefaq.center";
       const headers = { "Content-Type": "application/json" };
       if (token) {
         headers["Authorization"] = `Bearer ${token}`;
@@ -150,7 +150,7 @@ export default function NewTicketPage() {
 
     setFormSubmitting(true);
     try {
-      const apiBase = process.env.NEXT_PUBLIC_API_URL || "https://api.arab-tech1.online";
+      const apiBase = process.env.NEXT_PUBLIC_API_URL || "https://api.al-wefaq.center";
       const headers = { "Content-Type": "application/json" };
       if (token) {
         headers["Authorization"] = `Bearer ${token}`;

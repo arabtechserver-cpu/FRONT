@@ -3,8 +3,9 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { API_BASE_URL } from "@/config";
+import { API_BASE_URL, TURNSTILE_SITE_KEY } from "@/config";
 import { Turnstile } from '@marsidev/react-turnstile';
+import { Eye, EyeOff } from "lucide-react";
 
 export default function CustomerLogin() {
   const [activeTab, setActiveTab] = useState("login"); // login, register
@@ -23,11 +24,8 @@ export default function CustomerLogin() {
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
 
-  // OTP State
-  const [otpStep, setOtpStep] = useState(false);
-  const [otpKey, setOtpKey] = useState("");
+  // OTP State for Password Reset
   const [otpCode, setOtpCode] = useState("");
-  const [otpInfo, setOtpInfo] = useState("");
 
   const [turnstileToken, setTurnstileToken] = useState("");
   const turnstileRef = useRef();
@@ -88,11 +86,12 @@ export default function CustomerLogin() {
   }, [email, activeTab]);
 
   // Google OAuth 2.0 Direct Sign-In Handler
+  const googleInitializedRef = useRef(false);
   useEffect(() => {
-    if (otpStep || forgotStep > 0) return;
+    if (forgotStep > 0) return;
 
     let retryCount = 0;
-    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "540676912586-68bp39ompaobro5p8g1o4t2f6nd8htr8.apps.googleusercontent.com";
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "448396926862-6ucu0pg71ro724nninhumq5uoht3pl4j.apps.googleusercontent.com";
 
     const initGoogleSignIn = () => {
       if (typeof window === "undefined") return;
@@ -145,12 +144,15 @@ export default function CustomerLogin() {
       };
 
       try {
-        window.google.accounts.id.initialize({
-          client_id: clientId,
-          callback: window.handleGoogleCallback,
-          auto_select: false,
-          cancel_on_tap_outside: true
-        });
+        if (!googleInitializedRef.current) {
+          window.google.accounts.id.initialize({
+            client_id: clientId,
+            callback: window.handleGoogleCallback,
+            auto_select: false,
+            cancel_on_tap_outside: true
+          });
+          googleInitializedRef.current = true;
+        }
 
         const btnContainer = document.getElementById("googleSignInContainer");
         if (btnContainer) {
@@ -184,7 +186,7 @@ export default function CustomerLogin() {
     } else {
       initGoogleSignIn();
     }
-  }, [activeTab, otpStep, forgotStep, router]);
+  }, [activeTab, forgotStep, router]);
 
   // Fetch settings on mount
   useEffect(() => {
@@ -311,17 +313,11 @@ export default function CustomerLogin() {
         throw new Error(data.message || "حدث خطأ أثناء معالجة الطلب.");
       }
 
-      // If backend asks for OTP confirmation via WhatsApp/Gmail
-      if (data.requireOtp) {
-        setOtpKey(data.otpKey);
-        setOtpInfo(data.targetInfo || "");
-        setSuccess(data.message || "تم إرسال كود التحقق بنجاح.");
-        setOtpStep(true);
-        setSubmitting(false);
-        return;
+      // Direct login and registration without any OTP
+      if (!data.token) {
+        throw new Error(data.message || "حدث خطأ أثناء معالجة الطلب.");
       }
 
-      // Fallback direct login if OTP not required
       localStorage.setItem("customer_token", data.token);
       localStorage.setItem("customer_user", JSON.stringify(data.customer));
 
@@ -344,49 +340,6 @@ export default function CustomerLogin() {
       setError(err.message || "تعذر الاتصال بالخادم، يرجى المحاولة لاحقاً.");
       turnstileRef.current?.reset();
       setTurnstileToken("");
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const handleVerifyOtp = async (e) => {
-    e.preventDefault();
-    setError("");
-    setSuccess("");
-    if (!otpCode.trim() || otpCode.trim().length < 4) {
-      setError("يرجى إدخال كود التحقق المكون من 6 أرقام.");
-      return;
-    }
-    setSubmitting(true);
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/customer/verify-auth-otp`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ otpKey, code: otpCode.trim() })
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.message || "كود التحقق غير صحيح.");
-      }
-      localStorage.setItem("customer_token", data.token);
-      localStorage.setItem("customer_user", JSON.stringify(data.customer));
-      setSuccess("تم تأكيد هويتك وتفعيل الحساب بنجاح! 🚀");
-      setOtpStep(false);
-      setTimeout(() => {
-        if (typeof window !== "undefined") {
-          const urlParams = new URLSearchParams(window.location.search);
-          const redirectTo = urlParams.get("redirectTo");
-          if (redirectTo) {
-            router.push(redirectTo);
-            router.refresh();
-            return;
-          }
-        }
-        router.push("/");
-        router.refresh();
-      }, 1000);
-    } catch (err) {
-      setError(err.message || "تعذر التحقق من الكود.");
     } finally {
       setSubmitting(false);
     }
@@ -699,11 +652,17 @@ export default function CustomerLogin() {
                         placeholder="أدخل كلمة المرور الجديدة"
                         value={changePassNew}
                         onChange={(e) => setChangePassNew(e.target.value)}
-                        style={{ width: "100%", padding: "10px 40px 10px 10px", borderRadius: "8px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "var(--text-main)" }}
+                        className="password-input"
+                        style={{ width: "100%", paddingLeft: "54px", paddingRight: "18px", borderRadius: "8px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "var(--text-main)" }}
                         required
                       />
-                      <button type="button" onClick={() => setShowPassword(!showPassword)} style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", background: "none", border: "none", color: "var(--primary-color)", cursor: "pointer", fontSize: "0.8rem", fontWeight: "bold" }}>
-                        {showPassword ? "إخفاء" : "إظهار"}
+                      <button 
+                        type="button" 
+                        onClick={() => setShowPassword(!showPassword)} 
+                        aria-label={showPassword ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}
+                        className="password-toggle-btn"
+                      >
+                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                       </button>
                     </div>
                   </div>
@@ -848,6 +807,11 @@ export default function CustomerLogin() {
           transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
         }
 
+        .custom-login-panel .form-group input.password-input {
+          padding-left: 54px !important;
+          padding-right: 18px !important;
+        }
+
         [data-theme="light"] .custom-login-panel .form-group input {
           background: rgba(0, 0, 0, 0.03) !important;
           border: 1px solid rgba(0, 0, 0, 0.1) !important;
@@ -911,7 +875,7 @@ export default function CustomerLogin() {
         }
       ` }} />
 
-      <div key={`${activeTab}-${forgotStep}-${otpStep}`} className="custom-login-panel">
+      <div key={`${activeTab}-${forgotStep}`} className="custom-login-panel">
         
         {/* Header */}
         <div style={{ textAlign: "center" }}>
@@ -926,72 +890,7 @@ export default function CustomerLogin() {
           <p className="animate-line line-3" style={{ color: "var(--text-muted)", fontSize: "0.82rem", marginTop: "4px" }}>تابع مشترياتك واحصل على خدماتك بسرعة فائقة</p>
         </div>
 
-        {otpStep ? (
-          <form onSubmit={handleVerifyOtp} style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
-            <div className="animate-line line-4" style={{ textAlign: "center", background: "rgba(56, 189, 248, 0.08)", border: "1px dashed rgba(56, 189, 248, 0.3)", borderRadius: "14px", padding: "16px" }}>
-              <div style={{ fontSize: "2rem", marginBottom: "6px" }}>📲</div>
-              <h3 style={{ fontWeight: 800, color: "#38bdf8", margin: "0 0 6px 0" }}>تأكيد الهوية وتفعيل الحساب</h3>
-              <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", margin: "0 0 12px 0", lineHeight: 1.5 }}>
-                تم إرسال كود تحقق (OTP) مكون من 6 أرقام إلى <strong>{otpInfo || "حسابك"}</strong>. يرجى إدخاله أدناه لإتمام العملية.
-              </p>
-              <div style={{ background: "rgba(255, 255, 255, 0.03)", borderRadius: "8px", padding: "10px", fontSize: "0.8rem", color: "#e2e8f0", border: "1px solid rgba(255,255,255,0.05)" }}>
-                📢 <strong>لتلقي الأكواد عبر تيليجرام:</strong><br />
-                افتح البوت واضغط Start ثم ارسل اسم مستخدم حسابك للربط.<br />
-                <a 
-                  href="https://t.me/Al-WefaqOTPBot" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  style={{ display: "inline-block", marginTop: "8px", background: "#0088cc", color: "var(--text-main)", padding: "6px 12px", borderRadius: "8px", textDecoration: "none", fontWeight: "bold", fontSize: "0.75rem" }}
-                >
-                  ✈️ افتح بوت التيليجرام واضغط Start
-                </a>
-              </div>
-            </div>
-
-            <div className="form-group animate-line line-5" style={{ marginBottom: 0 }}>
-              <label style={{ fontWeight: 700, color: "var(--text-main)", marginBottom: "8px", display: "block" }}>كود التحقق (OTP):</label>
-              <input
-                type="text"
-                placeholder="1 2 3 4 5 6"
-                value={otpCode}
-                onChange={(e) => setOtpCode(e.target.value)}
-                maxLength={6}
-                style={{ width: "100%", textAlign: "center", fontSize: "1.5rem", letterSpacing: "8px", fontWeight: 900, padding: "14px", borderRadius: "12px", background: "rgba(0,0,0,0.3)", border: "2px solid rgba(255,255,255,0.15)" }}
-                required
-              />
-            </div>
-
-            {error && (
-              <div style={{ padding: "10px 14px", background: "rgba(244, 63, 94, 0.1)", borderRight: "4px solid var(--danger-color)", color: "var(--danger-color)", borderRadius: "8px", fontSize: "0.85rem", fontWeight: "600" }}>
-                ⚠️ {error}
-              </div>
-            )}
-
-            {success && (
-              <div style={{ padding: "10px 14px", background: "rgba(16, 185, 129, 0.1)", borderRight: "4px solid var(--success-color)", color: "var(--success-color)", borderRadius: "8px", fontSize: "0.85rem", fontWeight: "600" }}>
-                ✓ {success}
-              </div>
-            )}
-
-            <button
-              type="submit"
-              disabled={submitting}
-              className="glass-btn glass-btn-primary animate-line line-6"
-              style={{ padding: "14px", width: "100%", borderRadius: "12px", fontWeight: 800, fontSize: "1.05rem" }}
-            >
-              {submitting ? "جاري التحقق..." : "🚀 تأكيد والدخول الآن"}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => { setOtpStep(false); setOtpCode(""); setError(""); setSuccess(""); }}
-              className="glass-btn animate-line line-7"
-              style={{ padding: "10px", width: "100%", borderRadius: "12px", background: "rgba(255,255,255,0.04)" }}
-            >
-              ← العودة وتعديل البيانات
-            </button>
-          </form>
-        ) : forgotStep > 0 ? (
+        {forgotStep > 0 ? (
           <>
             {forgotStep === 1 && (
               <form onSubmit={handleForgotPasswordRequest} style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
@@ -1013,9 +912,11 @@ export default function CustomerLogin() {
                   <Turnstile 
                     key="turnstile-forgot"
                     ref={turnstileRef}
-                    siteKey="0x4AAAAAAEGa8uvGDLwzrReL"
+                    siteKey={TURNSTILE_SITE_KEY}
                     options={{ theme: 'auto', action: 'turnstile-spin-v2' }}
                     onSuccess={(token) => setTurnstileToken(token)}
+                    onExpire={() => setTurnstileToken("")}
+                    onError={() => setTurnstileToken("")}
                   />
                 </div>
                 {error && <div style={{ padding: "10px", background: "rgba(244, 63, 94, 0.1)", color: "var(--danger-color)", borderRadius: "8px", fontSize: "0.85rem" }}>⚠️ {error}</div>}
@@ -1038,7 +939,7 @@ export default function CustomerLogin() {
                   📢 <strong>لم تستلم الكود على تيليجرام؟</strong><br />
                   تأكد من فتح البوت والضغط على Start وإرسال اسم حسابك.<br />
                   <a 
-                    href="https://t.me/Al-WefaqOTPBot" 
+                    href="https://t.me/AlWefaqStore_bot" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     style={{ display: "inline-block", marginTop: "8px", background: "#0088cc", color: "var(--text-main)", padding: "6px 12px", borderRadius: "8px", textDecoration: "none", fontWeight: "bold", fontSize: "0.75rem" }}
@@ -1079,11 +980,12 @@ export default function CustomerLogin() {
                       placeholder="أدخل كلمة المرور الجديدة"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      style={{ width: "100%", paddingLeft: "48px" }}
+                      className="password-input"
+                      style={{ width: "100%", paddingLeft: "54px", paddingRight: "18px" }}
                       required
                     />
-                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="password-toggle-btn">
-                      {showPassword ? "إخفاء" : "إظهار"}
+                    <button type="button" onClick={() => setShowPassword(!showPassword)} aria-label={showPassword ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"} className="password-toggle-btn">
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                   </div>
                 </div>
@@ -1095,11 +997,12 @@ export default function CustomerLogin() {
                       placeholder="أعد إدخال كلمة المرور"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
-                      style={{ width: "100%", paddingLeft: "48px" }}
+                      className="password-input"
+                      style={{ width: "100%", paddingLeft: "54px", paddingRight: "18px" }}
                       required
                     />
-                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="password-toggle-btn">
-                      {showPassword ? "إخفاء" : "إظهار"}
+                    <button type="button" onClick={() => setShowPassword(!showPassword)} aria-label={showPassword ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"} className="password-toggle-btn">
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                   </div>
                 </div>
@@ -1108,9 +1011,11 @@ export default function CustomerLogin() {
                   <Turnstile 
                     key="turnstile-reset"
                     ref={turnstileRef}
-                    siteKey="0x4AAAAAAEGa8uvGDLwzrReL"
+                    siteKey={TURNSTILE_SITE_KEY}
                     options={{ theme: 'auto', action: 'turnstile-spin-v2' }}
                     onSuccess={(token) => setTurnstileToken(token)}
+                    onExpire={() => setTurnstileToken("")}
+                    onError={() => setTurnstileToken("")}
                   />
                 </div>
 
@@ -1156,7 +1061,8 @@ export default function CustomerLogin() {
                       placeholder="أدخل كلمة المرور"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      style={{ width: "100%", paddingLeft: "48px" }}
+                      className="password-input"
+                      style={{ width: "100%", paddingLeft: "54px", paddingRight: "18px" }}
                       required
                     />
                     <button
@@ -1165,7 +1071,7 @@ export default function CustomerLogin() {
                       aria-label={showPassword ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}
                       className="password-toggle-btn"
                     >
-                      {showPassword ? "إخفاء" : "إظهار"}
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                   </div>
                 </div>
@@ -1227,7 +1133,8 @@ export default function CustomerLogin() {
                         placeholder="أدخل كلمة المرور"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        style={{ width: "100%", paddingLeft: "48px" }}
+                        className="password-input"
+                        style={{ width: "100%", paddingLeft: "54px", paddingRight: "18px" }}
                         required
                       />
                       <button
@@ -1236,7 +1143,7 @@ export default function CustomerLogin() {
                         aria-label={showPassword ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}
                         className="password-toggle-btn"
                       >
-                        {showPassword ? "إخفاء" : "إظهار"}
+                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                       </button>
                     </div>
                   </div>
@@ -1250,7 +1157,8 @@ export default function CustomerLogin() {
                         placeholder="أعد إدخال كلمة المرور"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
-                        style={{ width: "100%", paddingLeft: "48px" }}
+                        className="password-input"
+                        style={{ width: "100%", paddingLeft: "54px", paddingRight: "18px" }}
                         required
                       />
                       <button
@@ -1259,7 +1167,7 @@ export default function CustomerLogin() {
                         aria-label={showPassword ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}
                         className="password-toggle-btn"
                       >
-                        {showPassword ? "إخفاء" : "إظهار"}
+                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                       </button>
                     </div>
                   </div>
@@ -1282,9 +1190,11 @@ export default function CustomerLogin() {
               <Turnstile 
                 key="turnstile-main"
                 ref={turnstileRef}
-                siteKey="0x4AAAAAAEGa8uvGDLwzrReL"
+                siteKey={TURNSTILE_SITE_KEY}
                 options={{ theme: 'auto', action: 'turnstile-spin-v2' }}
                 onSuccess={(token) => setTurnstileToken(token)}
+                onExpire={() => setTurnstileToken("")}
+                onError={() => setTurnstileToken("")}
               />
             </div>
 

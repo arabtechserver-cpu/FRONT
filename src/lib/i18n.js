@@ -422,7 +422,7 @@ const dictionary = {
     popular: "Most Ordered",
     orderService: "Order Service",
     viewAllServices: "View All Services",
-    whyChoose: "Why choose Arab Service?",
+    whyChoose: "Why choose Al-Wefaq Server?",
     securityReliable: "Security and reliability",
     dataProtection: "Full data protection",
     fastExecution: "Fast execution",
@@ -650,7 +650,7 @@ const dictionary = {
     popular: "Самые популярные",
     orderService: "Заказать услугу",
     viewAllServices: "Все услуги",
-    whyChoose: "Почему выбирают Arab Service?",
+    whyChoose: "Почему выбирают Al-Wefaq Server?",
     securityReliable: "Безопасность и надежность",
     dataProtection: "Полная защита данных",
     fastExecution: "Быстрое выполнение",
@@ -878,7 +878,7 @@ const dictionary = {
     popular: "最常订购",
     orderService: "订购服务",
     viewAllServices: "查看全部服务",
-    whyChoose: "为什么选择 Arab Service?",
+    whyChoose: "为什么选择 Al-Wefaq Server?",
     securityReliable: "安全可靠",
     dataProtection: "完整数据保护",
     fastExecution: "快速执行",
@@ -1093,7 +1093,7 @@ const dictionary = {
     popular: "सबसे अधिक ऑर्डर",
     orderService: "सेवा ऑर्डर करें",
     viewAllServices: "सभी सेवाएं देखें",
-    whyChoose: "Arab Service क्यों चुनें?",
+    whyChoose: "Al-Wefaq Server क्यों चुनें?",
     securityReliable: "सुरक्षा और भरोसा",
     dataProtection: "डेटा की पूरी सुरक्षा",
     fastExecution: "तेज निष्पादन",
@@ -2077,23 +2077,33 @@ function applyAttributes(languageCode) {
   attrs.forEach((attr) => {
     document.querySelectorAll(`[${attr}]`).forEach((el) => {
       if (el.closest("[data-i18n-skip]")) return;
-      const cacheName = `data-Al-Wefaq-original-${attr.replaceAll("-", "_")}`;
-      const appliedName = `data-Al-Wefaq-applied-${attr.replaceAll("-", "_")}`;
+
+      // Clean up legacy DOM attributes if they exist to prevent React hydration mismatch
+      const legacyCacheName = `data-al-wefaq-original-${attr.replaceAll("-", "_")}`;
+      const legacyAppliedName = `data-al-wefaq-applied-${attr.replaceAll("-", "_")}`;
+      if (el.hasAttribute(legacyCacheName)) el.removeAttribute(legacyCacheName);
+      if (el.hasAttribute(legacyAppliedName)) el.removeAttribute(legacyAppliedName);
+
+      if (!el.__alWefaqAttrOriginal) el.__alWefaqAttrOriginal = {};
+      if (!el.__alWefaqAttrApplied) el.__alWefaqAttrApplied = {};
+
       const currentValue = el.getAttribute(attr) || "";
-      const lastAppliedValue = el.getAttribute(appliedName);
+      const lastAppliedValue = el.__alWefaqAttrApplied[attr];
 
       // React may update an existing attribute after an API request. Refresh
       // the cached source when that change did not come from this translator.
-      if (!el.hasAttribute(cacheName) || (
-        lastAppliedValue !== null && currentValue !== lastAppliedValue
-      )) {
-        el.setAttribute(cacheName, currentValue);
+      if (
+        el.__alWefaqAttrOriginal[attr] === undefined ||
+        (lastAppliedValue !== undefined && currentValue !== lastAppliedValue)
+      ) {
+        el.__alWefaqAttrOriginal[attr] = currentValue;
       }
-      const nextValue = replaceKnownPhrases(el.getAttribute(cacheName) || "", languageCode);
+
+      const nextValue = replaceKnownPhrases(el.__alWefaqAttrOriginal[attr] || "", languageCode);
       if (currentValue !== nextValue) {
         el.setAttribute(attr, nextValue);
       }
-      el.setAttribute(appliedName, nextValue);
+      el.__alWefaqAttrApplied[attr] = nextValue;
     });
   });
 }

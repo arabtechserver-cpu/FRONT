@@ -200,7 +200,7 @@ export default function AnalyticsTab({ token }) {
         </table>
 
         <div class="footer-note">
-          تم استخراج هذا التقرير رسمياً من نظام إدارة Al-Wefaq Server — https://arab-tech1.online
+          تم استخراج هذا التقرير رسمياً من نظام إدارة Al-Wefaq Server — https://al-wefaq.center
         </div>
       </body>
       </html>

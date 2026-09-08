@@ -42,27 +42,50 @@ const getCategoriesAndServices = cache(async function getCategoriesAndServices()
 
 export async function generateMetadata() {
   const metadata = await getSiteMetadata();
-  const rawName = metadata?.site_name || "سيرفر الوفاق";
-  const siteName = rawName
-    .replace(/عرب\s*تك\s*برو\s*سيرفر/g, 'سيرفر الوفاق')
-    .replace(/عرب\s*تك\s*سيرفر(\s*online)?/gi, 'سيرفر الوفاق')
-    .replace(/عرب\s*تك/g, 'الوفاق')
-    .trim() || "سيرفر الوفاق";
+  const siteName = metadata?.site_name?.trim() || "سيرفر الوفاق - Al-Wefaq Server";
 
-  const title = `${siteName} | Al-Wefaq Server - خدمات السوفت وير والسيرفر`;
-  const description = `${siteName} (Al-Wefaq Server)، يقدم خدمات السوفت وير والاشتراكات وأدوات GSM وخدمات IMEI والسيرفر.`;
+  const title = siteName;
+  const description = `${siteName} — المنصة الأولى المتكاملة لخدمات السوفت وير، تفعيل البرامج والدونجلات، أدوات GSM، وخدمات السيرفر وIMEI بأسعار منافسة وتسليم فوري.`;
 
   return {
     title,
     description,
     keywords: [
-      "Al-Wefaq Server",
+      siteName,
       "سيرفر الوفاق",
+      "Al-Wefaq Server",
       "Al-Wefaq",
-      "خدمات السوفت وير",
-      "تفعيل دونجلات وبوكسات",
-      siteName
+      "Alwefaq",
+      "سيرفر الوفاق لخدمات السوفت وير",
+      "خدمات رقمية",
+      "تفعيل برامج",
+      "أدوات GSM",
+      "فك شفرات",
+      "شحن وتفعيل",
+      "شحن ألعاب"
     ],
+    openGraph: {
+      title,
+      description,
+      url: SITE_URL || "https://al-wefaq.center",
+      siteName: "سيرفر الوفاق - Al-Wefaq Server",
+      locale: "ar_SA",
+      type: "website",
+      images: [
+        {
+          url: "/og-image.png",
+          width: 1200,
+          height: 630,
+          alt: "سيرفر الوفاق - Al-Wefaq Server",
+        }
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: ["/og-image.png"],
+    },
     alternates: {
       canonical: `${SITE_URL}/`,
     }

@@ -1,5 +1,4 @@
-let apiBaseUrl = process.env.NEXT_PUBLIC_API_URL ||
-  (process.env.NODE_ENV === "production" ? "https://api.arab-tech1.online" : "http://localhost:5000");
+let apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "https://api.al-wefaq.center";
 
 if (typeof window !== "undefined") {
   // Browser requests stay on the storefront origin and are proxied by Next.js.
@@ -9,7 +8,8 @@ if (typeof window !== "undefined") {
 }
 
 export const API_BASE_URL = apiBaseUrl;
-export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://arab-tech1.online";
+export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://al-wefaq.center";
+export const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "0x4AAAAAAErjWz_SzYtE3fce";
 
 /**
  * fetch() with a timeout (default 10 seconds).

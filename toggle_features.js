@@ -39,7 +39,7 @@ if (command === 'api') {
   showApi = !showApi;
 }
 
-const updatedContent = `export const FEATURES = {\n  // Set to false to hide API docs and API reseller links across the site\n  showApiDocs: ${showApi},\n  // Set to true to enable the protection verification overlay modal\n  showProtectionModal: ${showProt},\n};\n`;
+const updatedContent = `export const FEATURES = {\n  // Set to false to hide API docs and API reseller links across the site\n  showApiDocs: ${showApi},\n  // Strict Execution Mode: Completely disable API and Provider features\n  disableApi: true,\n  disableProviders: true,\n  // Set to true to enable the protection verification overlay modal\n  showProtectionModal: ${showProt},\n};\n`;
 
 fs.writeFileSync(featuresFilePath, updatedContent, 'utf8');
 

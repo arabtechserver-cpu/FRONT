@@ -27,8 +27,8 @@ export default function MainLayout({ children }) {
   const servicesMenuRef = useRef(null);
   const [categoriesExpanded, setCategoriesExpanded] = useState(false);
   const [settings, setSettings] = useState({
-    site_name: "سيرفر الوفاق",
-    site_logo: "/main-logo.png",
+    site_name: "سيرفر الوفاق - Al-Wefaq Server",
+    site_logo: "/logo.png",
     services_menu_placements: { desktop: true, mobile: true, footer: true }
   });
   const [logoFailed, setLogoFailed] = useState(false);
@@ -39,16 +39,8 @@ export default function MainLayout({ children }) {
       .then(res => res.ok ? res.json() : null)
       .then(data => {
         if (data) {
-          const cleanName = (data.site_name || "سيرفر الوفاق")
-            .replace(/عرب\s*تك\s*برو\s*سيرفر/g, 'سيرفر الوفاق')
-            .replace(/عرب\s*تك\s*سيرفر(\s*online)?/gi, 'سيرفر الوفاق')
-            .replace(/عرب\s*تك/g, 'الوفاق')
-            .trim() || "سيرفر الوفاق";
-
-          let cleanLogo = data.site_logo;
-          if (!cleanLogo || cleanLogo === "default" || cleanLogo.includes("af6e9ac5") || cleanLogo.includes("arab")) {
-            cleanLogo = "/main-logo.png";
-          }
+          const cleanName = data.site_name?.trim() || "سيرفر الوفاق - Al-Wefaq Server";
+          let cleanLogo = data.site_logo && data.site_logo !== "default" ? data.site_logo : "/logo.png";
 
           setSettings({
             ...data,
@@ -706,27 +698,28 @@ export default function MainLayout({ children }) {
               {settings.site_logo && settings.site_logo !== 'default' && !logoFailed ? (
                 <img src={settings.site_logo.startsWith('http') || settings.site_logo.startsWith('data:') ? settings.site_logo : (settings.site_logo.includes('uploads') ? `${API_BASE_URL}${settings.site_logo.startsWith('/') ? '' : '/'}${settings.site_logo}` : settings.site_logo)} alt={settings.site_name} onError={() => setLogoFailed(true)} fetchPriority="high" style={{ width: '40px', height: '40px', borderRadius: '8px', objectFit: 'contain', flexShrink: 0, filter: 'drop-shadow(0 2px 5px rgba(234,179,8,0.2))' }} />
               ) : (
-                <img
-              src="/main-logo.png"
-              alt={settings.site_name || "سيرفر الوفاق"}
-              fetchPriority="high"
-              style={{
-                width: '42px',
-                height: '42px',
-                borderRadius: '50%',
-                objectFit: 'cover',
-                flexShrink: 0,
-                border: '1.5px solid rgba(234, 179, 8, 0.4)',
-                filter: 'drop-shadow(0 2px 8px rgba(234, 179, 8, 0.35))'
-              }}
-            />
+                <div
+                  style={{
+                    width: '40px',
+                    height: '40px',
+                    borderRadius: '8px',
+                    background: 'linear-gradient(135deg, rgba(234, 179, 8, 0.2), rgba(234, 179, 8, 0.05))',
+                    border: '1.5px solid rgba(234, 179, 8, 0.4)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '1.2rem',
+                    fontWeight: 'bold',
+                    color: '#eab308',
+                    flexShrink: 0
+                  }}
+                >
+                  {(settings.site_name || "S")[0]}
+                </div>
               )}
-              <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', height: '24px', overflowY: 'hidden', minWidth: '180px' }}>
-                <span className={`font-black absolute transition-all duration-700 ease-in-out ${logoLang === 'ar' ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full'}`} style={{ color: '#eab308', whiteSpace: 'nowrap', fontSize: 'clamp(0.9rem, 3vw, 1.15rem)', letterSpacing: '0.5px', textShadow: '0 2px 10px rgba(234, 179, 8, 0.4)' }}>
-                  سيرفر الوفاق
-                </span>
-                <span translate="no" className={`font-black absolute transition-all duration-700 ease-in-out ${logoLang === 'en' ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-full'}`} style={{ color: '#eab308', whiteSpace: 'nowrap', fontSize: 'clamp(0.85rem, 2.5vw, 1rem)', letterSpacing: '0.5px', textShadow: '0 2px 10px rgba(234, 179, 8, 0.4)' }}>
-                  Al-Wefaq Server
+              <div style={{ display: 'flex', alignItems: 'center', minWidth: '120px' }}>
+                <span className="font-black" style={{ color: '#eab308', whiteSpace: 'nowrap', fontSize: 'clamp(0.95rem, 3vw, 1.2rem)', letterSpacing: '0.5px', textShadow: '0 2px 10px rgba(234, 179, 8, 0.4)' }}>
+                  {settings.site_name || "Spider Store"}
                 </span>
               </div>
             </Link>

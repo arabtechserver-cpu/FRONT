@@ -1,7 +1,7 @@
 {
-  "name": "عرب تك سيرفر",
-  "short_name": "عرب تك سيرفر",
-  "description": "سيرفر عرب تك لخدمات وبرامج السوفت وير",
+  "name": "سيرفر الوفاق - Al-Wefaq Server",
+  "short_name": "سيرفر الوفاق",
+  "description": "سيرفر الوفاق (Al-Wefaq Server) — المنصة المتكاملة لخدمات السوفت وير وتفعيل البرامج وأدوات السيرفر",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#141a28",

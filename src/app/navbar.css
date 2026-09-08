@@ -797,34 +797,55 @@ option {
   color: rgba(0, 0, 0, 0.4);
 }
 
+/* Hide browser's native reveal buttons (e.g. Edge, IE) */
+input::-ms-reveal,
+input::-ms-clear {
+  display: none !important;
+}
+
 /* Password Toggle Button Class */
 .password-toggle-btn {
   position: absolute;
-  left: 8px;
+  left: 10px;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: #ffffff;
-  border-radius: 10px;
-  padding: 6px 10px;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  border-radius: 8px;
+  padding: 0;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  font-size: 0.8rem;
   transition: all 0.2s ease;
+  z-index: 2;
 }
 
 .password-toggle-btn:hover {
-  background: rgba(255, 255, 255, 0.12);
+  color: var(--primary-color, #00b4d8);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 [data-theme="light"] .password-toggle-btn {
-  background: rgba(0, 0, 0, 0.05);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  color: #000000;
+  background: transparent;
+  border: none;
+  color: rgba(0, 0, 0, 0.5);
 }
 
 [data-theme="light"] .password-toggle-btn:hover {
-  background: rgba(0, 0, 0, 0.1);
+  color: var(--primary-color, #00b4d8);
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* Force adequate left padding so password text never collides with the eye toggle button */
+.password-input,
+.custom-login-panel .form-group input.password-input,
+.form-group input.password-input {
+  padding-left: 54px !important;
+  padding-right: 18px !important;
 }
 
 /* Prevent browser autofill from turning text black or overriding dark background */

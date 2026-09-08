@@ -28,91 +28,106 @@ const resolveMediaUrl = (value, fallback) => {
 
 const getSiteSettings = cache(async () => {
   let siteName = "سيرفر الوفاق - Al-Wefaq Server";
-  let siteLogo = "/images/logo_ar.png";
+  let siteLogo = "/logo.png";
   let siteFavicon = "/favicon.ico";
 
-  if (!isBuildTime) {
-    try {
-      const res = await fetchWithTimeout(`${API_BASE_URL}/api/settings/metadata`, { next: { revalidate: 300 } });
-      if (res.ok) {
-        const settings = await res.json();
-        if (settings.site_name) {
-          siteName = settings.site_name
-            .replace(/عرب\s*تك\s*برو\s*سيرفر/g, 'سيرفر الوفاق')
-            .replace(/عرب\s*تك\s*سيرفر/g, 'سيرفر الوفاق')
-            .replace(/عرب\s*تك/g, 'الوفاق')
-            .replace(/Arab\s*Tech\s*Pro\s*Server/gi, 'Al-Wefaq Server')
-            .replace(/Arab\s*Tech\s*Server/gi, 'Al-Wefaq Server')
-            .replace(/Arab\s*Tech/gi, 'Al-Wefaq')
-            .trim();
-        }
-        if (settings.site_logo && settings.site_logo !== "default" && !settings.site_logo.includes('af6e9ac5')) siteLogo = settings.site_logo;
-        if (settings.site_favicon && settings.site_favicon !== "default" && !settings.site_favicon.includes('f48ffcfd')) siteFavicon = settings.site_favicon;
+  try {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/api/settings/metadata`, { next: { revalidate: 300 } });
+    if (res.ok) {
+      const settings = await res.json();
+      if (settings.site_name) {
+        siteName = settings.site_name.trim();
       }
-    } catch {
-      // Keep metadata rendering resilient during build or temporary API downtime.
+      if (settings.site_logo && settings.site_logo !== "default") siteLogo = settings.site_logo;
+      if (settings.site_favicon && settings.site_favicon !== "default") siteFavicon = settings.site_favicon;
     }
+  } catch {
+    // Keep metadata rendering resilient during build or temporary API downtime.
   }
   return {
     siteName: siteName || "سيرفر الوفاق - Al-Wefaq Server",
-    siteLogo: resolveMediaUrl(siteLogo, "/images/logo_ar.png"),
+    siteLogo: resolveMediaUrl(siteLogo, "/logo.png"),
     siteFavicon: resolveMediaUrl(siteFavicon, "/favicon.ico"),
   };
 });
 
 export async function generateMetadata() {
-  const { siteName, siteFavicon } = await getSiteSettings();
-  const siteUrl = SITE_URL || "https://arab-tech1.online";
-  
+  const { siteName, siteFavicon, siteLogo } = await getSiteSettings();
+  const siteUrl = SITE_URL || "https://al-wefaq.center";
+  const title = siteName || "سيرفر الوفاق - Al-Wefaq Server";
+  const description = "سيرفر الوفاق (Al-Wefaq Server) — المنصة الأولى لخدمات السوفت وير، تفعيل البرامج، أدوات GSM، وخدمات السيرفر وIMEI بأسعار مناسبة وتسليم فوري.";
+
   return {
     title: {
-      default: siteName,
-      template: `%s | ${siteName}`,
+      default: title,
+      template: `%s | ${title}`,
     },
-    description: "سيرفر الوفاق (Al-Wefaq Server) — المنصة الأولى لخدمات السوفت وير، تفعيل البرامج، أدوات GSM، وخدمات السيرفر وIMEI بأسعار مناسبة.",
+    description,
     keywords: [
-      "سيرفر الوفاق", 
-      "Al-Wefaq Server", 
+      "سيرفر الوفاق",
+      "Al-Wefaq Server",
+      "سيرفر الوفاق - Al-Wefaq Server",
       "Al-Wefaq",
+      "Alwefaq",
+      "سيرفر الوفاق لخدمات السوفت وير",
       "تفعيل برامج",
       "خدمات سيرفر",
       "فك شفرات",
-      "أدوات GSM"
+      "أدوات GSM",
+      "شحن وتفعيل",
+      "خدمات رقمية"
     ],
     metadataBase: new URL(siteUrl),
     alternates: {
       canonical: "/",
+    },
+    openGraph: {
+      title,
+      description,
+      url: siteUrl,
+      siteName: "سيرفر الوفاق - Al-Wefaq Server",
+      locale: "ar_SA",
+      type: "website",
+      images: [
+        {
+          url: "/og-image.png",
+          width: 1200,
+          height: 630,
+          alt: "سيرفر الوفاق - Al-Wefaq Server",
+        }
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: ["/og-image.png"],
     },
     icons: {
       icon: siteFavicon,
       shortcut: siteFavicon,
       apple: siteFavicon,
     },
+    verification: {
+      google: "98MXmfIHXauUjaZPs2tF1w439NPxK2pIvWr2wRQe0JI",
+    },
   };
 }
 
 export default async function RootLayout({ children }) {
-  const { siteName, siteLogo } = await getSiteSettings();
+  const { siteName, siteLogo, siteFavicon } = await getSiteSettings();
   const siteLogoUrl = siteLogo;
 
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",
     "name": siteName,
-    "alternateName": ["Al-Wefaq Server", "Al-Wefaq", "سيرفر الوفاق"],
-    "url": SITE_URL || "https://arab-tech1.online",
+    "url": SITE_URL || "https://al-wefaq.center",
     "publisher": {
       "@type": "Organization",
-      "name": "Al-Wefaq Server",
-      "alternateName": ["Al-Wefaq", "سيرفر الوفاق"],
-      "url": "https://arab-tech1.online",
-      "logo": `${SITE_URL || "https://arab-tech1.online"}/main-logo.png`,
-      "sameAs": [
-        "https://t.me/Elmuizabbas",
-        "https://www.facebook.com/profile.php?id=100029216807637",
-        "https://www.youtube.com/@elmuizabba24",
-        "https://tiktok.com/@249118100809elmuiz"
-      ]
+      "name": siteName,
+      "url": SITE_URL || "https://al-wefaq.center",
+      "logo": siteLogoUrl,
     },
     "mainEntity": [
       {
@@ -123,7 +138,7 @@ export default async function RootLayout({ children }) {
             "name": "كيف أضمن أمان تفعيل البرامج والخدمات؟",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": `متجر ${siteName} آمن وموثوق 100%، وتتم كافة المعاملات عبر بوابات دفع مشفرة وخدمات تفعيل رسمية تضمن حماية خصوصية العملاء.`
+              "text": `متجر ${siteName} آمن وموثوق 100%، وتتم كافة المعاملات عبر بوابات دفع مشفرة وخدمات رسمية تضمن حماية خصوصية العملاء.`
             }
           }
         ]
@@ -134,17 +149,13 @@ export default async function RootLayout({ children }) {
   return (
     <html lang="ar" dir="rtl" data-theme="dark" suppressHydrationWarning>
       <head>
+        <meta name="google-site-verification" content="98MXmfIHXauUjaZPs2tF1w439NPxK2pIvWr2wRQe0JI" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <link rel="apple-touch-icon" href={siteLogoUrl} />
         <link rel="icon" href="/favicon.ico" sizes="any" />
-        <link rel="icon" type="image/png" href="/favicon.png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16.png" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32.png" />
-        <link rel="icon" type="image/png" sizes="48x48" href="/icons/icon-48.png" />
-        <link rel="icon" type="image/png" sizes="96x96" href="/icons/icon-96.png" />
-        <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
+        <link rel="icon" type="image/png" href={siteFavicon} />
         <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
 
         {/* SEO Structured Data */}

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 export default function AmrrUnlockerTab({
   unlockerBalanceEmail,
@@ -45,41 +45,162 @@ export default function AmrrUnlockerTab({
   unlockerCategories,
   apiAutoSubmit,
   handleToggleAutoSubmit,
-  handleWipeAndSyncAll
+  handleWipeAndSyncAll,
+  unlockerApiKey,
+  setUnlockerApiKey,
+  unlockerUsername,
+  setUnlockerUsername,
+  unlockerApiUrl,
+  setUnlockerApiUrl,
+  saveUnlockerSettings,
+  unlockerSettingsMsg
 }) {
+  const [showApiKey, setShowApiKey] = useState(false);
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
       
-      {/* 1. API Connection Status (Hardcoded & Secure) */}
+      {/* 1. API Connection Status & Configuration */}
       <div className="premium-card-solid" style={{ padding: "20px" }}>
-        <h3 style={{ margin: "0 0 12px", fontSize: "1.1rem", fontWeight: 800, color: "#38bdf8", display: "flex", alignItems: "center", gap: "8px" }}>
-          <span>🔓</span> بوابة Amrr Unlocker متصلة بنجاح
-        </h3>
-        <p style={{ color: "#94a3b8", fontSize: "0.88rem", margin: 0, lineHeight: "1.6" }}>
-          تم ربط وتهيئة اتصال لوحة التحكم ببوابة الخدمات الخارجية تلقائياً بشكل آمن وجاهز للتشغيل.
-        </p>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "24px", marginTop: "12px", fontSize: "0.85rem", color: "#cbd5e1", background: "rgba(255,255,255,0.02)", padding: "12px 16px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.04)", alignItems: "center" }}>
-          <div><strong>اسم المستخدم:</strong> <span style={{ color: "#38bdf8" }}>Hassen1990</span></div>
-          {unlockerBalanceEmail && (
-            <div><strong>بريد الحساب:</strong> <span style={{ color: "#e2e8f0" }}>{unlockerBalanceEmail}</span></div>
-          )}
-          <div><strong>حالة الاتصال:</strong> <span style={{ color: "#34d399", fontWeight: "bold" }}>● متصل بالخدمة</span></div>
-          
-          <div style={{ marginRight: "auto", display: "flex", alignItems: "center", gap: "10px" }}>
-            <span style={{ fontSize: "0.8rem", color: "#94a3b8" }}>رصيدك لدى المزود:</span>
-            <span style={{ fontSize: "1.15rem", fontWeight: "900", color: "#fbbf24", background: "rgba(251, 191, 36, 0.1)", padding: "4px 12px", borderRadius: "6px", border: "1px solid rgba(251, 191, 36, 0.2)", display: "inline-flex", direction: "ltr" }}>
-              {unlockerBalanceLoading ? "جاري التحميل..." : (unlockerBalance || "غير متوفر")}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "12px", marginBottom: "16px" }}>
+          <h3 style={{ margin: 0, fontSize: "1.2rem", fontWeight: 800, color: "#38bdf8", display: "flex", alignItems: "center", gap: "8px" }}>
+            <span>⚡</span> بوابة مزود عرب تك برو (Arab Tech Pro Server)
+          </h3>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <span style={{ fontSize: "0.85rem", color: "#94a3b8" }}>رصيد الحساب لدى المزود:</span>
+            <span style={{ fontSize: "1.2rem", fontWeight: "900", color: "#fbbf24", background: "rgba(251, 191, 36, 0.1)", padding: "4px 14px", borderRadius: "8px", border: "1px solid rgba(251, 191, 36, 0.2)", display: "inline-flex", direction: "ltr" }}>
+              {unlockerBalanceLoading ? "جاري الفحص..." : (unlockerBalance ? `${unlockerBalance} USD` : "غير متوفر")}
             </span>
             <button 
               onClick={fetchUnlockerBalance} 
               disabled={unlockerBalanceLoading}
-              style={{ background: "rgba(56, 189, 248, 0.12)", border: "1px solid rgba(56, 189, 248, 0.3)", color: "#38bdf8", padding: "4px 10px", borderRadius: "6px", cursor: "pointer", fontSize: "0.78rem", fontWeight: "bold", display: "flex", alignItems: "center", gap: "4px", transition: "all 0.2s" }}
-              title="تحديث الرصيد"
+              style={{ background: "rgba(56, 189, 248, 0.12)", border: "1px solid rgba(56, 189, 248, 0.3)", color: "#38bdf8", padding: "6px 12px", borderRadius: "6px", cursor: "pointer", fontSize: "0.82rem", fontWeight: "bold", display: "flex", alignItems: "center", gap: "4px", transition: "all 0.2s" }}
+              title="تحديث وفحص الرصيد"
             >
-              {unlockerBalanceLoading ? "انتظر..." : "🔄 تحديث"}
+              {unlockerBalanceLoading ? "انتظر..." : "🔄 فحص الرصيد"}
             </button>
           </div>
         </div>
+
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "10px", background: "rgba(34, 197, 94, 0.08)", border: "1px solid rgba(34, 197, 94, 0.25)", padding: "12px 16px", borderRadius: "10px", marginBottom: "16px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "0.9rem", color: "#4ade80" }}>
+            <span style={{ width: "10px", height: "10px", borderRadius: "50%", background: "#22c55e", boxShadow: "0 0 12px #22c55e", display: "inline-block" }} />
+            <span>حالة البوابة: <strong>متصلة بنجاح بمزود عرب تك برو (Arab Tech Pro Server)</strong></span>
+          </div>
+          <div style={{ display: "flex", gap: "12px", alignItems: "center", fontSize: "0.82rem", color: "#94a3b8", flexWrap: "wrap" }}>
+            <span>المزود: <code style={{ color: "#38bdf8", direction: "ltr" }}>arabtechproserver.tech</code></span>
+            <span>•</span>
+            <span>الحساب: <strong style={{ color: "#fbbf24" }}>{unlockerUsername || "mina15g4y_pcm"}</strong></span>
+            {unlockerBalanceEmail && (
+              <>
+                <span>•</span>
+                <span>البريد: <strong style={{ color: "#38bdf8" }}>{unlockerBalanceEmail}</strong></span>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Credentials Form */}
+        <form onSubmit={saveUnlockerSettings} style={{ background: "rgba(15, 23, 42, 0.55)", border: "1px solid rgba(255, 255, 255, 0.08)", borderRadius: "12px", padding: "18px", marginBottom: "16px" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "14px", borderBottom: "1px solid rgba(255,255,255,0.06)", paddingBottom: "10px", flexWrap: "wrap", gap: "8px" }}>
+            <h4 style={{ margin: 0, fontSize: "0.95rem", color: "#e2e8f0", fontWeight: 700, display: "flex", alignItems: "center", gap: "6px" }}>
+              <span>🔑</span> بيانات واعتمادات الربط (API Credentials)
+            </h4>
+            <span style={{ fontSize: "0.75rem", color: "#94a3b8" }}>بروتوكول DHru Fusion المتوافق مع عرب تك برو</span>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "16px", marginBottom: "16px" }}>
+            <div className="form-group" style={{ marginBottom: 0 }}>
+              <label style={{ color: "#94a3b8", fontSize: "0.85rem", marginBottom: "6px", display: "flex", justifyContent: "space-between" }}>
+                <span>1. رابط السيرفر (API URL):</span>
+                <span style={{ color: "#38bdf8", fontSize: "0.75rem" }}>Endpoint</span>
+              </label>
+              <input
+                type="text"
+                value={unlockerApiUrl || ""}
+                onChange={(e) => setUnlockerApiUrl(e.target.value)}
+                placeholder="https://arabtechproserver.tech/api/v1/provider"
+                className="search-input-premium"
+                style={{ padding: "10px 14px", width: "100%", direction: "ltr", fontFamily: "monospace", fontSize: "0.85rem" }}
+                required
+              />
+              <span style={{ fontSize: "0.72rem", color: "#64748b", marginTop: "4px", display: "block" }}>
+                رابط نقطة الاتصال بمزود الخدمة
+              </span>
+            </div>
+
+            <div className="form-group" style={{ marginBottom: 0 }}>
+              <label style={{ color: "#94a3b8", fontSize: "0.85rem", marginBottom: "6px", display: "flex", justifyContent: "space-between" }}>
+                <span>2. اسم المستخدم (API USERNAME):</span>
+                <span style={{ color: "#fbbf24", fontSize: "0.75rem" }}>Username / Email</span>
+              </label>
+              <input
+                type="text"
+                value={unlockerUsername || ""}
+                onChange={(e) => setUnlockerUsername(e.target.value)}
+                placeholder="mina15g4y_pcm"
+                className="search-input-premium"
+                style={{ padding: "10px 14px", width: "100%", direction: "ltr", fontFamily: "monospace", fontSize: "0.85rem" }}
+                required
+              />
+              <span style={{ fontSize: "0.72rem", color: "#64748b", marginTop: "4px", display: "block" }}>
+                يمكن استخدام <code style={{ color: "#94a3b8" }}>mina15g4y_pcm</code> أو البريد <code style={{ color: "#94a3b8" }}>mina15g4y@gmail.com</code>
+              </span>
+            </div>
+
+            <div className="form-group" style={{ marginBottom: 0 }}>
+              <label style={{ color: "#94a3b8", fontSize: "0.85rem", marginBottom: "6px", display: "flex", justifyContent: "space-between" }}>
+                <span>3. المفتاح السري (API KEY / ACCESS KEY):</span>
+                <button
+                  type="button"
+                  onClick={() => setShowApiKey(!showApiKey)}
+                  style={{ background: "none", border: "none", color: "#38bdf8", cursor: "pointer", fontSize: "0.75rem", padding: 0 }}
+                >
+                  {showApiKey ? "👁️ إخفاء" : "👁️ إظهار"}
+                </button>
+              </label>
+              <input
+                type={showApiKey ? "text" : "password"}
+                value={unlockerApiKey || ""}
+                onChange={(e) => setUnlockerApiKey(e.target.value)}
+                placeholder="ATS-f0feca4a984f3c1eec2ef6e1e1ff6dcf"
+                className="search-input-premium"
+                style={{ padding: "10px 14px", width: "100%", direction: "ltr", fontFamily: "monospace", fontSize: "0.85rem" }}
+                required
+              />
+              <span style={{ fontSize: "0.72rem", color: "#64748b", marginTop: "4px", display: "block" }}>
+                مفتاح API السري للتوثيق مع عرب تك برو
+              </span>
+            </div>
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "12px" }}>
+            <div style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
+              <button
+                type="submit"
+                className="btn-premium btn-premium-primary"
+                style={{ padding: "8px 20px", fontSize: "0.88rem", display: "flex", alignItems: "center", gap: "6px", cursor: "pointer" }}
+              >
+                <span>💾</span> حفظ إعدادات البوابة
+              </button>
+              <button
+                type="button"
+                onClick={fetchUnlockerBalance}
+                disabled={unlockerBalanceLoading}
+                className="btn-premium"
+                style={{ padding: "8px 16px", fontSize: "0.88rem", background: "rgba(56, 189, 248, 0.1)", border: "1px solid rgba(56, 189, 248, 0.3)", color: "#38bdf8", cursor: "pointer" }}
+              >
+                {unlockerBalanceLoading ? "جاري الفحص..." : "🔄 فحص الاتصال والرصيد"}
+              </button>
+            </div>
+
+            {unlockerSettingsMsg && (
+              <div style={{ padding: "6px 14px", borderRadius: "8px", fontSize: "0.85rem", fontWeight: "bold", background: unlockerSettingsMsg.includes("❌") ? "rgba(239, 68, 68, 0.15)" : "rgba(34, 197, 94, 0.15)", color: unlockerSettingsMsg.includes("❌") ? "#f87171" : "#4ade80", border: `1px solid ${unlockerSettingsMsg.includes("❌") ? "rgba(239, 68, 68, 0.3)" : "rgba(34, 197, 94, 0.3)"}` }}>
+                {unlockerSettingsMsg}
+              </div>
+            )}
+          </div>
+        </form>
 
         {/* Auto-Submit Toggle */}
         <div style={{ display: "flex", alignItems: "center", gap: "12px", marginTop: "16px", padding: "14px 18px", background: apiAutoSubmit ? "rgba(34, 197, 94, 0.06)" : "rgba(239, 68, 68, 0.06)", borderRadius: "10px", border: `1px solid ${apiAutoSubmit ? "rgba(34, 197, 94, 0.2)" : "rgba(239, 68, 68, 0.2)"}`, transition: "all 0.3s ease" }}>

@@ -86,6 +86,12 @@ export default function WalletPage() {
   }, [selectedMethodId]);
 
   useEffect(() => {
+    if (paymentMethods.length > 0 && !selectedMethodId) {
+      setSelectedMethodId(paymentMethods[0].id);
+    }
+  }, [paymentMethods, selectedMethodId]);
+
+  useEffect(() => {
     setToken(localStorage.getItem("customer_token") || "");
     setTheme(document.documentElement.getAttribute("data-theme") || localStorage.getItem("theme") || "dark");
     setHydrated(true);
@@ -291,6 +297,8 @@ export default function WalletPage() {
       }
 
       const formattedNotes = notes;
+      const selectedMethod = paymentMethods.find(m => m.id === selectedMethodId) || paymentMethods[0];
+      const paymentMethodName = selectedMethod ? selectedMethod.name : "";
 
       const response = await fetch(`${API_BASE_URL}/api/customer/wallet-requests`, {
         method: "POST",
@@ -302,6 +310,7 @@ export default function WalletPage() {
           amount: parsedAmount,
           currency: selectedCurrency,
           sender_phone: senderPhone,
+          payment_method: paymentMethodName,
           notes: formattedNotes,
           receipt_image: receiptBase64  // sent to backend for auto WhatsApp delivery
         })
@@ -317,6 +326,7 @@ export default function WalletPage() {
       const waText = [
         `💳 طلب شحن رصيد #${requestId}`,
         `👤 الاسم: ${customerName}`,
+        paymentMethodName ? `🏦 طريقة التحويل: ${paymentMethodName}` : "",
         `💰 القيمة المطلوبة: $${parsedAmount} USD`,
         `💵 عملة التحويل: ${selectedCurrency}`,
         `📞 رقم التحويل: ${senderPhone}`,
@@ -645,8 +655,9 @@ export default function WalletPage() {
 
                   {selectedMethodId && (() => {
                     const pm = allMethods.find(m => m.id === selectedMethodId);
-                    if (!pm) return null;
-                    const isPaypal = pm.isDirectPaypal || pm.name.toLowerCase().includes("paypal") || pm.name.includes("باي بال");
+                    // خيار تعطيل/إخفاء بوابة PayPal التلقائية المباشرة بدون إزالة الكود البرمجي (مغلقة حالياً)
+                    const isDirectPaypalGatewayEnabled = false;
+                    const isPaypal = isDirectPaypalGatewayEnabled && (pm.isDirectPaypal || pm.name.toLowerCase().includes("paypal") || pm.name.includes("باي بال"));
 
                     if (isPaypal) {
                       return (
@@ -918,8 +929,9 @@ export default function WalletPage() {
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", fontSize: "0.9rem", color: "var(--text-muted)" }}>
                   <div>المبلغ: <strong style={{ color: "var(--text-main)" }}>$ {Number(request.amount).toFixed(2)} USD</strong></div>
                   <div>العملة: <strong style={{ color: "var(--text-main)" }}>{request.currency || "USD"}</strong></div>
+                  <div>طريقة الدفع: <strong style={{ color: "var(--primary-color, #38bdf8)" }}>{request.payment_method || "غير محدد"}</strong></div>
                   <div>من رقم: <strong style={{ color: "var(--text-main)" }}>{request.sender_phone || "-"}</strong></div>
-                  <div>بتاريخ: <strong style={{ color: "var(--text-main)" }}>{new Date(request.created_at).toLocaleString("ar-EG")}</strong></div>
+                  <div style={{ gridColumn: "span 2" }}>بتاريخ: <strong style={{ color: "var(--text-main)" }}>{new Date(request.created_at).toLocaleString("ar-EG")}</strong></div>
                   {request.notes && !request.notes.includes("paypal_order") && (
                     <div style={{ gridColumn: "span 2", background: "var(--bg-secondary)", padding: "10px", borderRadius: "8px", marginTop: "4px" }}>
                       الملاحظات: <strong style={{ color: "var(--text-main)" }}>{request.notes.replace(/^\[تم تحويل:[^\]]+\]\s*/, "")}</strong>

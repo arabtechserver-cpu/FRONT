@@ -30,13 +30,13 @@ export default function AdminSidebar() {
     { tab: "banners", icon: "🖼️", label: "إدارة البانر الإعلاني" },
     { tab: "reviews", icon: "⭐", label: "آراء العملاء" },
     { tab: "memberships", icon: "⭐", label: "نظام العضويات" },
-    { tab: "amrr_unlocker", icon: "🔗", label: "بوابة الخدمات الخارجية" },
+    { tab: "amrr_unlocker", icon: "🔗", label: "عرب تك برو" },
     { tab: "settings", icon: "⚙️", label: "إعدادات الموقع" },
-    { tab: "gmail", icon: "📧", label: "بوابة ربط الجيميل" },
     { tab: "backups", icon: "💾", label: "النسخ الاحتياطي" },
   ];
 
-  const tabs = allTabs.filter(t => FEATURES.showApiDocs || t.tab !== "api_resellers");
+  const hiddenTabs = ["api-providers", "api_resellers"];
+  const tabs = allTabs.filter(t => !hiddenTabs.includes(t.tab));
 
   return (
     <>

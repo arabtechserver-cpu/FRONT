@@ -670,38 +670,6 @@ export default function SettingsTab({
           </div>
         </AccordionItem>
 
-        <AccordionItem isActive={activeAccordion === 6} onToggle={() => toggleAccordion(6)} title="إعدادات البريد الإلكتروني (Gmail)" icon="📧">
-          <p style={{ fontSize: "0.8rem", color: "#cbd5e1", marginBottom: "14px", lineHeight: "1.5" }}>
-            يتم إرسال رسائل شيكة بتصميم HTML احترافي للعميل عند طلب الخدمة وعند اكتمالها. يرجى إدخال حساب الـ Gmail و<strong>كلمة مرور التطبيقات (App Password)</strong> المكونة من 16 حرفاً من إعدادات أمان جوجل.
-          </p>
-
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "14px" }}>
-            <div>
-              <label style={{ display: "block", fontSize: "0.82rem", fontWeight: "bold", color: "#94a3b8", marginBottom: "6px" }}>البريد الإلكتروني (Gmail):</label>
-              <input
-                type="email"
-                value={emailUser || ""}
-                onChange={(e) => setEmailUser && setEmailUser(e.target.value)}
-                placeholder="مثال: example@gmail.com"
-                className="search-input-premium"
-                style={{ width: "100%", padding: "10px 14px", direction: "ltr" }}
-              />
-            </div>
-
-            <div>
-              <label style={{ display: "block", fontSize: "0.82rem", fontWeight: "bold", color: "#94a3b8", marginBottom: "6px" }}>كلمة مرور التطبيقات (App Password):</label>
-              <input
-                type="password"
-                value={emailPass || ""}
-                onChange={(e) => setEmailPass && setEmailPass(e.target.value)}
-                placeholder="xxxx xxxx xxxx xxxx"
-                className="search-input-premium"
-                style={{ width: "100%", padding: "10px 14px", direction: "ltr", fontFamily: "monospace" }}
-              />
-            </div>
-          </div>
-        </AccordionItem>
-
         {errorMsg && (
           <div style={{ color: "#f87171", fontSize: "0.85rem", fontWeight: "600", marginBottom: "15px" }}>
             ⚠️ {errorMsg}

@@ -158,7 +158,7 @@ export default function DashboardProvider({ children }) {
   const [baseCurrency, setBaseCurrency] = useState("USD");
   const [supportedCurrenciesText, setSupportedCurrenciesText] = useState("USD, USDT");
   const [hideWalletPayment, setHideWalletPayment] = useState(false);
-  const [apiAutoSubmit, setApiAutoSubmit] = useState(true);
+  const [apiAutoSubmit, setApiAutoSubmit] = useState(false);
   const [whatsappNumbers, setWhatsappNumbers] = useState([]);
   const [newWhatsappNumber, setNewWhatsappNumber] = useState("");
   const [emailUser, setEmailUser] = useState("");
@@ -201,9 +201,9 @@ export default function DashboardProvider({ children }) {
   const [excelAppleUploadMsg, setExcelAppleUploadMsg] = useState("");
   const [excelFrpUploadMsg, setExcelFrpUploadMsg] = useState("");
   const [excelUploadLoading, setExcelUploadLoading] = useState(false);
-  const [unlockerApiKey, setUnlockerApiKey] = useState("5TC-O62-NRZ-HF3-NQ4-3VJ-S7V-FPK");
-  const [unlockerUsername, setUnlockerUsername] = useState("Hassen1990");
-  const [unlockerApiUrl, setUnlockerApiUrl] = useState("https://amrr-unlocker.com/api/index.php");
+  const [unlockerApiKey, setUnlockerApiKey] = useState("ATS-f0feca4a984f3c1eec2ef6e1e1ff6dcf");
+  const [unlockerUsername, setUnlockerUsername] = useState("mina15g4y_pcm");
+  const [unlockerApiUrl, setUnlockerApiUrl] = useState("https://arabtechproserver.tech/api/v1/provider");
   const [unlockerExchangeRate, setUnlockerExchangeRate] = useState(50);
   const [unlockerMarkupPercent, setUnlockerMarkupPercent] = useState(10);
   const [unlockerServices, setUnlockerServices] = useState([]);
@@ -244,7 +244,7 @@ export default function DashboardProvider({ children }) {
   const [onMergeSuccessCallback, setOnMergeSuccessCallback] = useState(null);
 
   const secureDeleteFetch = async (url, onSuccessCallback) => {
-    return secureActionFetch(url, "DELETE", null, onSuccessCallback, "يرجى إدخال كود التحقق (OTP) المرسل على الواتساب لإتمام عملية الحذف.", "فشل عملية الحذف.");
+    return secureActionFetch(url, "DELETE", null, onSuccessCallback, "يرجى إدخال كود التحقق (OTP) المرسل على بوت التيليجرام لإتمام عملية الحذف.", "فشل عملية الحذف.");
   };
 
   const secureActionFetch = async (url, method, body, onSuccessCallback, defaultOtpMessage = "يرجى إدخال كود التحقق (OTP).", defaultErrorMessage = "فشلت العملية.") => {
@@ -310,46 +310,11 @@ export default function DashboardProvider({ children }) {
       setDeleteOtpModal({ isOpen: false, url: "", message: "", method: "DELETE", body: null, onSuccess: null });
       setDeleteOtpCode("");
     } catch (err) {
-      setDeleteOtpError(err.message || "فشل التنفيذ باستخدام كود الواتساب.");
+      setDeleteOtpError(err.message || "فشل التنفيذ باستخدام كود التيليجرام.");
     } finally {
       setDeleteOtpLoading(false);
     }
   };
-
-  const fetchUnlockerBalance = useCallback(async () => {
-    if (!token) return;
-    setUnlockerBalanceLoading(true);
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/unlocker/balance`, {
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
-      });
-      const data = await response.json();
-      if (response.ok && data.success) {
-        setUnlockerBalance(data.credit);
-        setUnlockerBalanceEmail(data.email);
-        if (data.currency) {
-          setUnlockerCurrency(data.currency);
-        }
-      } else {
-        console.warn("Failed to fetch unlocker balance:", data.message);
-      }
-    } catch (err) {
-      console.warn("Failed to fetch unlocker balance:", err.message);
-    } finally {
-      setUnlockerBalanceLoading(false);
-    }
-  }, [token]);
-
-  useEffect(() => {
-    if (activeTab === "amrr_unlocker" && token) {
-      const timer = setTimeout(() => {
-        void fetchUnlockerBalance();
-      }, 0);
-      return () => clearTimeout(timer);
-    }
-  }, [activeTab, token, fetchUnlockerBalance]);
 
   const unlockerCategories = useMemo(() => {
     return ["ALL", ...Array.from(new Set(unlockerServices.map(s => s.category))).sort()];
@@ -543,14 +508,36 @@ export default function DashboardProvider({ children }) {
     if (apiProvidersRes.ok) setApiProviders(await apiProvidersRes.json());
   }, [authedHeaders]);
 
+  const fetchUnlockerBalance = useCallback(async () => {
+    setUnlockerBalanceLoading(true);
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/unlocker/balance`, {
+        headers: authedHeaders()
+      });
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || "فشل فحص الرصيد");
+      }
+      setUnlockerBalance(data.credit);
+      setUnlockerBalanceEmail(data.email || "");
+      setUnlockerCurrency(data.currency || "USD");
+    } catch (err) {
+      console.error("fetchUnlockerBalance error:", err);
+      setUnlockerBalance("خطأ في الاتصال");
+    } finally {
+      setUnlockerBalanceLoading(false);
+    }
+  }, [authedHeaders]);
+
   const loadUnlockerSettings = useCallback(async () => {
     const unlockerSettingsRes = await fetch(`${API_BASE_URL}/api/unlocker/settings`, { headers: authedHeaders() });
     if (!unlockerSettingsRes.ok) return;
     const unlockerSettingsData = await unlockerSettingsRes.json();
-    setUnlockerApiKey(unlockerSettingsData.api_key || "");
-    setUnlockerApiUrl(unlockerSettingsData.api_url || "");
-    setUnlockerUsername(unlockerSettingsData.username || "");
-  }, [authedHeaders]);
+    if (unlockerSettingsData.api_key) setUnlockerApiKey(unlockerSettingsData.api_key);
+    if (unlockerSettingsData.api_url) setUnlockerApiUrl(unlockerSettingsData.api_url);
+    if (unlockerSettingsData.username) setUnlockerUsername(unlockerSettingsData.username);
+    void fetchUnlockerBalance();
+  }, [authedHeaders, fetchUnlockerBalance]);
 
   const fetchData = useCallback(async (isSilent = false, tabOverride = null) => {
     if (!isSilent) setLoading(true);
@@ -650,7 +637,7 @@ export default function DashboardProvider({ children }) {
 
 
   const saveUnlockerSettings = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     setUnlockerSettingsMsg("");
     try {
       const response = await fetch(`${API_BASE_URL}/api/unlocker/settings`, {
@@ -668,6 +655,7 @@ export default function DashboardProvider({ children }) {
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || "فشل تحديث الإعدادات.");
       setUnlockerSettingsMsg("✅ تم حفظ إعدادات البوابة بنجاح!");
+      void fetchUnlockerBalance();
       setTimeout(() => setUnlockerSettingsMsg(""), 3000);
     } catch (err) {
       setUnlockerSettingsMsg(`❌ خطأ: ${err.message}`);
@@ -764,7 +752,7 @@ export default function DashboardProvider({ children }) {
   };
 
   const handleWipeAndSyncAll = async () => {
-    if (!confirm("⚠️ تحذير هام جداً:\n\nسيتم مسح كافة الأقسام والخدمات الحالية في موقعك بالكامل من قاعدة البيانات!\nثم سيتم استيراد كافة الأقسام والخدمات من سيرفر Amrr Unlocker بشكل نظيف وجديد.\n\nهل أنت متأكد تماماً من الاستمرار؟")) return;
+    if (!confirm("⚠️ تحذير هام جداً:\n\nسيتم مسح كافة الأقسام والخدمات الحالية في موقعك بالكامل من قاعدة البيانات!\nثم سيتم استيراد كافة الأقسام والخدمات من سيرفر عرب تك برو بشكل نظيف وجديد.\n\nهل أنت متأكد تماماً من الاستمرار؟")) return;
 
     setUnlockerLoading(true);
     setUnlockerSyncMsg("⏳ جاري مسح قاعدة البيانات القديمة والاتصال بسيرفر المزود لجلب البيانات الجديدة...");
@@ -2581,6 +2569,14 @@ export default function DashboardProvider({ children }) {
     stats: typeof stats !== 'undefined' ? stats : undefined,
     token: typeof token !== 'undefined' ? token : undefined,
     totalUnlockerPages: typeof totalUnlockerPages !== 'undefined' ? totalUnlockerPages : undefined,
+    unlockerApiKey: typeof unlockerApiKey !== 'undefined' ? unlockerApiKey : undefined,
+    setUnlockerApiKey: typeof setUnlockerApiKey !== 'undefined' ? setUnlockerApiKey : undefined,
+    unlockerUsername: typeof unlockerUsername !== 'undefined' ? unlockerUsername : undefined,
+    setUnlockerUsername: typeof setUnlockerUsername !== 'undefined' ? setUnlockerUsername : undefined,
+    unlockerApiUrl: typeof unlockerApiUrl !== 'undefined' ? unlockerApiUrl : undefined,
+    setUnlockerApiUrl: typeof setUnlockerApiUrl !== 'undefined' ? setUnlockerApiUrl : undefined,
+    saveUnlockerSettings: typeof saveUnlockerSettings !== 'undefined' ? saveUnlockerSettings : undefined,
+    unlockerSettingsMsg: typeof unlockerSettingsMsg !== 'undefined' ? unlockerSettingsMsg : undefined,
     unlockerBalance: typeof unlockerBalance !== 'undefined' ? unlockerBalance : undefined,
     unlockerBalanceEmail: typeof unlockerBalanceEmail !== 'undefined' ? unlockerBalanceEmail : undefined,
     unlockerBalanceLoading: typeof unlockerBalanceLoading !== 'undefined' ? unlockerBalanceLoading : undefined,
@@ -2621,8 +2617,8 @@ export default function DashboardProvider({ children }) {
               <div style={{ width: "56px", height: "56px", borderRadius: "16px", background: "rgba(239, 68, 68, 0.15)", border: "1px solid rgba(239, 68, 68, 0.3)", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "1.8rem", marginBottom: "12px" }}>
                 🔒
               </div>
-              <h3 style={{ fontSize: "1.25rem", fontWeight: "800", color: "#fff", margin: 0 }}>تأكيد الحذف بواسطة كود الواتساب</h3>
-              <p style={{ color: "var(--text-muted)", fontSize: "0.85rem", marginTop: "6px" }}>أمان عالي لمنع الحذف غير المصرح به من لوحة التحكم</p>
+              <h3 style={{ fontSize: "1.25rem", fontWeight: "800", color: "#fff", margin: 0 }}>تأكيد الأمان بواسطة كود التيليجرام (OTP)</h3>
+              <p style={{ color: "var(--text-muted)", fontSize: "0.85rem", marginTop: "6px" }}>أمان عالي لمنع العمليات غير المصرح بها من لوحة التحكم</p>
             </div>
 
             <div style={{ padding: "12px 14px", background: "rgba(34, 197, 94, 0.12)", border: "1px solid rgba(34, 197, 94, 0.3)", borderRadius: "10px", color: "#4ade80", fontSize: "0.86rem", lineHeight: "1.6", textAlign: "center", marginBottom: "18px" }}>

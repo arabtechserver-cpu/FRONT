@@ -433,15 +433,6 @@ export default function ServiceDetail({ params, initialService = null }) {
       // provider fields stored on the parent service as a fallback when the
       // package payload is incomplete or empty.
       rawFields = hasPackageFields ? [...selectedPackage.fields] : [...serviceFields];
-
-      const packageHasStrictImeiField = rawFields.some((field) => isStrictImeiField(field));
-      const serviceLevelImeiField = Array.isArray(serviceFields)
-        ? serviceFields.find((field) => isStrictImeiField(field))
-        : null;
-
-      if (!packageHasStrictImeiField && serviceLevelImeiField) {
-        rawFields = [serviceLevelImeiField, ...rawFields];
-      }
     } else {
       // Always inherit fields from the parent service (e.g., manual services)
       if (Array.isArray(serviceFields)) {
@@ -520,29 +511,12 @@ export default function ServiceDetail({ params, initialService = null }) {
       uniqueFields.push(f);
     }
 
-    const activeServiceType = String(
-      selectedPackage?.api_service_type || activeService?.api_service_type || activeService?.type || ''
-    ).toLowerCase();
-
-    // Ensure ALL IMEI services ALWAYS have a system IMEI field, even if the
-    // provider exposes only extra custom fields and omits IMEI from them.
-    if (!hasImeiField && activeServiceType !== 'server' && activeServiceType !== 'remote') {
-      uniqueFields.unshift({
-        id: 'player_id',
-        name: 'player_id',
-        label: 'IMEI',
-        placeholder: 'أدخل رقم IMEI المكوّن من 15 رقمًا',
-        type: 'text',
-        required: true
-      });
-    }
-
     return uniqueFields.map(f => ({
       ...f,
       // Normalize: always use 'name' as the key for formData, falling back to 'id'
       name: (f.name || f.id || "").trim()
     }));
-  }, [activeService, serviceFields, defaultFields, selectedPackage]);
+  }, [activeService, serviceFields, selectedPackage]);
 
   const fieldsSectionTitle = useMemo(() => {
     if (!activeService) return t("serviceData");
@@ -641,7 +615,7 @@ export default function ServiceDetail({ params, initialService = null }) {
         return;
       }
 
-      if (isPrimaryImeiInputField(field) && looksLikeInvalidNumericImei(formData[field.name])) {
+      if (isStrictImeiField(field) && looksLikeInvalidNumericImei(formData[field.name])) {
         setErrorMessage(`حقل "${field.label}" يجب أن يحتوي على IMEI صحيح مكوّن من 15 رقمًا.`);
         return;
       }
@@ -887,6 +861,7 @@ export default function ServiceDetail({ params, initialService = null }) {
           <input
             type="text"
             placeholder="البحث عن باقة..."
+            suppressHydrationWarning
             value={packageSearchTerm}
             onChange={(e) => setPackageSearchTerm(e.target.value)}
             style={{
@@ -999,6 +974,7 @@ export default function ServiceDetail({ params, initialService = null }) {
 
                   <div className="scc-arrow" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                     <button
+                      suppressHydrationWarning
                       onClick={(e) => {
                         e.stopPropagation();
                         let url = `${window.location.origin}/service/${serviceId}?package=${pkg.id}`;

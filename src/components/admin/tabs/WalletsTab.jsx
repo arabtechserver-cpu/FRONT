@@ -80,6 +80,7 @@ export default function WalletsTab({
               <th>رقم الطلب</th>
               <th>العميل</th>
               <th>المبلغ</th>
+              <th>طريقة الدفع</th>
               <th>رقم التحويل</th>
               <th>ملاحظات</th>
               <th>تاريخ الطلب</th>
@@ -90,7 +91,7 @@ export default function WalletsTab({
           <tbody>
             {filteredWalletRequests.length === 0 ? (
               <tr>
-                <td colSpan="8" style={{ textAlign: "center", padding: "40px", color: "#64748b" }}>
+                <td colSpan="9" style={{ textAlign: "center", padding: "40px", color: "#64748b" }}>
                   لا توجد طلبات شحن رصيد مطابقة للفلتر الحالي.
                 </td>
               </tr>
@@ -109,6 +110,20 @@ export default function WalletsTab({
                         الدفع: {request.currency}
                       </div>
                     )}
+                  </td>
+                  <td data-label="طريقة الدفع">
+                    <span style={{ 
+                      padding: "4px 10px", 
+                      borderRadius: "8px", 
+                      fontSize: "0.85rem", 
+                      fontWeight: 700, 
+                      background: "rgba(56, 189, 248, 0.1)", 
+                      color: "#38bdf8",
+                      border: "1px solid rgba(56, 189, 248, 0.25)",
+                      display: "inline-block"
+                    }}>
+                      {request.payment_method || "غير محدد"}
+                    </span>
                   </td>
                   <td data-label="رقم التحويل" style={{ direction: "ltr" }}>{request.sender_phone || "-"}</td>
                   <td data-label="ملاحظات" style={{ maxWidth: "220px", color: "#cbd5e1" }}>{request.notes ? request.notes.replace(/^\[تم تحويل:[^\]]+\]\s*/, "") : "-"}</td>

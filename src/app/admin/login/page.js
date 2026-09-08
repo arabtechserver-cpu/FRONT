@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { API_BASE_URL } from "@/config";
 import Link from "next/link";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function AdminLogin() {
   const [username, setUsername] = useState("");
@@ -163,7 +164,8 @@ export default function AdminLogin() {
                   placeholder="••••••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  style={{ width: "100%", paddingLeft: "48px" }}
+                  className="password-input"
+                  style={{ width: "100%", paddingLeft: "54px", paddingRight: "18px" }}
                   required
                 />
                 <button
@@ -172,7 +174,7 @@ export default function AdminLogin() {
                   aria-label={showPassword ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}
                   className="password-toggle-btn"
                 >
-                  {showPassword ? "إخفاء" : "إظهار"}
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
             </div>
