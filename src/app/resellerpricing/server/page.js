@@ -24,8 +24,9 @@ const getCategoriesAndServices = cache(async function getCategoriesAndServices()
 
 export async function generateMetadata() {
   return {
-    title: "Server Service Reseller Pricing | أسعار خدمات السيرفر",
-    description: "Wholesale reseller pricing for Box Tool Activations, Credits, and Digital Gift Cards.",
+    title: "Server Service Reseller Pricing | SK-unlocker - أسعار خدمات السيرفر",
+    description: "Wholesale reseller pricing for Box Tool Activations, Credits, and Digital Gift Cards on SK-unlocker. Fast activation and competitive pricing.",
+    keywords: ["SK-unlocker server reseller", "server tool reseller", "box activation wholesale", "digital credits reseller", "gift cards wholesale"],
     alternates: {
       canonical: `${SITE_URL}/resellerpricing/server`
     }

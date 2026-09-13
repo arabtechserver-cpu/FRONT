@@ -24,8 +24,9 @@ const getCategoriesAndServices = cache(async function getCategoriesAndServices()
 
 export async function generateMetadata() {
   return {
-    title: "Reseller Pricing | أسعار الموزعين",
-    description: "Check our wholesale reseller pricing for IMEI, Server, and Remote unlocking services.",
+    title: "Reseller Pricing | SK-unlocker - أسعار الموزعين",
+    description: "Check wholesale reseller pricing for IMEI, Server, and Remote unlocking services on SK-unlocker. Competitive rates with instant delivery.",
+    keywords: ["SK-unlocker reseller", "reseller pricing", "wholesale unlock prices", "IMEI reseller", "server reseller"],
     alternates: {
       canonical: `${SITE_URL}/resellerpricing`
     }

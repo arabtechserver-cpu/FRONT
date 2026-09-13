@@ -24,8 +24,9 @@ const getCategoriesAndServices = cache(async function getCategoriesAndServices()
 
 export async function generateMetadata() {
   return {
-    title: "Remote Service Reseller Pricing | أسعار خدمات الريموت",
-    description: "Wholesale reseller pricing for Remote FRP Unlock and Technician Services.",
+    title: "Remote Unlock Reseller Pricing | SK-unlocker - أسعار خدمات الريموت",
+    description: "Wholesale reseller pricing for Remote FRP Unlock and Technician Services on SK-unlocker. Professional remote unlocking at best rates.",
+    keywords: ["SK-unlocker remote reseller", "FRP unlock wholesale", "remote unlock reseller", "technician services wholesale", "remote FRP price"],
     alternates: {
       canonical: `${SITE_URL}/resellerpricing/remote`
     }

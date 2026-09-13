@@ -24,8 +24,9 @@ const getCategoriesAndServices = cache(async function getCategoriesAndServices()
 
 export async function generateMetadata() {
   return {
-    title: "IMEI Service Reseller Pricing | أسعار خدمات IMEI",
-    description: "Wholesale reseller pricing for Apple, Samsung, Xiaomi, and iCloud IMEI unlocking services.",
+    title: "IMEI Unlock Reseller Pricing | SK-unlocker - أسعار خدمات فك IMEI",
+    description: "Wholesale reseller pricing for Apple, Samsung, Xiaomi, and iCloud IMEI unlocking services on SK-unlocker. Best rates guaranteed.",
+    keywords: ["SK-unlocker IMEI reseller", "IMEI unlock wholesale", "Apple unlock reseller", "iCloud unlock price", "Samsung IMEI unlock"],
     alternates: {
       canonical: `${SITE_URL}/resellerpricing/imei`
     }
