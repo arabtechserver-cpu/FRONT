@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
@@ -752,7 +752,7 @@ export default function DashboardProvider({ children }) {
   };
 
   const handleWipeAndSyncAll = async () => {
-    if (!confirm("⚠️ تحذير هام جداً:\n\nسيتم مسح كافة الأقسام والخدمات الحالية في موقعك بالكامل من قاعدة البيانات!\nثم سيتم استيراد كافة الأقسام والخدمات من سيرفر عرب تك برو بشكل نظيف وجديد.\n\nهل أنت متأكد تماماً من الاستمرار؟")) return;
+    if (!confirm("⚠️ تحذير هام جداً:\n\nسيتم مسح كافة الأقسام والخدمات الحالية في موقعك بالكامل من قاعدة البيانات!\nثم سيتم استيراد كافة الأقسام والخدمات من SK-unlocker بشكل نظيف وجديد.\n\nهل أنت متأكد تماماً من الاستمرار؟")) return;
 
     setUnlockerLoading(true);
     setUnlockerSyncMsg("⏳ جاري مسح قاعدة البيانات القديمة والاتصال بسيرفر المزود لجلب البيانات الجديدة...");

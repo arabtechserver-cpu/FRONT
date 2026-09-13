@@ -62,20 +62,21 @@ export default function AiChatWidget() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
     try {
-      const saved = JSON.parse(localStorage.getItem('al_wefaq_server_ai_history') || localStorage.getItem('arab_tech_server_ai_history') || '[]');
+      const saved = JSON.parse(localStorage.getItem('sk_unlocker_ai_history') || localStorage.getItem('al_wefaq_server_ai_history') || localStorage.getItem('arab_tech_server_ai_history') || '[]');
       if (Array.isArray(saved)) setMessages(saved.slice(-50));
     } catch {}
   }, []);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    if (messages.length) localStorage.setItem('al_wefaq_server_ai_history', JSON.stringify(messages.slice(-50)));
+    if (messages.length) localStorage.setItem('sk_unlocker_ai_history', JSON.stringify(messages.slice(-50)));
   }, [messages]);
 
   const startNewChat = () => {
     setMessages([]);
     setInput('');
     if (typeof window !== 'undefined') {
+      localStorage.removeItem('sk_unlocker_ai_history');
       localStorage.removeItem('al_wefaq_server_ai_history');
       localStorage.removeItem('arab_tech_server_ai_history');
     }

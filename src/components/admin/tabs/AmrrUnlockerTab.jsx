@@ -64,7 +64,7 @@ export default function AmrrUnlockerTab({
       <div className="premium-card-solid" style={{ padding: "20px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "12px", marginBottom: "16px" }}>
           <h3 style={{ margin: 0, fontSize: "1.2rem", fontWeight: 800, color: "#38bdf8", display: "flex", alignItems: "center", gap: "8px" }}>
-            <span>⚡</span> بوابة مزود عرب تك برو (Arab Tech Pro Server)
+            <span>⚡</span> بوابة SK-unlocker
           </h3>
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <span style={{ fontSize: "0.85rem", color: "#94a3b8" }}>رصيد الحساب لدى المزود:</span>
@@ -85,7 +85,7 @@ export default function AmrrUnlockerTab({
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "10px", background: "rgba(34, 197, 94, 0.08)", border: "1px solid rgba(34, 197, 94, 0.25)", padding: "12px 16px", borderRadius: "10px", marginBottom: "16px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "0.9rem", color: "#4ade80" }}>
             <span style={{ width: "10px", height: "10px", borderRadius: "50%", background: "#22c55e", boxShadow: "0 0 12px #22c55e", display: "inline-block" }} />
-            <span>حالة البوابة: <strong>متصلة بنجاح بمزود عرب تك برو (Arab Tech Pro Server)</strong></span>
+            <span>حالة البوابة: <strong>متصلة بنجاح بـ SK-unlocker</strong></span>
           </div>
           <div style={{ display: "flex", gap: "12px", alignItems: "center", fontSize: "0.82rem", color: "#94a3b8", flexWrap: "wrap" }}>
             <span>المزود: <code style={{ color: "#38bdf8", direction: "ltr" }}>arabtechproserver.tech</code></span>
@@ -106,7 +106,7 @@ export default function AmrrUnlockerTab({
             <h4 style={{ margin: 0, fontSize: "0.95rem", color: "#e2e8f0", fontWeight: 700, display: "flex", alignItems: "center", gap: "6px" }}>
               <span>🔑</span> بيانات واعتمادات الربط (API Credentials)
             </h4>
-            <span style={{ fontSize: "0.75rem", color: "#94a3b8" }}>بروتوكول DHru Fusion المتوافق مع عرب تك برو</span>
+            <span style={{ fontSize: "0.75rem", color: "#94a3b8" }}>بروتوكول DHru Fusion المتوافق مع SK-unlocker</span>
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "16px", marginBottom: "16px" }}>
@@ -169,7 +169,7 @@ export default function AmrrUnlockerTab({
                 required
               />
               <span style={{ fontSize: "0.72rem", color: "#64748b", marginTop: "4px", display: "block" }}>
-                مفتاح API السري للتوثيق مع عرب تك برو
+                مفتاح API السري للتوثيق مع SK-unlocker
               </span>
             </div>
           </div>

@@ -50,7 +50,7 @@ export default function AdminSidebar() {
     { tab: "banners", icon: ImageIcon, label: "إدارة البانر الإعلاني" },
     { tab: "reviews", icon: Star, label: "آراء العملاء" },
     { tab: "memberships", icon: Award, label: "نظام العضويات" },
-    { tab: "amrr_unlocker", icon: LinkIcon, label: "عرب تك برو" },
+    { tab: "amrr_unlocker", icon: LinkIcon, label: "SK-unlocker" },
     { tab: "settings", icon: Settings, label: "إعدادات الموقع" },
     { tab: "backups", icon: Database, label: "النسخ الاحتياطي" },
   ];
