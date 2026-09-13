@@ -181,7 +181,14 @@ export default function AdminLogin() {
               type="submit"
               disabled={submitting}
               className="glass-btn glass-btn-primary"
-              style={{ padding: "12px", width: "100%", borderRadius: "12px", fontWeight: "700" }}
+              style={{
+                padding: "12px",
+                width: "100%",
+                borderRadius: "12px",
+                fontWeight: "700",
+                background: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)",
+                boxShadow: "0 8px 28px rgba(37, 99, 235, 0.45)"
+              }}
             >
               {submitting ? "جاري التحقق والتوقيع..." : "تسجيل الدخول الآمن"}
             </button>
