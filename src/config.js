@@ -1,4 +1,4 @@
-let apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "https://api.sk-unlocker.com";
+let apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "https://api.al-wefaq.center";
 
 if (typeof window !== "undefined") {
   // Browser requests stay on the storefront origin and are proxied by Next.js.
