@@ -3,125 +3,98 @@
 import React from "react";
 import Link from "next/link";
 import { useI18n } from "@/lib/i18n";
+import { Phone, Mail, Globe, ShieldCheck } from "lucide-react";
 
 const paymentMethodsList = [
   {
-    name: "Binance Pay",
-    nameAr: "بايننس باي",
-    badge: "Instant",
-    color: "#F3BA2F",
-    bg: "rgba(243, 186, 47, 0.12)",
-    border: "rgba(243, 186, 47, 0.35)",
+    name: "Vodafone Cash",
+    nameAr: "فودافون كاش",
+    bg: "#b91c1c",
+    color: "#ffffff",
     icon: (
-      <svg width="24" height="24" viewBox="0 0 32 32" fill="none">
-        <circle cx="16" cy="16" r="16" fill="#181A20"/>
-        <path d="M16 6.5l3.2 3.2-3.2 3.2-3.2-3.2L16 6.5zm-6.3 6.3l3.2 3.2-3.2 3.2-3.2-3.2 3.2-3.2zm12.6 0l3.2 3.2-3.2 3.2-3.2-3.2 3.2-3.2zM16 19.1l3.2 3.2-3.2 3.2-3.2-3.2 3.2-3.2zm0-4.3l2.1 2.1-2.1 2.1-2.1-2.1 2.1-2.1z" fill="#F3BA2F"/>
+      <svg width="20" height="20" viewBox="0 0 32 32" fill="none">
+        <circle cx="16" cy="16" r="16" fill="#e60000" />
+        <path d="M16 8c-4.4 0-8 3.6-8 8 0 2.2.9 4.2 2.4 5.7l1.4-1.4C10.6 19 10 17.6 10 16c0-3.3 2.7-6 6-6s6 2.7 6 6c0 1.6-.6 3-1.8 4.3l1.4 1.4C23.1 20.2 24 18.2 24 16c0-4.4-3.6-8-8-8z" fill="#fff" />
+        <circle cx="16" cy="16" r="3" fill="#fff" />
+      </svg>
+    )
+  },
+  {
+    name: "Bankak | BOK",
+    nameAr: "بنك الخرطوم",
+    bg: "#047857",
+    color: "#ffffff",
+    icon: (
+      <div style={{ width: "20px", height: "20px", borderRadius: "50%", background: "#065f46", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: "900", fontSize: "9px", border: "1px solid rgba(255,255,255,0.4)" }}>
+        BOK
+      </div>
+    )
+  },
+  {
+    name: "Visa Card",
+    nameAr: "فيزا كارت",
+    bg: "#1d4ed8",
+    color: "#ffffff",
+    icon: (
+      <svg width="22" height="18" viewBox="0 0 36 24" fill="none">
+        <rect width="36" height="24" rx="4" fill="#0f172a" />
+        <path d="M14.2 16.5l1.9-11.8h2.9l-1.9 11.8h-2.9zm11.3-11.5c-.6-.2-1.5-.4-2.7-.4-3 0-5.1 1.6-5.1 3.8 0 1.7 1.5 2.6 2.6 3.1 1.2.6 1.6.9 1.6 1.5 0 .8-1 1.2-1.9 1.2-1.3 0-2-.2-3-.6l-.4-.2-.4 2.6c.7.3 2 .6 3.4.6 3.2 0 5.3-1.6 5.3-4 0-1.3-.8-2.4-2.6-3.2-1.1-.5-1.7-.9-1.7-1.4 0-.5.6-1 1.8-1 1 0 1.8.2 2.4.5l.3.1.4-2.6zm7.2 0h-2.3c-.7 0-1.3.2-1.6 1l-4.5 10.8h3.1l.6-1.7h3.8l.4 1.7h2.7l-2.2-11.8zm-3.9 7.7l1.6-4.3.9 4.3h-2.5zM11.6 4.7l-2.8 8-0.3-1.5c-.5-1.7-2.1-3.6-3.9-4.5l2.6 9.8h3.1l4.6-11.8h-3.3z" fill="#f59e0b" />
       </svg>
     )
   },
   {
     name: "USDT TRC20 / BEP20",
     nameAr: "USDT (Tether)",
-    badge: "Crypto",
-    color: "#26A17B",
-    bg: "rgba(38, 161, 123, 0.12)",
-    border: "rgba(38, 161, 123, 0.35)",
+    bg: "#0f766e",
+    color: "#ffffff",
     icon: (
-      <svg width="24" height="24" viewBox="0 0 32 32" fill="none">
-        <circle cx="16" cy="16" r="16" fill="#26A17B"/>
-        <path d="M17.9 14.5c-.1 0-1 .1-1.9.1-1 0-1.7-.1-1.9-.1v-2.3h7.8V9.4h-19v2.8h7.4v2.3c-.3 0-1.1.1-2 .1-.9 0-1.8-.1-1.9-.1-4.4-.2-7.7-1.1-7.7-2.1 0-1.1 3.3-1.9 7.7-2.1v3.3c.3 0 1.2.1 2 .1.9 0 1.7-.1 2-.1V10.4c4.4.2 7.7 1.1 7.7 2.1-.1 1.1-3.4 1.9-7.8 2.1zm0 1c4.3-.2 7.5-1 7.5-2 0-.2-.1-.4-.4-.6-1.1 1-4 1.8-7.1 1.9v7.9h-3.8v-7.9c-3.1-.1-6-.9-7.1-1.9-.3.2-.4.4-.4.6 0 1 3.2 1.8 7.5 2v7.9h3.8v-7.9z" fill="#fff"/>
+      <svg width="20" height="20" viewBox="0 0 32 32" fill="none">
+        <circle cx="16" cy="16" r="16" fill="#26A17B" />
+        <path d="M17.9 14.5c-.1 0-1 .1-1.9.1-1 0-1.7-.1-1.9-.1v-2.3h7.8V9.4h-19v2.8h7.4v2.3c-.3 0-1.1.1-2 .1-.9 0-1.8-.1-1.9-.1-4.4-.2-7.7-1.1-7.7-2.1 0-1.1 3.3-1.9 7.7-2.1v3.3c.3 0 1.2.1 2 .1.9 0 1.7-.1 2-.1V10.4c4.4.2 7.7 1.1 7.7 2.1-.1 1.1-3.4 1.9-7.8 2.1zm0 1c4.3-.2 7.5-1 7.5-2 0-.2-.1-.4-.4-.6-1.1 1-4 1.8-7.1 1.9v7.9h-3.8v-7.9c-3.1-.1-6-.9-7.1-1.9-.3.2-.4.4-.4.6 0 1 3.2 1.8 7.5 2v7.9h3.8v-7.9z" fill="#fff" />
       </svg>
     )
   },
   {
-    name: "Visa Card",
-    nameAr: "فيزا كارد",
-    badge: "Cards",
-    color: "#2563EB",
-    bg: "rgba(37, 99, 235, 0.12)",
-    border: "rgba(37, 99, 235, 0.35)",
+    name: "Binance Pay",
+    nameAr: "بينانس باي",
+    bg: "#1c1917",
+    color: "#f59e0b",
     icon: (
-      <svg width="26" height="24" viewBox="0 0 36 24" fill="none">
-        <rect width="36" height="24" rx="4" fill="#0D1B2A"/>
-        <path d="M14.2 16.5l1.9-11.8h2.9l-1.9 11.8h-2.9zm11.3-11.5c-.6-.2-1.5-.4-2.7-.4-3 0-5.1 1.6-5.1 3.8 0 1.7 1.5 2.6 2.6 3.1 1.2.6 1.6.9 1.6 1.5 0 .8-1 1.2-1.9 1.2-1.3 0-2-.2-3-.6l-.4-.2-.4 2.6c.7.3 2 .6 3.4.6 3.2 0 5.3-1.6 5.3-4 0-1.3-.8-2.4-2.6-3.2-1.1-.5-1.7-.9-1.7-1.4 0-.5.6-1 1.8-1 1 0 1.8.2 2.4.5l.3.1.4-2.6zm7.2 0h-2.3c-.7 0-1.3.2-1.6 1l-4.5 10.8h3.1l.6-1.7h3.8l.4 1.7h2.7l-2.2-11.8zm-3.9 7.7l1.6-4.3.9 4.3h-2.5zM11.6 4.7l-2.8 8-0.3-1.5c-.5-1.7-2.1-3.6-3.9-4.5l2.6 9.8h3.1l4.6-11.8h-3.3z" fill="#F7B600"/>
+      <svg width="20" height="20" viewBox="0 0 32 32" fill="none">
+        <circle cx="16" cy="16" r="16" fill="#181A20" />
+        <path d="M16 6.5l3.2 3.2-3.2 3.2-3.2-3.2L16 6.5zm-6.3 6.3l3.2 3.2-3.2 3.2-3.2-3.2 3.2-3.2zm12.6 0l3.2 3.2-3.2 3.2-3.2-3.2 3.2-3.2zM16 19.1l3.2 3.2-3.2 3.2-3.2-3.2 3.2-3.2zm0-4.3l2.1 2.1-2.1 2.1-2.1-2.1 2.1-2.1z" fill="#F3BA2F" />
       </svg>
     )
   },
   {
-    name: "Bankak | BOK",
-    nameAr: "بنكك (بنك الخرطوم)",
-    badge: "سودان 🇸🇩",
-    color: "#10b981",
-    bg: "rgba(16, 185, 129, 0.15)",
-    border: "rgba(16, 185, 129, 0.35)",
-    icon: (
-      <div style={{ width: "24px", height: "24px", borderRadius: "50%", background: "linear-gradient(135deg, #00833E, #004d24)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: "900", fontSize: "11px", border: "1px solid rgba(255,255,255,0.4)" }}>
-        BOK
-      </div>
-    )
-  },
-  {
-    name: "Vodafone Cash",
-    nameAr: "فودافون كاش",
-    badge: "مصر 🇪🇬",
-    color: "#E60000",
-    bg: "rgba(230, 0, 0, 0.12)",
-    border: "rgba(230, 0, 0, 0.35)",
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 32 32" fill="none">
-        <circle cx="16" cy="16" r="16" fill="#E60000"/>
-        <path d="M16 8c-4.4 0-8 3.6-8 8 0 2.2.9 4.2 2.4 5.7l1.4-1.4C10.6 19 10 17.6 10 16c0-3.3 2.7-6 6-6s6 2.7 6 6c0 1.6-.6 3-1.8 4.3l1.4 1.4C23.1 20.2 24 18.2 24 16c0-4.4-3.6-8-8-8z" fill="#fff"/>
-        <circle cx="16" cy="16" r="3" fill="#fff"/>
-      </svg>
-    )
-  },
-  {
-    name: "InstaPay",
+    name: "Instapay",
     nameAr: "إنستاباي",
-    badge: "مصر 🇪🇬",
-    color: "#A855F7",
-    bg: "rgba(108, 29, 95, 0.15)",
-    border: "rgba(168, 85, 247, 0.35)",
+    bg: "#6b21a8",
+    color: "#ffffff",
     icon: (
-      <div style={{ width: "24px", height: "24px", borderRadius: "6px", background: "linear-gradient(135deg, #6C1D5F, #A855F7)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: "900", fontSize: "10px" }}>
+      <div style={{ width: "20px", height: "20px", borderRadius: "4px", background: "#581c87", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: "900", fontSize: "9px" }}>
         IP
       </div>
     )
   }
 ];
 
-export default function Footer({ siteName = "Al-Wefaq Server", showServices = false }) {
+export default function Footer({ siteName = "SK-unlocker", showServices = false }) {
   const { t, meta } = useI18n();
-  const underlineSide = meta.dir === "rtl" ? { right: 0 } : { left: 0 };
 
   const linkStyle = {
-    color: "#94a3b8",
+    color: "#475569",
     textDecoration: "none",
-    fontSize: "0.95rem",
+    fontSize: "0.88rem",
+    fontWeight: 600,
     transition: "color 0.2s"
   };
 
   const sectionTitleStyle = {
-    color: "#fff",
-    fontSize: "1.1rem",
+    color: "#0f172a",
+    fontSize: "1rem",
     fontWeight: 800,
-    marginBottom: "20px",
-    position: "relative",
-    display: "inline-block"
-  };
-
-  const underlineStyle = {
-    position: "absolute",
-    bottom: "-8px",
-    ...underlineSide,
-    width: "40%",
-    height: "2px",
-    background: "var(--primary-color, #3b82f6)",
-    borderRadius: "2px"
-  };
-
-  const setHover = (event, color) => {
-    event.currentTarget.style.color = color;
+    marginBottom: "16px"
   };
 
   return (
@@ -129,94 +102,117 @@ export default function Footer({ siteName = "Al-Wefaq Server", showServices = fa
       dir={meta.dir}
       data-i18n-skip
       style={{
-        background: "rgba(10, 15, 30, 0.95)",
-        borderTop: "1px solid rgba(255, 255, 255, 0.05)",
-        padding: "60px 20px 30px",
+        background: "#ffffff",
+        borderTop: "1px solid #e2e8f0",
+        padding: "50px 20px 24px",
         marginTop: "auto",
         position: "relative",
-        zIndex: 10,
-        backdropFilter: "blur(20px)"
+        zIndex: 10
       }}
     >
-      <div style={{ maxWidth: "1200px", margin: "0 auto", display: "flex", flexDirection: "column", gap: "40px" }}>
-        
-        {/* ── TOP COLUMNS GRID ── */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "40px" }}>
+      <div style={{ maxWidth: "1200px", margin: "0 auto", display: "flex", flexDirection: "column", gap: "36px" }}>
+
+        {/* Top 4 Columns */}
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+          gap: "32px",
+          alignItems: "flex-start"
+        }}>
+          {/* Column 1: Brand Info */}
           <div>
-            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "20px" }}>
-              <img src="/logo.jpg" alt={siteName} style={{ width: "40px", height: "40px", borderRadius: "8px", objectFit: "contain", flexShrink: 0, filter: "drop-shadow(0 2px 5px rgba(234,179,8,0.2))" }} />
-              <h3 style={{ margin: 0, fontSize: "1.4rem", fontWeight: 900, background: "linear-gradient(135deg, #fff 0%, #a8b2d1 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-                {siteName}
+            <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "14px" }}>
+              <div style={{
+                width: 42,
+                height: 42,
+                borderRadius: "10px",
+                background: "#ffffff",
+                border: "1px solid #e2e8f0",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                overflow: "hidden",
+                padding: "2px",
+                boxShadow: "0 3px 10px rgba(2, 132, 199, 0.15)"
+              }}>
+                <img src="/logo.png" alt="SK-unlocker" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+              </div>
+              <h3 style={{ margin: 0, fontSize: "1.25rem", fontWeight: 900, color: "#0f172a" }}>
+                SK-unlocker
               </h3>
             </div>
-            <p style={{ color: "#94a3b8", fontSize: "0.95rem", lineHeight: "1.7", margin: 0 }}>
-              {t("footerAbout") || "المنصة الرائدة لخدمات السيرفرات، أدوات السوفت وير، وتفعيل الباقات بأسعار تنافسية. نقدم خدمات احترافية لدعم أعمالك التقنية."}
+            <p style={{ color: "#64748b", fontSize: "0.86rem", lineHeight: "1.7", margin: 0 }}>
+              أقوى منصة للشرق الأوسط لخدمات السيرفرات، الدعم والعميل، مع أفضل الأسعار والدعم الفني المباشر، نقدم الحلول المتكاملة بجودة وأمان للعملاء.
             </p>
           </div>
 
+          {/* Column 2: خدماتنا */}
           <div>
             <h4 style={sectionTitleStyle}>
-              {t("quickLinks") || "روابط سريعة"}
-              <div style={underlineStyle}></div>
+              خدماتنا
             </h4>
-            <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "12px" }}>
-              <li><Link href="/" style={linkStyle} onMouseEnter={(e) => setHover(e, "#fff")} onMouseLeave={(e) => setHover(e, "#94a3b8")}>{t("home") || "الرئيسية"}</Link></li>
-              {showServices && (
-                <li><Link href="/services" style={linkStyle} onMouseEnter={(e) => setHover(e, "#fff")} onMouseLeave={(e) => setHover(e, "#94a3b8")}>{t("services") || "الخدمات"}</Link></li>
-              )}
-              <li><Link href="/wallet" style={linkStyle} onMouseEnter={(e) => setHover(e, "#fff")} onMouseLeave={(e) => setHover(e, "#94a3b8")}>{t("chargeBalance") || "شحن رصيدي"}</Link></li>
-              <li><Link href="/tickets/new" style={linkStyle} onMouseEnter={(e) => setHover(e, "#fff")} onMouseLeave={(e) => setHover(e, "#94a3b8")}>تذاكر الدعم الفني 🤖</Link></li>
+            <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "10px" }}>
+              <li><Link href="/" style={linkStyle}>الرئيسية</Link></li>
+              <li><Link href="/services" style={linkStyle}>الخدمات</Link></li>
+              <li><Link href="/resellerpricing/server" style={linkStyle}>حساب التخفيض</Link></li>
+              <li><Link href="/tickets/new" style={linkStyle}>مركز الدعم الفني</Link></li>
             </ul>
           </div>
 
+          {/* Column 3: روابط سريعة */}
           <div>
             <h4 style={sectionTitleStyle}>
-              {t("policiesTerms") || "السياسات والشروط"}
-              <div style={underlineStyle}></div>
+              روابط سريعة
             </h4>
-            <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "12px" }}>
-              <li><Link href="/terms" style={linkStyle} onMouseEnter={(e) => setHover(e, "#fff")} onMouseLeave={(e) => setHover(e, "#94a3b8")}>{t("terms") || "الشروط"}</Link></li>
-              <li><Link href="/privacy" style={linkStyle} onMouseEnter={(e) => setHover(e, "#fff")} onMouseLeave={(e) => setHover(e, "#94a3b8")}>{t("privacy") || "سياسة الخصوصية"}</Link></li>
-              <li><Link href="/terms#refund-policy" style={linkStyle} onMouseEnter={(e) => setHover(e, "#fff")} onMouseLeave={(e) => setHover(e, "#94a3b8")}>{t("refundPolicy") || "سياسة الاسترجاع"}</Link></li>
+            <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "10px" }}>
+              <li><Link href="/terms" style={linkStyle}>الشروط</Link></li>
+              <li><Link href="/privacy" style={linkStyle}>سياسة الخصوصية</Link></li>
+              <li><Link href="/terms#refund-policy" style={linkStyle}>سياسة الاسترجاع</Link></li>
             </ul>
           </div>
 
+          {/* Column 4: تواصل معنا */}
           <div>
             <h4 style={sectionTitleStyle}>
-              {t("contactUs") || "تواصل معنا"}
-              <div style={underlineStyle}></div>
+              تواصل معنا
             </h4>
-            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-              <a href="https://wa.me/249118100809" target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center", gap: "10px", color: "#34d399", fontSize: "0.95rem", textDecoration: "none", transition: "opacity 0.2s" }}>
-                <span style={{ background: "rgba(34, 197, 94, 0.15)", padding: "6px 10px", borderRadius: "8px" }}>💬</span>
-                <bdi dir="ltr" style={{ fontWeight: "bold" }}>+249 11 810 0809</bdi>
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+              <a href="https://wa.me/249118100889" target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center", gap: "8px", color: "#16a34a", fontSize: "0.88rem", textDecoration: "none" }}>
+                <span style={{ background: "#dcfce7", padding: "4px 8px", borderRadius: "6px", display: "inline-flex", alignItems: "center" }}>
+                  <Phone size={13} color="#16a34a" />
+                </span>
+                <bdi dir="ltr" style={{ fontWeight: 700 }}>+249 11 810 0889</bdi>
               </a>
-              <a href="https://wa.me/249927922237" target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center", gap: "10px", color: "#34d399", fontSize: "0.95rem", textDecoration: "none", transition: "opacity 0.2s" }}>
-                <span style={{ background: "rgba(34, 197, 94, 0.15)", padding: "6px 10px", borderRadius: "8px" }}>💬</span>
-                <bdi dir="ltr" style={{ fontWeight: "bold" }}>+249 92 792 2237</bdi>
+              <a href="https://wa.me/249927922237" target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center", gap: "8px", color: "#16a34a", fontSize: "0.88rem", textDecoration: "none" }}>
+                <span style={{ background: "#dcfce7", padding: "4px 8px", borderRadius: "6px", display: "inline-flex", alignItems: "center" }}>
+                  <Phone size={13} color="#16a34a" />
+                </span>
+                <bdi dir="ltr" style={{ fontWeight: 700 }}>+249 92 792 2237</bdi>
               </a>
-              <div style={{ display: "flex", alignItems: "center", gap: "10px", color: "#94a3b8", fontSize: "0.95rem", marginTop: "4px" }}>
-                <span style={{ background: "rgba(255,255,255,0.05)", padding: "6px 10px", borderRadius: "8px" }}>✉️</span>
-                <span dir="ltr">Al-Wefaq Server@gmail.com</span>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#64748b", fontSize: "0.86rem", marginTop: "2px" }}>
+                <span style={{ background: "#f1f5f9", padding: "4px 8px", borderRadius: "6px", display: "inline-flex", alignItems: "center" }}>
+                  <Mail size={13} color="#64748b" />
+                </span>
+                <span dir="ltr">support@sk-unlocker.com</span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* ── PAYMENT METHODS ICONS SHOWCASE (ONLY THE 6 SELECTED METHODS) ── */}
+        {/* Payment Methods Bar */}
         <div style={{
-          borderTop: "1px solid rgba(255, 255, 255, 0.08)",
-          paddingTop: "32px",
+          borderTop: "1px solid #e2e8f0",
+          paddingTop: "24px",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          gap: "18px"
+          gap: "16px"
         }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#e2e8f0", fontSize: "0.95rem", fontWeight: 700, flexWrap: "wrap", justifyContent: "center" }}>
-            <span>💳</span>
-            <span>طرق الدفع والشحن المعتمدة | Supported Payment Methods</span>
-            <span style={{ color: "#10b981", fontSize: "0.8rem", background: "rgba(16, 185, 129, 0.12)", border: "1px solid rgba(16, 185, 129, 0.3)", padding: "2px 8px", borderRadius: "6px", marginLeft: "6px" }}>
-              🔒 آمن ومشفر 100%
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#0f172a", fontSize: "0.9rem", fontWeight: 800, flexWrap: "wrap", justifyContent: "center" }}>
+            <span>Supported Payment Methods | طرق الدفع التي ندعمها</span>
+            <span style={{ color: "#16a34a", fontSize: "0.76rem", background: "#dcfce7", border: "1px solid #86efac", padding: "2px 8px", borderRadius: "6px", marginRight: "6px", display: "inline-flex", alignItems: "center", gap: "4px" }}>
+              <ShieldCheck size={12} color="#16a34a" />
+              <span>أون لاين 100%</span>
             </span>
           </div>
 
@@ -225,7 +221,7 @@ export default function Footer({ siteName = "Al-Wefaq Server", showServices = fa
             flexWrap: "wrap",
             justifyContent: "center",
             alignItems: "center",
-            gap: "12px",
+            gap: "10px",
             maxWidth: "1000px"
           }}>
             {paymentMethodsList.map((pm, idx) => (
@@ -235,45 +231,30 @@ export default function Footer({ siteName = "Al-Wefaq Server", showServices = fa
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  gap: "10px",
-                  padding: "8px 18px",
-                  borderRadius: "14px",
+                  gap: "8px",
+                  padding: "7px 16px",
+                  borderRadius: "20px",
                   background: pm.bg,
-                  border: `1px solid ${pm.border}`,
-                  color: "#f8fafc",
-                  fontSize: "0.9rem",
-                  fontWeight: 700,
-                  transition: "all 0.25s ease",
-                  cursor: "default",
-                  boxShadow: "0 3px 10px rgba(0, 0, 0, 0.18)"
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "translateY(-3px)";
-                  e.currentTarget.style.borderColor = pm.color;
-                  e.currentTarget.style.boxShadow = `0 8px 20px ${pm.bg}`;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "translateY(0)";
-                  e.currentTarget.style.borderColor = pm.border;
-                  e.currentTarget.style.boxShadow = "0 3px 10px rgba(0, 0, 0, 0.18)";
+                  color: pm.color,
+                  fontSize: "0.82rem",
+                  fontWeight: 800,
+                  boxShadow: "0 2px 6px rgba(0, 0, 0, 0.12)"
                 }}
               >
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  {pm.icon}
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", lineHeight: 1.25 }}>
-                  <span style={{ color: "#ffffff", fontSize: "0.92rem", fontWeight: 800 }}>{pm.name}</span>
-                  <span style={{ color: "rgba(255, 255, 255, 0.7)", fontSize: "0.76rem", fontWeight: 600 }}>{pm.nameAr}</span>
+                {pm.icon}
+                <div style={{ display: "flex", flexDirection: "column", lineHeight: 1.15 }}>
+                  <span style={{ fontSize: "0.82rem", fontWeight: 800 }}>{pm.name}</span>
+                  <span style={{ fontSize: "0.68rem", opacity: 0.9 }}>{pm.nameAr}</span>
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* ── COPYRIGHT ROW ── */}
-        <div style={{ borderTop: "1px solid rgba(255, 255, 255, 0.05)", paddingTop: "25px", display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
-          <p style={{ color: "#64748b", fontSize: "0.85rem", margin: 0, textAlign: "center" }}>
-            {t("rightsReserved", { year: new Date().getFullYear(), site: siteName }) || `جميع الحقوق محفوظة © ${new Date().getFullYear()} - ${siteName}`}
+        {/* Copyright */}
+        <div style={{ borderTop: "1px solid #e2e8f0", paddingTop: "18px", textAlign: "center" }}>
+          <p style={{ color: "#64748b", fontSize: "0.82rem", margin: 0 }}>
+            جميع الحقوق محفوظة © 2025 SK-unlocker
           </p>
         </div>
       </div>

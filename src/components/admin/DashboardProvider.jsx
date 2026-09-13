@@ -427,7 +427,7 @@ export default function DashboardProvider({ children }) {
     if (!settingsRes.ok) return;
 
     const settingsData = await settingsRes.json();
-    setSiteName(settingsData.site_name || "Al-Wefaq Server");
+    setSiteName(settingsData.site_name || "SK-unlocker");
     setHomeHeroTitle(settingsData.home_hero_title || "جميع الخدمات");
     setHomeHeroSubtitle(settingsData.home_hero_subtitle || "اختر الخدمة التي تناسب احتياجك من بين مجموعة واسعة من الخدمات الاحترافية الموثوقة");
     setSiteLogo(settingsData.site_logo || "default");

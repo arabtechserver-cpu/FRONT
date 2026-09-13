@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { API_BASE_URL } from "@/config";
+import { Package } from "lucide-react";
 
 export default function OrdersHistory() {
   const router = useRouter();
@@ -147,7 +148,7 @@ export default function OrdersHistory() {
 
   const getSpeedUpWhatsAppUrl = (phoneNum, orderObj, customerName = "") => {
     const custName = customerName || orderObj.customer_username || (orderObj.phone ? `زائر (${orderObj.phone})` : "عميل");
-    const text = `🟢 *طلب تسريع خدمة (الوفاق)* ⚡\n\n` +
+    const text = `🟢 *طلب تسريع خدمة (SK-unlocker)* ⚡\n\n` +
       `▫️ *رقم الطلب:* #${orderObj.id}\n` +
       `▫️ *اسم العميل:* ${custName}\n` +
       `▫️ *الخدمة:* ${orderObj.service_name || "خدمة"}\n` +
@@ -188,7 +189,7 @@ export default function OrdersHistory() {
       ctx.strokeStyle = "#26364d"; ctx.beginPath(); ctx.moveTo(55, y + 25); ctx.lineTo(width - 55, y + 25); ctx.stroke();
     });
     if (order.code) { ctx.fillStyle = "#10b981"; ctx.font = "bold 26px Arial"; ctx.fillText(`النتيجة: ${order.code}`, width - 70, 700); }
-    ctx.fillStyle = "#64748b"; ctx.font = "20px Arial"; ctx.fillText("سيرفر الوفاق", width - 70, 840);
+    ctx.fillStyle = "#64748b"; ctx.font = "20px Arial"; ctx.fillText("SK-unlocker", width - 70, 840);
     const link = document.createElement("a");
     link.download = `order-${order.id}.png`;
     link.href = canvas.toDataURL("image/png");
@@ -410,7 +411,7 @@ export default function OrdersHistory() {
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "10px" }}>
                         <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
                           <div style={{ width: "40px", height: "40px", background: "var(--primary-glow)", borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                            <img src="/services-icon.png" alt="" style={{ width: "24px", height: "24px", objectFit: "contain", filter: "invert(1)" }} onError={(e) => e.target.style.display="none"} />
+                            <Package size={20} color="var(--primary-color)" />
                           </div>
                           <div>
                             <h4 style={{ margin: 0, fontSize: "1rem", fontWeight: "bold", color: "var(--text-main)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
@@ -534,7 +535,7 @@ export default function OrdersHistory() {
         
         {/* Title Section */}
         <div style={{ textAlign: "center", marginBottom: "35px" }}>
-          <h2 style={{ fontSize: "1.8rem", fontWeight: 900, margin: "0 0 10px 0", color: "var(--text-main)", letterSpacing: "-0.5px" }}>لماذا تختار <span style={{ color: "var(--brand-blue)" }}>الوفاق</span>؟</h2>
+          <h2 style={{ fontSize: "1.8rem", fontWeight: 900, margin: "0 0 10px 0", color: "var(--text-main)", letterSpacing: "-0.5px" }}>لماذا تختار <span style={{ color: "var(--brand-blue)" }}>SK-unlocker</span>؟</h2>
           <p style={{ color: "var(--text-muted)", fontSize: "0.95rem", maxWidth: "400px", margin: "0 auto", lineHeight: "1.6" }}>نقدم لك أفضل الخدمات التقنية مع ضمان الجودة، الأمان، والسرعة الفائقة.</p>
         </div>
 
@@ -595,7 +596,7 @@ export default function OrdersHistory() {
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border-glass)", paddingBottom: "15px" }}>
               <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
                 <div style={{ width: "45px", height: "45px", background: "var(--primary-glow)", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <img src="/services-icon.png" alt="" style={{ width: "24px", height: "24px", objectFit: "contain", filter: "invert(1)" }} onError={(e) => e.target.style.display="none"} />
+                  <Package size={22} color="var(--primary-color)" />
                 </div>
                 <div>
                   <h3 style={{ margin: 0, fontSize: "1.2rem", fontWeight: "900", color: "var(--text-main)" }}>تفاصيل الطلب</h3>

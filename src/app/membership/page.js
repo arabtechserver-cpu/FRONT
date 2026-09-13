@@ -12,7 +12,7 @@ const getSiteName = cache(async function getSiteName() {
   } catch (err) {
     console.error("Error fetching site name in metadata:", err);
   }
-  return "سيرفر الوفاق - Al-Wefaq Server";
+  return "SK-unlocker";
 });
 
 export async function generateMetadata() {

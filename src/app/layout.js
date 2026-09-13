@@ -27,9 +27,9 @@ const resolveMediaUrl = (value, fallback) => {
 };
 
 const getSiteSettings = cache(async () => {
-  let siteName = "سيرفر الوفاق - Al-Wefaq Server";
+  let siteName = "SK-unlocker";
   let siteLogo = "/logo.png";
-  let siteFavicon = "/favicon.ico";
+  let siteFavicon = "/favicon.png";
 
   try {
     const res = await fetchWithTimeout(`${API_BASE_URL}/api/settings/metadata`, { next: { revalidate: 300 } });
@@ -45,17 +45,17 @@ const getSiteSettings = cache(async () => {
     // Keep metadata rendering resilient during build or temporary API downtime.
   }
   return {
-    siteName: siteName || "سيرفر الوفاق - Al-Wefaq Server",
+    siteName: siteName || "SK-unlocker",
     siteLogo: resolveMediaUrl(siteLogo, "/logo.png"),
-    siteFavicon: resolveMediaUrl(siteFavicon, "/favicon.ico"),
+    siteFavicon: resolveMediaUrl(siteFavicon, "/favicon.png"),
   };
 });
 
 export async function generateMetadata() {
   const { siteName, siteFavicon, siteLogo } = await getSiteSettings();
-  const siteUrl = SITE_URL || "https://al-wefaq.center";
-  const title = siteName || "سيرفر الوفاق - Al-Wefaq Server";
-  const description = "سيرفر الوفاق (Al-Wefaq Server) — المنصة الأولى لخدمات السوفت وير، تفعيل البرامج، أدوات GSM، وخدمات السيرفر وIMEI بأسعار مناسبة وتسليم فوري.";
+  const siteUrl = SITE_URL || "https://sk-unlocker.com";
+  const title = siteName || "SK-unlocker";
+  const description = "SK-unlocker — المنصة الأولى لخدمات السوفت وير، تفعيل البرامج، أدوات GSM، وخدمات السيرفر وIMEI بأسعار مناسبة وتسليم فوري.";
 
   return {
     title: {
@@ -64,12 +64,11 @@ export async function generateMetadata() {
     },
     description,
     keywords: [
-      "سيرفر الوفاق",
-      "Al-Wefaq Server",
-      "سيرفر الوفاق - Al-Wefaq Server",
-      "Al-Wefaq",
-      "Alwefaq",
-      "سيرفر الوفاق لخدمات السوفت وير",
+      "SK-unlocker",
+      "SK-UNLOCKER",
+      "sk-unlocker",
+      "SK unlocker",
+      "سيرفر SK-unlocker لخدمات السوفت وير",
       "تفعيل برامج",
       "خدمات سيرفر",
       "فك شفرات",
@@ -85,20 +84,20 @@ export async function generateMetadata() {
       title,
       description,
       url: siteUrl,
-      siteName: "سيرفر الوفاق - Al-Wefaq Server",
+      siteName: "SK-unlocker",
       locale: "ar_SA",
       type: "website",
       images: [
         {
           url: "/og-image.png",
-          width: 1200,
-          height: 630,
-          alt: "سيرفر الوفاق - Al-Wefaq Server",
+          width: 1024,
+          height: 1024,
+          alt: "SK-unlocker",
         }
       ],
     },
     twitter: {
-      card: "summary_large_image",
+      card: "summary",
       title,
       description,
       images: ["/og-image.png"],
@@ -122,12 +121,12 @@ export default async function RootLayout({ children }) {
     "@context": "https://schema.org",
     "@type": "WebSite",
     "name": siteName,
-    "url": SITE_URL || "https://al-wefaq.center",
+    "url": SITE_URL || "https://sk-unlocker.com",
     "publisher": {
       "@type": "Organization",
       "name": siteName,
-      "url": SITE_URL || "https://al-wefaq.center",
-      "logo": siteLogoUrl,
+      "url": SITE_URL || "https://sk-unlocker.com",
+      "logo": siteLogoUrl || "/logo.png"
     },
     "mainEntity": [
       {
@@ -147,7 +146,7 @@ export default async function RootLayout({ children }) {
   };
 
   return (
-    <html lang="ar" dir="rtl" data-theme="dark" suppressHydrationWarning>
+    <html lang="ar" dir="rtl" data-theme="light" suppressHydrationWarning>
       <head>
         <meta name="google-site-verification" content="98MXmfIHXauUjaZPs2tF1w439NPxK2pIvWr2wRQe0JI" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -169,10 +168,10 @@ export default async function RootLayout({ children }) {
             __html: `
               (function() {
                 try {
-                  var savedTheme = localStorage.getItem('theme') || 'dark';
+                  var savedTheme = localStorage.getItem('theme') || 'light';
                   document.documentElement.setAttribute('data-theme', savedTheme);
-                  var savedLanguage = localStorage.getItem('Al-Wefaq_user_language') || 'ar';
-                  if (savedLanguage === 'zh-CN') savedLanguage = 'zh';
+                  var savedLanguage = localStorage.getItem('sk_unlocker_user_language') || 'ar';
+                  if (savedLanguage !== 'en' && savedLanguage !== 'ar') savedLanguage = 'ar';
                   var isRtl = savedLanguage === 'ar';
                   document.documentElement.lang = savedLanguage;
                   document.documentElement.dir = isRtl ? 'rtl' : 'ltr';

@@ -5,9 +5,9 @@ import Link from "next/link";
 import { API_BASE_URL } from "@/config";
 
 const DEFAULT_SLIDES = [
-  { title: "قسم خدمات سيرفر والأدوات", highlight: "Server & Tools", desc: "كافة خدمات السيرفر، تفعيل الأدوات، البوكسات الرقمية والدعم الفني.", badge: "القسم الأساسي", color: "#10b981", icon: "🛠️", link: "/category/14" },
-  { title: "أحدث خدمات وأكواد APPLE", highlight: "Apple Services", desc: "تفعيل اشتراكات آبل، بطاقات الهدايا، وحلول الحسابات الرسمية.", badge: "مميز وحصري", color: "#a855f7", icon: "🍏", link: "/category/13" },
-  { title: "خدمات USDT والمحفظة", highlight: "Zoom USDT", desc: "راجع السعر وطريقة الدفع المتاحة بوضوح قبل تأكيد الطلب.", badge: "خدمات المحفظة", color: "#00b4d8", icon: "🪙", link: "/wallet" },
+  { title: "قسم خدمات سيرفر والأدوات", highlight: "Server & Tools", desc: "كافة خدمات السيرفر، تفعيل الأدوات، البوكسات الرقمية والدعم الفني.", badge: "القسم الأساسي", color: "#10b981", icon: null, link: "/category/14" },
+  { title: "أحدث خدمات وأكواد APPLE", highlight: "Apple Services", desc: "تفعيل اشتراكات آبل، بطاقات الهدايا، وحلول الحسابات الرسمية.", badge: "مميز وحصري", color: "#a855f7", icon: null, link: "/category/13" },
+  { title: "خدمات USDT والمحفظة", highlight: "Zoom USDT", desc: "راجع السعر وطريقة الدفع المتاحة بوضوح قبل تأكيد الطلب.", badge: "خدمات المحفظة", color: "#00b4d8", icon: null, link: "/wallet" },
 ];
 
 export default function HeroSlider({ customSlides = [] }) {
@@ -27,7 +27,7 @@ export default function HeroSlider({ customSlides = [] }) {
     } else {
       // Try to load cached banners
       try {
-        const cachedBanners = localStorage.getItem("Al-Wefaq_cached_banners");
+        const cachedBanners = localStorage.getItem("sk_unlocker_cached_banners");
         if (cachedBanners) {
           const parsed = JSON.parse(cachedBanners);
           if (Array.isArray(parsed) && parsed.length > 0) {
@@ -43,7 +43,7 @@ export default function HeroSlider({ customSlides = [] }) {
           if (data && Array.isArray(data) && data.length > 0) {
             setSlides(data);
             try {
-              localStorage.setItem("Al-Wefaq_cached_banners", JSON.stringify(data));
+              localStorage.setItem("sk_unlocker_cached_banners", JSON.stringify(data));
             } catch(e) {}
           }
         })
@@ -60,7 +60,7 @@ export default function HeroSlider({ customSlides = [] }) {
   }, [slides.length]);
 
   return (
-    <section className="hero-section" style={{ position: "relative", minHeight: "450px", borderRadius: "16px", overflow: "hidden", marginBottom: "15px", padding: 0 }}>
+    <section className="hero-section" style={{ position: "relative", minHeight: "320px", maxHeight: "380px", borderRadius: "16px", overflow: "hidden", marginBottom: "0", padding: 0 }}>
       <div className="hero-slides-area">
         {slides.map((slide, idx) => {
           const isImage = slide.icon && (slide.icon.startsWith("data:") || slide.icon.startsWith("http") || slide.icon.startsWith("/uploads"));
@@ -86,17 +86,7 @@ export default function HeroSlider({ customSlides = [] }) {
                 zIndex: currentSlide === idx ? 2 : 1
               }}
             >
-              {isImage && (
-                <>
-                  <img 
-                    src={imgSrc} 
-                    alt={slide.title} 
-                    className="banner-bg-img" 
-                    loading="eager"
-                    style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: -2 }}
-                  />
-                </>
-              )}
+
 
               <div className="banner-info" style={{ flex: "1 1 50%", minWidth: "300px", zIndex: 3 }}>
                 {slide.badge && <span className="banner-badge" style={{ display: "inline-block", padding: "6px 12px", borderRadius: "30px", fontSize: "0.85rem", fontWeight: "bold", marginBottom: "15px", borderColor: accentColor, color: accentColor, background: `${accentColor}22`, border: `1px solid ${accentColor}` }}>{slide.badge}</span>}

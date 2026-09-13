@@ -98,7 +98,7 @@ export default function WalletPage() {
     let cachedSettings = globalSettingsCache;
     if (!cachedSettings) {
       try {
-        cachedSettings = JSON.parse(localStorage.getItem("Al-Wefaq_cached_settings") || "null");
+        cachedSettings = JSON.parse(localStorage.getItem("sk_unlocker_cached_settings") || "null");
       } catch {
         cachedSettings = null;
       }
@@ -125,7 +125,7 @@ export default function WalletPage() {
           if (data) {
             data = normalizeWalletSettings(data);
             globalSettingsCache = data;
-            try { localStorage.setItem("Al-Wefaq_cached_settings", JSON.stringify(data)); } catch {}
+            try { localStorage.setItem("sk_unlocker_cached_settings", JSON.stringify(data)); } catch {}
             if (data.payment_methods) {
               setPaymentMethods(data.payment_methods);
             }

@@ -97,7 +97,7 @@ export default function AiChatWidget() {
         headers['Authorization'] = `Bearer ${token}`;
       }
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://api.al-wefaq.center'}/api/ai/chat`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://api.sk-unlocker.com'}/api/ai/chat`, {
         method: 'POST',
         headers,
         body: JSON.stringify({
@@ -155,7 +155,7 @@ export default function AiChatWidget() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <div style={{ fontSize: '1.5rem' }}>🤖</div>
               <div>
-                <h3 className="ai-chat-title" style={{ margin: 0, fontSize: '1.1rem', color: '#fff' }}>سيرفر الوفاق AI — الدعم الذكي</h3>
+                <h3 className="ai-chat-title" style={{ margin: 0, fontSize: '1.1rem', color: '#fff' }}>SK-unlocker AI — الدعم الذكي</h3>
                 <span style={{ fontSize: '0.8rem', color: '#00b4d8' }}>متصل • يرسل الشكاوى لتيليجرام</span>
               </div>
             </div>
@@ -294,8 +294,8 @@ export default function AiChatWidget() {
       {!isOpen && <button
         className="ai-chat-toggle"
         onClick={() => setIsOpen(true)}
-        aria-label="فتح سيرفر الوفاق AI / Open Al-Wefaq AI"
-        title="سيرفر الوفاق AI"
+        aria-label="فتح SK-unlocker AI / Open SK-unlocker AI"
+        title="SK-unlocker AI"
         style={{
            width: '68px',
            height: '68px',
@@ -314,7 +314,7 @@ export default function AiChatWidget() {
           transform: 'scale(1)'
         }}
       >
-        <span className="arab-ai-logo">الوفاق AI</span>
+        <span className="arab-ai-logo">SK-unlocker AI</span>
       </button>}
       
       <style>{`

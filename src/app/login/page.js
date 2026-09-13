@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { API_BASE_URL, TURNSTILE_SITE_KEY } from "@/config";
 import { Turnstile } from '@marsidev/react-turnstile';
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Shield, User } from "lucide-react";
 
 export default function CustomerLogin() {
   const [activeTab, setActiveTab] = useState("login"); // login, register
@@ -18,7 +18,7 @@ export default function CustomerLogin() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [settings, setSettings] = useState({ site_name: "سيرفر الوفاق", site_logo: "/logo.jpg" });
+  const [settings, setSettings] = useState({ site_name: "SK-unlocker", site_logo: "/logo.png" });
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [customer, setCustomer] = useState(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
@@ -46,6 +46,12 @@ export default function CustomerLogin() {
 
   useEffect(() => {
     setIsMounted(true);
+    if (typeof window !== "undefined") {
+      const p = new URLSearchParams(window.location.search);
+      if (p.get("mode") === "register" || p.get("tab") === "register") {
+        setActiveTab("register");
+      }
+    }
   }, []);
 
   // Live anti-fake Gmail check on registration email change
@@ -504,11 +510,9 @@ export default function CustomerLogin() {
           {/* Header */}
           <div style={{ textAlign: "center" }}>
             <div style={{ display: "inline-flex", justifyContent: "center", marginBottom: "10px" }}>
-              <img
-                src="/icons/icon-128.png"
-                alt="سيرفر الوفاق online"
-                style={{ width: "64px", height: "64px", borderRadius: "16px", objectFit: "cover" }}
-              />
+              <div style={{ width: "64px", height: "64px", borderRadius: "16px", background: "linear-gradient(135deg, #0284c7, #2563eb)", display: "flex", alignItems: "center", justifyContent: "center", color: "#ffffff", boxShadow: "0 8px 20px rgba(2,132,199,0.3)" }}>
+                <User size={32} />
+              </div>
             </div>
             <h2 style={{ fontWeight: 900 }}>الملف الشخصي</h2>
             <p style={{ color: "var(--text-muted)", fontSize: "0.82rem", marginTop: "4px" }}>بيانات حسابك الشخصي والتحكم بالرصيد</p>
@@ -880,11 +884,9 @@ export default function CustomerLogin() {
         {/* Header */}
         <div style={{ textAlign: "center" }}>
           <div className="animate-line line-1" style={{ display: "inline-flex", justifyContent: "center", marginBottom: "10px" }}>
-            <img 
-              src="/logo.jpg" 
-              alt={settings.site_name || "سيرفر الوفاق online"} 
-              style={{ width: "54px", height: "54px", borderRadius: "12px", objectFit: "contain", flexShrink: 0, filter: "drop-shadow(0 2px 5px rgba(234,179,8,0.2))" }} 
-            />
+            <div style={{ width: "68px", height: "68px", borderRadius: "16px", background: "#ffffff", border: "1.5px solid #0284c7", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", padding: "4px", boxShadow: "0 8px 20px rgba(2,132,199,0.25)" }}>
+              <img src="/logo.png" alt={settings.site_name || "SK-unlocker"} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+            </div>
           </div>
           <h2 className="animate-line line-2" style={{ fontWeight: 900, margin: 0 }}>حساب {settings.site_name}</h2>
           <p className="animate-line line-3" style={{ color: "var(--text-muted)", fontSize: "0.82rem", marginTop: "4px" }}>تابع مشترياتك واحصل على خدماتك بسرعة فائقة</p>
@@ -939,7 +941,7 @@ export default function CustomerLogin() {
                   📢 <strong>لم تستلم الكود على تيليجرام؟</strong><br />
                   تأكد من فتح البوت والضغط على Start وإرسال اسم حسابك.<br />
                   <a 
-                    href="https://t.me/AlWefaqStore_bot" 
+                    href="https://t.me/sk_unlocker_bot" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     style={{ display: "inline-block", marginTop: "8px", background: "#0088cc", color: "var(--text-main)", padding: "6px 12px", borderRadius: "8px", textDecoration: "none", fontWeight: "bold", fontSize: "0.75rem" }}

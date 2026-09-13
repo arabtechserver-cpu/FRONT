@@ -1,4 +1,4 @@
-let apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "https://api.al-wefaq.center";
+let apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "https://api.sk-unlocker.com";
 
 if (typeof window !== "undefined") {
   // Browser requests stay on the storefront origin and are proxied by Next.js.
@@ -8,7 +8,7 @@ if (typeof window !== "undefined") {
 }
 
 export const API_BASE_URL = apiBaseUrl;
-export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://al-wefaq.center";
+export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://sk-unlocker.com";
 export const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "0x4AAAAAAErjWz_SzYtE3fce";
 
 /**

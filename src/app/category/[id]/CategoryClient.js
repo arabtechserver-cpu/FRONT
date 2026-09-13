@@ -4,6 +4,7 @@ import { useState, useEffect, use } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { API_BASE_URL, fetchWithTimeout } from "@/config";
+import { Zap, Folder } from "lucide-react";
 
 export default function CategoryServices({ params }) {
   // Unwrap params using React.use() to comply with Next.js 15+ specifications
@@ -221,32 +222,7 @@ export default function CategoryServices({ params }) {
   };
 
   const getServiceIcon = (image, name = "") => {
-    if (!image) return getFallbackEmoji(name, image);
-    if (image.startsWith("data:image") || image.startsWith("http") || image.includes("uploads")) {
-      const src = image.startsWith("http") || image.startsWith("data:") 
-        ? image 
-        : (image.startsWith("/") ? `${API_BASE_URL}${image}` : `${API_BASE_URL}/${image}`);
-      return <img 
-        src={src} 
-        alt="Service Icon" 
-        onError={(e) => {
-          e.target.style.display = 'none';
-          const parent = e.target.parentElement;
-          if (parent) {
-            parent.innerText = getFallbackEmoji(name, image);
-          }
-        }}
-        style={{ width: "45px", height: "45px", objectFit: "contain", borderRadius: "8px" }} 
-      />;
-    }
-    if (image.includes("pubg")) return "🔫";
-    if (image.includes("freefire")) return "🔥";
-    if (image.includes("bigo")) return "💬";
-    if (image.includes("vodafone")) return "📱";
-    if (image.includes("usdt")) return "🪙";
-    if (image.includes("canva")) return "🎨";
-    if (image.includes("netflix")) return "🎬";
-    return "⚡";
+    return <Zap size={22} color="#0284c7" />;
   };
 
   
@@ -320,24 +296,11 @@ export default function CategoryServices({ params }) {
                     href={`/category/${cat.id}`}
                     style={{ "--scc-ac": color, "--scc-gl": glow }}
                   >
-                    <div className="scc-side-line"></div>
-                    {imgSrc && (
-                      <div className="scc-img-ring" style={{ borderColor: color }}>
-                        <div className="scc-img-inner">
-                          <img
-                            src={imgSrc}
-                            alt={cat.name}
-                            loading="lazy"
-                            className="scc-img"
-                            onError={e => {
-                              e.target.style.display = 'none';
-                              const ring = e.target.closest('.scc-img-ring');
-                              if (ring) ring.style.display = 'none';
-                            }}
-                          />
-                        </div>
+                    <div className="scc-img-ring" style={{ borderColor: color }}>
+                      <div className="scc-img-inner" style={{ display: "flex", alignItems: "center", justifyContent: "center", background: "var(--bg-glass)" }}>
+                        <Folder size={18} color={color} />
                       </div>
-                    )}
+                    </div>
                     <div className="scc-content">
                       <span className="scc-name">{cat.name}</span>
                       <div className="scc-meta">
@@ -520,25 +483,11 @@ export default function CategoryServices({ params }) {
                             style={{ '--scc-ac': catColor, '--scc-gl': catGlow }}
                           >
                             <div className="scc-side-line"></div>
-                            {imgSrc && (
                               <div className="scc-img-ring">
-                                <div className="scc-img-inner">
-                                  <img 
-                                    src={imgSrc} 
-                                    alt={(pkg.name === "تفعيل فوري تلقائي" || !pkg.name) ? service.name : pkg.name} 
-                                    loading="lazy" 
-                                    className="scc-img" 
-                                    onError={(e) => {
-                                      e.target.style.display = 'none';
-                                      const ring = e.target.closest('.scc-img-ring');
-                                      if (ring) {
-                                        ring.style.display = 'none';
-                                      }
-                                    }}
-                                  />
+                                <div className="scc-img-inner" style={{ display: "flex", alignItems: "center", justifyContent: "center", background: "var(--bg-glass)" }}>
+                                  <Zap size={16} color={catColor} />
                                 </div>
                               </div>
-                            )}
                             <div className="scc-content">
                               <span className="scc-name">{(pkg.name === "تفعيل فوري تلقائي" || !pkg.name) ? service.name : pkg.name}</span>
                               <div className="scc-meta" style={{ display: "flex", gap: "8px", alignItems: "center", marginTop: "4.5px" }}>
@@ -565,25 +514,11 @@ export default function CategoryServices({ params }) {
                           style={{ '--scc-ac': catColor, '--scc-gl': catGlow }}
                         >
                           <div className="scc-side-line"></div>
-                          {imgSrc && (
                             <div className="scc-img-ring">
-                              <div className="scc-img-inner">
-                                <img 
-                                  src={imgSrc} 
-                                  alt={service.name} 
-                                  loading="lazy" 
-                                  className="scc-img" 
-                                  onError={(e) => {
-                                    e.target.style.display = 'none';
-                                    const ring = e.target.closest('.scc-img-ring');
-                                    if (ring) {
-                                      ring.style.display = 'none';
-                                    }
-                                  }}
-                                />
+                              <div className="scc-img-inner" style={{ display: "flex", alignItems: "center", justifyContent: "center", background: "var(--bg-glass)" }}>
+                                <Zap size={16} color={catColor} />
                               </div>
                             </div>
-                          )}
                           <div className="scc-content">
                             <span className="scc-name">{service.name}</span>
                             <div className="scc-meta" style={{ display: "flex", gap: "8px", alignItems: "center", marginTop: "4px" }}>

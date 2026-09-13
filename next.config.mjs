@@ -1,4 +1,4 @@
-const defaultApiUrl = 'https://api.al-wefaq.center';
+const defaultApiUrl = 'https://api.sk-unlocker.com';
 const apiUrl = process.env.NEXT_PUBLIC_API_URL || defaultApiUrl;
 
 const securityHeaders = [
@@ -18,9 +18,9 @@ const securityHeaders = [
       "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.paypal.com https://*.paypal.com https://challenges.cloudflare.com https://accounts.google.com https://apis.google.com https://*.google.com",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com",
       "font-src 'self' https://fonts.gstatic.com data:",
-      `img-src 'self' data: blob: ${apiUrl} https://api.al-wefaq.center https://al-wefaq.center https://* http://* https://lh3.googleusercontent.com https://ssl.gstatic.com https://*.googleusercontent.com`,
-      `media-src 'self' data: blob: ${apiUrl} https://api.al-wefaq.center https://al-wefaq.center`,
-      `connect-src 'self' ${apiUrl} https://api.al-wefaq.center https://al-wefaq.center https://www.paypal.com https://*.paypal.com https://challenges.cloudflare.com https://accounts.google.com https://*.google.com https://identitytoolkit.googleapis.com https://v6.exchangerate-api.com`,
+      `img-src 'self' data: blob: ${apiUrl} https://api.sk-unlocker.com https://sk-unlocker.com https://* http://* https://lh3.googleusercontent.com https://ssl.gstatic.com https://*.googleusercontent.com`,
+      `media-src 'self' data: blob: ${apiUrl} https://api.sk-unlocker.com https://sk-unlocker.com`,
+      `connect-src 'self' ${apiUrl} https://api.sk-unlocker.com https://sk-unlocker.com https://www.paypal.com https://*.paypal.com https://challenges.cloudflare.com https://accounts.google.com https://*.google.com https://identitytoolkit.googleapis.com https://v6.exchangerate-api.com`,
       "frame-src https://www.paypal.com https://*.paypal.com https://challenges.cloudflare.com https://accounts.google.com https://*.google.com",
       "upgrade-insecure-requests",
     ].join('; '),

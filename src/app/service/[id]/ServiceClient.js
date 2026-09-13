@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { API_BASE_URL } from "@/config";
 import { useI18n } from "@/lib/i18n";
 import { trackConversion } from "@/lib/analytics";
+import { Zap, Shield, Smartphone, Server, Radio } from "lucide-react";
 
 const isStrictImeiField = (field) => {
   const normalizedName = String(field?.name || field?.id || "").trim().toLowerCase();
@@ -564,7 +565,7 @@ export default function ServiceDetail({ params, initialService = null }) {
 
   const getSpeedUpWhatsAppUrl = (phoneNum, orderObj, customerName = "") => {
     const custName = customerName || orderObj.customer_username || (orderObj.phone ? `زائر (${orderObj.phone})` : "عميل");
-    const text = `🟢 *طلب تسريع خدمة (الوفاق)* ⚡\n\n` +
+    const text = `🟢 *طلب تسريع خدمة (SK-unlocker)* ⚡\n\n` +
       `▫️ *رقم الطلب:* #${orderObj.id}\n` +
       `▫️ *اسم العميل:* ${custName}\n` +
       `▫️ *الخدمة:* ${orderObj.service_name || "خدمة"}\n` +
@@ -739,28 +740,7 @@ export default function ServiceDetail({ params, initialService = null }) {
   };
 
   const getServiceIcon = (image, name = "") => {
-    if (!image) return getFallbackEmoji(name, image);
-    if (image.startsWith("data:image") || image.startsWith("http") || image.includes("uploads")) {
-      const src = image.startsWith("http") || image.startsWith("data:")
-        ? image
-        : (image.startsWith("/") ? `${API_BASE_URL}${image}` : `${API_BASE_URL}/${image}`);
-      return <img
-        src={src}
-        alt="Service Icon"
-        onError={(e) => {
-          setImageError(true);
-        }}
-        style={{ width: "100%", height: "100%", objectFit: "contain", borderRadius: "inherit" }}
-      />;
-    }
-    if (image.includes("pubg")) return "🔫";
-    if (image.includes("freefire")) return "🔥";
-    if (image.includes("bigo")) return "💬";
-    if (image.includes("vodafone")) return "📱";
-    if (image.includes("usdt")) return "🪙";
-    if (image.includes("canva")) return "🎨";
-    if (image.includes("netflix")) return "🎬";
-    return "⚡";
+    return <Zap size={22} color="#0284c7" />;
   };
 
   const filteredPackages = !activeService?.packages
@@ -943,22 +923,11 @@ export default function ServiceDetail({ params, initialService = null }) {
                 >
                   <div className="scc-side-line"></div>
 
-                  {hasImage && (
                     <div className="scc-img-ring" style={{ borderColor: accentColor }}>
-                      <div className="scc-img-inner">
-                        <img
-                          alt={(pkg.name === "تفعيل فوري تلقائي" || !pkg.name) ? service.name : pkg.name}
-                          className="scc-img"
-                          src={service.image.startsWith("http") || service.image.startsWith("data:")
-                            ? service.image
-                            : (service.image.startsWith("/") ? `${API_BASE_URL}${service.image}` : `${API_BASE_URL}/${service.image}`)}
-                          onError={() => {
-                            setImageError(true);
-                          }}
-                        />
+                      <div className="scc-img-inner" style={{ display: "flex", alignItems: "center", justifyContent: "center", background: "var(--bg-glass)" }}>
+                        <Zap size={18} color={accentColor} />
                       </div>
                     </div>
-                  )}
 
                   <div className="scc-content" style={{ paddingRight: hasImage ? "0px" : "4px" }}>
                     <span className="scc-name" style={{ fontSize: "1rem", fontWeight: "800" }}>{(pkg.name === "تفعيل فوري تلقائي" || !pkg.name) ? service.name : pkg.name}</span>
@@ -2087,7 +2056,7 @@ export default function ServiceDetail({ params, initialService = null }) {
 
             <h2 style={{ fontWeight: 800, fontSize: "1.8rem", color: "#ffffff", marginBottom: "10px" }}>تم استلام طلبك بنجاح!</h2>
             <p style={{ margin: "0 auto 30px auto", maxWidth: "480px", lineHeight: "1.6", color: "#94a3b8", fontSize: "0.95rem" }}>
-              شكراً لثقتك بـ <strong style={{ color: "#38bdf8" }}>الوفاق</strong>. تم استلام وتسجيل طلب الخدمة الخاص بك وهو الآن قيد التنفيذ التلقائي الفوري.
+              شكراً لثقتك بـ <strong style={{ color: "#38bdf8" }}>SK-unlocker</strong>. تم استلام وتسجيل طلب الخدمة الخاص بك وهو الآن قيد التنفيذ التلقائي الفوري.
             </p>
 
             <div className="success-order-invoice" style={{
@@ -2180,7 +2149,7 @@ export default function ServiceDetail({ params, initialService = null }) {
               }}>
                 <span style={{ color: "#94a3b8", fontSize: "0.85rem" }}>طريقة الدفع ومستلم التحويل:</span>
                 {successData.payment_method === "wallet" ? (
-                  <strong style={{ color: "#60a5fa", display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>المحفظة <img src="/icons/icon-128.png" alt="سيرفر الوفاق online " fetchPriority="high" style={{width:"40px",height:"40px",borderRadius:"8px",objectFit:"contain",flexShrink:0,filter:"drop-shadow(0 2px 5px rgba(234,179,8,0.2))"}} /> للموقع</strong>
+                  <strong style={{ color: "#60a5fa" }}>المحفظة الرقمية للموقع</strong>
                 ) : (
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px", flexWrap: "wrap", marginTop: "4px" }}>
                     <span style={{ color: "#f1f5f9", fontWeight: "bold" }}>تحويل يدوي إلى الرقم:</span>

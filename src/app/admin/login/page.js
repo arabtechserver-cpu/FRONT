@@ -12,7 +12,7 @@ export default function AdminLogin() {
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
-  const [settings, setSettings] = useState({ site_name: "سيرفر الوفاق", site_logo: "/logo.jpg" });
+  const [settings, setSettings] = useState({ site_name: "SK-unlocker", site_logo: "/logo.png" });
   
   // 2FA OTP state
   const [requireOtp, setRequireOtp] = useState(false);
@@ -120,17 +120,9 @@ export default function AdminLogin() {
         {/* Logo and title */}
         <div style={{ textAlign: "center" }}>
           <div style={{ display: "inline-flex", justifyContent: "center", marginBottom: "15px" }}>
-            {settings.site_logo && settings.site_logo !== "default" ? (
-              <img 
-                src={settings.site_logo.startsWith("http") || settings.site_logo.startsWith("data:") ? settings.site_logo : (settings.site_logo.includes("uploads") ? `${API_BASE_URL}${settings.site_logo.startsWith("/") ? "" : "/"}${settings.site_logo}` : settings.site_logo)} 
-                alt={settings.site_name} 
-                style={{ width: "60px", height: "60px", borderRadius: "12px", objectFit: "cover" }} 
-              />
-            ) : (
-              <div className="logo-circle" style={{ width: "60px", height: "60px", fontSize: "2rem", borderRadius: "12px" }}>
-                {settings.site_name ? settings.site_name.charAt(0) : "ع"}
-              </div>
-            )}
+            <div style={{ width: "68px", height: "68px", borderRadius: "16px", background: "#ffffff", border: "1.5px solid #0284c7", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", padding: "4px", boxShadow: "0 8px 20px rgba(2,132,199,0.25)" }}>
+              <img src="/logo.png" alt={settings.site_name || "SK-unlocker"} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+            </div>
           </div>
           <h2 style={{ fontWeight: 800 }}>{requireOtp ? "🔒 التحقق الثنائي (2FA)" : "بوابة المشرفين الآمنة"}</h2>
           <p style={{ color: "var(--text-muted)", fontSize: "0.85rem", marginTop: "5px" }}>

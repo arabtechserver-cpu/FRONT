@@ -25,7 +25,7 @@ export default function TicketsIndexPage() {
   const fetchMyTickets = async (authToken) => {
     setIsLoading(true);
     try {
-      const apiBase = process.env.NEXT_PUBLIC_API_URL || "https://api.al-wefaq.center";
+      const apiBase = process.env.NEXT_PUBLIC_API_URL || "https://api.sk-unlocker.com";
       const res = await fetch(`${apiBase}/api/ai/tickets`, {
         headers: { "Authorization": `Bearer ${authToken}` }
       });

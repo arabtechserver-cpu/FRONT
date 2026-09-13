@@ -21,7 +21,7 @@ export default function NewTicketPage() {
   const [messages, setMessages] = useState([
     {
       role: "assistant",
-      content: "مرحباً بك في مركز الدعم الفني الذكي لمنصة Al-Wefaq Server! 🤖\n\nأنا المساعد الذكي المباشر المربوط بإدارة السيرفر. أخبرني بمشكلتك أو رقم طلبك، وسأقوم بفحصها فوراً وإرسال الشكوى والتذكرة مباشرة إلى فريق الإدارة على تيليجرام لمتابعتها معك!"
+      content: "مرحباً بك في مركز الدعم الفني الذكي لمنصة SK-unlocker! 🤖\n\nأنا المساعد الذكي المباشر المربوط بإدارة السيرفر. أخبرني بمشكلتك أو رقم طلبك، وسأقوم بفحصها فوراً وإرسال الشكوى والتذكرة مباشرة إلى فريق الإدارة على تيليجرام لمتابعتها معك!"
     }
   ]);
   const [inputMessage, setInputMessage] = useState("");
@@ -87,7 +87,7 @@ export default function NewTicketPage() {
     setIsAiLoading(true);
 
     try {
-      const apiBase = process.env.NEXT_PUBLIC_API_URL || "https://api.al-wefaq.center";
+      const apiBase = process.env.NEXT_PUBLIC_API_URL || "https://api.sk-unlocker.com";
       const headers = { "Content-Type": "application/json" };
       if (token) {
         headers["Authorization"] = `Bearer ${token}`;
@@ -150,7 +150,7 @@ export default function NewTicketPage() {
 
     setFormSubmitting(true);
     try {
-      const apiBase = process.env.NEXT_PUBLIC_API_URL || "https://api.al-wefaq.center";
+      const apiBase = process.env.NEXT_PUBLIC_API_URL || "https://api.sk-unlocker.com";
       const headers = { "Content-Type": "application/json" };
       if (token) {
         headers["Authorization"] = `Bearer ${token}`;
@@ -207,7 +207,7 @@ export default function NewTicketPage() {
           fontWeight: "bold", marginBottom: "15px"
         }}>
           <span>🤖</span>
-          <span>Al-Wefaq AI Smart Support & Telegram Alerts</span>
+          <span>SK-unlocker AI Smart Support & Telegram Alerts</span>
         </div>
 
         <h1 style={{ fontSize: "2.4rem", fontWeight: 900, color: "var(--text-main)", marginBottom: "12px", letterSpacing: "-0.5px" }}>
@@ -332,7 +332,7 @@ export default function NewTicketPage() {
                 </div>
                 <div>
                   <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: 800, color: "var(--text-main)" }}>
-                    مساعد الدعم الفني الذكي — سيرفر الوفاق AI
+                    مساعد الدعم الفني الذكي — SK-unlocker AI
                   </h3>
                   <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "0.8rem", color: "#10b981", fontWeight: "bold" }}>
                     <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#10b981" }}></span>

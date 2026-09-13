@@ -38,7 +38,7 @@ export default function TermsPage() {
         </h1>
         
         <p style={{ color: "var(--text-muted)", fontSize: "1.1rem", maxWidth: "650px", margin: "0 auto", lineHeight: "1.6" }}>
-          نحرص في منصة <strong>سيرفر الوفاق</strong> على الشفافية التامة ووضوح العلاقة مع عملائنا. يرجى قراءة شروط الاستخدام وسياسة الاسترجاع والضمان بعناية قبل إتمام أي طلب.
+          نحرص في منصة <strong>SK-unlocker</strong> على الشفافية التامة ووضوح العلاقة مع عملائنا. يرجى قراءة شروط الاستخدام وسياسة الاسترجاع والضمان بعناية قبل إتمام أي طلب.
         </p>
 
         <div style={{ display: "flex", gap: "12px", marginTop: "20px", flexWrap: "wrap", justifyContent: "center" }}>
@@ -74,7 +74,7 @@ export default function TermsPage() {
            <div className="glass-panel" style={{ padding: "20px 24px", borderRadius: "20px", display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "15px" }}>
              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                <h3 style={{ fontSize: "1.1rem", fontWeight: 900, margin: 0, color: "var(--text-main)" }}>1. قبول الشروط</h3>
-               <p style={{ margin: 0, fontSize: "0.95rem", color: "var(--text-muted)", lineHeight: 1.6 }}>باستخدامك لمنصة الوفاق، فإنك توافق التزاماً كاملاً بجميع الشروط والأحكام والسياسات المعلنة.</p>
+               <p style={{ margin: 0, fontSize: "0.95rem", color: "var(--text-muted)", lineHeight: 1.6 }}>باستخدامك لمنصة SK-unlocker، فإنك توافق التزاماً كاملاً بجميع الشروط والأحكام والسياسات المعلنة.</p>
              </div>
              <div style={{ color: "var(--brand-cyan)", fontSize: "1.5rem" }}>📝</div>
            </div>
@@ -144,7 +144,7 @@ export default function TermsPage() {
              <div style={{ flex: 1 }}>
                <h3 style={{ fontSize: "1.1rem", fontWeight: 900, marginBottom: "8px", color: "var(--text-main)" }}>وثيقة رسمية ومعتمدة</h3>
                <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--text-muted)", lineHeight: 1.5 }}>
-                 تخضع هذه السياسات لأنظمة حماية المستهلك والمعاملات الرقمية المعتمدة لدى منصة سيرفر الوفاق.
+                 تخضع هذه السياسات لأنظمة حماية المستهلك والمعاملات الرقمية المعتمدة لدى منصة SK-unlocker.
                </p>
              </div>
              <div style={{ fontSize: "3rem", color: "#38bdf8" }}>🛡️</div>
@@ -277,7 +277,7 @@ export default function TermsPage() {
             <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "20px" }}>
               <span style={{ fontSize: "2rem" }}>🔄</span>
               <h2 style={{ fontSize: "1.5rem", fontWeight: 900, color: "#facc15", margin: 0 }}>
-                سياسة الاسترجاع الكاملة — Al-Wefaq Server
+                سياسة الاسترجاع الكاملة — SK-unlocker
               </h2>
             </div>
 

@@ -134,7 +134,7 @@ export default function AnalyticsTab({ token }) {
       <html dir="rtl" lang="ar">
       <head>
         <meta charset="utf-8">
-        <title>تقرير إنجاز الطلبات - Al-Wefaq Server</title>
+        <title>تقرير إنجاز الطلبات - SK-unlocker</title>
         <style>
           @page { size: A4; margin: 12mm; }
           body {
@@ -163,7 +163,7 @@ export default function AnalyticsTab({ token }) {
       </head>
       <body>
         <div class="header-box">
-          <div style="font-size: 18px; font-weight: 900; color: #0284c7; margin-bottom: 4px;">⚡ Al-Wefaq Server</div>
+          <div style="font-size: 18px; font-weight: 900; color: #0284c7; margin-bottom: 4px;">⚡ SK-unlocker</div>
           <h1>تقرير إنجاز ومبيعات الطلبات</h1>
           <p>تاريخ الطباعة: ${new Date().toLocaleString('ar-EG')} | الفترة المحددة: ${reportPeriod === 'today' ? 'اليوم' : reportPeriod === 'yesterday' ? 'الأمس' : reportPeriod === 'last7days' ? 'آخر 7 أيام' : 'أحدث الطلبات المنجزة'
       }</p>
@@ -200,7 +200,7 @@ export default function AnalyticsTab({ token }) {
         </table>
 
         <div class="footer-note">
-          تم استخراج هذا التقرير رسمياً من نظام إدارة Al-Wefaq Server — https://al-wefaq.center
+          تم استخراج هذا التقرير رسمياً من نظام إدارة SK-unlocker — https://sk-unlocker.com
         </div>
       </body>
       </html>

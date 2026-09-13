@@ -466,7 +466,7 @@ export default function OrderInspectionView({ order, onClose, onOrderUpdated, to
         </div>
 
         <div class="footer-watermark">
-          Al-Wefaq Server — Official Service Order Record | Printed on ${new Date().toLocaleString('en-US')}
+          SK-unlocker — Official Service Order Record | Printed on ${new Date().toLocaleString('en-US')}
         </div>
       </body>
       </html>

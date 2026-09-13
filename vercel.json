@@ -1,7 +1,7 @@
 {
   "buildCommand": "npm run build",
   "env": {
-    "NEXT_PUBLIC_API_URL": "https://api.al-wefaq.center",
-    "NEXT_PUBLIC_SITE_URL": "https://al-wefaq.center"
+    "NEXT_PUBLIC_API_URL": "https://api.sk-unlocker.com",
+    "NEXT_PUBLIC_SITE_URL": "https://sk-unlocker.com"
   }
 }

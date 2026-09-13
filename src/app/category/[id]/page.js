@@ -57,7 +57,7 @@ const getSiteName = cache(async function getSiteName() {
   } catch (err) {
     console.error("Error fetching site name in metadata:", err);
   }
-  return "سيرفر الوفاق - Al-Wefaq Server";
+  return "SK-unlocker";
 });
 
 export async function generateMetadata({ params }) {
@@ -167,7 +167,7 @@ export default async function Page({ params }) {
           "url": `${SITE_URL}/service/${s.id}`,
           "image": s.image 
             ? (s.image.startsWith("http") ? s.image : `${API_BASE_URL}${s.image.startsWith("/") ? s.image : `/${s.image}`}`) 
-            : `${SITE_URL}/logo.jpg`
+            : `${SITE_URL}/logo.png`
         }
       }))
     }
