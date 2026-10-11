@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useRef, useState } from "react";
 
@@ -43,6 +43,10 @@ export default function CloudflareTurnstile({
   className = "",
   size = "normal"
 }: CloudflareTurnstileProps) {
+  const isTurnstileDisabled =
+    process.env.NEXT_PUBLIC_DISABLE_TURNSTILE === "true" ||
+    process.env.NEXT_PUBLIC_DISABLE_CLOUDFLARE === "true";
+
   const containerRef = useRef<HTMLDivElement | null>(null);
   const widgetIdRef = useRef<string | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -60,6 +64,16 @@ export default function CloudflareTurnstile({
     onExpireRef.current = onExpire;
     onErrorRef.current = onError;
   });
+
+  useEffect(() => {
+    if (isTurnstileDisabled) {
+      onVerifyRef.current?.("cf-turnstile-bypassed");
+    }
+  }, [isTurnstileDisabled]);
+
+  if (isTurnstileDisabled) {
+    return null;
+  }
 
   const [retryCount, setRetryCount] = useState(0);
 
