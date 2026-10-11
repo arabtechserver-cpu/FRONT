@@ -379,13 +379,6 @@ export default function LoginClient({ lang, dict }: { lang: Locale; dict: any })
             </button>
           </div>
 
-          {/* Cloudflare Turnstile CAPTCHA Protection */}
-          <CloudflareTurnstile 
-            onVerify={(token) => setTurnstileToken(token)}
-            onExpire={() => setTurnstileToken("")}
-            onError={() => setTurnstileToken("cf-turnstile-client-fallback")}
-          />
-
           <button 
             type="submit" 
             disabled={isLoading}

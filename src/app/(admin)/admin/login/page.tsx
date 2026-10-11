@@ -420,12 +420,6 @@ export default function AdminLogin() {
                 </div>
               </div>
 
-              <CloudflareTurnstile
-                onVerify={(token) => setTurnstileToken(token)}
-                onExpire={() => setTurnstileToken("")}
-                onError={() => setTurnstileToken("cf-turnstile-client-fallback")}
-              />
-
               <button
                 type="submit"
                 disabled={loading}

@@ -843,15 +843,6 @@ export default function RegisterClient({ lang, dict }: { lang: Locale; dict: any
             </div>
           </div>
 
-          {/* Cloudflare Turnstile CAPTCHA Protection */}
-          <div className="col-span-1 md:col-span-2">
-            <CloudflareTurnstile 
-              onVerify={(token) => setTurnstileToken(token)}
-              onExpire={() => setTurnstileToken("")}
-              onError={() => setTurnstileToken("cf-turnstile-client-fallback")}
-            />
-          </div>
-
           {/* FAST DIRECT SUBMIT BUTTON */}
           <div className="col-span-1 md:col-span-2">
             <button 
