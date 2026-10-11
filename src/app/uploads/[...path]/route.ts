@@ -60,9 +60,6 @@ export async function GET(
   }
 
   const candidates = getBackendCandidates(cachedBackendUrl, process.env.INTERNAL_API_URL);
-  if (process.platform === 'win32' && !candidates.includes('http://127.0.0.1:5000')) {
-    candidates.push('http://127.0.0.1:5000');
-  }
 
   for (const baseUrl of candidates) {
     // Try primary /uploads/:filename endpoint on server disk

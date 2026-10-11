@@ -2,16 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getBackendCandidates } from "../../../lib/api-proxy-candidates";
 
 /**
- * Smart catch-all API proxy with working URL caching.
- *
- * The public domain is NOT reachable from inside
- * the Docker container due to hairpin NAT — so we only try internal hostnames.
- *
- * INTERNAL_API_URL takes priority. If not set (or set to localhost), we try
- * known Dokploy service names automatically.
- *
- * Once a working URL is found, it's cached in memory for the container lifetime
- * to avoid repeated failures and log spam.
+ * Stream API requests to the shared backend selected for this environment.
+ * Production always uses api.borai.store so cached or configured legacy
+ * internal services cannot receive authentication or other API requests.
  */
 
 // Cache the working backend URL after first successful connection
@@ -90,13 +83,6 @@ async function handler(
   }
 
   const candidates = getBackendCandidates(cachedBackendUrl, process.env.INTERNAL_API_URL);
-  if (process.platform === 'win32') {
-    if (!cachedBackendUrl && !candidates.includes('http://127.0.0.1:5000')) {
-      candidates.unshift('http://127.0.0.1:5000');
-    } else if (!candidates.includes('http://127.0.0.1:5000')) {
-      candidates.push('http://127.0.0.1:5000');
-    }
-  }
   const isIdempotent = ['GET', 'HEAD', 'OPTIONS'].includes(request.method);
   const targets = isIdempotent ? candidates : candidates.slice(0, 1);
 
@@ -151,7 +137,7 @@ async function handler(
   return NextResponse.json(
     {
       error: 'Backend unavailable',
-      hint: 'Set INTERNAL_API_URL=http://pro-b-i0r2xu:5000 in Dokploy frontend env vars',
+      hint: 'Check connectivity to the backend at https://api.borai.store',
     },
     { status: 502 }
   );

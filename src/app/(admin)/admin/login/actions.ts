@@ -1,16 +1,10 @@
 "use server";
 
 import { cookies } from "next/headers";
-
-const candidateUrls = [
-  process.env.INTERNAL_API_URL,
-  process.env.NEXT_PUBLIC_API_URL,
-  "http://127.0.0.1:5000",
-  "http://localhost:5000"
-].filter(Boolean) as string[];
+import { getBackendCandidates } from "../../../../lib/api-proxy-candidates";
 
 export async function loginAdmin(username: string, password: string) {
-  const uniqueUrls = Array.from(new Set(candidateUrls));
+  const uniqueUrls = getBackendCandidates(null, process.env.INTERNAL_API_URL);
   let lastErrorMessage = "";
 
   const cookieStore = await cookies();
@@ -73,7 +67,7 @@ export async function loginAdmin(username: string, password: string) {
 }
 
 export async function verifyAdminOtpAction(challengeToken: string, otp: string) {
-  const uniqueUrls = Array.from(new Set(candidateUrls));
+  const uniqueUrls = getBackendCandidates(null, process.env.INTERNAL_API_URL);
   let lastErrorMessage = "";
 
   const cookieStore = await cookies();
@@ -123,7 +117,7 @@ export async function verifyAdminOtpAction(challengeToken: string, otp: string) 
 }
 
 export async function resendAdminOtpAction(challengeToken: string) {
-  const uniqueUrls = Array.from(new Set(candidateUrls));
+  const uniqueUrls = getBackendCandidates(null, process.env.INTERNAL_API_URL);
   let lastErrorMessage = "";
 
   for (const apiUrl of uniqueUrls) {

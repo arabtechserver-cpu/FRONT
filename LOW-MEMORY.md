@@ -2,7 +2,7 @@
 
 Use this repository's Dockerfile and one running replica. In Dokploy Advanced > Resources set Memory Limit to **268435456 bytes (256 MiB)**, then redeploy. The backend budget is 208 MiB; both containers total 464 MiB (486539264 bytes), below 500 MB.
 
-Set INTERNAL_API_URL to http://YOUR_BACKEND_SERVICE_NAME:5000 on the same Docker network. Preserve existing public environment settings and domains. The runner sets NODE_OPTIONS=--max-old-space-size=96 --max-semi-space-size=2 and UV_THREADPOOL_SIZE=2. Update any existing Dokploy NODE_OPTIONS override to match. npm start also sets these heap limits. Use production builds; build memory is outside the runtime budget.
+Production API, uploads, and admin login/OTP requests use https://api.borai.store. INTERNAL_API_URL is used only for local development; legacy production service names are ignored. Preserve existing public environment settings and domains. The runner sets NODE_OPTIONS=--max-old-space-size=96 --max-semi-space-size=2 and UV_THREADPOOL_SIZE=2. Update any existing Dokploy NODE_OPTIONS override to match. npm start also sets these heap limits. Use production builds; build memory is outside the runtime budget.
 
 Next caches use disk and proxy responses stream to clients. Runtime image conversion is disabled; original assets are served and may use more bandwidth when the originals are large.
 
