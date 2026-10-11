@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { loginAdmin, verifyAdminOtpAction, resendAdminOtpAction } from "./actions";
 import { isServerActionMismatchError } from "@/lib/server-action-utils";
-import CloudflareTurnstile, { resetTurnstile } from "@/components/CloudflareTurnstile";
 import { getOrCreateDeviceToken, getDeviceFingerprint, getLocalIpViaWebRTC } from "@/utils/deviceUtils";
 
 export default function AdminLogin() {
@@ -15,7 +14,6 @@ export default function AdminLogin() {
   const [error, setError] = useState("");
   const [infoMessage, setInfoMessage] = useState("");
   const [loading, setLoading] = useState(false);
-  const [turnstileToken, setTurnstileToken] = useState("");
 
   const [challengeToken, setChallengeToken] = useState("");
   const [otp, setOtp] = useState("");
@@ -110,7 +108,6 @@ export default function AdminLogin() {
         body: JSON.stringify({
           username,
           password,
-          "cf-turnstile-response": turnstileToken || "cf-turnstile-client-fallback",
           deviceToken: devToken,
           localIp: clientLocal,
           deviceFingerprint: devFp
@@ -149,21 +146,17 @@ export default function AdminLogin() {
             ? `الوصول إلى لوحة التحكم غير مصرح به من عنوان الـ IP العام لهذه الشبكة (IP: ${clientIp}).`
             : "الوصول إلى لوحة التحكم غير مصرح به من هذه الشبكة."
         );
-        setTurnstileToken("");
-        resetTurnstile();
         setLoading(false);
         return;
       }
 
       if (apiData?.message || apiData?.error) {
         setError(apiData.message || apiData.error);
-        setTurnstileToken("");
-        resetTurnstile();
         setLoading(false);
         return;
       }
 
-      const result = await loginAdmin(username, password, turnstileToken);
+      const result = await loginAdmin(username, password);
       if (result.success) {
         if (result.requireOtp) {
           setChallengeToken(result.challengeToken || "");
@@ -185,8 +178,6 @@ export default function AdminLogin() {
         return;
       } else {
         setError(result.message || "بيانات الدخول غير صحيحة");
-        setTurnstileToken("");
-        resetTurnstile();
       }
     } catch (err: any) {
       if (isServerActionMismatchError(err)) {
@@ -194,8 +185,6 @@ export default function AdminLogin() {
         return;
       }
       setError("حدث خطأ أثناء تسجيل الدخول، يرجى تحديث الصفحة والمحاولة مجدداً.");
-      setTurnstileToken("");
-      resetTurnstile();
     } finally {
       setLoading(false);
     }
@@ -337,8 +326,6 @@ export default function AdminLogin() {
     setOtp("");
     setError("");
     setInfoMessage("");
-    setTurnstileToken("");
-    resetTurnstile();
   };
 
   const formatTime = (seconds: number) => {

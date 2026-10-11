@@ -5,7 +5,6 @@ import Link from "next/link";
 import Script from "next/script";
 import { Locale } from "@/i18n/config";
 import TermsModal from "@/components/TermsModal";
-import CloudflareTurnstile, { resetTurnstile } from "@/components/CloudflareTurnstile";
 
 const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "149631802250-7n94rcr7nd1041iq06ck2310uctituve.apps.googleusercontent.com";
 
@@ -269,7 +268,6 @@ export default function RegisterClient({ lang, dict }: { lang: Locale; dict: any
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
-  const [turnstileToken, setTurnstileToken] = useState("");
 
   const handleGoogleCallback = useCallback(async (response: any) => {
     if (!response.credential) return;
@@ -441,7 +439,6 @@ export default function RegisterClient({ lang, dict }: { lang: Locale; dict: any
           password,
           phone: formattedPhone,
           country: selectedCountry.code,
-          "cf-turnstile-response": turnstileToken || "cf-turnstile-client-fallback"
         })
       });
 
@@ -462,13 +459,9 @@ export default function RegisterClient({ lang, dict }: { lang: Locale; dict: any
       } else {
         const errorMsg = data.error || data.message || (lang === "ar" ? "حدث خطأ أثناء عملية التسجيل!" : "Registration failed!");
         setErrorMessage(errorMsg);
-        setTurnstileToken("");
-        resetTurnstile();
       }
     } catch {
       setErrorMessage(lang === "ar" ? "تعذر الاتصال بالسيرفر! يرجى المحاولة لاحقاً." : "Network error! Please try again.");
-      setTurnstileToken("");
-      resetTurnstile();
     } finally {
       setIsLoading(false);
     }

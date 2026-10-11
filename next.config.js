@@ -17,7 +17,6 @@ const nextConfig = {
     'borai-server.local',
     'borai-server.local:3000',
     '*.local',
-    '*.trycloudflare.com',
   ],
   experimental: {
     serverActions: {
@@ -82,13 +81,13 @@ const nextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              `script-src 'self' 'unsafe-inline' ${process.env.NODE_ENV === 'development' ? "'unsafe-eval'" : ''} https://accounts.google.com https://challenges.cloudflare.com https://www.paypal.com https://www.sandbox.paypal.com`.replace(/\s+/g, ' ').trim(),
+              `script-src 'self' 'unsafe-inline' ${process.env.NODE_ENV === 'development' ? "'unsafe-eval'" : ''} https://accounts.google.com https://www.paypal.com https://www.sandbox.paypal.com`.replace(/\s+/g, ' ').trim(),
               "style-src 'self' 'unsafe-inline' https://accounts.google.com https://fonts.googleapis.com",
               "font-src 'self' data: https://fonts.gstatic.com",
               "img-src 'self' data: blob: https: http://localhost:5000 http://127.0.0.1:5000",
               "media-src 'self' data: blob: https: http://localhost:5000 http://127.0.0.1:5000",
-              "connect-src 'self' ws: wss: http://localhost:5000 http://127.0.0.1:5000 ws://localhost:3000 ws://127.0.0.1:3000 ws://borai.local ws://borai.local:3000 http://borai.local http://borai.local:3000 http://borai-server.local https://borai.store https://www.borai.store https://api.borai.store https://accounts.google.com https://challenges.cloudflare.com https://www.paypal.com https://www.sandbox.paypal.com https://fonts.googleapis.com https://fonts.gstatic.com",
-              "frame-src 'self' https://accounts.google.com https://challenges.cloudflare.com https://www.sandbox.paypal.com https://www.paypal.com",
+              "connect-src 'self' ws: wss: http://localhost:5000 http://127.0.0.1:5000 ws://localhost:3000 ws://127.0.0.1:3000 ws://borai.local ws://borai.local:3000 http://borai.local http://borai.local:3000 http://borai-server.local https://borai.store https://www.borai.store https://api.borai.store https://accounts.google.com https://www.paypal.com https://www.sandbox.paypal.com https://fonts.googleapis.com https://fonts.gstatic.com",
+              "frame-src 'self' https://accounts.google.com https://www.sandbox.paypal.com https://www.paypal.com",
               "object-src 'none'",
               "base-uri 'self'",
               "frame-ancestors 'self'",

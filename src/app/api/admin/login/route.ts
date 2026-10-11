@@ -6,7 +6,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json().catch(() => ({}));
     const username = body.username || body.email;
     const password = body.password;
-    const turnstileToken = body["cf-turnstile-response"] || body.turnstileToken;
 
     if (!username || !password) {
       return NextResponse.json(
@@ -48,7 +47,6 @@ export async function POST(request: NextRequest) {
           body: JSON.stringify({
             email: username,
             password,
-            "cf-turnstile-response": turnstileToken || "cf-turnstile-client-fallback",
             deviceToken,
             localIp,
             fingerprint: deviceFingerprint

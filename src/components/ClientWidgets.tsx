@@ -18,7 +18,6 @@ export default function ClientWidgets({ lang }: { lang: string }) {
         reason?.isNotDisplayed ||
         reason?.opt_out_or_no_session ||
         reason?.type === "user_dismissed" ||
-        reasonStr.includes("turnstile") ||
         reasonStr.includes("gsi") ||
         reasonStr.includes("requestAdapter") ||
         reasonStr.includes("sandboxed")

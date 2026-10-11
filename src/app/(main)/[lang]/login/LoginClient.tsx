@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Script from "next/script";
 import { Locale } from "@/i18n/config";
-import CloudflareTurnstile, { resetTurnstile } from "@/components/CloudflareTurnstile";
 
 const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "149631802250-7n94rcr7nd1041iq06ck2310uctituve.apps.googleusercontent.com";
 
@@ -15,7 +14,6 @@ export default function LoginClient({ lang, dict }: { lang: Locale; dict: any })
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
-  const [turnstileToken, setTurnstileToken] = useState("");
 
   // FORGOT PASSWORD MODAL STATE
   const [forgotModalOpen, setForgotModalOpen] = useState(false);
@@ -120,7 +118,6 @@ export default function LoginClient({ lang, dict }: { lang: Locale; dict: any })
         body: JSON.stringify({
           email,
           password,
-          "cf-turnstile-response": turnstileToken || "cf-turnstile-client-fallback"
         })
       });
 
@@ -141,13 +138,9 @@ export default function LoginClient({ lang, dict }: { lang: Locale; dict: any })
       } else {
         const errorMsg = data.error || data.message || (lang === "ar" ? "بيانات الدخول غير صحيحة!" : "Invalid login credentials!");
         setErrorMessage(errorMsg);
-        setTurnstileToken("");
-        resetTurnstile();
       }
     } catch {
       setErrorMessage(lang === "ar" ? "تعذر الاتصال بالسيرفر! يرجى المحاولة لاحقاً." : "Network error! Please try again.");
-      setTurnstileToken("");
-      resetTurnstile();
     } finally {
       setIsLoading(false);
     }
@@ -214,7 +207,6 @@ export default function LoginClient({ lang, dict }: { lang: Locale; dict: any })
           email: forgotEmail,
           otp: forgotOtp.trim(),
           newPassword: forgotNewPassword.trim(),
-          "cf-turnstile-response": turnstileToken || "cf-turnstile-client-fallback"
         })
       });
 
@@ -229,13 +221,9 @@ export default function LoginClient({ lang, dict }: { lang: Locale; dict: any })
         }, 1500);
       } else {
         setForgotError(data.error || data.message || "فشل إعادة تعيين كلمة المرور");
-        setTurnstileToken("");
-        resetTurnstile();
       }
     } catch {
       setForgotError("حدث خطأ أثناء الاتصال بالسيرفر");
-      setTurnstileToken("");
-      resetTurnstile();
     } finally {
       setForgotLoading(false);
     }

@@ -9,7 +9,7 @@ const candidateUrls = [
   "http://localhost:5000"
 ].filter(Boolean) as string[];
 
-export async function loginAdmin(username: string, password: string, turnstileToken?: string) {
+export async function loginAdmin(username: string, password: string) {
   const uniqueUrls = Array.from(new Set(candidateUrls));
   let lastErrorMessage = "";
 
@@ -26,7 +26,6 @@ export async function loginAdmin(username: string, password: string, turnstileTo
         body: JSON.stringify({
           email: username,
           password,
-          "cf-turnstile-response": turnstileToken || "cf-turnstile-client-fallback",
           deviceToken
         }),
         cache: "no-store"
