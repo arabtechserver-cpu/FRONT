@@ -2,7 +2,7 @@
 
 import { SITE_CONTACTS } from "@/lib/site-contacts";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Locale } from "@/i18n/config";
@@ -30,6 +30,7 @@ interface PaymentMethod {
   isFawry?: boolean;
   isRewarble?: boolean;
   isBnbServices?: boolean;
+  isActive?: boolean;
 }
 
 interface CurrencyConfig {
@@ -81,6 +82,7 @@ interface CurrencyConfig {
     email: string;
     isActive: boolean;
   };
+  paymentMethods?: any[];
 }
 
 interface DBTransaction {
@@ -97,6 +99,8 @@ export default function WalletClient({ lang, dict }: { lang: Locale; dict: any }
   const router = useRouter();
   const isAr = lang === "ar";
 
+  const [checkingAuth, setCheckingAuth] = useState<boolean>(true);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [userSession, setUserSession] = useState<any>(null);
   const [depositAmount, setDepositAmount] = useState<string>("10.00");
   const [depositSdgAmount, setDepositSdgAmount] = useState<string>("");
@@ -143,39 +147,49 @@ export default function WalletClient({ lang, dict }: { lang: Locale; dict: any }
   }, []);
 
   useEffect(() => {
-    const saved = localStorage.getItem("user_session");
-    let currentUser: any = null;
+    if (typeof window === "undefined") return;
 
+    const saved = localStorage.getItem("user_session");
+    const token =
+      localStorage.getItem("user_token") ||
+      localStorage.getItem("token");
+
+    let currentUser: any = null;
     if (saved) {
       try {
         currentUser = JSON.parse(saved);
-        setUserSession(currentUser);
       } catch {
-        setUserSession(null);
+        currentUser = null;
       }
     }
 
-    if (currentUser) {
+    if (currentUser && (token || currentUser.id || currentUser.email)) {
+      setUserSession(currentUser);
+      setIsAuthenticated(true);
+      setCheckingAuth(false);
       fetchRealTransactions(currentUser?.id, currentUser?.email);
     } else {
+      setUserSession(null);
+      setIsAuthenticated(false);
+      setCheckingAuth(false);
       setIsFetchingTx(false);
+      router.replace(`/${lang}/login?redirect=/${lang}/wallet`);
+      return;
     }
 
-    if (typeof window !== "undefined") {
-      const urlParams = new URLSearchParams(window.location.search);
-      const methodParam = urlParams.get("method");
-      if (methodParam) {
-        setSelectedMethodId(methodParam.toLowerCase());
-      }
+    const urlParams = new URLSearchParams(window.location.search);
+    const methodParam = urlParams.get("method");
+    if (methodParam) {
+      setSelectedMethodId(methodParam.toLowerCase());
+    }
 
-      const paypalToken = urlParams.get("token");
-      const paypalStatus = urlParams.get("paypal");
+    const paypalToken = urlParams.get("token");
+    const paypalStatus = urlParams.get("paypal");
 
-      if (paypalToken && (paypalStatus === "success" || paypalToken)) {
-        handlePayPalReturnCapture(paypalToken, currentUser);
-      } else if (paypalStatus === "cancel") {
-        setErrorMessage(isAr ? "تم إلغاء عملية الدفع عبر PayPal." : "PayPal payment was cancelled.");
-      }
+    if (paypalToken && (paypalStatus === "success" || paypalToken)) {
+      handlePayPalReturnCapture(paypalToken, currentUser);
+    } else if (paypalStatus === "cancel") {
+      setErrorMessage(isAr ? "تم إلغاء عملية الدفع عبر PayPal." : "PayPal payment was cancelled.");
     }
   }, [lang, router]);
 
@@ -195,117 +209,194 @@ export default function WalletClient({ lang, dict }: { lang: Locale; dict: any }
     }
   };
 
-  const paymentMethods: PaymentMethod[] = [
-    {
-      id: "bankak",
-      nameAr: "بنك الخرطوم (بنكك)",
-      nameEn: "Bank of Khartoum (Bankak)",
-      badge: "SD",
-      icon: "account_balance",
-      color: "bg-blue-600",
-      copyValue: currencyConfig?.bankak?.accountNumber || "",
-      detailLabelAr: currencyConfig?.bankak?.accountName
-        ? `رقم حساب بنكك (باسم: ${currencyConfig.bankak.accountName}):`
-        : "رقم حساب بنكك:",
-      detailLabelEn: currencyConfig?.bankak?.accountName
-        ? `Bankak Account # (Name: ${currencyConfig.bankak.accountName}):`
-        : "Bankak Account #:",
-      instructionsAr:
-        currencyConfig?.bankak?.instructionsAr ||
-        "حول المبلغ بالجنيه السوداني عبر تطبيق بنكك إلى رقم الحساب ثم ارفع صورة إشعار التحويل للتأكيد.",
-      instructionsEn:
-        currencyConfig?.bankak?.instructionsEn ||
-        "Transfer via Bankak app in Sudanese Pounds then upload receipt image for confirmation.",
-      isBankak: true
-    },
-    {
-      id: "fawry",
-      nameAr: "فوري - بنك فيصل الإسلامي",
-      nameEn: "Fawri - Faisal Bank",
-      badge: "FAWRI",
-      icon: "account_balance",
-      color: "bg-indigo-600",
-      copyValue: currencyConfig?.fawry?.accountNumber || "51589889",
-      detailLabelAr: "الرقم البنكي الموحد (تطبيق فوري):",
-      detailLabelEn: "Unified Banking ID (Fawri App):",
-      instructionsAr:
-        currencyConfig?.fawry?.instructionsAr ||
-        "حول المبلغ بالجنيه السوداني عبر تطبيق فوري إلى الرقم البنكي الموحد (51589889) ثم ارفع صورة إشعار التحويل للتأكيد.",
-      instructionsEn:
-        currencyConfig?.fawry?.instructionsEn ||
-        "Transfer in Sudanese Pounds via Fawri app to Unified Banking ID # 51589889 then upload receipt image for confirmation.",
-      isFawry: true
-    },
-    {
-      id: "vodafone",
-      nameAr: "فودافون كاش (Vodafone Cash)",
-      nameEn: "Vodafone Cash",
-      badge: "VF",
-      icon: "phone_iphone",
-      color: "bg-rose-600",
-      copyValue: currencyConfig?.vodafone?.walletNumber || "",
-      detailLabelAr: "رقم محفظة فودافون كاش:",
-      detailLabelEn: "Vodafone Cash Wallet Number:",
-      instructionsAr:
-        currencyConfig?.vodafone?.instructionsAr ||
-        "حول المبلغ إلى رقم المحفظة واكتب الرقم المحول منه وارفق صورة رسالة أو إيصال التحويل.",
-      instructionsEn:
-        currencyConfig?.vodafone?.instructionsEn ||
-        "Transfer funds to the designated wallet number then attach receipt screenshot."
-    },
-    {
-      id: "binance",
-      nameAr: "Binance Pay (باينانس)",
-      nameEn: "Binance Pay",
-      badge: "PAY",
-      icon: "currency_exchange",
-      color: "bg-amber-500",
-      copyValue: currencyConfig?.binance?.payId || "",
-      detailLabelAr: "معرف باينانس باي (Binance Pay ID):",
-      detailLabelEn: "Binance Pay ID:",
-      instructionsAr:
-        currencyConfig?.binance?.instructionsAr ||
-        "افتح تطبيق باينانس واكتب معرف Binance Pay ID ثم ارفق لقطة الشاشة للتأكيد.",
-      instructionsEn:
-        currencyConfig?.binance?.instructionsEn ||
-        "Open Binance App and send funds via Pay ID then attach payment screenshot."
-    },
-    {
-      id: "bnb",
-      nameAr: "تحويل BNB (للألعاب والبطاقات والاشتراكات)",
-      nameEn: "BNB Transfer (Top-ups, Cards & Subscriptions)",
-      badge: "BNB",
-      icon: "account_balance_wallet",
-      color: "bg-amber-600",
-      copyValue:
-        currencyConfig?.cryptoBnb?.address ||
-        currencyConfig?.rewarble?.address ||
-        "0xaCc3ab6f0165B39Cf2F1286ED8A778735Ae8314f",
-      detailLabelAr: "عنوان المحفظة (BEP20 / BSC Link):",
-      detailLabelEn: "Wallet Address (BEP20 Link):",
-      instructionsAr:
-        currencyConfig?.cryptoBnb?.instructionsAr ||
-        "طريقة تحويل عبر BNB معتمدة لكافة الأقسام (شحن الألعاب المباشر، متاجر التطبيقات، أكواد الألعاب، الاشتراكات، و Rewarble): قم بالتحويل إلى رابط المحفظة (0xaCc3ab6f0165B39Cf2F1286ED8A778735Ae8314f) ثم ارفع صورة إشعار التحويل للتأكيد.",
-      instructionsEn:
-        currencyConfig?.cryptoBnb?.instructionsEn ||
-        "Approved BNB transfer method for all sections. Transfer to wallet address then upload receipt.",
-      isBnbServices: true
-    },
-    {
-      id: "paypal",
-      nameAr: "باي بال PayPal (تلقائي فوري)",
-      nameEn: "PayPal (Instant Auto)",
-      badge: "PP",
-      icon: "payments",
-      color: "bg-blue-600",
-      copyValue: currencyConfig?.paypal?.email || "paypal@gsmteam.com",
-      detailLabelAr: "الدفع التلقائي المباشر عبر PayPal:",
-      detailLabelEn: "Direct PayPal Instant Payment:",
-      instructionsAr: "ادخل المبلغ واضغط زر الدفع عبر PayPal لإتمام العملية تلقائياً.",
-      instructionsEn: "Enter amount and click PayPal button to pay instantly.",
-      isAutomaticPayPal: true
+  const paymentMethods: PaymentMethod[] = useMemo(() => {
+    if (
+      currencyConfig?.paymentMethods &&
+      Array.isArray(currencyConfig.paymentMethods) &&
+      currencyConfig.paymentMethods.length > 0
+    ) {
+      return currencyConfig.paymentMethods
+        .filter((m: any) => m.isActive !== false)
+        .map((m: any) => {
+          const isAutomaticPayPal = m.id === "paypal";
+          const isBankak = m.id === "bankak";
+          const isFawry = m.id === "fawry";
+          const isBnbServices = m.id === "bnb";
+
+          let copyVal = m.copyValue || "";
+          if (!copyVal) {
+            if (isBankak) copyVal = currencyConfig?.bankak?.accountNumber || "";
+            else if (isFawry) copyVal = currencyConfig?.fawry?.accountNumber || "51589889";
+            else if (m.id === "vodafone") copyVal = currencyConfig?.vodafone?.walletNumber || "";
+            else if (m.id === "binance") copyVal = currencyConfig?.binance?.payId || "";
+            else if (m.id === "bnb") copyVal = currencyConfig?.cryptoBnb?.address || currencyConfig?.rewarble?.address || "";
+            else if (m.id === "paypal") copyVal = currencyConfig?.paypal?.email || "";
+          }
+
+          let detailLabelAr = m.detailLabelAr || "";
+          let detailLabelEn = m.detailLabelEn || "";
+          if (!detailLabelAr) {
+            if (isBankak) {
+              const accName = m.accountName || currencyConfig?.bankak?.accountName;
+              detailLabelAr = accName ? `رقم حساب بنكك (باسم: ${accName}):` : "رقم حساب بنكك:";
+              detailLabelEn = accName ? `Bankak Account # (Name: ${accName}):` : "Bankak Account #:";
+            } else if (isFawry) {
+              const accName = m.accountName || currencyConfig?.fawry?.accountName;
+              detailLabelAr = accName ? `الرقم البنكي الموحد (باسم: ${accName}):` : "الرقم البنكي الموحد (تطبيق فوري):";
+              detailLabelEn = accName ? `Unified Banking ID (Name: ${accName}):` : "Unified Banking ID (Fawri App):";
+            } else if (m.accountName) {
+              detailLabelAr = `رقم الحساب / المحفظة (باسم: ${m.accountName}):`;
+              detailLabelEn = `Account / Wallet # (Name: ${m.accountName}):`;
+            } else {
+              detailLabelAr = "رقم الحساب / المحفظة للتحويل:";
+              detailLabelEn = "Account / Wallet Number for transfer:";
+            }
+          }
+
+          let instructionsAr = m.instructionsAr || "";
+          let instructionsEn = m.instructionsEn || "";
+          if (!instructionsAr) {
+            if (isBankak) instructionsAr = currencyConfig?.bankak?.instructionsAr || "حول المبلغ بالجنيه السوداني عبر تطبيق بنكك إلى رقم الحساب ثم ارفع صورة إشعار التحويل للتأكيد.";
+            else if (isFawry) instructionsAr = currencyConfig?.fawry?.instructionsAr || "حول المبلغ بالجنيه السوداني عبر تطبيق فوري إلى الرقم البنكي الموحد ثم ارفع صورة إشعار التحويل للتأكيد.";
+            else if (m.id === "vodafone") instructionsAr = currencyConfig?.vodafone?.instructionsAr || "حول المبلغ إلى رقم المحفظة واكتب الرقم المحول منه وارفق صورة رسالة أو إيصال التحويل.";
+            else if (m.id === "binance") instructionsAr = currencyConfig?.binance?.instructionsAr || "افتح تطبيق باينانس واكتب معرف Binance Pay ID ثم ارفق لقطة الشاشة للتأكيد.";
+            else if (m.id === "bnb") instructionsAr = currencyConfig?.cryptoBnb?.instructionsAr || "قم بالتحويل إلى عنوان المحفظة ثم ارفع صورة إشعار التحويل للتأكيد.";
+            else if (m.id === "paypal") instructionsAr = "ادخل المبلغ واضغط زر الدفع عبر PayPal لإتمام العملية تلقائياً.";
+          }
+
+          return {
+            id: m.id,
+            nameAr: m.nameAr || m.name || "",
+            nameEn: m.nameEn || m.name || "",
+            badge: m.badge || (isBankak ? "SD" : isFawry ? "FAWRI" : "PAY"),
+            icon: m.icon || "account_balance",
+            color: m.color || "bg-blue-600",
+            copyValue: copyVal,
+            detailLabelAr,
+            detailLabelEn,
+            instructionsAr,
+            instructionsEn,
+            isAutomaticPayPal,
+            isBankak,
+            isFawry,
+            isBnbServices,
+            isActive: m.isActive !== false
+          };
+        });
     }
-  ];
+
+    return [
+      {
+        id: "bankak",
+        nameAr: "بنك الخرطوم (بنكك)",
+        nameEn: "Bank of Khartoum (Bankak)",
+        badge: "SD",
+        icon: "account_balance",
+        color: "bg-blue-600",
+        copyValue: currencyConfig?.bankak?.accountNumber || "",
+        detailLabelAr: currencyConfig?.bankak?.accountName
+          ? `رقم حساب بنكك (باسم: ${currencyConfig.bankak.accountName}):`
+          : "رقم حساب بنكك:",
+        detailLabelEn: currencyConfig?.bankak?.accountName
+          ? `Bankak Account # (Name: ${currencyConfig.bankak.accountName}):`
+          : "Bankak Account #:",
+        instructionsAr:
+          currencyConfig?.bankak?.instructionsAr ||
+          "حول المبلغ بالجنيه السوداني عبر تطبيق بنكك إلى رقم الحساب ثم ارفع صورة إشعار التحويل للتأكيد.",
+        instructionsEn:
+          currencyConfig?.bankak?.instructionsEn ||
+          "Transfer via Bankak app in Sudanese Pounds then upload receipt image for confirmation.",
+        isBankak: true
+      },
+      {
+        id: "fawry",
+        nameAr: "فوري - بنك فيصل الإسلامي",
+        nameEn: "Fawri - Faisal Bank",
+        badge: "FAWRI",
+        icon: "account_balance",
+        color: "bg-indigo-600",
+        copyValue: currencyConfig?.fawry?.accountNumber || "51589889",
+        detailLabelAr: "الرقم البنكي الموحد (تطبيق فوري):",
+        detailLabelEn: "Unified Banking ID (Fawri App):",
+        instructionsAr:
+          currencyConfig?.fawry?.instructionsAr ||
+          "حول المبلغ بالجنيه السوداني عبر تطبيق فوري إلى الرقم البنكي الموحد (51589889) ثم ارفع صورة إشعار التحويل للتأكيد.",
+        instructionsEn:
+          currencyConfig?.fawry?.instructionsEn ||
+          "Transfer in Sudanese Pounds via Fawri app to Unified Banking ID # 51589889 then upload receipt image for confirmation.",
+        isFawry: true
+      },
+      {
+        id: "vodafone",
+        nameAr: "فودافون كاش (Vodafone Cash)",
+        nameEn: "Vodafone Cash",
+        badge: "VF",
+        icon: "phone_iphone",
+        color: "bg-rose-600",
+        copyValue: currencyConfig?.vodafone?.walletNumber || "",
+        detailLabelAr: "رقم محفظة فودافون كاش:",
+        detailLabelEn: "Vodafone Cash Wallet Number:",
+        instructionsAr:
+          currencyConfig?.vodafone?.instructionsAr ||
+          "حول المبلغ إلى رقم المحفظة واكتب الرقم المحول منه وارفق صورة رسالة أو إيصال التحويل.",
+        instructionsEn:
+          currencyConfig?.vodafone?.instructionsEn ||
+          "Transfer funds to the designated wallet number then attach receipt screenshot."
+      },
+      {
+        id: "binance",
+        nameAr: "Binance Pay (باينانس)",
+        nameEn: "Binance Pay",
+        badge: "PAY",
+        icon: "currency_exchange",
+        color: "bg-amber-500",
+        copyValue: currencyConfig?.binance?.payId || "",
+        detailLabelAr: "معرف باينانس باي (Binance Pay ID):",
+        detailLabelEn: "Binance Pay ID:",
+        instructionsAr:
+          currencyConfig?.binance?.instructionsAr ||
+          "افتح تطبيق باينانس واكتب معرف Binance Pay ID ثم ارفق لقطة الشاشة للتأكيد.",
+        instructionsEn:
+          currencyConfig?.binance?.instructionsEn ||
+          "Open Binance App and send funds via Pay ID then attach payment screenshot."
+      },
+      {
+        id: "bnb",
+        nameAr: "تحويل BNB (للألعاب والبطاقات والاشتراكات)",
+        nameEn: "BNB Transfer (Top-ups, Cards & Subscriptions)",
+        badge: "BNB",
+        icon: "account_balance_wallet",
+        color: "bg-amber-600",
+        copyValue:
+          currencyConfig?.cryptoBnb?.address ||
+          currencyConfig?.rewarble?.address ||
+          "0xaCc3ab6f0165B39Cf2F1286ED8A778735Ae8314f",
+        detailLabelAr: "عنوان المحفظة (BEP20 / BSC Link):",
+        detailLabelEn: "Wallet Address (BEP20 Link):",
+        instructionsAr:
+          currencyConfig?.cryptoBnb?.instructionsAr ||
+          "طريقة تحويل عبر BNB معتمدة لكافة الأقسام (شحن الألعاب المباشر، متاجر التطبيقات، أكواد الألعاب، الاشتراكات، و Rewarble): قم بالتحويل إلى رابط المحفظة (0xaCc3ab6f0165B39Cf2F1286ED8A778735Ae8314f) ثم ارفع صورة إشعار التحويل للتأكيد.",
+        instructionsEn:
+          currencyConfig?.cryptoBnb?.instructionsEn ||
+          "Approved BNB transfer method for all sections. Transfer to wallet address then upload receipt.",
+        isBnbServices: true
+      },
+      {
+        id: "paypal",
+        nameAr: "باي بال PayPal (تلقائي فوري)",
+        nameEn: "PayPal (Instant Auto)",
+        badge: "PP",
+        icon: "payments",
+        color: "bg-blue-600",
+        copyValue: currencyConfig?.paypal?.email || "paypal@gsmteam.com",
+        detailLabelAr: "الدفع التلقائي المباشر عبر PayPal:",
+        detailLabelEn: "Direct PayPal Instant Payment:",
+        instructionsAr: "ادخل المبلغ واضغط زر الدفع عبر PayPal لإتمام العملية تلقائياً.",
+        instructionsEn: "Enter amount and click PayPal button to pay instantly.",
+        isAutomaticPayPal: true
+      }
+    ];
+  }, [currencyConfig]);
 
   const handlePayPalReturnCapture = async (orderId: string, userObj?: any) => {
     setIsLoading(true);
@@ -540,7 +631,58 @@ export default function WalletClient({ lang, dict }: { lang: Locale; dict: any }
     const query = historyQuery.trim().toLocaleLowerCase();
     return matches && (!query || [tx.refNo, tx.type, tx.method].some(value => (value || "").toLocaleLowerCase().includes(query)));
   });
-  const methodIcons: Record<string, typeof Wallet> = { bankak: Banknote, fawry: Banknote, vodafone: Smartphone, binance: Bitcoin, bnb: Wallet, paypal: CreditCard };
+  const methodIcons: Record<string, typeof Wallet> = {
+    bankak: Banknote,
+    fawry: Banknote,
+    vodafone: Smartphone,
+    binance: Bitcoin,
+    bnb: Wallet,
+    paypal: CreditCard
+  };
+
+  const getMethodIcon = (method: PaymentMethod) => {
+    if (methodIcons[method.id]) return methodIcons[method.id];
+    if (method.icon === "phone_iphone" || method.icon === "smartphone") return Smartphone;
+    if (method.icon === "currency_exchange" || method.icon === "bitcoin") return Bitcoin;
+    if (method.icon === "payments" || method.icon === "credit_card") return CreditCard;
+    if (method.icon === "account_balance_wallet") return Wallet;
+    return Banknote;
+  };
+
+  if (checkingAuth) {
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center p-6 text-center" dir={isAr ? "rtl" : "ltr"}>
+        <RefreshCw className="animate-spin text-blue-600 mb-4" size={36} />
+        <p className="text-slate-600 dark:text-slate-300 font-medium">
+          {isAr ? "جاري التحقق من الحساب..." : "Verifying account..."}
+        </p>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated || !userSession) {
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center p-6 text-center" dir={isAr ? "rtl" : "ltr"}>
+        <div className="max-w-md w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-8 shadow-sm">
+          <ShieldCheck className="mx-auto text-amber-500 mb-4" size={48} />
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
+            {isAr ? "تسجيل الدخول مطلوب" : "Sign-in Required"}
+          </h2>
+          <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">
+            {isAr
+              ? "لا يمكنك الوصول إلى المحفظة أو عرض وسائل الدفع دون تسجيل الدخول إلى حسابك."
+              : "You must be signed in to access the wallet and view payment methods."}
+          </p>
+          <Link
+            href={`/${lang}/login?redirect=/${lang}/wallet`}
+            className="inline-flex items-center justify-center w-full py-3 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm transition-colors"
+          >
+            {isAr ? "الانتقال إلى صفحة تسجيل الدخول" : "Go to Sign In"}
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <PayPalScriptProvider options={{ clientId: PAYPAL_CLIENT_ID, currency: "USD", intent: "capture" }}>
@@ -563,7 +705,6 @@ export default function WalletClient({ lang, dict }: { lang: Locale; dict: any }
             <div className={styles.membership}><ShieldCheck size={16} /><span>{userSession?.membershipTier ? (isAr ? userSession.membershipTier.nameAr || userSession.membershipTier.name : userSession.membershipTier.name) + " · " + userSession.membershipTier.discountPercentage + "% " + (isAr ? "خصم" : "discount") : isAr ? "بنكك، فوري، كاش، باينانس وباي بال" : "Bankak, Fawri, Cash, Binance and PayPal"}</span></div>
           </div>
         </section>
-        {!userSession && <div className={styles.signIn + " bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800/50 text-amber-800 dark:text-amber-300"}><ShieldCheck size={22} /><div><strong>{isAr ? "سجّل الدخول لإتمام الشحن" : "Sign in to add funds"}</strong><p>{isAr ? "تابع رصيدك وطلباتك من حسابك." : "View your balance and requests from your account."}</p></div><Link href={"/" + lang + "/login"}>{isAr ? "تسجيل الدخول" : "Sign in"}<ChevronRight size={16} /></Link></div>}
         {errorMessage && <div className={styles.alert + " bg-rose-50 dark:bg-rose-950/30 border-rose-200 dark:border-rose-800/60 text-rose-700 dark:text-rose-300"} role="alert"><X size={20} /><span>{errorMessage}</span></div>}
         {successMessage && <div className={styles.alert + " bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800/60 text-emerald-800 dark:text-emerald-300"} role="status"><Check size={20} /><span>{successMessage}</span></div>}
         <section id="wallet-topup" className={styles.topup + " bg-surface-container shadow-sm"} aria-labelledby="topup-title">
@@ -572,7 +713,7 @@ export default function WalletClient({ lang, dict }: { lang: Locale; dict: any }
             <aside className={styles.methods}>
               <div className={styles.sectionTitle}><span className={styles.step + " text-blue-600 dark:text-blue-400"}>01</span><div><h3>{isAr ? "اختر وسيلة الدفع" : "Choose how to pay"}</h3><p className={styles.muted}>{isAr ? "الطريقة المناسبة لك" : "Pick what works for you"}</p></div></div>
               <div className={styles.methodList}>{paymentMethods.map(method => {
-                const selected = activeMethod.id === method.id; const Icon = methodIcons[method.id] || Wallet;
+                const selected = activeMethod.id === method.id; const Icon = getMethodIcon(method);
                 return <button key={method.id} type="button" aria-pressed={selected} aria-label={isAr ? method.nameAr : method.nameEn} onClick={() => { setSelectedMethodId(method.id); setErrorMessage(""); }} className={styles.method + " " + (selected ? styles.methodSelected + " bg-blue-50/70 dark:bg-blue-950/40 border-blue-600 dark:border-blue-500" : "dark:bg-background dark:border-white/10 hover:bg-slate-50/50 dark:hover:bg-surface-container-high/30")}><span className={styles.methodIcon + " text-white " + method.color}><Icon size={20} /></span><span className={styles.methodName}><strong>{isAr ? method.nameAr : method.nameEn}</strong><small>{method.badge} · {method.isAutomaticPayPal ? (isAr ? "دفع مباشر" : "Direct payment") : isAr ? "تحويل وإرفاق إيصال" : "Transfer with receipt"}</small></span><span className={styles.radio + " text-blue-600 dark:text-blue-400"}>{selected && <Check size={12} strokeWidth={3} />}</span></button>;
               })}</div>
               <div className={styles.rates}><div className={styles.ratesHeader}><span>{isAr ? "أسعار الصرف" : "Exchange rates"}</span><span className={styles.muted}>1 USD</span></div>{[{code:"SDG", value:sdgRate}, {code:"EGP", value:currencyConfig?.usdToEgp || 50}, {code:"SAR", value:currencyConfig?.usdToSar || 3.75}].map(rate => <div key={rate.code}><span className={styles.muted}>{rate.code}</span><strong dir="ltr">{rate.value.toLocaleString()}</strong></div>)}</div>
@@ -629,8 +770,8 @@ export default function WalletClient({ lang, dict }: { lang: Locale; dict: any }
                     </div>
                   </div>
 
-                  {/* Sudan SDG Equivalent (for bankak / fawri) */}
-                  {(activeMethod.isBankak || activeMethod.isFawry) && (
+                  {/* Sudan SDG Equivalent (for bankak / fawri / SD methods) */}
+                  {(activeMethod.isBankak || activeMethod.isFawry || activeMethod.badge === "SD" || activeMethod.badge === "FAWRI") && (
                     <div className="space-y-1">
                       <span className="text-[11px] font-bold text-slate-600 dark:text-slate-400">
                         {isAr ? "المعادل بالجنيه السوداني (SDG):" : "Equivalent (SDG):"}

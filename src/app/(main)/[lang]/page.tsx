@@ -2,11 +2,18 @@ import { Metadata } from "next";
 import { SITE_CONTACTS } from "@/lib/site-contacts";
 import { notFound } from "next/navigation";
 import { Locale, i18n } from "@/i18n/config";
+import { getBackendCandidates } from "@/lib/api-proxy-candidates";
 import ZoalnaHomepage from "@/components/zoalna/ZoalnaHomepage";
 import localHomepageConfig from "@/data/homepage_config.json";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 async function getHomepageConfig() {
+  const backendCandidates = getBackendCandidates(null, process.env.INTERNAL_API_URL);
   const candidates = [...new Set([
+    ...backendCandidates,
+    "https://api.borai.store",
     process.env.INTERNAL_API_URL,
     "http://127.0.0.1:5000",
     "http://localhost:5000",
@@ -17,13 +24,13 @@ async function getHomepageConfig() {
     const res = await Promise.any(candidates.map(async (baseUrl) => {
       const cleanBase = baseUrl.replace(/\/$/, "");
       const r = await fetch(`${cleanBase}/api/homepage`, {
-        next: { revalidate: 30 },
-        signal: AbortSignal.timeout(1500)
+        cache: "no-store",
+        signal: AbortSignal.timeout(3500)
       });
       if (!r.ok) throw new Error(`Homepage API returned ${r.status}`);
       return r.json();
     }));
-    if (res && (res.heroSlider || res.heroSection)) {
+    if (res && (res.heroSlider || res.heroSection || res.gamesGroup1)) {
       return res;
     }
     return localHomepageConfig;
