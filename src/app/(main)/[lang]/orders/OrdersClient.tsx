@@ -129,7 +129,7 @@ export default function OrdersClient({ lang, dict }: { lang: string; dict: any }
     const total = ordersList.length;
     const completed = ordersList.filter((o) => o.status === "completed").length;
     const pending = ordersList.filter(
-      (o) => o.status === "pending" || o.status === "processing"
+      (o) => o.status === "pending" || o.status === "processing" || o.status === "dispatching"
     ).length;
     const failed = ordersList.filter(
       (o) => o.status === "failed" || o.status === "rejected"
@@ -148,7 +148,7 @@ export default function OrdersClient({ lang, dict }: { lang: string; dict: any }
         if (filterStatus === "completed" && o.status !== "completed") return false;
         if (
           filterStatus === "processing" &&
-          !(o.status === "processing" || o.status === "pending")
+          !(o.status === "processing" || o.status === "pending" || o.status === "dispatching")
         )
           return false;
         if (
@@ -527,7 +527,7 @@ export default function OrdersClient({ lang, dict }: { lang: string; dict: any }
                 <tbody className="divide-y divide-slate-100 dark:divide-white/5 font-medium">
                   {filteredOrders.map((ord) => {
                     const isCompleted = ord.status === "completed";
-                    const isProcessing = ord.status === "processing" || ord.status === "pending";
+                    const isProcessing = ord.status === "processing" || ord.status === "pending" || ord.status === "dispatching";
                     const isFailed = ord.status === "failed" || ord.status === "rejected";
                     const rawReply = cleanHtmlToText(ord.reply || "");
 
@@ -692,7 +692,7 @@ export default function OrdersClient({ lang, dict }: { lang: string; dict: any }
             <div className="grid grid-cols-1 md:grid-cols-2 lg:hidden gap-3.5">
               {filteredOrders.map((ord) => {
                 const isCompleted = ord.status === "completed";
-                const isProcessing = ord.status === "processing" || ord.status === "pending";
+                const isProcessing = ord.status === "processing" || ord.status === "pending" || ord.status === "dispatching";
                 const isFailed = ord.status === "failed" || ord.status === "rejected";
                 const rawReply = cleanHtmlToText(ord.reply || "");
 

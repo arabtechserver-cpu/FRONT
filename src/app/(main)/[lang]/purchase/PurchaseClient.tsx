@@ -617,6 +617,11 @@ function PurchaseClientContent({ lang, dict }: { lang: string, dict: any }) {
       return;
     }
 
+    if (!selectedServiceDetailsLoaded) {
+      setSubmitFeedback({ type: "error", text: lang === 'ar' ? 'يرجى الانتظار حتى تحميل حقول الخدمة' : 'Please wait for the service fields to load.' });
+      return;
+    }
+
     const providerFields = getProviderCustomFields(selectedService);
     let payloadTarget = targetInput.trim();
     let rawImeiStr = "";
@@ -1408,29 +1413,6 @@ function PurchaseClientContent({ lang, dict }: { lang: string, dict: any }) {
                     </div>
                   )}
 
-                  {/* ── حالة 3: خدمة Server أو Remote بدون حقول مخصصة ── */}
-                  {!isImeiService && !hasCustomFields && (
-                    <div className="space-y-2 p-5 rounded-2xl bg-surface-container-high/40 border border-primary/20">
-                      <label htmlFor="purchase-target-input" className="text-xs font-bold text-on-surface-variant uppercase tracking-wider flex items-center justify-between">
-                        <span>
-                          {lang === 'ar' ? 'بيانات الطلب / المعرف المطلوب (Target / Account / Link):' : 'Order Target / Account ID / Link:'}
-                        </span>
-                        <span className="text-on-surface-variant/60 text-[11px] font-normal">
-                          {lang === 'ar' ? '(اختياري إن لم يتطلب)' : '(Optional)'}
-                        </span>
-                      </label>
-                      <input
-                        id="purchase-target-input"
-                        name="purchaseTarget"
-                        aria-label={lang === 'ar' ? 'بيانات الطلب أو المعرف المطلوب' : 'Order Target or Account ID'}
-                        type="text"
-                        value={targetInput}
-                        onChange={(e) => setTargetInput(e.target.value)}
-                        placeholder={lang === 'ar' ? 'أدخل المعرف أو الرابط أو اسم المستخدم...' : 'Enter account, username, or link...'}
-                        className="w-full bg-surface-container-lowest border border-outline-variant/40 rounded-xl py-3.5 px-4 text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all font-mono text-sm dir-ltr"
-                      />
-                    </div>
-                  )}
                 </div>
               );
             })()}

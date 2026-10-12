@@ -3,6 +3,7 @@
 import { SITE_CONTACTS } from "@/lib/site-contacts";
 
 import { useState, useEffect } from "react";
+import ApiIntegrationGuide from "./ApiIntegrationGuide";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { cleanHtmlToText } from "@/utils/cleanHtml";
@@ -1349,8 +1350,8 @@ export default function ProfileClient({ lang, dict }: { lang: string; dict: any 
               </h2>
               <p className="text-xs text-slate-500 mt-1 leading-relaxed">
                 {isAr 
-                  ? "يمكنك ربط موقعك أو سيرفرك الشخصي مباشرة بسيرفرنا لتقديم الطلبات آلياً وبأسرع وقت." 
-                  : "Connect your website or server directly to our platform to place automated orders."}
+                  ? "اربط موقعك أو سيرفرك لإرسال الطلبات وتتبعها عبر الـAPI. تخضع الطلبات لمراجعة الإدارة قبل إرسالها للمزود."
+                  : "Connect your website or server to submit and track API orders. Orders await admin approval before provider dispatch."}
               </p>
             </div>
 
@@ -1428,6 +1429,12 @@ export default function ProfileClient({ lang, dict }: { lang: string; dict: any 
                   </p>
                 </div>
               </div>
+
+              <ApiIntegrationGuide
+                endpoint={typeof window !== "undefined" ? window.location.origin + "/api/v1/provider" : "/api/v1/provider"}
+                apiKey={profile.apiKey || ""}
+                isAr={isAr}
+              />
 
               {/* Dhru Fusion Guide */}
               <div className="p-3.5 min-[380px]:p-5 rounded-xl border space-y-3 text-xs leading-relaxed text-slate-600 w-full max-w-full overflow-hidden">

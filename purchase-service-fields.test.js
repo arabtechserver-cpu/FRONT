@@ -102,3 +102,8 @@ assert.equal(
 
 console.log("purchase service field tests passed");
 
+
+// Stored provider action wins over misleading category/group labels.
+assert.equal(shouldShowDefaultImeiField("IMEI Service", null, "server", "IMEI Tools"), false);
+assert.equal(shouldShowDefaultImeiField("IMEI Service", null, "remote"), false);
+assert.equal(shouldShowDefaultImeiField("Server Service", null, "imei"), true);

@@ -1,6 +1,11 @@
 function isImeiCategoryOrService(categoryName, serviceType, groupName) {
-  const text = [categoryName, serviceType, groupName].filter(Boolean).join(' ').toLowerCase();
-  return text.includes('imei');
+  // The stored API type takes precedence over a category's display name.
+  for (const value of [serviceType, categoryName, groupName]) {
+    const text = String(value || '').toLowerCase();
+    if (text.includes('server') || text.includes('remote')) return false;
+    if (text.includes('imei')) return true;
+  }
+  return false;
 }
 
 function isPrimaryTargetCustomField(key, field) {

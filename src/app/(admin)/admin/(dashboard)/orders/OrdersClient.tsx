@@ -182,7 +182,7 @@ export default function OrdersClient() {
     const total = orders.length;
     const completed = orders.filter((o) => o.status === "completed").length;
     const processing = orders.filter((o) => o.status === "processing").length;
-    const pending = orders.filter((o) => o.status === "pending").length;
+    const pending = orders.filter((o) => o.status === "pending" || o.status === "dispatching").length;
     const rejected = orders.filter((o) => o.status === "rejected" || o.status === "cancelled" || o.status === "failed").length;
     const apiOrders = orders.filter((o) => o.source === "api" || Boolean(o.apiDetails) || Boolean(o.user?.apiSiteName)).length;
     return { total, completed, processing, pending, rejected, apiOrders };
@@ -193,7 +193,7 @@ export default function OrdersClient() {
       if (statusFilter !== "all") {
         if (statusFilter === "api") {
           if (order.source !== "api" && !order.apiDetails && !order.user?.apiSiteName) return false;
-        } else if (statusFilter === "pending" && order.status !== "pending") return false;
+        } else if (statusFilter === "pending" && order.status !== "pending" && order.status !== "dispatching") return false;
         else if (statusFilter === "processing" && order.status !== "processing") return false;
         else if (statusFilter === "completed" && order.status !== "completed") return false;
         else if (statusFilter === "rejected" && order.status !== "rejected" && order.status !== "cancelled" && order.status !== "failed") return false;
@@ -266,6 +266,7 @@ export default function OrdersClient() {
         }
       } else {
         showToast(data.error || "فشل إرسال الطلب للمزود", "error");
+        await fetchOrders();
       }
     } catch {
       showToast("حدث خطأ أثناء الاتصال بسيرفر المزود", "error");
@@ -809,13 +810,18 @@ export default function OrdersClient() {
                             قيد التنفيذ بالمزود
                           </span>
                         )}
+                        {order.status === "dispatching" && (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-400 font-bold text-[11px]">
+                            جارٍ الإرسال / في انتظار تأكيد المزود
+                          </span>
+                        )}
                         {order.status === "pending" && (
                           <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-400 font-bold text-[11px]">
                             <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
                             في انتظار الموافقة
                           </span>
                         )}
-                        {order.status !== "completed" && order.status !== "processing" && order.status !== "pending" && (
+                        {order.status !== "completed" && order.status !== "processing" && order.status !== "pending" && order.status !== "dispatching" && (
                           order.refundedAt ? (
                             <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-bold text-[11px]" title={`تم الاسترجاع برقم مرجع: ${order.refundRefNo || ''}`}>
                               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
