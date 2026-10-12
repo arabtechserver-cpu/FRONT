@@ -1,5 +1,7 @@
 ﻿"use client";
 
+import { SITE_CONTACTS } from "@/lib/site-contacts";
+
 import { useState, useEffect, useRef, useCallback, useDeferredValue } from "react";
 import { buildAdminTransactionsUrl, mergeTransactionPages } from "../../../../../lib/admin-wallet-pagination";
 
@@ -276,13 +278,13 @@ export default function AdminWalletClient() {
         </div>
 
         <a
-          href="https://t.me/ArabTechOTPBot"
+          href={SITE_CONTACTS.telegramBotUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="px-4 py-2.5 rounded-xl bg-[#0088cc] hover:bg-[#0088cc]/90 text-white font-bold text-xs flex items-center gap-2 transition-all shadow-md shrink-0 active:scale-95"
         >
           <span className="material-symbols-outlined text-base">near_me</span>
-          <span>افتح بوت التلجرام: @ArabTechOTPBot</span>
+          <span>افتح بوت التلجرام: {SITE_CONTACTS.telegramBotUrl.replace("https://t.me/", "@")}</span>
         </a>
       </div>
 

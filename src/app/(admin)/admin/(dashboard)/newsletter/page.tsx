@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect } from "react";
 
@@ -37,7 +37,7 @@ export default function AdminNewsletterPage() {
   const [title, setTitle] = useState("");
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
-  const [actionUrl, setActionUrl] = useState("https://arabtechproserver.tech/ar/pricing");
+  const [actionUrl, setActionUrl] = useState("/ar/pricing");
   const [actionText, setActionText] = useState("تصفح العرض واطلب الآن");
   const [sendingBroadcast, setSendingBroadcast] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -130,7 +130,7 @@ export default function AdminNewsletterPage() {
         body: JSON.stringify({
           category,
           title,
-          subject: subject || `[عرب تك برو] ${title}`,
+          subject: subject || `[BORAI STORE] ${title}`,
           message,
           actionUrl,
           actionText
@@ -163,23 +163,23 @@ export default function AdminNewsletterPage() {
     if (type === "tool") {
       setCategory("Tool Offer");
       setTitle("توفر تفعيل رسمي فوري لأداة جديدة!");
-      setSubject("أداة جديدة وتفعيل فوري على سيرفر عرب تك برو");
-      setMessage("يسرنا إعلامكم بتوفر تراخيص وتفعيلات رسمية جديدة لأقوى أدوات السوفت وير بأسعار حصرية وتسليم فوري تلقائي عبر السيرفر. تفضل بالطلب الآن واستمتع بأعلى سرعة وأفضل دعم فني.");
-      setActionUrl("https://arabtechproserver.tech/ar/pricing");
-      setActionText("طلب وتفعيل الأداة فوراً");
+      setSubject("خدمة جديدة وتفعيل فوري على BORAI STORE");
+      setMessage("يسرنا إعلامكم بتوفر خدمات وباقات شحن وتفعيلات جديدة بأسعار حصرية وتسليم فوري تلقائي عبر المتجر. تفضل بالطلب الآن واستمتع بأعلى سرعة وأفضل دعم فني.");
+      setActionUrl("/ar/pricing");
+      setActionText("طلب وتفعيل الخدمة فوراً");
     } else if (type === "discount") {
       setCategory("Hot Offer");
       setTitle("تخفيضات خاصة وعروض جملة لفترة محدودة!");
       setSubject("خصم خاص على باقات وتفعيلات السيرفر للوكلاء");
       setMessage("عرض خاص لجميع عملائنا ووكلائنا الكرام! تخفيضات حصرية على أرصدة السيرفرات وفك الشفرات وتخطي الحسابات لفترة محدودة. اشحن محفظتك الآن واستفد من العرض قبل انتهائه.");
-      setActionUrl("https://arabtechproserver.tech/ar/pricing");
+      setActionUrl("/ar/pricing");
       setActionText("استعراض العروض المخفضة");
     } else if (type === "server") {
       setCategory("Service Update");
       setTitle("تحديث جديد: دعم فك شفرات موديلات إضافية");
       setSubject("تحديث جديد لسيرفر فك الشفرات وتخطي الحسابات");
       setMessage("تم تحديث خدمات الـ IMEI والسيرفر لدعم أحدث الحمايات والموديلات العالمية لفك الشبكات وتخطي FRP و iCloud بكفاءة عالية وبأسرع وقت تسليم.");
-      setActionUrl("https://arabtechproserver.tech/ar/pricing?cat=imei");
+      setActionUrl("/ar/pricing?cat=imei");
       setActionText("عرض قائمة الخدمات المحدثة");
     }
   };
@@ -448,7 +448,7 @@ export default function AdminNewsletterPage() {
               <div className="bg-[#0b1329] border border-outline-variant/30 rounded-2xl p-5 space-y-4 shadow-inner">
                 {/* Header Logo */}
                 <div className="flex items-center justify-between pb-3 border-b border-violet-400/15">
-                  <span className="font-bold text-xs text-primary font-mono tracking-wider">ARAB TECH PRO SERVER</span>
+                  <span className="font-bold text-xs text-primary font-mono tracking-wider">BORAI STORE</span>
                   <span className="text-[10px] text-white/50">إشعار رسمي</span>
                 </div>
 
@@ -474,8 +474,8 @@ export default function AdminNewsletterPage() {
                 </div>
 
                 <div className="pt-4 border-t border-violet-400/15 text-[10px] text-white/40 text-center space-y-1">
-                  <p>تصلك هذه الرسالة لاشتراكك في نشرة عرب تك برو سيرفر.</p>
-                  <p>https://arabtechproserver.tech</p>
+                  <p>تصلك هذه الرسالة لاشتراكك في نشرة BORAI STORE.</p>
+                  <p>BORAI STORE | All Rights Reserved</p>
                 </div>
               </div>
             </div>

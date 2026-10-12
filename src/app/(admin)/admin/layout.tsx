@@ -1,14 +1,17 @@
-﻿import type { Metadata } from "next";
-import { Inter, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
+import type { Metadata } from "next";
+import { Cairo, Inter, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import "../../globals.css";
+import "@/styles/admin-theme.css";
+
+const cairo = Cairo({ subsets: ["arabic", "latin"], variable: "--font-cairo", weight: ["400", "500", "600", "700", "800", "900"], display: "swap" });
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-jakarta" });
 const jetbrains = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains" });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://arabtechproserver.tech"),
-  title: "Admin Dashboard | Arab Tech Pro Server",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
+  title: "Admin Dashboard | BORAI STORE",
   description: "Admin Management Portal",
   icons: {
     icon: [
@@ -26,7 +29,7 @@ export default function AdminRootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark" style={{ backgroundColor: "#050814", colorScheme: "dark" }}>
+    <html lang="ar" dir="rtl" className="dark admin-site">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -39,8 +42,7 @@ export default function AdminRootLayout({
         />
       </head>
       <body
-        className={`${inter.variable} ${jakarta.variable} ${jetbrains.variable} bg-surface text-on-surface antialiased`}
-        style={{ backgroundColor: "#050814", colorScheme: "dark" }}
+        className={`${cairo.variable} ${inter.variable} ${jakarta.variable} ${jetbrains.variable} admin-theme font-sans bg-background text-on-surface antialiased`}
       >
         {children}
       </body>

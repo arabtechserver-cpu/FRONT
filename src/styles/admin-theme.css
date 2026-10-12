@@ -1,0 +1,123 @@
+@import "./admin-theme-utilities.css";
+
+/* Administrative routes only: midnight surfaces with blue and cyan accents. */
+html.admin-site { background: #080e1a; color-scheme: dark; }
+html.admin-site body.admin-theme {
+  --color-bg: #080e1a;
+  --color-surface: #0c1729;
+  --color-surface-2: #11213a;
+  --color-surface-3: #162d4c;
+  --color-primary: #0284c7;
+  --color-primary-bright: #38bdf8;
+  --color-primary-dim: #0369a1;
+  --color-primary-deep: #0c4a6e;
+  --color-cyan: #22d3ee;
+  --color-cyan-bright: #67e8f9;
+  --color-cyan-dim: #0891b2;
+  --color-text: #eef6ff;
+  --color-text-muted: #a9bed6;
+  --color-border: rgb(56 189 248 / .23);
+  --color-border-bright: rgb(56 189 248 / .5);
+  --surface-container-lowest: 8 14 26;
+  --surface-container-low: 12 23 41;
+  --surface-container: 17 33 58;
+  --surface-container-high: 22 45 76;
+  --surface-container-highest: 30 60 94;
+  --surface-dim: 8 14 26;
+  --surface: 12 23 41;
+  --surface-bright: 22 45 76;
+  --surface-variant: 12 23 41;
+  --background: 8 14 26;
+  --on-background: 238 246 255;
+  --on-surface: 238 246 255;
+  --on-surface-variant: 169 190 214;
+  --inverse-surface: 238 246 255;
+  --inverse-on-surface: 8 14 26;
+  --outline: 100 155 192;
+  --outline-variant: 50 96 132;
+  /* Tailwind action tokens are scoped here, independently of customer themes. */
+  --user-primary: 2 132 199;
+  --user-primary-container: 3 105 161;
+  --user-primary-fixed: 186 230 253;
+  --user-primary-fixed-dim: 56 189 248;
+  --user-on-primary-fixed: 12 74 110;
+  --user-secondary: 34 211 238;
+  --user-on-secondary: 8 14 26;
+  --user-secondary-container: 8 145 178;
+  --user-on-secondary-container: 207 250 254;
+  background: var(--color-bg);
+  color: var(--color-text);
+  padding-bottom: 0;
+  min-height: 100dvh;
+}
+
+.admin-theme .admin-sidebar { background: #0b1424; box-shadow: -6px 0 24px rgb(0 0 0 / .15); }
+.admin-theme .admin-header { background-color: rgb(12 23 41 / .96); }
+.admin-theme .admin-main {
+  background: radial-gradient(ellipse at 48% 0, rgb(14 88 151 / .13), transparent 65%), var(--color-bg);
+  overscroll-behavior: contain;
+}
+.admin-theme .admin-sidebar a[aria-current="page"] {
+  background: linear-gradient(100deg, #0284c7, #0369a1);
+  border: 1px solid rgb(56 189 248 / .4);
+  box-shadow: 0 3px 14px rgb(2 132 199 / .2);
+  color: #fff;
+}
+.admin-theme .admin-sidebar a[aria-current="page"] .material-symbols-outlined { color: #fff; }
+.admin-theme .text-primary { color: #38bdf8; }
+.admin-theme .text-secondary { color: #22d3ee; }
+.admin-theme .glow-cyan { text-shadow: 0 0 12px rgb(56 189 248 / .14) !important; }
+
+html.admin-site .admin-theme :is(.glass-card, .glass-panel, .lamp-card, .convex-card, .card-spotlight, .curved-cockpit, .glass-card-cyan) {
+  background: linear-gradient(135deg, rgb(22 45 76 / .78), rgb(12 23 41 / .96)) !important;
+  color: var(--color-text);
+  border: 1px solid var(--color-border) !important;
+  box-shadow: 0 6px 24px rgb(0 0 0 / .18), inset 0 1px 0 rgb(186 230 253 / .035) !important;
+  backdrop-filter: none !important;
+}
+html.admin-site .admin-theme :is(.glass-card, .glass-panel, .lamp-card, .convex-card):hover {
+  border-color: var(--color-border-bright) !important;
+  background: linear-gradient(135deg, rgb(22 45 76 / .95), rgb(12 23 41 / .98)) !important;
+}
+.admin-theme :is(.btn-primary, .btn-royal, .btn-purple-glow) {
+  background: linear-gradient(110deg, #0284c7, #0369a1) !important;
+  color: #fff !important;
+  box-shadow: 0 4px 16px rgb(2 132 199 / .2) !important;
+}
+.admin-theme :is(.btn-secondary, .btn-dark-pill) {
+  background: var(--color-surface-3) !important;
+  color: var(--color-text) !important;
+  border-color: var(--color-border) !important;
+}
+.admin-theme :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea) {
+  background-color: rgb(var(--surface-container-lowest));
+  color: var(--color-text);
+  border-color: rgb(var(--outline-variant) / .65);
+  min-width: 0;
+}
+.admin-theme :is(input, textarea)::placeholder { color: #819bb7; opacity: 1; }
+.admin-theme :is(input, select, textarea):focus {
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 3px rgb(56 189 248 / .12);
+}
+.admin-theme :is(a, button, input, select, textarea):focus-visible {
+  outline: 2px solid #38bdf8;
+  outline-offset: 3px;
+}
+.admin-theme select option { background: #11213a; color: #eef6ff; }
+.admin-theme table { width: 100%; border-collapse: collapse; }
+.admin-theme thead { background: rgb(var(--surface-container-high) / .65); }
+.admin-theme thead th { color: #c5ddf5; font-weight: 700; }
+.admin-theme tbody tr:nth-child(even) { background-color: rgb(22 45 76 / .14); }
+.admin-theme tbody tr:hover { background-color: rgb(22 45 76 / .38); }
+.admin-theme th, .admin-theme td { border-color: rgb(var(--outline-variant) / .3); }
+.admin-theme :is(.overflow-x-auto, .overflow-auto) { scrollbar-width: thin; }
+.admin-theme, .admin-theme * { scrollbar-color: #326084 #080e1a; }
+.admin-theme ::-webkit-scrollbar-track { background: #080e1a; }
+.admin-theme ::-webkit-scrollbar-thumb { background: #326084; border-color: #080e1a; }
+.admin-theme ::-webkit-scrollbar-thumb:hover { background: #4293c2; }
+.admin-theme ::-webkit-scrollbar-corner { background: #080e1a; }
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-theme .admin-sidebar { transition: none; }
+}

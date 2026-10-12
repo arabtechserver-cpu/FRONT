@@ -16,8 +16,7 @@ export async function POST(request: NextRequest) {
       process.env.INTERNAL_API_URL,
       process.env.NEXT_PUBLIC_API_URL,
       "http://127.0.0.1:5000",
-      "http://localhost:5000",
-      "https://arabtechproserver.tech"
+      "http://localhost:5000"
     ].filter(Boolean) as string[];
 
     const uniqueUrls = Array.from(new Set(candidateUrls));

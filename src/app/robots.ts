@@ -14,6 +14,8 @@ export default function robots(): MetadataRoute.Robots {
     "/en/admin/*",
   ];
 
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://borai.store";
+
   return {
     rules: [
       {
@@ -56,8 +58,8 @@ export default function robots(): MetadataRoute.Robots {
         ],
       },
     ],
-    sitemap: "https://arabtechproserver.tech/sitemap.xml",
-    host: "https://arabtechproserver.tech",
+    sitemap: `${baseUrl}/sitemap.xml`,
+    host: baseUrl,
   };
 }
 

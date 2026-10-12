@@ -19,8 +19,7 @@ export async function POST(request: NextRequest) {
       process.env.INTERNAL_API_URL,
       process.env.NEXT_PUBLIC_API_URL,
       "http://127.0.0.1:5000",
-      "http://localhost:5000",
-      "https://arabtechproserver.tech"
+      "http://localhost:5000"
     ].filter(Boolean) as string[];
 
     const uniqueUrls = Array.from(new Set(candidateUrls));
@@ -70,14 +69,15 @@ export async function POST(request: NextRequest) {
           }
 
           if (data.success && data.user && ["admin", "super_admin"].includes(data.user.role)) {
+            const isHttps = request.headers.get("x-forwarded-proto") === "https" || request.nextUrl.protocol === "https:";
             const cookieStore = await cookies();
             cookieStore.set({
               name: "admin_token",
               value: data.token,
-              httpOnly: true,
-              secure: process.env.NODE_ENV === "production",
+              httpOnly: false,
+              secure: isHttps,
               sameSite: "lax",
-              maxAge: 60 * 60 * 12, // 12 Hours Session Limit
+              maxAge: 60 * 60 * 12,
               path: "/"
             });
             return NextResponse.json({ success: true, token: data.token, user: data.user });

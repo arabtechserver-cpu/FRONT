@@ -1,16 +1,17 @@
 import { MetadataRoute } from "next";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = "https://arabtechproserver.tech";
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://borai.store";
   const locales = ["ar", "en"];
   const staticRoutes = [
     "",
     "/pricing",
+    "/services",
+    "/gaming",
+    "/orders",
     "/purchase",
-    "/academy",
-    "/blog",
-    "/tutorials",
-    "/contact",
+    "/terms",
+    "/refund",
     "/login",
     "/register",
   ];
@@ -39,7 +40,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // 3. Dynamic Services from API for Google Indexing
   try {
-    const apiUrl = process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || "https://arabtechproserver.tech";
+    const apiUrl = process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
     const res = await fetch(`${apiUrl}/api/dhru/services?view=pricing`, { cache: "no-store" });
     if (res.ok) {
       const categories = await res.json();

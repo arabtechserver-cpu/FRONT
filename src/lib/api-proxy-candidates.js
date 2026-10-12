@@ -10,7 +10,8 @@ function isLocalhost(url) {
 }
 
 function getBackendCandidates(cachedBackendUrl, internalApiUrl) {
-  const configuredUrl = internalApiUrl && !isLocalhost(internalApiUrl) ? internalApiUrl : null;
+  const isDev = process.env.NODE_ENV !== "production";
+  const configuredUrl = internalApiUrl && (!isLocalhost(internalApiUrl) || isDev) ? internalApiUrl : null;
   return [cachedBackendUrl, configuredUrl, ...knownBackendUrls].filter(
     (url, index, all) => Boolean(url) && all.indexOf(url) === index
   );

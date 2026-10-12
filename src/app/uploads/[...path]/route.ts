@@ -45,12 +45,11 @@ export async function GET(
         }
         const headers = new Headers();
         res.headers.forEach((val, key) => {
-          if (!['transfer-encoding', 'connection'].includes(key.toLowerCase())) {
+          if (!['content-encoding', 'content-length', 'transfer-encoding', 'connection'].includes(key.toLowerCase())) {
             headers.set(key, val);
           }
         });
-        const body = await res.arrayBuffer();
-        return new NextResponse(body, {
+        return new NextResponse(res.body, {
           status: res.status,
           headers,
         });
@@ -65,12 +64,11 @@ export async function GET(
         }
         const headers = new Headers();
         fallbackRes.headers.forEach((val, key) => {
-          if (!['transfer-encoding', 'connection'].includes(key.toLowerCase())) {
+          if (!['content-encoding', 'content-length', 'transfer-encoding', 'connection'].includes(key.toLowerCase())) {
             headers.set(key, val);
           }
         });
-        const body = await fallbackRes.arrayBuffer();
-        return new NextResponse(body, {
+        return new NextResponse(fallbackRes.body, {
           status: fallbackRes.status,
           headers,
         });

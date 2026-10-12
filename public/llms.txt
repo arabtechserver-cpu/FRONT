@@ -1,23 +1,35 @@
-# Arab Tech Pro Server - عرب تك برو سيرفر (عرب تيك سيرفر)
+# BORAI STORE - بورعي ستور
 
 > The premier official server for remote mobile phone unlocking, GSM tools activations, IMEI checks, FRP bypass, and instant server credits.
-> الموقع الرسمي المعتمد لمنصة عرب تك برو سيرفر (عرب تيك سيرفر) لخدمات فك شفرات الهواتف، تفعيل أدوات وبرامج السوفت وير، تخطي آيكلود وFRP، وخدمات IMEI والسيرفرات عن بعد.
+> الموقع الرسمي المعتمد لمنصة BORAI STORE (بورعي ستور) لشحن الألعاب، البطاقات الرقمية، وتفعيل برامج السوفت وير والخدمات الرقمية الفورية.
 
-- **Website**: https://arabtechproserver.tech
-- **Arabic Portal**: https://arabtechproserver.tech/ar
-- **English Portal**: https://arabtechproserver.tech/en
-- **Pricing & Services Catalog**: https://arabtechproserver.tech/ar/pricing
-- **Purchase & Ordering**: https://arabtechproserver.tech/ar/purchase
-- **API Documentation**: https://arabtechproserver.tech/ar/api-developer
-- **Telegram Support**: https://t.me/ARABTECHSUPPURT2
-- **Telegram Channel**: https://t.me/arabtechserver
-- **Support WhatsApp / Phone**: +16728972935
+- **Website**: https://borai.store
+- **Arabic Portal**: https://borai.store/ar
+- **English Portal**: https://borai.store/en
+- **Pricing & Services Catalog**: https://borai.store/ar/pricing
+- **Purchase & Ordering**: https://borai.store/ar/purchase
+- **API Documentation**: https://borai.store/ar/api-developer
+- **Telegram Support**: https://t.me/boraiserver
+- **Telegram Channel**: https://t.me/boraiserver
+- **WhatsApp Group**: https://chat.whatsapp.com/D3SYr6QvMPJ6HYoT5QfTzS
+- **WhatsApp Support**: https://wa.me/249928863525
+- **Support WhatsApp / Phone**: +249928863525
 
 ---
 
 ## Core Capabilities & Services
 
-1. **GSM Tool Licenses & Activations (تفعيل البوكسات والدونجل والأدوات الرقمية)**:
+1. **Gaming Credits & Digital Gift Cards (شحن الألعاب والبطاقات الرقمية)**:
+   - PUBG Mobile UC (Instant Player ID topup)
+   - Free Fire Diamonds (Direct Player ID topup)
+   - Roblox Robux & Gift Cards
+   - Steam Wallet Gift Cards (Global, USD, TRY, ARS)
+   - PlayStation Network (PSN) & Xbox Live Gift Cards
+   - Google Play & Apple App Store / iTunes Gift Cards
+   - Call of Duty Mobile CP & eFootball Coins
+   - TikTok Coins & Social Media Credits
+
+2. **GSM Tool Licenses & Activations (تفعيل البوكسات والدونجل والأدوات الرقمية)**:
    - UnlockTool (3 Months, 6 Months, 12 Months)
    - Chimera Tool (Samsung, PRO, Full)
    - Borneo Schematics (Schematics & Hardware Solutions)
@@ -41,7 +53,7 @@
 4. **Reseller API Integration (ربط الـ API للموزعين وأصحاب السيرفرات)**:
    - Fully compatible with Dhru Fusion, Webx, and custom GSM CRM APIs.
    - Live automated order dispatch and real-time status webhooks.
-   - Endpoint: `https://arabtechproserver.tech/api/v1/provider`
+   - Endpoint: `https://borai.store/api/v1/provider`
 
 5. **Payment Methods & Instant Wallet Funding (طرق الدفع والشحن الفوري)**:
    - Instapay (Egypt)
@@ -59,4 +71,4 @@
 - **Q: Can other servers connect via API?**
   A: Yes, resellers can connect via our standard Dhru-compatible REST API at `/api/v1/provider`.
 - **Q: Is customer support available?**
-  A: 24/7 dedicated human priority support is available on Telegram (@ARABTECHSUPPURT2) and WhatsApp.
+  A: 24/7 dedicated human priority support is available on Telegram (@boraiserver) and WhatsApp.

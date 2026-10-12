@@ -51,7 +51,7 @@ export default function AiChatWidget() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
     try {
-      const saved = JSON.parse(localStorage.getItem('arabtech_ai_history') || '[]');
+      const saved = JSON.parse(localStorage.getItem('borai_store_ai_history') || '[]');
       if (Array.isArray(saved) && saved.length > 0) {
         setMessages(saved.slice(-50));
       }
@@ -61,7 +61,7 @@ export default function AiChatWidget() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
     if (messages.length) {
-      localStorage.setItem('arabtech_ai_history', JSON.stringify(messages.slice(-50)));
+      localStorage.setItem('borai_store_ai_history', JSON.stringify(messages.slice(-50)));
     }
   }, [messages]);
 
@@ -99,7 +99,7 @@ export default function AiChatWidget() {
       }
     } catch (err) {
       console.error('AI chat error:', err);
-      setMessages(prev => [...prev, { role: 'assistant', content: 'تعذر الاتصال بالمساعد الذكي حالياً. يمكنك مراسلة الدعم الفني مباشرة على تيليجرام: @ARABTECHSUPPURT2 أو واتساب: +16728972935' }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: 'تعذر الاتصال بالمساعد الذكي حالياً. يمكنك مراسلة الدعم الفني مباشرة عبر واتساب.' }]);
     } finally {
       setIsLoading(false);
     }
@@ -172,21 +172,21 @@ export default function AiChatWidget() {
     <>
       {/* Chat Box Modal (Fully Mobile & Desktop Responsive with Light & Dark Mode) */}
       {isOpen && (
-        <div className="fixed inset-x-2.5 bottom-2.5 sm:bottom-6 sm:left-6 sm:inset-x-auto w-auto sm:w-[420px] max-w-full h-[85vh] sm:h-[580px] bg-white/95 dark:bg-[#0b0f19]/95 backdrop-blur-2xl rounded-3xl border border-slate-200/90 dark:border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_60px_rgba(0,0,0,0.85)] flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-300 z-[9999]">
+        <div className="fixed inset-x-2.5 bottom-2.5 sm:bottom-6 sm:left-6 sm:inset-x-auto w-auto sm:w-[420px] max-w-full h-[85vh] sm:h-[580px] bg-white/95 dark:bg-background/95 backdrop-blur-2xl rounded-3xl border border-slate-200/90 dark:border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_60px_rgba(15,17,26,0.7)] flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-300 z-[9999]">
           
           {/* Header */}
-          <div className="p-3.5 sm:p-4 bg-gradient-to-r from-sky-500/10 via-blue-500/10 to-slate-50 dark:from-primary/20 dark:via-blue-900/30 dark:to-surface-container-high border-b border-slate-200 dark:border-white/10 flex items-center justify-between">
+          <div className="p-3.5 sm:p-4 bg-gradient-to-r from-sky-500/10 via-blue-500/10 to-slate-50 dark:from-primary/20 dark:via-blue-900/30 dark:to-[#44403c] border-b border-slate-200 dark:border-white/10 flex items-center justify-between">
             <div className="flex items-center gap-2.5 sm:gap-3">
-              <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-600 p-0.5 shadow-md">
-                <div className="w-full h-full bg-white dark:bg-[#0f172a] rounded-full flex items-center justify-center">
+              <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gradient-to-tr from-amber-400 to-blue-600 p-0.5 shadow-md">
+                <div className="w-full h-full bg-white dark:bg-surface-container rounded-full flex items-center justify-center">
                   <span className="material-symbols-outlined text-cyan-600 dark:text-primary text-lg sm:text-xl">smart_toy</span>
                 </div>
                 <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-white dark:border-[#0b0f19] rounded-full" />
               </div>
               <div>
                 <h3 className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white flex items-center gap-1.5">
-                  <span>عرب تك برو AI</span>
-                  <span className="text-[9px] sm:text-[10px] bg-cyan-500/15 text-cyan-600 dark:bg-primary/20 dark:text-primary px-1.5 py-0.5 rounded-full font-mono border border-cyan-500/30 dark:border-primary/30">PRO</span>
+                  <span>BORAI STORE AI</span>
+                  <span className="text-[9px] sm:text-[10px] bg-blue-500/15 text-blue-600 px-1.5 py-0.5 rounded-full font-mono border border-blue-500/30">PRO</span>
                 </h3>
                 <p className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1">
                   <span>متصل الآن لخدمتك</span>
@@ -279,7 +279,7 @@ export default function AiChatWidget() {
               e.preventDefault();
               handleSend();
             }}
-            className="p-2.5 sm:p-3 bg-slate-50/90 dark:bg-[#080d1a] border-t border-slate-200 dark:border-white/10 flex items-center gap-2"
+            className="p-2.5 sm:p-3 bg-slate-50/90 dark:bg-background border-t border-slate-200 dark:border-white/10 flex items-center gap-2"
           >
             <input
               id="ai-chat-input"
@@ -290,12 +290,12 @@ export default function AiChatWidget() {
               aria-label="اكتب استفسارك أو طلبك هنا"
               placeholder="اكتب استفسارك أو طلبك هنا..."
               disabled={isLoading}
-              className="flex-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/15 rounded-2xl px-3.5 py-2.5 sm:px-4 sm:py-3 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
+              className="flex-1 bg-white dark:bg-surface-container border border-slate-200 dark:border-white/15 rounded-2xl px-3.5 py-2.5 sm:px-4 sm:py-3 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-400 focus:outline-none focus:border-amber-400 transition-colors"
             />
             <button
               type="submit"
               disabled={!input.trim() || isLoading}
-              className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-cyan-600 hover:bg-cyan-500 dark:bg-primary dark:hover:bg-primary/90 disabled:opacity-40 text-white flex items-center justify-center shadow-md transition-transform active:scale-95 shrink-0"
+              className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-cyan-600 hover:bg-cyan-500 dark:bg-primary dark:hover:bg-primary-container dark:text-white disabled:opacity-40 text-white flex items-center justify-center shadow-md transition-transform active:scale-95 shrink-0"
               aria-label="Send message"
             >
               <span className="material-symbols-outlined text-lg sm:text-xl rotate-180">send</span>

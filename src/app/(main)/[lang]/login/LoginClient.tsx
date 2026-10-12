@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
@@ -6,7 +6,7 @@ import Script from "next/script";
 import { Locale } from "@/i18n/config";
 import CloudflareTurnstile, { resetTurnstile } from "@/components/CloudflareTurnstile";
 
-const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "540676912586-vifo9ogu2gjud3d00efv1khd9r7tcajb.apps.googleusercontent.com";
+const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "149631802250-7n94rcr7nd1041iq06ck2310uctituve.apps.googleusercontent.com";
 
 export default function LoginClient({ lang, dict }: { lang: Locale; dict: any }) {
   const [email, setEmail] = useState("");
@@ -242,28 +242,23 @@ export default function LoginClient({ lang, dict }: { lang: Locale; dict: any })
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[calc(100vh-160px)] py-12">
-      <div className="w-full max-w-md glass-card rounded-2xl p-8 shadow-2xl relative overflow-hidden">
-        {/* Background Decorative */}
-        <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary/20 rounded-full blur-3xl pointer-events-none"></div>
-        <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-secondary/20 rounded-full blur-3xl pointer-events-none"></div>
-        
+    <div className="flex flex-col items-center justify-center min-h-[calc(100vh-160px)] py-10 sm:py-16">
+      <div className="bg-surface-container w-full max-w-md rounded-2xl p-6 sm:p-8 border shadow-sm relative">
         {/* Header with Logo */}
-        <div className="relative z-10 flex flex-col items-center mb-8">
-          <Link href={`/${lang}`} className="relative group mb-4 flex items-center justify-center" aria-label="Home">
-            <div className="absolute -inset-2 bg-gradient-to-r from-white/20 via-primary/30 to-white/20 rounded-full blur-xl opacity-80 group-hover:opacity-100 transition-all pointer-events-none"></div>
+        <div className="flex flex-col items-center mb-6">
+          <Link href={`/${lang}`} className="mb-4 flex items-center justify-center" aria-label="Home">
             <img 
-              src={lang === "ar" ? "/images/logo_ar.png" : "/images/logo_en.png"} 
-              alt="Logo" 
-              className="relative z-10 h-12 sm:h-14 w-auto max-w-[260px] object-contain transition-transform group-hover:scale-105 drop-shadow-[0_0_15px_rgba(255,255,255,0.35)]" 
+              src="/images/borai-logo.png?v=2" 
+              alt="BORAI SERVER" 
+              className="h-12 sm:h-14 w-auto max-w-[240px] object-contain" 
             />
           </Link>
-          <h1 className="font-display-lg-mobile text-2xl font-bold text-on-surface">{dict.login.title}</h1>
-          <p className="text-on-surface-variant text-sm mt-1">{dict.login.subtitle}</p>
+          <h1 className="text-xl sm:text-2xl font-bold ">{dict.login.title}</h1>
+          <p className="text-slate-500 text-sm mt-1 text-center">{dict.login.subtitle}</p>
         </div>
 
         {/* Quick Google Sign-In Button */}
-        <div className="relative z-10 mb-5 flex flex-col gap-4">
+        <div className="mb-5 flex flex-col gap-4">
           <Script 
             src="https://accounts.google.com/gsi/client" 
             strategy="afterInteractive" 
@@ -273,32 +268,32 @@ export default function LoginClient({ lang, dict }: { lang: Locale; dict: any })
 
           {/* Divider */}
           <div className="relative flex items-center justify-center">
-            <div className="w-full border-t border-outline-variant/20"></div>
-            <span className="absolute px-3 bg-surface-container-high text-xs text-on-surface-variant font-medium rounded-full border border-outline-variant/20">{dict.login.or}</span>
+            <div className="w-full border-t "></div>
+            <span className="absolute px-3 text-xs text-slate-400 font-medium rounded-full border ">{dict.login.or}</span>
           </div>
         </div>
 
         {/* Feedback Alert Banners */}
         {errorMessage && (
-          <div className="relative z-10 mb-5 p-3.5 rounded-xl bg-red-500/15 border border-red-500/30 text-red-300 text-xs font-semibold flex items-center gap-2.5 animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="mb-5 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold flex items-center gap-2.5">
             <span className="material-symbols-outlined text-base shrink-0">error</span>
             <span>{errorMessage}</span>
           </div>
         )}
 
         {successMessage && (
-          <div className="relative z-10 mb-5 p-3.5 rounded-xl bg-violet-500/15 border border-violet-500/30 text-violet-300 text-xs font-semibold flex items-center gap-2.5 animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="mb-5 p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold flex items-center gap-2.5">
             <span className="material-symbols-outlined text-base shrink-0">check_circle</span>
             <span>{successMessage}</span>
           </div>
         )}
 
         {/* Login Form */}
-        <form onSubmit={handleLoginSubmit} className="relative z-10 flex flex-col gap-5" autoComplete="off">
-          <div className="flex flex-col gap-2">
-            <label htmlFor="login-email" className="text-sm font-label-sm text-on-surface-variant uppercase tracking-wider">{dict.login.emailLabel}</label>
+        <form onSubmit={handleLoginSubmit} className="flex flex-col gap-4 sm:gap-5" autoComplete="off">
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="login-email" className="text-xs font-semibold ">{dict.login.emailLabel}</label>
             <div className="relative">
-              <span className={`absolute ${lang === 'ar' ? 'right-3' : 'left-3'} top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant text-sm`}>person</span>
+              <span className={`absolute ${lang === 'ar' ? 'right-3.5' : 'left-3.5'} top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-lg`}>person</span>
               <input 
                 id="login-email"
                 name="email"
@@ -311,14 +306,14 @@ export default function LoginClient({ lang, dict }: { lang: Locale; dict: any })
                 autoCapitalize="off"
                 spellCheck={false}
                 aria-label={dict.login.emailLabel}
-                className={`w-full bg-surface-container-lowest border border-outline-variant/30 rounded-lg py-3 ${lang === 'ar' ? 'pr-10 pl-4' : 'pl-10 pr-4'} text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-on-surface-variant/50`}
+                className={`w-full border rounded-xl py-3 ${lang === 'ar' ? 'pr-11 pl-4' : 'pl-11 pr-4'} text-sm focus:outline-none focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-100 transition-all placeholder:text-slate-400`}
               />
             </div>
           </div>
 
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-1.5">
             <div className="flex justify-between items-center">
-               <label htmlFor="login-password" className="text-sm font-label-sm text-on-surface-variant uppercase tracking-wider">{dict.login.passwordLabel}</label>
+               <label htmlFor="login-password" className="text-xs font-semibold ">{dict.login.passwordLabel}</label>
                <button 
                 type="button" 
                 onClick={() => {
@@ -327,14 +322,14 @@ export default function LoginClient({ lang, dict }: { lang: Locale; dict: any })
                   setForgotError("");
                   setForgotSuccess("");
                 }}
-                className="text-xs text-primary hover:underline font-bold transition-colors flex items-center gap-1"
+                className="text-xs text-blue-600 hover:text-blue-700 hover:underline font-semibold transition-colors flex items-center gap-1"
                >
                  <span className="material-symbols-outlined text-xs">key</span>
-                 <span>{dict.login.forgot || "نسيت كلمة المرور؟"}</span>
+                 <span>{dict.login.forgot || (lang === "ar" ? "نسيت كلمة المرور؟" : "Forgot Password?")}</span>
                </button>
             </div>
             <div className="relative">
-              <span className={`absolute ${lang === 'ar' ? 'right-3' : 'left-3'} top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant text-sm`}>lock</span>
+              <span className={`absolute ${lang === 'ar' ? 'right-3.5' : 'left-3.5'} top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-lg`}>lock</span>
               <input 
                 id="login-password"
                 name="password"
@@ -347,13 +342,13 @@ export default function LoginClient({ lang, dict }: { lang: Locale; dict: any })
                 autoCapitalize="off"
                 spellCheck={false}
                 aria-label={dict.login.passwordLabel}
-                className={`w-full bg-surface-container-lowest border border-outline-variant/30 rounded-lg py-3 ${lang === 'ar' ? 'pr-10 pl-10' : 'pl-10 pr-10'} text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-on-surface-variant/50`}
+                className={`w-full border rounded-xl py-3 ${lang === 'ar' ? 'pr-11 pl-11' : 'pl-11 pr-11'} text-sm focus:outline-none focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-100 transition-all placeholder:text-slate-400`}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 aria-label={showPassword ? (lang === 'ar' ? "إخفاء كلمة المرور" : "Hide password") : (lang === 'ar' ? "إظهار كلمة المرور" : "Show password")}
-                className={`absolute ${lang === 'ar' ? 'left-3' : 'right-3'} top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors`}
+                className={`absolute ${lang === 'ar' ? 'left-3' : 'right-3'} top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors`}
                 title={showPassword ? "إخفاء" : "إظهار"}
               >
                 <span className="material-symbols-outlined text-lg">
@@ -363,10 +358,10 @@ export default function LoginClient({ lang, dict }: { lang: Locale; dict: any })
             </div>
           </div>
 
-          <div className="flex items-center justify-between mt-2">
+          <div className="flex items-center justify-between mt-1">
             <div className="flex items-center gap-2">
-              <input type="checkbox" id="remember" className="w-4 h-4 rounded border-outline-variant/50 bg-surface-container-lowest text-primary focus:ring-primary/50 focus:ring-offset-background" />
-              <label htmlFor="remember" className="text-sm text-on-surface-variant cursor-pointer">{dict.login.remember}</label>
+              <input type="checkbox" id="remember" className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+              <label htmlFor="remember" className="text-xs text-slate-600 cursor-pointer">{dict.login.remember}</label>
             </div>
 
             <button 
@@ -377,7 +372,7 @@ export default function LoginClient({ lang, dict }: { lang: Locale; dict: any })
                 setForgotError("");
                 setForgotSuccess("");
               }}
-              className="text-xs text-primary hover:underline font-bold transition-all flex items-center gap-1"
+              className="text-xs text-blue-600 hover:text-blue-700 hover:underline font-semibold transition-all flex items-center gap-1"
             >
               <span className="material-symbols-outlined text-xs">lock_reset</span>
               <span>{lang === "ar" ? "نسيت كلمة المرور؟" : "Forgot Password?"}</span>
@@ -394,11 +389,11 @@ export default function LoginClient({ lang, dict }: { lang: Locale; dict: any })
           <button 
             type="submit" 
             disabled={isLoading}
-            className="w-full mt-4 bg-primary-container text-on-primary-container py-3.5 rounded-lg font-bold uppercase tracking-wider hover:bg-primary transition-all glow-primary shadow-[0_0_15px_rgba(124,58,237,0.2)] active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-50"
+            className="w-full mt-2 bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-xl font-bold text-sm transition-all shadow-sm active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-50"
           >
             {isLoading ? (
               <>
-                <span className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin"></span>
+                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
                 <span>{lang === "ar" ? "جاري الدخول..." : "Logging in..."}</span>
               </>
             ) : (
@@ -407,52 +402,52 @@ export default function LoginClient({ lang, dict }: { lang: Locale; dict: any })
           </button>
         </form>
 
-        <div className="relative z-10 mt-8 text-center text-sm text-on-surface-variant">
-          {dict.login.noAccount} <Link href={`/${lang}/register`} className="text-primary hover:text-primary-container font-semibold transition-colors">{dict.login.registerNow}</Link>
+        <div className="mt-6 text-center text-xs text-slate-500">
+          {dict.login.noAccount} <Link href={`/${lang}/register`} className="text-blue-600 hover:text-blue-700 font-bold transition-colors">{dict.login.registerNow}</Link>
         </div>
       </div>
 
-      {/* FORGOT PASSWORD MODAL WITH LOOPS OTP */}
+      {/* FORGOT PASSWORD MODAL */}
       {forgotModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-in fade-in duration-200">
-          <div className="glass-card w-full max-w-md rounded-2xl p-6 border border-primary/30 shadow-2xl relative overflow-hidden">
-            <div className="flex items-center justify-between pb-4 border-b border-outline-variant/20">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="w-full max-w-md rounded-2xl p-6 border shadow-xl relative">
+            <div className="flex items-center justify-between pb-4 border-b ">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-primary/20 text-primary flex items-center justify-center">
+                <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center">
                   <span className="material-symbols-outlined text-xl">lock_reset</span>
                 </div>
                 <div>
-                  <h2 className="font-bold text-on-surface text-base">استعادة كلمة المرور</h2>
-                  <p className="text-xs text-on-surface-variant">إرسال كود التحقق OTP إلى بريدك الإلكتروني</p>
+                  <h2 className="font-bold text-sm">استعادة كلمة المرور</h2>
+                  <p className="text-xs text-slate-500">إرسال كود التحقق OTP إلى بريدك الإلكتروني</p>
                 </div>
               </div>
               <button 
                 onClick={() => setForgotModalOpen(false)}
                 aria-label="إغلاق نافذة استعادة كلمة المرور"
-                className="p-1.5 rounded-lg hover:bg-surface-container-high text-on-surface-variant transition-colors"
+                className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors"
               >
                 <span className="material-symbols-outlined text-lg">close</span>
               </button>
             </div>
 
             {forgotError && (
-              <div className="mt-4 p-3 rounded-xl bg-red-500/15 border border-red-500/30 text-red-300 text-xs font-semibold flex items-center gap-2">
+              <div className="mt-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold flex items-center gap-2">
                 <span className="material-symbols-outlined text-base">error</span>
                 <span>{forgotError}</span>
               </div>
             )}
 
             {forgotSuccess && (
-              <div className="mt-4 p-3 rounded-xl bg-violet-500/15 border border-violet-500/30 text-violet-300 text-xs font-semibold flex items-center gap-2">
+              <div className="mt-4 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold flex items-center gap-2">
                 <span className="material-symbols-outlined text-base">check_circle</span>
                 <span>{forgotSuccess}</span>
               </div>
             )}
 
             {forgotStep === "email" ? (
-              <form onSubmit={handleForgotSendOtp} className="py-5 space-y-4">
-                <div className="flex flex-col gap-2">
-                  <label htmlFor="forgot-email" className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">البريد الإلكتروني المسجل (Gmail)</label>
+              <form onSubmit={handleForgotSendOtp} className="py-4 space-y-4">
+                <div className="flex flex-col gap-1.5">
+                  <label htmlFor="forgot-email" className="text-xs font-semibold ">البريد الإلكتروني المسجل</label>
                   <input
                     id="forgot-email"
                     name="forgot-email"
@@ -462,7 +457,7 @@ export default function LoginClient({ lang, dict }: { lang: Locale; dict: any })
                     placeholder="customer@gmail.com"
                     autoComplete="off"
                     aria-label="البريد الإلكتروني المسجل"
-                    className="w-full bg-surface-container-lowest border border-outline-variant/30 rounded-xl py-3 px-4 text-xs text-on-surface focus:outline-none focus:border-primary font-mono"
+                    className="w-full border rounded-xl py-2.5 px-3.5 text-xs focus:outline-none focus:bg-white focus:border-blue-600 font-mono"
                     autoFocus
                   />
                 </div>
@@ -471,11 +466,11 @@ export default function LoginClient({ lang, dict }: { lang: Locale; dict: any })
                   <button
                     type="submit"
                     disabled={forgotLoading || !forgotEmail.trim()}
-                    className="flex-1 py-3 rounded-xl bg-primary text-on-primary font-bold text-xs hover:bg-primary-container transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                    className="flex-1 py-2.5 rounded-xl bg-blue-600 text-white font-bold text-xs hover:bg-blue-700 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                   >
                     {forgotLoading ? (
                       <>
-                        <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></span>
+                        <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
                         <span>جاري إرسال كود OTP...</span>
                       </>
                     ) : (
@@ -488,16 +483,16 @@ export default function LoginClient({ lang, dict }: { lang: Locale; dict: any })
                   <button
                     type="button"
                     onClick={() => setForgotModalOpen(false)}
-                    className="px-4 py-3 rounded-xl bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-bold text-xs"
+                    className="px-4 py-2.5 rounded-xl hover:bg-slate-200 font-bold text-xs"
                   >
                     إلغاء
                   </button>
                 </div>
               </form>
             ) : (
-              <form onSubmit={handleForgotResetPassword} className="py-5 space-y-4">
-                <div className="flex flex-col gap-2">
-                  <label htmlFor="forgot-otp" className="text-xs font-bold text-on-surface-variant uppercase tracking-wider text-center">أدخل كود OTP (6 أرقام) من الإيميل</label>
+              <form onSubmit={handleForgotResetPassword} className="py-4 space-y-4">
+                <div className="flex flex-col gap-1.5">
+                  <label htmlFor="forgot-otp" className="text-xs font-semibold text-center">أدخل كود OTP (6 أرقام) من الإيميل</label>
                   <input
                     id="forgot-otp"
                     name="forgot-otp"
@@ -507,13 +502,13 @@ export default function LoginClient({ lang, dict }: { lang: Locale; dict: any })
                     maxLength={6}
                     placeholder="1 2 3 4 5 6"
                     aria-label="كود التحقق OTP"
-                    className="w-full bg-surface-container-lowest border-2 border-primary/50 rounded-xl py-3 px-4 text-center text-xl font-bold tracking-[0.4em] text-primary focus:outline-none focus:border-primary font-mono"
+                    className="w-full border-2 border-blue-200 rounded-xl py-2.5 px-4 text-center text-lg font-bold tracking-[0.3em] text-blue-600 focus:outline-none focus:border-blue-600 font-mono"
                     autoFocus
                   />
                 </div>
 
-                <div className="flex flex-col gap-2">
-                  <label htmlFor="forgot-new-password" className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">كلمة المرور الجديدة</label>
+                <div className="flex flex-col gap-1.5">
+                  <label htmlFor="forgot-new-password" className="text-xs font-semibold ">كلمة المرور الجديدة</label>
                   <div className="relative">
                     <input
                       id="forgot-new-password"
@@ -523,13 +518,13 @@ export default function LoginClient({ lang, dict }: { lang: Locale; dict: any })
                       onChange={(e) => setForgotNewPassword(e.target.value)}
                       placeholder="********"
                       aria-label="كلمة المرور الجديدة"
-                      className="w-full bg-surface-container-lowest border border-outline-variant/30 rounded-xl py-3 pr-4 pl-10 text-xs text-on-surface focus:outline-none focus:border-primary font-mono"
+                      className="w-full border rounded-xl py-2.5 pr-4 pl-10 text-xs focus:outline-none focus:bg-white focus:border-blue-600 font-mono"
                     />
                     <button
                       type="button"
                       onClick={() => setForgotShowPassword(!forgotShowPassword)}
                       aria-label={forgotShowPassword ? "إخفاء كلمة المرور الجديدة" : "إظهار كلمة المرور الجديدة"}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
                     >
                       <span className="material-symbols-outlined text-lg">
                         {forgotShowPassword ? "visibility_off" : "visibility"}
@@ -542,11 +537,11 @@ export default function LoginClient({ lang, dict }: { lang: Locale; dict: any })
                   <button
                     type="submit"
                     disabled={forgotLoading || !forgotOtp.trim() || !forgotNewPassword.trim()}
-                    className="flex-1 py-3 rounded-xl bg-violet-500 hover:bg-violet-600 text-black font-bold text-xs transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                    className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                   >
                     {forgotLoading ? (
                       <>
-                        <span className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></span>
+                        <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
                         <span>جاري الحفظ...</span>
                       </>
                     ) : (
@@ -559,7 +554,7 @@ export default function LoginClient({ lang, dict }: { lang: Locale; dict: any })
                   <button
                     type="button"
                     onClick={() => setForgotStep("email")}
-                    className="px-4 py-3 rounded-xl bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-bold text-xs"
+                    className="px-4 py-2.5 rounded-xl hover:bg-slate-200 font-bold text-xs"
                   >
                     رجوع
                   </button>

@@ -24,6 +24,9 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
+ENV NODE_OPTIONS="--max-old-space-size=96 --max-semi-space-size=2"
+ENV UV_THREADPOOL_SIZE=2
+
 # Create non-root user
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs

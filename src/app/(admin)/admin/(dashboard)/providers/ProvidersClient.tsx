@@ -6,12 +6,21 @@ import {
   filterProviderServicesByType,
   getProviderServiceType,
   getProviderServiceTypeCounts,
-  getProviderServiceTypeLabel
+  getProviderServiceTypeLabel,
+  refinePackageGroupName
 } from "../../../../../lib/provider-service-types";
 import { getProviderCustomFields } from "../../../../../lib/purchase-service-fields";
 import { loadProviderServicesForBrowse } from "../../../../../lib/provider-service-browse";
 
-type ProviderServiceType = "imei" | "server" | "remote";
+type ProviderServiceType =
+  | "imei"
+  | "server"
+  | "remote"
+  | "topups"
+  | "appstores"
+  | "gamecodes"
+  | "subscriptions"
+  | "esim";
 type ProviderServiceTypeFilter = "all" | ProviderServiceType;
 
 interface Provider {
@@ -209,6 +218,9 @@ export default function ProvidersClient() {
   const [browseProvider, setBrowseProvider] = useState<Provider | null>(null);
   const [providerServices, setProviderServices] = useState<any[]>([]);
   const [loadingServices, setLoadingServices] = useState(false);
+  const [serviceLoadError, setServiceLoadError] = useState<string | null>(null);
+  const [loadingServiceSource, setLoadingServiceSource] = useState<"stored" | "remote">("stored");
+  const browseRequestRef = useRef<AbortController | null>(null);
   const [serviceLoadSource, setServiceLoadSource] = useState<"stored" | "remote" | null>(null);
   const [serviceSearch, setServiceSearch] = useState("");
   const deferredServiceSearch = useDeferredValue(serviceSearch);
@@ -246,6 +258,7 @@ export default function ProvidersClient() {
 
   useEffect(() => {
     fetchProviders();
+    return () => browseRequestRef.current?.abort();
   }, []);
 
   const openAddModal = () => {
@@ -464,9 +477,23 @@ export default function ProvidersClient() {
     }
   };
 
+  const closeBrowseServices = () => {
+    browseRequestRef.current?.abort();
+    browseRequestRef.current = null;
+    setLoadingServices(false);
+    setBrowseProvider(null);
+  };
+
   const handleBrowseServices = async (provider: Provider, forceSource?: "stored" | "remote" | "auto") => {
+    browseRequestRef.current?.abort();
+    const controller = new AbortController();
+    browseRequestRef.current = controller;
     setBrowseProvider(provider);
     setLoadingServices(true);
+    setServiceLoadError(null);
+    setProviderServices([]);
+    setServiceLoadSource(null);
+    setLoadingServiceSource(forceSource === "remote" ? "remote" : "stored");
     setServiceSearch("");
     setPackageFilter("all");
     setSelectedGroupNames([]);
@@ -474,23 +501,48 @@ export default function ProvidersClient() {
     setServiceTypeFilter("all");
     setVisibleGroupsLimit(25);
     try {
-      const preferred = forceSource || (serviceLoadSource || "auto");
+      // Each provider opens from its own stored catalog, independent of the previous tab.
+      const preferred = forceSource || "auto";
       const result = await loadProviderServicesForBrowse(provider.id, async (url: string) => {
-        const res = await fetch(url, { cache: "no-store" });
-        const data = await res.json().catch(() => ({}));
-        return { ok: res.ok, data };
+        if (controller.signal.aborted) throw new DOMException("Aborted", "AbortError");
+        const isRemote = url.endsWith("/fetch-services");
+        setLoadingServiceSource(isRemote ? "remote" : "stored");
+        const requestController = new AbortController();
+        const cancelRequest = () => requestController.abort();
+        controller.signal.addEventListener("abort", cancelRequest, { once: true });
+        let timedOut = false;
+        const timeout = setTimeout(() => {
+          timedOut = true;
+          requestController.abort();
+        }, isRemote ? 30000 : 10000);
+        try {
+          const res = await fetch(url, { cache: "no-store", signal: requestController.signal });
+          const data = await res.json().catch((error) => {
+            if (requestController.signal.aborted) throw error;
+            return {};
+          });
+          return { ok: res.ok, data };
+        } catch (error) {
+          if (timedOut) throw new Error(isRemote
+            ? "المزود لم يرد خلال 30 ثانية. أعد المحاولة أو اعرض الخدمات المضافة في الموقع."
+            : "تعذر تحميل الخدمات المحفوظة خلال 10 ثوانٍ. أعد المحاولة.");
+          throw error;
+        } finally {
+          clearTimeout(timeout);
+          controller.signal.removeEventListener("abort", cancelRequest);
+        }
       }, preferred);
+      if (browseRequestRef.current !== controller || controller.signal.aborted) return;
       setProviderServices(result.services);
       setServiceLoadSource(result.source);
       setProviders((current) => current.map((item) => (
         item.id === provider.id && result.source === "stored" ? { ...item, servicesCount: result.services.length } : item
       )));
     } catch (error) {
-      setProviderServices([]);
-      setServiceLoadSource(null);
-      showToast(error instanceof Error ? error.message : "فشل جلب خدمات المزود", "error");
+      if (browseRequestRef.current !== controller || controller.signal.aborted) return;
+      setServiceLoadError(error instanceof Error ? error.message : "فشل جلب خدمات المزود");
     } finally {
-      setLoadingServices(false);
+      if (browseRequestRef.current === controller) setLoadingServices(false);
     }
   };
 
@@ -508,7 +560,8 @@ export default function ProvidersClient() {
   const groupedPackages = useMemo(() => {
     const map: Record<string, any[]> = {};
     for (const s of typeFilteredProviderServices) {
-      const g = s.groupName || s.group_name || "باقة عامة";
+      const rawG = s.groupName || s.group_name || "باقة عامة";
+      const g = refinePackageGroupName(rawG, s.name || s.originalName || "");
       if (!map[g]) map[g] = [];
       map[g].push(s);
     }
@@ -779,7 +832,7 @@ export default function ProvidersClient() {
         provider,
         metadata: {
           exportedAt: new Date().toISOString(),
-          system: "Arab Tech Pro Server",
+          system: "BORAI STORE",
           totalServices: services.length,
           totalPackages: packages.length
         },
@@ -816,7 +869,7 @@ export default function ProvidersClient() {
       const fallbackExport = {
         metadata: {
           exportedAt: new Date().toISOString(),
-          system: "Arab Tech Pro Server",
+          system: "BORAI STORE",
           totalProviders: providers.length
         },
         providers
@@ -1113,7 +1166,7 @@ export default function ProvidersClient() {
                 <input
                   type="text"
                   required
-                  placeholder="مثال: عرب تك برو سيرفر أو GsmServer"
+                  placeholder="مثال: BORAI STORE أو GsmServer"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   className="w-full px-4 py-3 bg-surface-container-lowest border border-outline-variant/40 rounded-xl focus:border-primary outline-none text-xs font-bold text-on-surface transition-all"
@@ -1407,14 +1460,15 @@ export default function ProvidersClient() {
                       <span className="text-primary font-display">{browseProvider.name}</span>
                     </h3>
                     <p className="text-[11px] sm:text-xs text-on-surface-variant">
-                      {filteredGroups.length} باقة مسجلة • {totalFilteredServicesCount} خدمة متاحة مع تفاصيل حقول الطلب
+                      {loadingServices ? "جاري تحميل الخدمات، لم يكتمل حساب العدد بعد..." : serviceLoadError ? "تعذر تحميل قائمة الخدمات" : `${filteredGroups.length} باقة • ${totalFilteredServicesCount} خدمة متاحة مع تفاصيل حقول الطلب`}
                     </p>
                   </div>
                 </div>
 
                 <button
                   type="button"
-                  onClick={() => setBrowseProvider(null)}
+                  onClick={closeBrowseServices}
+                  aria-label="إغلاق خدمات المزود"
                   className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-surface-variant flex items-center justify-center text-on-surface-variant hover:text-on-surface"
                 >
                   <span className="material-symbols-outlined text-sm">close</span>
@@ -1427,7 +1481,6 @@ export default function ProvidersClient() {
                   <button
                     type="button"
                     onClick={() => handleBrowseServices(browseProvider, "remote")}
-                    disabled={loadingServices}
                     className={`px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-xs font-bold transition-all flex items-center gap-1.5 ${
                       serviceLoadSource === "remote"
                         ? "bg-sky-500 text-white shadow-md"
@@ -1442,7 +1495,6 @@ export default function ProvidersClient() {
                   <button
                     type="button"
                     onClick={() => handleBrowseServices(browseProvider, "stored")}
-                    disabled={loadingServices}
                     className={`px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-xs font-bold transition-all flex items-center gap-1.5 ${
                       serviceLoadSource === "stored"
                         ? "bg-primary text-on-primary shadow-md"
@@ -1572,38 +1624,76 @@ export default function ProvidersClient() {
                 </div>
               </div>
 
-              {/* Real Provider Service Type Filters */}
-              <div className="grid grid-cols-4 gap-1.5 p-1.5 sm:p-2 rounded-2xl bg-surface-container-lowest border border-outline-variant/20">
-                {([
-                  { type: "all", label: "الكل", count: serviceTypeCounts.all, icon: "apps" },
-                  { type: "imei", label: "IMEI", count: serviceTypeCounts.imei, icon: "fingerprint" },
-                  { type: "server", label: "Server", count: serviceTypeCounts.server, icon: "dns" },
-                  { type: "remote", label: "Remote", count: serviceTypeCounts.remote, icon: "settings_remote" }
-                ] as const).map((option) => (
-                  <button
-                    key={option.type}
-                    type="button"
-                    onClick={() => {
-                      setServiceTypeFilter(option.type);
-                      setSelectedGroupNames([]);
-                      setExpandedGroups({});
-                      setVisibleGroupsLimit(25);
-                    }}
-                    className={`px-2 py-1.5 sm:py-2 rounded-xl border text-[11px] sm:text-xs font-bold transition-all flex items-center justify-center gap-1 sm:gap-1.5 ${
-                      serviceTypeFilter === option.type
-                        ? "bg-primary text-on-primary border-primary shadow"
-                        : "bg-surface-container-high border-outline-variant/20 text-on-surface-variant hover:text-on-surface hover:border-primary/30"
-                    }`}
-                  >
-                    <span className="material-symbols-outlined text-xs sm:text-sm">{option.icon}</span>
-                    <span>{option.label}</span>
-                    <span className={`font-mono px-1 py-0.2 rounded text-[10px] sm:text-xs ${
-                      serviceTypeFilter === option.type ? "bg-black/20" : "bg-surface-container-highest"
-                    }`}>
-                      {option.count}
-                    </span>
-                  </button>
-                ))}
+              {/* Provider Service Type Filters: Divided into 2 clean rows */}
+              <div className="space-y-1.5 p-1.5 sm:p-2 rounded-2xl bg-surface-container-lowest border border-outline-variant/20">
+                {/* الصف الأول: الأقسام الأساسية والسيرفر */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                  {([
+                    { type: "all", label: "الكل", count: serviceTypeCounts.all, icon: "apps" },
+                    { type: "imei", label: "IMEI", count: serviceTypeCounts.imei, icon: "fingerprint" },
+                    { type: "server", label: "Server", count: serviceTypeCounts.server, icon: "dns" },
+                    { type: "remote", label: "Remote", count: serviceTypeCounts.remote, icon: "settings_remote" }
+                  ] as const).map((option) => (
+                    <button
+                      key={option.type}
+                      type="button"
+                      onClick={() => {
+                        setServiceTypeFilter(option.type);
+                        setSelectedGroupNames([]);
+                        setExpandedGroups({});
+                        setVisibleGroupsLimit(25);
+                      }}
+                      className={`px-2 py-1.5 sm:py-2 rounded-xl border text-[11px] sm:text-xs font-bold transition-all flex items-center justify-center gap-1 sm:gap-1.5 ${
+                        serviceTypeFilter === option.type
+                          ? "bg-primary text-on-primary border-primary shadow"
+                          : "bg-surface-container-high border-outline-variant/20 text-on-surface-variant hover:text-on-surface hover:border-primary/30"
+                      }`}
+                    >
+                      <span className="material-symbols-outlined text-xs sm:text-sm">{option.icon}</span>
+                      <span className="truncate">{option.label}</span>
+                      <span className={`font-mono px-1 py-0.2 rounded text-[10px] sm:text-xs ${
+                        serviceTypeFilter === option.type ? "bg-black/20" : "bg-surface-container-highest"
+                      }`}>
+                        {option.count}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+
+                {/* الصف الثاني: الألعاب والبطاقات الرقمية والاشتراكات */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-1.5">
+                  {([
+                    { type: "topups", label: "شحن ألعاب", count: serviceTypeCounts.topups, icon: "sports_esports" },
+                    { type: "gamecodes", label: "أكواد وبطاقات", count: serviceTypeCounts.gamecodes, icon: "vpn_key" },
+                    { type: "appstores", label: "متاجر وتطبيقات", count: serviceTypeCounts.appstores, icon: "store" },
+                    { type: "subscriptions", label: "اشتراكات", count: serviceTypeCounts.subscriptions, icon: "subscriptions" },
+                    { type: "esim", label: "eSIM", count: serviceTypeCounts.esim, icon: "sim_card" }
+                  ] as const).map((option) => (
+                    <button
+                      key={option.type}
+                      type="button"
+                      onClick={() => {
+                        setServiceTypeFilter(option.type);
+                        setSelectedGroupNames([]);
+                        setExpandedGroups({});
+                        setVisibleGroupsLimit(25);
+                      }}
+                      className={`px-2 py-1.5 sm:py-2 rounded-xl border text-[11px] sm:text-xs font-bold transition-all flex items-center justify-center gap-1 sm:gap-1.5 ${
+                        serviceTypeFilter === option.type
+                          ? "bg-primary text-on-primary border-primary shadow"
+                          : "bg-surface-container-high border-outline-variant/20 text-on-surface-variant hover:text-on-surface hover:border-primary/30"
+                      }`}
+                    >
+                      <span className="material-symbols-outlined text-xs sm:text-sm">{option.icon}</span>
+                      <span className="truncate">{option.label}</span>
+                      <span className={`font-mono px-1 py-0.2 rounded text-[10px] sm:text-xs ${
+                        serviceTypeFilter === option.type ? "bg-black/20" : "bg-surface-container-highest"
+                      }`}>
+                        {option.count}
+                      </span>
+                    </button>
+                  ))}
+                </div>
               </div>
 
               {/* Search & Filter Tabs */}
@@ -1694,14 +1784,23 @@ export default function ProvidersClient() {
               }}
             >
               {loadingServices ? (
-                <div className="p-16 text-center text-on-surface-variant text-xs flex flex-col items-center gap-3">
+                <div role="status" className="p-8 sm:p-16 text-center text-on-surface-variant text-xs flex flex-col items-center gap-3">
                   <span className="w-8 h-8 border-3 border-primary border-t-transparent rounded-full animate-spin"></span>
-                  <span>جاري تنظيم وجلب باقات وخدمات المزود...</span>
+                  <span>{loadingServiceSource === "remote" ? "جاري جلب الباقات والخدمات من API المزود..." : "جاري تحميل الخدمات المضافة في الموقع..."}</span>
+                  {loadingServiceSource === "remote" && <span>يمكنك عرض الخدمات المضافة في الموقع أثناء انتظار المزود.</span>}
+                </div>
+              ) : serviceLoadError ? (
+                <div role="alert" className="p-8 sm:p-16 text-center text-on-surface-variant text-xs space-y-3">
+                  <span className="material-symbols-outlined text-4xl text-red-400">error_outline</span>
+                  <p className="font-bold text-on-surface text-sm">تعذر جلب خدمات المزود</p>
+                  <p className="break-words">{serviceLoadError}</p>
+                  <button type="button" onClick={() => handleBrowseServices(browseProvider, loadingServiceSource)} className="px-4 py-2 rounded-xl bg-primary text-on-primary font-bold">إعادة المحاولة</button>
                 </div>
               ) : filteredGroups.length === 0 ? (
                 <div className="p-16 text-center text-on-surface-variant text-xs space-y-3">
                   <span className="material-symbols-outlined text-4xl text-on-surface-variant/40">category</span>
-                  <p className="font-bold text-on-surface text-sm">لا توجد باقات أو خدمات مطابقة للبحث.</p>
+                  <p className="font-bold text-on-surface text-sm">{providerServices.length === 0 && serviceLoadSource === "stored" ? "لم يتم استيراد خدمات لهذا المزود في الموقع بعد." : "لا توجد باقات أو خدمات مطابقة للبحث."}</p>
+                  {providerServices.length === 0 && serviceLoadSource === "stored" && <button type="button" onClick={() => handleBrowseServices(browseProvider, "remote")} className="px-4 py-2 rounded-xl bg-primary text-on-primary font-bold">تصفح باقات المزود من API</button>}
                 </div>
               ) : (
                 <>
@@ -1818,13 +1917,13 @@ export default function ProvidersClient() {
                         {/* Services List Inside This Package */}
                         {isExpanded && (
                           <div className="p-2 sm:p-3 space-y-2 bg-surface-container-lowest/70 divide-y divide-outline-variant/10">
-                            {group.services.map((srv) => {
+                            {group.services.map((srv, srvIdx) => {
                               const srvType = getProviderServiceType(srv);
                               const reqFields = getServiceRequiredFields(srv);
 
                               return (
                                 <div
-                                  key={srv.id}
+                                  key={srv.id ? `${srv.id}_${srvIdx}` : `srv_${srv.service_id || srv.name}_${srvIdx}`}
                                   className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs"
                                 >
                                   <div className="space-y-1">
@@ -1928,7 +2027,7 @@ export default function ProvidersClient() {
               </Link>
               <button
                 type="button"
-                onClick={() => setBrowseProvider(null)}
+                onClick={closeBrowseServices}
                 className="px-5 py-2 rounded-xl bg-surface-variant text-on-surface-variant hover:text-on-surface text-xs font-bold"
               >
                 إغلاق

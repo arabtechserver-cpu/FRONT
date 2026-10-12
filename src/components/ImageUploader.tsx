@@ -50,7 +50,7 @@ export default function ImageUploader({ name, defaultValue, onChange, className 
 
           const data = await res.json();
           if (res.ok && data.success) {
-            const relativeUrl = data.url.replace(/^https:\/\/api\.arabtechproserver\.tech/, "");
+            const relativeUrl = data.url.replace(/^https?:\/\/(api\.)?(borai\.store|arabtechproserver\.tech)/, "");
             setImageUrl(relativeUrl);
             if (onChange) onChange(relativeUrl);
           } else {

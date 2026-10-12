@@ -6,8 +6,7 @@ const candidateUrls = [
   process.env.INTERNAL_API_URL,
   process.env.NEXT_PUBLIC_API_URL,
   "http://127.0.0.1:5000",
-  "http://localhost:5000",
-  "https://arabtechproserver.tech"
+  "http://localhost:5000"
 ].filter(Boolean) as string[];
 
 export async function loginAdmin(username: string, password: string, turnstileToken?: string) {
@@ -50,13 +49,13 @@ export async function loginAdmin(username: string, password: string, turnstileTo
           cookieStore.set({
             name: "admin_token",
             value: data.token,
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
+            httpOnly: false,
+            secure: false,
             sameSite: "lax",
             maxAge: 60 * 60 * 12,
             path: "/"
           });
-          return { success: true };
+          return { success: true, token: data.token, user: data.user };
         } else {
           return { success: false, message: data.error || data.message || "ليس لديك صلاحيات الدخول للوحة التحكم" };
         }
@@ -100,13 +99,13 @@ export async function verifyAdminOtpAction(challengeToken: string, otp: string) 
           cookieStore.set({
             name: "admin_token",
             value: data.token,
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
+            httpOnly: false,
+            secure: false,
             sameSite: "lax",
             maxAge: 60 * 60 * 12,
             path: "/"
           });
-          return { success: true, user: data.user };
+          return { success: true, token: data.token, user: data.user };
         } else {
           return { success: false, message: data.error || data.message || "رمز التحقق غير صحيح" };
         }

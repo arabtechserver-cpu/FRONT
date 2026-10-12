@@ -5,7 +5,7 @@ import { match as matchLocale } from '@formatjs/intl-localematcher';
 import Negotiator from 'negotiator';
 import { jwtVerify } from 'jose';
 
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = process.env.JWT_SECRET || 'your_super_strong_secret_key_here';
 
 function getLocale(request: NextRequest): string | undefined {
   const negotiatorHeaders: Record<string, string> = {};
@@ -54,6 +54,8 @@ export async function proxy(request: NextRequest) {
     pathname === '/icon.png' ||
     pathname === '/apple-icon.png' ||
     pathname === '/main-logo.png' ||
+    pathname === '/borai-logo.png' ||
+    pathname.startsWith('/borai-favicon') ||
     pathname === '/og-image.png' ||
     pathname === '/llms.txt' ||
     pathname.startsWith('/fonts/') ||
@@ -101,5 +103,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!api/|_next/static|_next/image|fonts|images|videos|uploads|sitemap.xml|robots.txt|favicon.ico|icon.png|apple-icon.png|main-logo.png|og-image.png|llms.txt).*)'],
+  matcher: ['/((?!api/|_next/static|_next/image|fonts|images|videos|uploads|sitemap.xml|robots.txt|favicon.ico|icon.png|apple-icon.png|main-logo.png|borai-logo.png|og-image.png|llms.txt).*)'],
 };

@@ -29,8 +29,8 @@ export default async function RefundPolicyPage(props: PageProps) {
         </h1>
         <p className="text-sm text-on-surface-variant max-w-2xl mx-auto">
           {lang === "ar"
-            ? "الشروط والأحكام الكاملة لاسترجاع الرصيد وإلغاء الطلبات الرقمية في منصة عرب تك سيرفر."
-            : "Complete terms and conditions for refunds and order cancellations."}
+            ? "الشروط والأحكام الكاملة لاسترجاع الرصيد وإلغاء الطلبات الرقمية في منصة BORAI STORE."
+            : "Complete terms and conditions for refunds and order cancellations on BORAI STORE."}
         </p>
       </div>
 

@@ -736,9 +736,9 @@ export default function AnalyticsClient() {
 
         return (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/75 backdrop-blur-sm animate-in fade-in">
-            <div className="bg-white text-slate-800 w-full max-w-2xl rounded-2xl sm:rounded-3xl border border-slate-200 shadow-2xl relative overflow-hidden flex flex-col max-h-[94vh]">
+            <div className="bg-surface-container text-on-surface w-full max-w-2xl rounded-2xl sm:rounded-3xl border shadow-2xl relative overflow-hidden flex flex-col max-h-[94vh]">
               {/* Top Navigation Bar - Exactly like screenshot */}
-              <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 bg-white">
+              <div className="flex items-center justify-between px-4 py-3 border-b hover:bg-slate-50">
                 <div className="flex items-center gap-2">
                   <span className="w-7 h-7 rounded-full border border-slate-300 flex items-center justify-center text-slate-600 text-xs font-bold select-none cursor-default">
                     •••
@@ -748,10 +748,10 @@ export default function AnalyticsClient() {
 
                 {/* Center / Right: Group Name + Circular Icon + Arrow */}
                 <div className="flex items-center gap-2">
-                  <span className="font-bold text-slate-800 text-sm sm:text-base">
+                  <span className="font-bold text-sm sm:text-base">
                     {order.groupName || "EFT Dongle"}
                   </span>
-                  <div className="w-7 h-7 rounded-full bg-slate-100 border border-slate-300 flex items-center justify-center text-slate-700 font-bold text-xs">
+                  <div className="w-7 h-7 rounded-full border border-slate-300 flex items-center justify-center font-bold text-xs">
                     <span className="material-symbols-outlined text-sm text-blue-600">dns</span>
                   </div>
                   <span className="text-slate-400 font-bold text-sm">›</span>
@@ -765,7 +765,7 @@ export default function AnalyticsClient() {
                     setIsEditingFields(false);
                     setModalFeedback(null);
                   }}
-                  className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center text-xs font-bold transition-colors"
+                  className="w-7 h-7 rounded-full hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center text-xs font-bold transition-colors"
                   title="إغلاق"
                 >
                   ✕
@@ -773,10 +773,10 @@ export default function AnalyticsClient() {
               </div>
 
               {/* Service Header Info Bar */}
-              <div className="px-5 py-3 border-b border-slate-100 bg-slate-50/50">
+              <div className="px-5 py-3 border-b bg-slate-50/50">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <h4 className="font-bold text-slate-900 text-sm leading-snug flex items-center gap-1.5 flex-wrap">
+                    <h4 className="font-bold text-sm leading-snug flex items-center gap-1.5 flex-wrap">
                       <span>{order.serviceName}</span>
                       <span className="w-4 h-4 rounded bg-emerald-600 text-white flex items-center justify-center text-[10px] font-bold">
                         ✓
@@ -828,35 +828,35 @@ export default function AnalyticsClient() {
               )}
 
               {/* Modal Scrollable Body */}
-              <div className="overflow-y-auto flex-1 p-4 sm:p-5 space-y-4 text-xs text-slate-800 bg-white">
+              <div className="overflow-y-auto flex-1 p-4 sm:p-5 space-y-4 text-xs hover:bg-slate-50">
                 {/* Main Dhru Fusion Key-Value Table */}
-                <div className="bg-white divide-y divide-slate-100 text-xs sm:text-sm">
+                <div className="divide-y divide-slate-100 text-xs sm:text-sm">
                   {/* Service Credit */}
-                  <div className="flex items-center justify-between py-2.5 px-3 hover:bg-slate-50/60 transition-colors">
+                  <div className="flex items-center justify-between py-2.5 px-3 hover:bg-slate-50/60 dark:hover:bg-surface-container-high/60 transition-colors">
                     <span className="text-slate-500 font-medium w-36 sm:w-44 text-left">Service Credit</span>
-                    <span className="text-slate-800 font-mono font-semibold text-left flex-1">
+                    <span className="font-mono font-semibold text-left flex-1">
                       {order.quantity || 1} Credit
                     </span>
                   </div>
 
                   {/* Service API Price */}
-                  <div className="flex items-center justify-between py-2.5 px-3 hover:bg-slate-50/60 transition-colors">
+                  <div className="flex items-center justify-between py-2.5 px-3 hover:bg-slate-50/60 dark:hover:bg-surface-container-high/60 transition-colors">
                     <span className="text-slate-500 font-medium w-36 sm:w-44 text-left">Service API Price</span>
-                    <span className="text-slate-800 font-mono font-semibold text-left flex-1">
+                    <span className="font-mono font-semibold text-left flex-1">
                       {order.cost ? `$${order.cost.toFixed(2)} USD` : "—"}
                     </span>
                   </div>
 
                   {/* User Cost */}
-                  <div className="flex items-center justify-between py-2.5 px-3 hover:bg-slate-50/60 transition-colors">
+                  <div className="flex items-center justify-between py-2.5 px-3 hover:bg-slate-50/60 dark:hover:bg-surface-container-high/60 transition-colors">
                     <span className="text-slate-500 font-medium w-36 sm:w-44 text-left">User Cost</span>
-                    <span className="text-slate-800 font-mono font-semibold text-left flex-1">
+                    <span className="font-mono font-semibold text-left flex-1">
                       ${(order.price || 0).toFixed(2)} USD
                     </span>
                   </div>
 
                   {/* Total Paid (Mint-Green Solid Badge matching screenshot) */}
-                  <div className="flex items-center justify-between py-2.5 px-3 hover:bg-slate-50/60 transition-colors">
+                  <div className="flex items-center justify-between py-2.5 px-3 hover:bg-slate-50/60 dark:hover:bg-surface-container-high/60 transition-colors">
                     <span className="text-slate-500 font-medium w-36 sm:w-44 text-left">Total Paid</span>
                     <div className="flex-1 text-left">
                       <span className="inline-block bg-[#d4f8e8] text-[#0f766e] px-4 py-1 rounded font-mono font-bold text-xs sm:text-sm tracking-wide">
@@ -867,7 +867,7 @@ export default function AnalyticsClient() {
 
                   {/* Profit Margin */}
                   {order.cost !== undefined && order.cost !== null && order.cost > 0 && (
-                    <div className="flex items-center justify-between py-2.5 px-3 hover:bg-slate-50/60 transition-colors bg-purple-50/40">
+                    <div className="flex items-center justify-between py-2.5 px-3 hover:bg-slate-50/60 dark:hover:bg-surface-container-high/60 transition-colors bg-purple-50/40">
                       <span className="text-purple-700 font-medium w-36 sm:w-44 text-left">صافي الربح التقديري</span>
                       <span className="font-mono font-bold text-purple-700 text-left flex-1">
                         +${Math.max(0, (order.price || 0) - order.cost).toFixed(2)} USD
@@ -880,19 +880,19 @@ export default function AnalyticsClient() {
                     <div className="w-full divide-y divide-slate-100">
                       <div className="flex items-center justify-between py-1.5">
                         <span className="text-slate-500 font-medium w-36 sm:w-44 text-left">API</span>
-                        <span className="text-slate-800 font-bold text-left flex-1">
+                        <span className="font-bold text-left flex-1">
                           {order.provider?.name || "EA Unlocker"}
                         </span>
                       </div>
                       <div className="flex items-center justify-between py-1.5">
                         <span className="text-slate-500 font-medium w-36 sm:w-44 text-left">API Order ID</span>
-                        <span className="text-slate-800 font-mono font-bold text-left flex-1">
+                        <span className="font-mono font-bold text-left flex-1">
                           {order.apiOrderId ? `#${order.apiOrderId}` : "—"}
                         </span>
                       </div>
                       <div className="flex items-center justify-between py-1.5">
                         <span className="text-slate-500 font-medium w-36 sm:w-44 text-left">Client</span>
-                        <span className="text-slate-800 font-semibold text-left flex-1">
+                        <span className="font-semibold text-left flex-1">
                           {order.user?.fullName || order.user?.username || order.user?.email || "Client"}
                         </span>
                       </div>
@@ -908,25 +908,25 @@ export default function AnalyticsClient() {
                   </div>
 
                   {/* Order On */}
-                  <div className="flex items-center justify-between py-2.5 px-3 hover:bg-slate-50/60 transition-colors">
+                  <div className="flex items-center justify-between py-2.5 px-3 hover:bg-slate-50/60 dark:hover:bg-surface-container-high/60 transition-colors">
                     <span className="text-slate-500 font-medium w-36 sm:w-44 text-left">Order On</span>
-                    <span className="text-slate-800 font-mono font-medium text-left flex-1">
+                    <span className="font-mono font-medium text-left flex-1">
                       {formatDhruDate(order.createdAt)}
                     </span>
                   </div>
 
                   {/* Accepted After */}
-                  <div className="flex items-center justify-between py-2.5 px-3 hover:bg-slate-50/60 transition-colors">
+                  <div className="flex items-center justify-between py-2.5 px-3 hover:bg-slate-50/60 dark:hover:bg-surface-container-high/60 transition-colors">
                     <span className="text-slate-500 font-medium w-36 sm:w-44 text-left">Accepted After</span>
-                    <span className="text-slate-800 font-mono font-medium text-left flex-1">
+                    <span className="font-mono font-medium text-left flex-1">
                       {acceptedDuration} []
                     </span>
                   </div>
 
                   {/* Replied On (With Red Pill Badge After X Hr Y Min by) */}
-                  <div className="flex items-center justify-between py-2.5 px-3 hover:bg-slate-50/60 transition-colors">
+                  <div className="flex items-center justify-between py-2.5 px-3 hover:bg-slate-50/60 dark:hover:bg-surface-container-high/60 transition-colors">
                     <span className="text-slate-500 font-medium w-36 sm:w-44 text-left">Replied On</span>
-                    <div className="text-slate-800 font-mono text-left flex-1 flex items-center flex-wrap gap-1.5">
+                    <div className="font-mono text-left flex-1 flex items-center flex-wrap gap-1.5">
                       {order.status === "completed" && repliedTime ? (
                         <>
                           <span>{formatDhruDate(repliedTime)}</span>
@@ -946,7 +946,7 @@ export default function AnalyticsClient() {
                   </div>
 
                   {/* Order From IP */}
-                  <div className="flex items-center justify-between py-2.5 px-3 hover:bg-slate-50/60 transition-colors">
+                  <div className="flex items-center justify-between py-2.5 px-3 hover:bg-slate-50/60 dark:hover:bg-surface-container-high/60 transition-colors">
                     <span className="text-slate-500 font-medium w-36 sm:w-44 text-left">Order From IP</span>
                     <span className="text-slate-600 font-mono text-left flex-1">
                       {order.clientIp || "156.204.12.88 (Web)"}
@@ -954,18 +954,18 @@ export default function AnalyticsClient() {
                   </div>
 
                   {/* Source */}
-                  <div className="flex items-center justify-between py-2.5 px-3 hover:bg-slate-50/60 transition-colors">
+                  <div className="flex items-center justify-between py-2.5 px-3 hover:bg-slate-50/60 dark:hover:bg-surface-container-high/60 transition-colors">
                     <span className="text-slate-500 font-medium w-36 sm:w-44 text-left">Source</span>
-                    <span className="text-slate-800 font-semibold text-left flex-1">
+                    <span className="font-semibold text-left flex-1">
                       {order.source === "api" ? "API" : "Web"}
                     </span>
                   </div>
                 </div>
 
                 {/* Fields Box (Matching Screenshot Exactly) */}
-                <div className="border border-slate-200 rounded-lg overflow-hidden bg-white mt-4 shadow-sm">
+                <div className="border rounded-lg overflow-hidden mt-4 shadow-sm">
                   {/* Header */}
-                  <div className="bg-[#f8f9fa] px-4 py-2.5 text-xs font-bold text-slate-700 border-b border-slate-200">
+                  <div className="bg-[#f8f9fa] px-4 py-2.5 text-xs font-bold border-b ">
                     Fields
                   </div>
 
@@ -973,12 +973,12 @@ export default function AnalyticsClient() {
                   <div className="divide-y divide-slate-100">
                     {fieldRows.length > 0 ? (
                       fieldRows.map((field: any, idx: number) => (
-                        <div key={idx} className="flex items-center justify-between px-4 py-3 hover:bg-slate-50/60 transition-colors">
-                          <span className="text-slate-700 font-bold uppercase text-xs w-36 sm:w-44">
+                        <div key={idx} className="flex items-center justify-between px-4 py-3 hover:bg-slate-50/60 dark:hover:bg-surface-container-high/60 transition-colors">
+                          <span className="font-bold uppercase text-xs w-36 sm:w-44">
                             {field.label || field.id}
                           </span>
                           <div className="flex items-center gap-2 flex-1 justify-end">
-                            <span className="font-mono font-bold text-slate-900 text-sm tracking-wider break-all text-left dir-ltr">
+                            <span className="font-mono font-bold text-sm tracking-wider break-all text-left dir-ltr">
                               {field.value || "—"}
                             </span>
                             {field.value && (
@@ -999,12 +999,12 @@ export default function AnalyticsClient() {
                         </div>
                       ))
                     ) : (
-                      <div className="flex items-center justify-between px-4 py-3 hover:bg-slate-50/60 transition-colors">
-                        <span className="text-slate-700 font-bold uppercase text-xs w-36 sm:w-44">
+                      <div className="flex items-center justify-between px-4 py-3 hover:bg-slate-50/60 dark:hover:bg-surface-container-high/60 transition-colors">
+                        <span className="font-bold uppercase text-xs w-36 sm:w-44">
                           IMEI
                         </span>
                         <div className="flex items-center gap-2 flex-1 justify-end">
-                          <span className="font-mono font-bold text-slate-900 text-sm tracking-wider break-all text-left dir-ltr">
+                          <span className="font-mono font-bold text-sm tracking-wider break-all text-left dir-ltr">
                             {order.targetInput || "—"}
                           </span>
                           {order.targetInput && (
@@ -1027,15 +1027,15 @@ export default function AnalyticsClient() {
                   </div>
 
                   {/* Edit Fields Row */}
-                  <div className="bg-[#f8f9fa] px-4 py-2 border-t border-slate-200">
+                  <div className="bg-[#f8f9fa] px-4 py-2 border-t ">
                     {isEditingFields ? (
                       <div className="space-y-2 py-2">
-                        <label className="block text-xs font-bold text-slate-700">تعديل بيانات الحقول:</label>
+                        <label className="block text-xs font-bold ">تعديل بيانات الحقول:</label>
                         <input
                           type="text"
                           value={editedTargetInput}
                           onChange={(e) => setEditedTargetInput(e.target.value)}
-                          className="w-full px-3 py-2 bg-white border border-blue-500 rounded-lg font-mono text-xs text-slate-900 outline-none shadow-sm"
+                          className="w-full px-3 py-2 border border-blue-500 rounded-lg font-mono text-xs outline-none shadow-sm"
                           placeholder="أدخل القيمة الجديدة"
                         />
                         <div className="flex gap-2 justify-end pt-1">
@@ -1050,7 +1050,7 @@ export default function AnalyticsClient() {
                           <button
                             type="button"
                             onClick={() => setIsEditingFields(false)}
-                            className="px-3 py-1.5 rounded-lg bg-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-300 transition-colors"
+                            className="px-3 py-1.5 rounded-lg bg-slate-200 font-bold text-xs hover:bg-slate-300 transition-colors"
                           >
                             إلغاء
                           </button>
@@ -1063,7 +1063,7 @@ export default function AnalyticsClient() {
                           setEditedTargetInput(order.targetInput || "");
                           setIsEditingFields(true);
                         }}
-                        className="text-xs font-medium text-slate-700 hover:text-blue-600 flex items-center gap-1.5 py-1 transition-colors"
+                        className="text-xs font-medium hover:text-blue-600 flex items-center gap-1.5 py-1 transition-colors"
                       >
                         <span className="material-symbols-outlined text-sm">edit</span>
                         <span>Edit Fields</span>
@@ -1093,7 +1093,7 @@ export default function AnalyticsClient() {
                         <span>نسخ الكود</span>
                       </button>
                     </div>
-                    <p className="font-mono text-slate-900 font-bold bg-white p-3 rounded-lg border border-violet-200 whitespace-pre-wrap dir-ltr text-start block text-xs select-all">
+                    <p className="font-mono font-bold p-3 rounded-lg border border-violet-200 whitespace-pre-wrap dir-ltr text-start block text-xs select-all">
                       {cleanHtmlToText(order.reply)}
                     </p>
                   </div>
@@ -1104,7 +1104,7 @@ export default function AnalyticsClient() {
                   <button
                     type="button"
                     onClick={() => setShowTimeline(!showTimeline)}
-                    className="w-full py-2 px-3 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-600 flex items-center justify-between text-xs font-bold transition-colors"
+                    className="w-full py-2 px-3 rounded-lg border  hover:bg-slate-100 text-slate-600 flex items-center justify-between text-xs font-bold transition-colors"
                   >
                     <span className="flex items-center gap-1.5">
                       <span className="material-symbols-outlined text-sm text-blue-600">history</span>
@@ -1116,11 +1116,11 @@ export default function AnalyticsClient() {
                   </button>
 
                   {showTimeline && (
-                    <div className="mt-2 p-4 rounded-lg bg-slate-50 border border-slate-200 space-y-3 animate-in fade-in">
+                    <div className="mt-2 p-4 rounded-lg border space-y-3 animate-in fade-in">
                       <div className="relative pl-3 space-y-3 before:absolute before:right-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-300 pr-6 text-xs">
                         <div className="relative">
                           <span className="absolute -right-6 top-0.5 w-3 h-3 rounded-full bg-blue-600 ring-4 ring-blue-100"></span>
-                          <div className="font-bold text-slate-800">إنشاء الطلب من العميل</div>
+                          <div className="font-bold ">إنشاء الطلب من العميل</div>
                           <div className="text-[11px] text-slate-600">خصم ${(order.price || 0).toFixed(2)} USD من رصيد المحفظة</div>
                           <div className="text-[10px] text-slate-400 font-mono">{formatDhruDate(order.createdAt)}</div>
                         </div>
@@ -1128,7 +1128,7 @@ export default function AnalyticsClient() {
                         {order.apiOrderId && (
                           <div className="relative">
                             <span className="absolute -right-6 top-0.5 w-3 h-3 rounded-full bg-slate-500 ring-4 ring-slate-200"></span>
-                            <div className="font-bold text-slate-800">تم الإرسال للمزود ({order.provider?.name || "المزود"})</div>
+                            <div className="font-bold ">تم الإرسال للمزود ({order.provider?.name || "المزود"})</div>
                             <div className="text-[11px] text-slate-600">رقم المرجع لدى المزود: #{order.apiOrderId}</div>
                             <div className="text-[10px] text-slate-400 font-mono">{formatDhruDate(order.createdAt)}</div>
                           </div>
@@ -1137,7 +1137,7 @@ export default function AnalyticsClient() {
                         {order.events?.map((ev: any, i: number) => (
                           <div key={i} className="relative">
                             <span className="absolute -right-6 top-0.5 w-3 h-3 rounded-full bg-slate-500 ring-4 ring-slate-200"></span>
-                            <div className="font-bold text-slate-800">{ev.title || ev.action}</div>
+                            <div className="font-bold ">{ev.title || ev.action}</div>
                             <div className="text-[11px] text-slate-600">{ev.desc}</div>
                             <div className="text-[10px] text-slate-400 font-mono">{formatDhruDate(ev.time)}</div>
                           </div>
@@ -1160,14 +1160,14 @@ export default function AnalyticsClient() {
               </div>
 
               {/* Bottom Actions Bar */}
-              <div className="flex items-center justify-between px-5 py-3 border-t border-slate-200 bg-slate-50">
+              <div className="flex items-center justify-between px-5 py-3 border-t hover:bg-slate-50">
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
                     onClick={() => {
                       router.push(`/admin/orders?search=${encodeURIComponent(order.apiOrderId || order.id)}`);
                     }}
-                    className="px-4 py-2 rounded-xl bg-white hover:bg-slate-100 border border-slate-300 text-blue-600 font-bold text-xs flex items-center gap-1.5 transition-all shadow-sm"
+                    className="px-4 py-2 rounded-xl hover:bg-slate-100 border border-slate-300 text-blue-600 font-bold text-xs flex items-center gap-1.5 transition-all shadow-sm"
                   >
                     <span className="material-symbols-outlined text-sm">open_in_new</span>
                     <span>فتح في صفحة إدارة الطلبات</span>
@@ -1181,7 +1181,7 @@ export default function AnalyticsClient() {
                     setIsEditingFields(false);
                     setModalFeedback(null);
                   }}
-                  className="px-6 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs transition-colors"
+                  className="px-6 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 font-bold text-xs transition-colors"
                 >
                   إغلاق
                 </button>

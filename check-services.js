@@ -1,6 +1,6 @@
 async function check() {
   try {
-    const res = await fetch("https://arabtechproserver.tech/api/dhru/services?all=true");
+    const res = await fetch("https://borai.store/api/dhru/services?all=true");
     const data = await res.json();
     let totalServices = 0;
     data.forEach(c => {

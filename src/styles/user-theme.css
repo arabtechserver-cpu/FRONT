@@ -1,0 +1,259 @@
+@import "./user-theme-utilities.css";
+
+/* Customer routes only. The reference palette is exclusive to dark mode. */
+html.user-site { color-scheme: light; }
+html.user-site.dark { color-scheme: dark; }
+
+.user-theme {
+  --ambient-primary: 59 130 246;
+  --ambient-secondary: 14 165 233;
+  --ambient-opacity: .25;
+  --halo-primary: #3b82f6;
+  --halo-secondary: #0ea5e9;
+  --halo-tertiary: #6366f1;
+  --action-start: #3b82f6;
+  --action-end: #1d4ed8;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  isolation: isolate;
+}
+
+.dark .user-theme {
+  background-color: var(--color-bg);
+  /* Midnight, slate, peach, crimson and burgundy from the supplied image. */
+  --color-bg: #151b2e;
+  --color-surface: #242e43;
+  --color-surface-2: #35445a;
+  --color-surface-3: #45566a;
+  --color-primary: #b91932;
+  --color-primary-bright: #ffab90;
+  --color-primary-dim: #96172e;
+  --color-primary-deep: #541e33;
+  --color-cyan: #ffab90;
+  --color-cyan-bright: #ffc6b2;
+  --color-cyan-dim: #e89179;
+  --color-accent-pink: #b91932;
+  --color-accent-blue: #ffab90;
+  --color-text: #f6f2f4;
+  --color-text-muted: #b9c2d0;
+  --color-border: rgb(185 194 208 / .16);
+  --color-border-bright: rgb(255 171 144 / .38);
+  --surface-container-lowest: 21 27 46;
+  --surface-container-low: 29 37 56;
+  --surface-container: 36 46 67;
+  --surface-container-high: 53 68 90;
+  --surface-container-highest: 69 86 106;
+  --surface-dim: 21 27 46;
+  --surface: 36 46 67;
+  --surface-bright: 53 68 90;
+  --surface-variant: 29 37 56;
+  --background: 21 27 46;
+  --on-background: 246 242 244;
+  --on-surface: 246 242 244;
+  --on-surface-variant: 185 194 208;
+  --inverse-surface: 246 242 244;
+  --inverse-on-surface: 21 27 46;
+  --outline: 106 124 146;
+  --outline-variant: 69 86 106;
+  --z-white: #242e43;
+  --z-g50: #151b2e;
+  --z-g100: #35445a;
+  --z-g200: #45566a;
+  --z-g400: #a3b0c2;
+  --z-g500: #b9c2d0;
+  --z-g700: #e4e8ef;
+  --z-g900: #f6f2f4;
+  --z-accent: #b91932;
+  --z-accent-d: #96172e;
+  --z-accent-l: rgb(255 171 144 / .12);
+  --z-accent-m: #ffab90;
+  --z-red: #b91932;
+  --z-red-l: #541e33;
+  --ambient-primary: 185 25 50;
+  --ambient-secondary: 255 171 144;
+  --ambient-opacity: .42;
+  --halo-primary: #b91932;
+  --halo-secondary: #ffab90;
+  --halo-tertiary: #541e33;
+  --action-start: #b91932;
+  --action-end: #541e33;
+  --user-primary: 185 25 50;
+  --user-link: #ffab90;
+  --user-primary-container: 150 23 46;
+  --user-primary-fixed: 255 198 178;
+  --user-primary-fixed-dim: 255 171 144;
+  --user-on-primary-fixed: 84 30 51;
+  --user-secondary: 255 171 144;
+  --user-on-secondary: 21 27 46;
+  --user-secondary-container: 84 30 51;
+  --user-on-secondary-container: 255 198 178;
+}
+
+/* Two slow glows sit behind the content and cannot capture clicks. */
+.user-ambient {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  z-index: -1;
+  pointer-events: none;
+}
+.user-ambient__glow {
+  position: absolute;
+  width: min(105vw, 1100px);
+  height: min(100vh, 950px);
+  opacity: var(--ambient-opacity);
+  background: radial-gradient(ellipse, rgb(var(--ambient-primary) / .85), transparent 68%);
+  --user-color-animation: user-ambient-drift 12s ease-in-out infinite alternate;
+  animation: var(--user-color-animation);
+}
+.user-ambient__glow--primary { top: -14%; inset-inline-start: -30%; }
+.user-ambient__glow--secondary {
+  bottom: -16%;
+  inset-inline-end: -30%;
+  background: radial-gradient(ellipse, rgb(var(--ambient-secondary) / .8), transparent 68%);
+  --user-color-animation: user-ambient-drift 16s ease-in-out -8s infinite alternate-reverse;
+}
+@keyframes user-ambient-drift {
+  from { transform: translate3d(-12%, -8%, 0) scale(.88); }
+  to { transform: translate3d(42%, 30%, 0) scale(1.15); }
+}
+
+/* The glow travels around the edge; product images and text stay still. */
+@property --user-halo-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+.user-theme :is(.slider-wrapper, .side-card, .app-card__icon-inner, .digital-card, .mini-card, .zoalna-search-bar, .glass-card, .bg-surface-container.shadow-sm) {
+  position: relative;
+}
+.user-theme :is(.slider-wrapper, .side-card, .app-card__icon-inner, .digital-card, .mini-card, .zoalna-search-bar, .glass-card, .bg-surface-container.shadow-sm)::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  padding: 2px;
+  border-radius: inherit;
+  background: conic-gradient(from var(--user-halo-angle), transparent 0% 16%, var(--halo-primary) 30%, var(--halo-secondary) 44%, transparent 58% 70%, var(--halo-tertiary) 86%, var(--halo-primary));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: .85;
+  --user-color-animation: user-halo-orbit 6s linear infinite;
+  animation: var(--user-color-animation);
+}
+@keyframes user-halo-orbit {
+  to { --user-halo-angle: 360deg; }
+}
+.user-theme .hx-bar::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 2px;
+  pointer-events: none;
+  background: linear-gradient(90deg, var(--halo-primary), var(--halo-secondary), var(--halo-tertiary), var(--halo-primary));
+  background-size: 250% 100%;
+  --user-color-animation: user-action-flow 5s ease-in-out infinite;
+  animation: var(--user-color-animation);
+}
+
+.user-theme .zoalna-root { background: transparent; }
+:where(.user-theme) :where(*, ::before, ::after) { border-color: rgb(var(--outline-variant) / .55); }
+.user-theme :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea) {
+  background-color: rgb(var(--surface-container-low));
+  color: var(--color-text);
+  border-color: rgb(var(--outline-variant));
+}
+.user-theme :is(input, select, textarea):focus {
+  background-color: rgb(var(--surface-container));
+  border-color: var(--color-primary-bright);
+}
+.user-theme :is(a, button, input, select, textarea):focus-visible {
+  outline: 2px solid var(--color-primary-bright);
+  outline-offset: 3px;
+}
+
+/* Shared customer cards, home grids, dialogs and mobile navigation. */
+.dark .user-theme :is(.lamp-card, .card-spotlight, .curved-cockpit, .convex-card, .glass-card, .glass-panel, .glass-card-cyan) {
+  background: var(--color-surface) !important;
+  color: var(--color-text);
+  border-color: var(--color-border) !important;
+}
+.dark .user-theme :is(.digital-card, .mini-card, .zoalna-modal-card, .zoalna-auth-card, .floating-messenger-btn) {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+.dark .user-theme :is(.app-card-link, .app-card__title, .digital-card-link, .mini-card-title, .messenger-text, .zoalna-modal-card h3) { color: var(--color-text); }
+.dark .user-theme :is(.mini-card-text, .zoalna-modal-card p) { color: var(--color-text-muted); }
+.dark .user-theme :is(.app-card__icon-inner, .mini-card-img, .zoalna-close-x) { background: var(--color-surface-2); }
+.dark .user-theme .digital-card__title { background: rgb(var(--surface-container) / .94); color: var(--color-text); }
+.dark .user-theme .ann-bar { background: #541e33; color: #f6f2f4; }
+.dark .user-theme .ann-dot { background: #ffab90; }
+.dark .user-theme :is(.hx-nav-link.active, .mn-item.active, .mob-bn-item.active) { color: #ffab90; }
+.dark .user-theme :is(.mini-card-btn, .zoalna-modal-btn-skip, .zoalna-close-x) {
+  background: var(--color-surface-2);
+  color: #ffab90;
+  border-color: var(--color-border-bright);
+}
+.dark .user-theme .mini-card-btn:hover { background: #541e33; }
+.dark .user-theme .side-card { background: var(--color-surface); }
+.dark .user-theme .side-card:hover { background: #541e33; }
+.dark .user-theme .zoalna-search-bar { background: var(--color-surface); border-color: var(--color-border); }
+.dark .user-theme .zoalna-search-bar:focus-within { border-color: #ffab90; box-shadow: 0 0 0 3px rgb(255 171 144 / .1); }
+.user-theme .zoalna-search-bar input, .user-theme .zoalna-search-bar input:focus { background: transparent; }
+.dark .user-theme .zoalna-search-bar input { color: var(--color-text); }
+.dark .user-theme .zoalna-search-bar input::placeholder { color: var(--color-text-muted); }
+.dark .user-theme .text-primary { color: #ffab90; }
+.user-theme .bg-blue-600 {
+  background-image: linear-gradient(115deg, var(--action-start), var(--action-end), var(--action-start));
+  background-size: 220% 100%;
+  --user-color-animation: user-action-flow 5s ease-in-out infinite;
+  animation: var(--user-color-animation);
+}
+.user-theme .bg-blue-600:hover { filter: brightness(1.08); }
+
+.user-theme :is(.btn-primary, .btn-royal, .btn-purple-glow, .zoalna-submit-btn, .zoalna-modal-btn-download, .zoalna-modal-icon-wrap) {
+  background: linear-gradient(115deg, var(--action-start), var(--action-end), var(--action-start)) !important;
+  background-size: 220% 100% !important;
+  --user-color-animation: user-action-flow 5s ease-in-out infinite;
+  animation: var(--user-color-animation);
+  color: #fff !important;
+  box-shadow: 0 5px 18px rgb(var(--ambient-primary) / .2) !important;
+}
+@keyframes user-action-flow {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+.dark .user-theme :is(.btn-secondary, .btn-dark-pill, .btn-cyan-glow) {
+  background: var(--color-surface-2) !important;
+  color: #ffc6b2 !important;
+  border-color: var(--color-border-bright) !important;
+  box-shadow: 0 4px 16px rgb(21 27 46 / .3) !important;
+}
+.dark .user-theme .section-divider {
+  background: radial-gradient(ellipse, rgb(255 171 144 / .14), rgb(185 25 50 / .08) 50%, transparent 80%);
+}
+.dark .user-theme .section-divider::before { background: radial-gradient(ellipse, rgb(255 171 144 / .2), transparent 80%); }
+
+@media (max-width: 640px) {
+  .user-ambient__glow { width: 130vw; height: 85vh; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .user-theme, .user-theme *, .user-theme ::before, .user-theme ::after {
+    animation: none !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+  html.user-site { scroll-behavior: auto; }
+}
+
+/* Decorative color motion stays active in both themes. */
+html.user-site .user-theme .user-ambient__glow,
+html.user-site .user-theme :is(.bg-blue-600, .btn-primary, .btn-royal, .btn-purple-glow, .zoalna-submit-btn, .zoalna-modal-btn-download, .zoalna-modal-icon-wrap),
+html.user-site .user-theme :is(.slider-wrapper, .side-card, .app-card__icon-inner, .digital-card, .mini-card, .zoalna-search-bar, .glass-card, .bg-surface-container.shadow-sm, .hx-bar)::after {
+  animation: var(--user-color-animation) !important;
+}

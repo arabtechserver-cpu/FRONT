@@ -4,7 +4,8 @@ import { cookies } from "next/headers";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json().catch(() => ({}));
-    const { challengeToken, otp } = body;
+    const challengeToken = body?.challengeToken;
+    const otp = body?.otp || body?.code;
 
     if (!challengeToken || !otp) {
       return NextResponse.json(
@@ -17,8 +18,7 @@ export async function POST(request: NextRequest) {
       process.env.INTERNAL_API_URL,
       process.env.NEXT_PUBLIC_API_URL,
       "http://127.0.0.1:5000",
-      "http://localhost:5000",
-      "https://arabtechproserver.tech"
+      "http://localhost:5000"
     ].filter(Boolean) as string[];
 
     const uniqueUrls = Array.from(new Set(candidateUrls));
@@ -52,12 +52,13 @@ export async function POST(request: NextRequest) {
           const data = await res.json();
 
           if (data.success && data.token && data.user && ["admin", "super_admin"].includes(data.user.role)) {
+            const isHttps = request.headers.get("x-forwarded-proto") === "https" || request.nextUrl.protocol === "https:";
             const cookieStore = await cookies();
             cookieStore.set({
               name: "admin_token",
               value: data.token,
-              httpOnly: true,
-              secure: process.env.NODE_ENV === "production",
+              httpOnly: false,
+              secure: isHttps,
               sameSite: "lax",
               maxAge: 60 * 60 * 12,
               path: "/"

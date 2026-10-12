@@ -28,23 +28,23 @@ module.exports = {
         "inverse-on-surface":       "rgb(var(--inverse-on-surface) / <alpha-value>)",
 
         /* Primary: Royal Tech Blue */
-        "primary":                  "#2563eb",
-        "primary-container":        "#1d4ed8",
-        "primary-fixed":            "#93c5fd",
-        "primary-fixed-dim":        "#3b82f6",
+        "primary":                  "rgb(var(--user-primary, 37 99 235) / <alpha-value>)",
+        "primary-container":        "rgb(var(--user-primary-container, 29 78 216) / <alpha-value>)",
+        "primary-fixed":            "rgb(var(--user-primary-fixed, 147 197 253) / <alpha-value>)",
+        "primary-fixed-dim":        "rgb(var(--user-primary-fixed-dim, 59 130 246) / <alpha-value>)",
         "on-primary":               "#ffffff",
         "on-primary-container":     "#eff6ff",
-        "on-primary-fixed":         "#1e3a8a",
+        "on-primary-fixed":         "rgb(var(--user-on-primary-fixed, 30 58 138) / <alpha-value>)",
         "on-primary-fixed-variant": "#1d4ed8",
         "inverse-primary":          "#1d4ed8",
 
         /* Secondary: Refined Sky / Tech Cyan */
-        "secondary":                "#0ea5e9",
-        "secondary-container":      "#0284c7",
+        "secondary":                "rgb(var(--user-secondary, 14 165 233) / <alpha-value>)",
+        "secondary-container":      "rgb(var(--user-secondary-container, 2 132 199) / <alpha-value>)",
         "secondary-fixed":          "#bae6fd",
         "secondary-fixed-dim":      "#38bdf8",
-        "on-secondary":             "#ffffff",
-        "on-secondary-container":   "#f0f9ff",
+        "on-secondary":             "rgb(var(--user-on-secondary, 255 255 255) / <alpha-value>)",
+        "on-secondary-container":   "rgb(var(--user-on-secondary-container, 240 249 255) / <alpha-value>)",
         "on-secondary-fixed":       "#0c4a6e",
         "on-secondary-fixed-variant":"#0369a1",
 

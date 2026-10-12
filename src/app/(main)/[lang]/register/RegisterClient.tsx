@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
@@ -7,7 +7,7 @@ import { Locale } from "@/i18n/config";
 import TermsModal from "@/components/TermsModal";
 import CloudflareTurnstile, { resetTurnstile } from "@/components/CloudflareTurnstile";
 
-const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "540676912586-vifo9ogu2gjud3d00efv1khd9r7tcajb.apps.googleusercontent.com";
+const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "149631802250-7n94rcr7nd1041iq06ck2310uctituve.apps.googleusercontent.com";
 
 interface Country {
   code: string;
@@ -475,28 +475,23 @@ export default function RegisterClient({ lang, dict }: { lang: Locale; dict: any
   };
 
   return (
-    <div className="flex flex-col items-center justify-center py-12">
-      <div className="w-full max-w-2xl glass-card rounded-2xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
-        {/* Decorative Gradients */}
-        <div className="absolute -top-32 -right-32 w-64 h-64 bg-primary/10 rounded-full blur-3xl pointer-events-none"></div>
-        <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-secondary/10 rounded-full blur-3xl pointer-events-none"></div>
-
+    <div className="flex flex-col items-center justify-center py-10 sm:py-16">
+      <div className="bg-surface-container w-full max-w-2xl rounded-2xl p-6 sm:p-8 border shadow-sm relative">
         {/* Header with Logo */}
-        <div className="relative z-10 flex flex-col items-center mb-8">
-          <Link href={`/${lang}`} className="relative group mb-4 flex items-center justify-center" aria-label="Home">
-            <div className="absolute -inset-2 bg-gradient-to-r from-white/20 via-primary/30 to-white/20 rounded-full blur-xl opacity-80 group-hover:opacity-100 transition-all pointer-events-none"></div>
+        <div className="flex flex-col items-center mb-6">
+          <Link href={`/${lang}`} className="mb-4 flex items-center justify-center" aria-label="Home">
             <img 
-              src={lang === "ar" ? "/images/logo_ar.png" : "/images/logo_en.png"} 
-              alt="Logo" 
-              className="relative z-10 h-12 sm:h-14 w-auto max-w-[260px] object-contain transition-transform group-hover:scale-105 drop-shadow-[0_0_15px_rgba(255,255,255,0.35)]" 
+              src="/images/borai-logo.png?v=2" 
+              alt="BORAI SERVER" 
+              className="h-12 sm:h-14 w-auto max-w-[240px] object-contain" 
             />
           </Link>
-          <h1 className="font-display-lg-mobile text-3xl font-bold text-on-surface">{dict.register.title}</h1>
-          <p className="text-on-surface-variant text-sm mt-2 text-center max-w-sm">{dict.register.subtitle}</p>
+          <h1 className="text-2xl sm:text-3xl font-bold ">{dict.register.title}</h1>
+          <p className="text-slate-500 text-sm mt-1.5 text-center max-w-sm">{dict.register.subtitle}</p>
         </div>
 
         {/* Quick Google Sign-Up Button */}
-        <div className="relative z-10 mb-6 flex flex-col gap-4 max-w-md mx-auto w-full">
+        <div className="mb-6 flex flex-col gap-4 max-w-md mx-auto w-full">
           <Script 
             src="https://accounts.google.com/gsi/client" 
             strategy="afterInteractive" 
@@ -506,32 +501,32 @@ export default function RegisterClient({ lang, dict }: { lang: Locale; dict: any
 
           {/* Divider */}
           <div className="relative flex items-center justify-center">
-            <div className="w-full border-t border-outline-variant/20"></div>
-            <span className="absolute px-3 bg-surface-container-high text-xs text-on-surface-variant font-medium rounded-full border border-outline-variant/20">{dict.login.or}</span>
+            <div className="w-full border-t "></div>
+            <span className="absolute px-3 text-xs text-slate-400 font-medium rounded-full border ">{dict.login.or}</span>
           </div>
         </div>
 
         {/* Feedback Alert Banners */}
         {errorMessage && (
-          <div className="relative z-10 mb-6 p-4 rounded-xl bg-red-500/15 border border-red-500/30 text-red-300 text-xs font-semibold flex items-center gap-2.5 animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="mb-6 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold flex items-center gap-2.5">
             <span className="material-symbols-outlined text-base shrink-0">error</span>
             <span>{errorMessage}</span>
           </div>
         )}
 
         {successMessage && (
-          <div className="relative z-10 mb-6 p-4 rounded-xl bg-violet-500/15 border border-violet-500/30 text-violet-300 text-xs font-semibold flex items-center gap-2.5 animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="mb-6 p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold flex items-center gap-2.5">
             <span className="material-symbols-outlined text-base shrink-0">check_circle</span>
             <span>{successMessage}</span>
           </div>
         )}
 
         {/* FAST INSTANT REGISTRATION FORM */}
-        <form onSubmit={handleFastRegisterSubmit} className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-6" autoComplete="off">
+        <form onSubmit={handleFastRegisterSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6" autoComplete="off">
           {/* Column 1 */}
-          <div className="flex flex-col gap-5">
-            <div className="flex flex-col gap-2">
-              <label htmlFor="reg-fullname" className="text-xs font-label-sm text-on-surface-variant uppercase tracking-wider">{dict.register.fullName}</label>
+          <div className="flex flex-col gap-4 sm:gap-5">
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="reg-fullname" className="text-xs font-semibold uppercase tracking-wider">{dict.register.fullName}</label>
               <input 
                 id="reg-fullname"
                 name="fullName"
@@ -544,12 +539,12 @@ export default function RegisterClient({ lang, dict }: { lang: Locale; dict: any
                 autoCapitalize="off"
                 spellCheck={false}
                 aria-label={dict.register.fullName}
-                className="w-full bg-surface-container-lowest border border-outline-variant/30 rounded-lg py-3 px-4 text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-on-surface-variant/50"
+                className="w-full border rounded-xl py-3 px-4 text-sm focus:outline-none focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-100 transition-all placeholder:text-slate-400"
               />
             </div>
 
-            <div className="flex flex-col gap-2">
-              <label htmlFor="reg-email" className="text-xs font-label-sm text-on-surface-variant uppercase tracking-wider">{dict.register.email}</label>
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="reg-email" className="text-xs font-semibold uppercase tracking-wider">{dict.register.email}</label>
               <input 
                 id="reg-email"
                 name="email"
@@ -562,23 +557,23 @@ export default function RegisterClient({ lang, dict }: { lang: Locale; dict: any
                 autoCapitalize="off"
                 spellCheck={false}
                 aria-label={dict.register.email}
-                className="w-full bg-surface-container-lowest border border-outline-variant/30 rounded-lg py-3 px-4 text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-on-surface-variant/50 font-mono"
+                className="w-full border rounded-xl py-3 px-4 text-sm focus:outline-none focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-100 transition-all placeholder:text-slate-400 font-mono"
               />
             </div>
 
             {/* PHONE NUMBER FIELD WITH COUNTRY CODE PREVIEW */}
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between">
-                <label htmlFor="reg-phone" className="text-xs font-label-sm text-on-surface-variant uppercase tracking-wider">
+                <label htmlFor="reg-phone" className="text-xs font-semibold uppercase tracking-wider">
                   {dict.register.phone || (lang === "ar" ? "رقم الهاتف / الواتساب" : "Phone / WhatsApp Number")}
                 </label>
-                <span className="text-[11px] text-primary font-mono font-bold flex items-center gap-1.5 dir-ltr bg-primary/10 px-2 py-0.5 rounded border border-primary/20">
-                  <span className="px-1 rounded bg-primary/20 text-[10px]">{selectedCountry.flag}</span>
+                <span className="text-[11px] text-blue-600 font-mono font-bold flex items-center gap-1.5 dir-ltr bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
+                  <span className="px-1 rounded bg-blue-100 text-[10px]">{selectedCountry.flag}</span>
                   <span>{selectedCountry.dialCode}</span>
                 </span>
               </div>
               <div className="relative flex items-center">
-                <span className={`material-symbols-outlined text-base absolute ${lang === 'ar' ? 'right-3' : 'left-3'} text-on-surface-variant pointer-events-none`}>
+                <span className={`material-symbols-outlined text-base absolute ${lang === 'ar' ? 'right-3.5' : 'left-3.5'} text-slate-400 pointer-events-none`}>
                   call
                 </span>
                 <input 
@@ -587,25 +582,25 @@ export default function RegisterClient({ lang, dict }: { lang: Locale; dict: any
                   type="tel" 
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  placeholder={dict.register.phonePlaceholder || (lang === "ar" ? "01012345678" : "01012345678")}
+                  placeholder={dict.register.phonePlaceholder || "01012345678"}
                   autoComplete="tel"
                   autoCorrect="off"
                   autoCapitalize="off"
                   spellCheck={false}
                   aria-label={dict.register.phone || (lang === "ar" ? "رقم الهاتف أو الواتساب" : "Phone or WhatsApp Number")}
-                  className={`w-full bg-surface-container-lowest border border-outline-variant/30 rounded-lg py-3 ${lang === 'ar' ? 'pr-9 pl-4' : 'pl-9 pr-4'} text-on-surface font-mono focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-on-surface-variant/50 placeholder:font-sans`}
+                  className={`w-full border rounded-xl py-3 ${lang === 'ar' ? 'pr-11 pl-4' : 'pl-11 pr-4'} font-mono text-sm focus:outline-none focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-100 transition-all placeholder:text-slate-400 placeholder:font-sans`}
                 />
               </div>
             </div>
 
             {/* PASSWORD FIELD WITH EYE TOGGLE & GENERATOR */}
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1.5">
               <div className="flex justify-between items-center">
-                <label htmlFor="reg-password" className="text-xs font-label-sm text-on-surface-variant uppercase tracking-wider">{dict.register.password}</label>
+                <label htmlFor="reg-password" className="text-xs font-semibold uppercase tracking-wider">{dict.register.password}</label>
                 <button
                   type="button"
                   onClick={generateStrongPassword}
-                  className="text-xs text-primary font-bold hover:underline flex items-center gap-1"
+                  className="text-xs text-blue-600 font-semibold hover:underline flex items-center gap-1"
                 >
                   <span className="material-symbols-outlined text-xs">auto_fix_high</span>
                   {lang === "ar" ? "توليد كلمة مرور قوية" : "Generate Strong Password"}
@@ -625,13 +620,13 @@ export default function RegisterClient({ lang, dict }: { lang: Locale; dict: any
                   autoCapitalize="off"
                   spellCheck={false}
                   aria-label={dict.register.password}
-                  className={`w-full bg-surface-container-lowest border border-outline-variant/30 rounded-lg py-3 ${lang === 'ar' ? 'pr-4 pl-11' : 'pl-4 pr-11'} text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-on-surface-variant/50`}
+                  className={`w-full border rounded-xl py-3 ${lang === 'ar' ? 'pr-4 pl-11' : 'pl-4 pr-11'} text-sm focus:outline-none focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-100 transition-all placeholder:text-slate-400`}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   aria-label={showPassword ? (lang === 'ar' ? "إخفاء كلمة المرور" : "Hide password") : (lang === 'ar' ? "إظهار كلمة المرور" : "Show password")}
-                  className={`absolute ${lang === 'ar' ? 'left-3' : 'right-3'} top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors`}
+                  className={`absolute ${lang === 'ar' ? 'left-3' : 'right-3'} top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors`}
                   title={showPassword ? "إخفاء" : "إظهار"}
                 >
                   <span className="material-symbols-outlined text-lg">
@@ -643,13 +638,13 @@ export default function RegisterClient({ lang, dict }: { lang: Locale; dict: any
               {/* Password Strength Indicator */}
               {password && (
                 <div className="flex flex-col gap-1 mt-1">
-                  <div className="flex justify-between items-center text-[11px] font-bold">
-                    <span className="text-on-surface-variant">
+                  <div className="flex justify-between items-center text-[11px] font-semibold">
+                    <span className="text-slate-500">
                       {lang === "ar" ? "قوة كلمة المرور:" : "Password Strength:"}
                     </span>
-                    <span className="text-primary">{lang === "ar" ? passwordStrength.textAr : passwordStrength.textEn}</span>
+                    <span className="text-blue-600">{lang === "ar" ? passwordStrength.textAr : passwordStrength.textEn}</span>
                   </div>
-                  <div className="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden">
+                  <div className="w-full h-1.5 rounded-full overflow-hidden">
                     <div 
                       className={`h-full transition-all duration-300 ${passwordStrength.color}`} 
                       style={{ width: `${passwordStrength.percent}%` }}
@@ -661,9 +656,9 @@ export default function RegisterClient({ lang, dict }: { lang: Locale; dict: any
           </div>
 
           {/* Column 2 */}
-          <div className="flex flex-col gap-5">
-            <div className="flex flex-col gap-2">
-              <label htmlFor="reg-username" className="text-xs font-label-sm text-on-surface-variant uppercase tracking-wider">{dict.register.username}</label>
+          <div className="flex flex-col gap-4 sm:gap-5">
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="reg-username" className="text-xs font-semibold uppercase tracking-wider">{dict.register.username}</label>
               <input 
                 id="reg-username"
                 name="username"
@@ -676,13 +671,13 @@ export default function RegisterClient({ lang, dict }: { lang: Locale; dict: any
                 autoCapitalize="off"
                 spellCheck={false}
                 aria-label={dict.register.username}
-                className="w-full bg-surface-container-lowest border border-outline-variant/30 rounded-lg py-3 px-4 text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-on-surface-variant/50"
+                className="w-full border rounded-xl py-3 px-4 text-sm focus:outline-none focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-100 transition-all placeholder:text-slate-400"
               />
             </div>
 
             {/* Searchable Country Selector */}
-            <div className="flex flex-col gap-2 relative">
-              <label htmlFor="reg-country-btn" className="text-xs font-label-sm text-on-surface-variant uppercase tracking-wider">
+            <div className="flex flex-col gap-1.5 relative">
+              <label htmlFor="reg-country-btn" className="text-xs font-semibold uppercase tracking-wider">
                 {lang === "ar" ? "الدولة (جميع دول العالم)" : "Country"}
               </label>
 
@@ -691,21 +686,21 @@ export default function RegisterClient({ lang, dict }: { lang: Locale; dict: any
                 type="button"
                 aria-label={lang === "ar" ? "اختر الدولة" : "Select country"}
                 onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="w-full bg-surface-container-lowest border border-outline-variant/30 rounded-lg py-3 px-4 text-on-surface flex items-center justify-between hover:border-primary/50 focus:outline-none transition-all"
+                className="w-full border rounded-xl py-3 px-4 flex items-center justify-between  focus:outline-none transition-all text-sm"
               >
-                <div className="flex items-center gap-2 text-sm font-medium">
-                  <span className="px-2 py-0.5 rounded bg-surface-container-high border border-outline-variant/30 text-primary font-mono text-xs font-bold">{selectedCountry.flag}</span>
+                <div className="flex items-center gap-2 font-medium">
+                  <span className="px-1.5 py-0.5 rounded bg-blue-50 border border-blue-200 text-blue-600 font-mono text-xs font-bold">{selectedCountry.flag}</span>
                   <span>{lang === "ar" ? selectedCountry.nameAr : selectedCountry.nameEn}</span>
-                  <span className="text-xs text-on-surface-variant">({selectedCountry.dialCode})</span>
+                  <span className="text-xs text-slate-400">({selectedCountry.dialCode})</span>
                 </div>
-                <span className="material-symbols-outlined text-sm text-on-surface-variant">expand_more</span>
+                <span className="material-symbols-outlined text-sm text-slate-400">expand_more</span>
               </button>
 
               {/* Searchable Dropdown Popover */}
               {dropdownOpen && (
-                <div className="absolute top-full left-0 right-0 mt-2 z-50 glass-panel border border-outline-variant/30 rounded-xl shadow-2xl p-3 bg-surface-container-lowest/95 backdrop-blur-2xl animate-in fade-in slide-in-from-top-2 duration-200">
-                  <div className="relative mb-3">
-                    <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-sm text-on-surface-variant">search</span>
+                <div className="absolute top-full left-0 right-0 mt-2 z-50 border rounded-xl shadow-xl p-3 animate-in fade-in slide-in-from-top-2 duration-200">
+                  <div className="relative mb-2.5">
+                    <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-sm text-slate-400">search</span>
                     <input
                       id="reg-country-search"
                       name="country-search"
@@ -718,12 +713,12 @@ export default function RegisterClient({ lang, dict }: { lang: Locale; dict: any
                       autoCapitalize="off"
                       spellCheck={false}
                       aria-label={lang === "ar" ? "ابحث باسم الدولة" : "Search country"}
-                      className="w-full bg-surface-container border border-outline-variant/30 rounded-lg py-2 pl-9 pr-3 text-xs text-on-surface focus:outline-none focus:border-primary"
+                      className="w-full border rounded-lg py-2 pl-9 pr-3 text-xs focus:outline-none focus:bg-white focus:border-blue-600"
                       autoFocus
                     />
                   </div>
 
-                  <div className="max-h-48 overflow-y-auto flex flex-col gap-1 pr-1 custom-scrollbar">
+                  <div className="max-h-48 overflow-y-auto flex flex-col gap-0.5 pr-1 custom-scrollbar">
                     {filteredCountries.length > 0 ? (
                       filteredCountries.map((country) => (
                         <button
@@ -734,21 +729,21 @@ export default function RegisterClient({ lang, dict }: { lang: Locale; dict: any
                             setDropdownOpen(false);
                             setSearchQuery("");
                           }}
-                          className={`flex items-center justify-between p-2.5 rounded-lg text-xs font-medium text-start transition-all ${
+                          className={`flex items-center justify-between p-2 rounded-lg text-xs font-medium text-start transition-all ${
                             selectedCountryCode === country.code
-                              ? "bg-primary/20 text-primary font-bold"
-                              : "hover:bg-surface-container-high text-on-surface"
+                              ? "bg-blue-50 text-blue-700 font-bold"
+                              : " hover:bg-slate-50"
                           }`}
                         >
-                          <div className="flex items-center gap-2.5">
-                            <span className="px-1.5 py-0.5 rounded bg-surface-container-high border border-outline-variant/30 text-primary font-mono text-xs font-bold">{country.flag}</span>
+                          <div className="flex items-center gap-2">
+                            <span className="px-1.5 py-0.5 rounded border  font-mono text-[11px]">{country.flag}</span>
                             <span>{lang === "ar" ? country.nameAr : country.nameEn}</span>
                           </div>
-                          <span className="text-[10px] text-on-surface-variant">{country.dialCode}</span>
+                          <span className="text-[10px] text-slate-400 font-mono">{country.dialCode}</span>
                         </button>
                       ))
                     ) : (
-                      <div className="p-4 text-center text-xs text-on-surface-variant">
+                      <div className="p-3 text-center text-xs text-slate-400">
                         {lang === "ar" ? "لم يتم العثور على نتائج" : "No countries found"}
                       </div>
                     )}
@@ -758,8 +753,8 @@ export default function RegisterClient({ lang, dict }: { lang: Locale; dict: any
             </div>
 
             {/* CONFIRM PASSWORD FIELD WITH EYE TOGGLE */}
-            <div className="flex flex-col gap-2">
-              <label htmlFor="reg-confirm-password" className="text-xs font-label-sm text-on-surface-variant uppercase tracking-wider">
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="reg-confirm-password" className="text-xs font-semibold uppercase tracking-wider">
                 {lang === "ar" ? "تأكيد كلمة المرور" : "Confirm Password"}
               </label>
 
@@ -776,13 +771,13 @@ export default function RegisterClient({ lang, dict }: { lang: Locale; dict: any
                   autoCapitalize="off"
                   spellCheck={false}
                   aria-label={lang === "ar" ? "تأكيد كلمة المرور" : "Confirm Password"}
-                  className={`w-full bg-surface-container-lowest border border-outline-variant/30 rounded-lg py-3 ${lang === 'ar' ? 'pr-4 pl-11' : 'pl-4 pr-11'} text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-on-surface-variant/50`}
+                  className={`w-full border rounded-xl py-3 ${lang === 'ar' ? 'pr-4 pl-11' : 'pl-4 pr-11'} text-sm focus:outline-none focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-100 transition-all placeholder:text-slate-400`}
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   aria-label={showConfirmPassword ? (lang === 'ar' ? "إخفاء تأكيد كلمة المرور" : "Hide confirm password") : (lang === 'ar' ? "إظهار تأكيد كلمة المرور" : "Show confirm password")}
-                  className={`absolute ${lang === 'ar' ? 'left-3' : 'right-3'} top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors`}
+                  className={`absolute ${lang === 'ar' ? 'left-3' : 'right-3'} top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors`}
                   title={showConfirmPassword ? "إخفاء" : "إظهار"}
                 >
                   <span className="material-symbols-outlined text-lg">
@@ -792,14 +787,14 @@ export default function RegisterClient({ lang, dict }: { lang: Locale; dict: any
               </div>
 
               {passwordsMatch !== null && (
-                <div className="text-[11px] font-bold mt-0.5">
+                <div className="text-[11px] font-semibold mt-0.5">
                   {passwordsMatch ? (
-                    <span className="text-violet-400 flex items-center gap-1">
+                    <span className="text-emerald-600 flex items-center gap-1">
                       <span className="material-symbols-outlined text-sm">check_circle</span>
                       {lang === "ar" ? "كلمات المرور متطابقة" : "Passwords match"}
                     </span>
                   ) : (
-                    <span className="text-red-400 flex items-center gap-1">
+                    <span className="text-rose-600 flex items-center gap-1">
                       <span className="material-symbols-outlined text-sm">cancel</span>
                       {lang === "ar" ? "كلمات المرور غير متطابقة" : "Passwords do not match"}
                     </span>
@@ -810,21 +805,21 @@ export default function RegisterClient({ lang, dict }: { lang: Locale; dict: any
           </div>
 
           {/* Terms Agreement */}
-          <div className="col-span-1 md:col-span-2 pt-2 border-t border-outline-variant/20">
+          <div className="col-span-1 md:col-span-2 pt-2 border-t ">
             <div className="flex items-start gap-3">
               <input 
                 type="checkbox" 
                 id="terms" 
                 checked={termsAgreed}
                 onChange={(e) => setTermsAgreed(e.target.checked)}
-                className="mt-1 w-4 h-4 rounded border-outline-variant/50 bg-surface-container-lowest text-primary focus:ring-primary/50 cursor-pointer" 
+                className="mt-1 w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer" 
               />
-              <label htmlFor="terms" className="text-sm text-on-surface-variant cursor-pointer select-none">
+              <label htmlFor="terms" className="text-xs sm:text-sm text-slate-600 cursor-pointer select-none">
                 {dict.register.agree}{" "}
                 <button
                   type="button"
                   onClick={() => { setTermsModalTab("terms"); setTermsModalOpen(true); }}
-                  className="text-primary font-bold hover:underline"
+                  className="text-blue-600 font-semibold hover:underline"
                 >
                   {dict.register.tos}
                 </button>{" "}
@@ -832,7 +827,7 @@ export default function RegisterClient({ lang, dict }: { lang: Locale; dict: any
                 <button
                   type="button"
                   onClick={() => { setTermsModalTab("terms"); setTermsModalOpen(true); }}
-                  className="text-primary font-bold hover:underline"
+                  className="text-blue-600 font-semibold hover:underline"
                 >
                   {dict.register.privacy}
                 </button>{" "}
@@ -840,7 +835,7 @@ export default function RegisterClient({ lang, dict }: { lang: Locale; dict: any
                 <button
                   type="button"
                   onClick={() => { setTermsModalTab("refund"); setTermsModalOpen(true); }}
-                  className="text-amber-400 font-bold hover:underline"
+                  className="text-blue-600 font-semibold hover:underline"
                 >
                   {lang === "ar" ? "سياسة الاسترجاع والضمان" : "Refund Policy"}
                 </button>.
@@ -862,11 +857,11 @@ export default function RegisterClient({ lang, dict }: { lang: Locale; dict: any
             <button 
               type="submit" 
               disabled={isLoading}
-              className="w-full bg-primary-container text-on-primary-container py-4 rounded-lg font-bold text-lg hover:bg-primary transition-all glow-primary shadow-[0_0_15px_rgba(124,58,237,0.2)] active:scale-[0.99] flex items-center justify-center gap-2 disabled:opacity-50"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3.5 sm:py-4 rounded-xl font-bold text-base transition-all shadow-sm active:scale-[0.99] flex items-center justify-center gap-2 disabled:opacity-50"
             >
               {isLoading ? (
                 <>
-                  <span className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin"></span>
+                  <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
                   <span>{lang === "ar" ? "جاري إنشاء الحساب فورا..." : "Creating Account..."}</span>
                 </>
               ) : (
@@ -876,8 +871,8 @@ export default function RegisterClient({ lang, dict }: { lang: Locale; dict: any
           </div>
         </form>
 
-        <div className="relative z-10 mt-8 text-center text-sm text-on-surface-variant">
-          {dict.register.hasAccount} <Link href={`/${lang}/login`} className="text-primary hover:text-primary-container font-semibold transition-colors">{dict.register.signIn}</Link>
+        <div className="mt-6 text-center text-xs text-slate-500">
+          {dict.register.hasAccount} <Link href={`/${lang}/login`} className="text-blue-600 hover:text-blue-700 font-bold transition-colors">{dict.register.signIn}</Link>
         </div>
       </div>
 

@@ -4,7 +4,7 @@ import { getBackendCandidates } from "../../../lib/api-proxy-candidates";
 /**
  * Smart catch-all API proxy with working URL caching.
  *
- * The public domain (arabtechproserver.tech) is NOT reachable from inside
+ * The public domain is NOT reachable from inside
  * the Docker container due to hairpin NAT — so we only try internal hostnames.
  *
  * INTERNAL_API_URL takes priority. If not set (or set to localhost), we try
@@ -126,14 +126,13 @@ async function handler(
         console.log(`[API Proxy] Backend found at: ${baseUrl} - caching for future requests`);
       }
 
-      const responseBody = await res.arrayBuffer();
-      responseHeaders.set('content-length', responseBody.byteLength.toString());
 
       if (res.status >= 400) {
         console.warn(`[API Proxy] ${request.method} /api/${path} returned status ${res.status}`);
       }
 
-      return new NextResponse(responseBody, {
+      // Stream with backpressure rather than copying the entire API response.
+      return new NextResponse(res.body, {
         status: res.status,
         headers: responseHeaders,
       });

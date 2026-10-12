@@ -29,7 +29,7 @@ export default async function TermsPage(props: PageProps) {
         </h1>
         <p className="text-sm text-on-surface-variant max-w-2xl mx-auto">
           {lang === "ar"
-            ? "نحرص في منصة عرب تك سيرفر على الشفافية التامة ووضوح العلاقة مع عملائنا. يرجى قراءة شروط الاستخدام وسياسة الاسترجاع والضمان بعناية قبل إتمام أي طلب."
+            ? "نحرص في منصة BORAI STORE على الشفافية التامة ووضوح العلاقة مع عملائنا. يرجى قراءة شروط الاستخدام وسياسة الاسترجاع والضمان بعناية قبل إتمام أي طلب."
             : "We are committed to full transparency. Please read our terms and policies carefully."}
         </p>
         <div className="pt-2">
@@ -52,7 +52,7 @@ export default async function TermsPage(props: PageProps) {
           </div>
           <p className="text-on-surface-variant text-sm leading-relaxed">
             {lang === "ar"
-              ? "باستخدامك لمنصة عرب تك، فإنك توافق التزاماً كاملاً بجميع الشروط والأحكام والسياسات المعلنة."
+              ? "باستخدامك لمنصة BORAI STORE، فإنك توافق التزاماً كاملاً بجميع الشروط والأحكام والسياسات المعلنة."
               : "By using our platform, you fully agree to comply with all published terms and policies."}
           </p>
         </div>

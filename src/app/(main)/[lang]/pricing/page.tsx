@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { Locale } from "@/i18n/config";
 import PricingClient from "./PricingClient";
@@ -54,8 +54,8 @@ export async function generateMetadata(
 
   let title = isAr ? "قائمة الأسعار والخدمات" : "Services & Price List";
   let description = isAr
-    ? "تصفح قائمة أسعار وخدمات عرب تك برو سيرفر لفك الشفرات وتخطي حسابات FRP وتنشيط البوكسات بأفضل الأسعار وأسرع تسليم."
-    : "Browse Arab Tech Pro Server complete catalog and live price list for phone unlocking, FRP bypass, and software tool activations.";
+    ? "تصفح قائمة أسعار وخدمات BORAI STORE (بورعي ستور) لشحن الألعاب والبطاقات الرقمية والتفعيل الفوري بأفضل الأسعار وأسرع تسليم."
+    : "Browse BORAI STORE complete catalog and live price list for game credits, digital vouchers, and software activations.";
 
   if (section) {
     const categories = await fetchPricingServices();
@@ -80,39 +80,40 @@ export async function generateMetadata(
         : `${section} (${count} Services)`;
 
       description = isAr
-        ? `أسعار باقة ${section} (${count} خدمة): تسليم فوري وتفعيل تلقائي 24/7 عبر سيرفر عرب تك برو بأفضل الأسعار المعتمدة.`
-        : `Live prices for ${section} (${count} services): instant 24/7 delivery and activation on Arab Tech Pro Server.`;
+        ? `أسعار باقة ${section} (${count} خدمة): تسليم فوري وتفعيل تلقائي 24/7 عبر متجر BORAI STORE بأفضل الأسعار المعتمدة.`
+        : `Live prices for ${section} (${count} services): instant 24/7 delivery and activation on BORAI STORE.`;
     } else {
       title = `${section}`;
       description = isAr
-        ? `تصفح أسعار وخدمات باقة ${section} على منصة عرب تك برو سيرفر مع التسليم الفوري وأقوى عروض الموزعين.`
-        : `Explore ${section} services and real-time live prices on Arab Tech Pro Server with instant 24/7 delivery.`;
+        ? `تصفح أسعار وخدمات باقة ${section} على منصة BORAI STORE مع التسليم الفوري وأقوى عروض الموزعين.`
+        : `Explore ${section} services and real-time live prices on BORAI STORE with instant 24/7 delivery.`;
     }
   }
 
-  const currentUrl = `https://arabtechproserver.tech/${params.lang}/pricing${section ? `?section=${encodeURIComponent(section)}` : ''}`;
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://borai.store";
+  const currentUrl = `${siteUrl}/${params.lang}/pricing${section ? `?section=${encodeURIComponent(section)}` : ''}`;
 
   return {
-    metadataBase: new URL("https://arabtechproserver.tech"),
+    metadataBase: new URL(siteUrl),
     title,
     description,
     openGraph: {
       title,
       description,
       url: currentUrl,
-      siteName: isAr ? "عرب تك برو سيرفر (عرب تك برو سيرفر) - Arab Tech Pro Server" : "Arab Tech Pro Server",
+      siteName: isAr ? "BORAI STORE (بورعي ستور)" : "BORAI STORE",
       images: [
         {
-          url: "https://arabtechproserver.tech/main-logo.png",
+          url: `${siteUrl}/main-logo.png`,
           width: 512,
           height: 512,
-          alt: "Arab Tech Pro Server Logo",
+          alt: "BORAI STORE Logo",
         },
         {
-          url: "https://arabtechproserver.tech/images/og-image.png",
+          url: `${siteUrl}/images/og-image.png`,
           width: 1200,
           height: 630,
-          alt: "Arab Tech Pro Server",
+          alt: "BORAI STORE",
         },
       ],
       locale: isAr ? "ar_AR" : "en_US",
@@ -122,7 +123,7 @@ export async function generateMetadata(
       card: "summary",
       title,
       description,
-      images: ["https://arabtechproserver.tech/main-logo.png"],
+      images: [`${siteUrl}/main-logo.png`],
     },
   };
 }
@@ -136,10 +137,10 @@ export default async function Pricing(props: { params: Promise<{ lang: Locale }>
 
   return (
     <div className="flex flex-col gap-8 pb-12">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-2">
         <div>
-          <h1 className="font-display-lg-mobile text-4xl font-bold text-on-surface mb-2">{dict.pricing.title}</h1>
-          <p className="text-on-surface-variant max-w-2xl">
+          <h1 className="text-2xl sm:text-4xl font-extrabold dark:text-white mb-2">{dict.pricing.title}</h1>
+          <p className="text-slate-500 dark:text-slate-400 text-sm max-w-2xl">
             {dict.pricing.subtitle}
           </p>
         </div>

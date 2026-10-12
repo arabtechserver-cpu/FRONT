@@ -130,6 +130,13 @@ export default function AdminLogin() {
           return;
         }
 
+        if (apiData.token) {
+          try {
+            document.cookie = `admin_token=${apiData.token}; path=/; max-age=43200; SameSite=Lax`;
+            localStorage.setItem("admin_token", apiData.token);
+            sessionStorage.setItem("admin_token", apiData.token);
+          } catch {}
+        }
         window.location.href = "/admin";
         return;
       }
@@ -166,6 +173,13 @@ export default function AdminLogin() {
           setInfoMessage(result.message || "تم إرسال رمز التحقق إلى حساب تيليجرام الخاص بالإدارة");
           setLoading(false);
           return;
+        }
+        if (result.token) {
+          try {
+            document.cookie = `admin_token=${result.token}; path=/; max-age=43200; SameSite=Lax`;
+            localStorage.setItem("admin_token", result.token);
+            sessionStorage.setItem("admin_token", result.token);
+          } catch {}
         }
         window.location.href = "/admin";
         return;
@@ -222,6 +236,13 @@ export default function AdminLogin() {
       const apiData = await apiRes.json().catch(() => ({}));
 
       if (apiRes.ok && apiData.success) {
+        if (apiData.token) {
+          try {
+            document.cookie = `admin_token=${apiData.token}; path=/; max-age=43200; SameSite=Lax`;
+            localStorage.setItem("admin_token", apiData.token);
+            sessionStorage.setItem("admin_token", apiData.token);
+          } catch {}
+        }
         window.location.href = "/admin";
         return;
       }
@@ -246,6 +267,13 @@ export default function AdminLogin() {
 
       const result = await verifyAdminOtpAction(challengeToken, otp.trim());
       if (result.success) {
+        if (result.token) {
+          try {
+            document.cookie = `admin_token=${result.token}; path=/; max-age=43200; SameSite=Lax`;
+            localStorage.setItem("admin_token", result.token);
+            sessionStorage.setItem("admin_token", result.token);
+          } catch {}
+        }
         window.location.href = "/admin";
         return;
       } else {
@@ -462,12 +490,20 @@ export default function AdminLogin() {
                 <input
                   ref={otpInputRef}
                   type="text"
+                  dir="ltr"
                   inputMode="numeric"
                   pattern="[0-9]*"
                   maxLength={6}
                   value={otp}
                   onChange={(e) => {
-                    const val = e.target.value.replace(/\D/g, "");
+                    const raw = e.target.value;
+                    const arabicDigits = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+                    const persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+                    let res = raw;
+                    for (let i = 0; i < 10; i++) {
+                      res = res.replaceAll(arabicDigits[i], String(i)).replaceAll(persianDigits[i], String(i));
+                    }
+                    const val = res.replace(/\D/g, "");
                     setOtp(val);
                   }}
                   autoComplete="one-time-code"

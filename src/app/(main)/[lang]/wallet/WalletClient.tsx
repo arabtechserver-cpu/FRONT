@@ -1,11 +1,15 @@
 "use client";
 
+import { SITE_CONTACTS } from "@/lib/site-contacts";
+
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Locale } from "@/i18n/config";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { cleanHtmlToText } from "@/utils/cleanHtml";
+import { Wallet, ArrowUpRight, ArrowDownLeft, Check, Clock3, ReceiptText, Copy, Upload, ShieldCheck, RefreshCw, Banknote, Smartphone, Bitcoin, CreditCard, Headphones, Search, X, ChevronRight } from "lucide-react";
+import styles from "./wallet.module.css";
 
 const PAYPAL_CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "";
 
@@ -91,6 +95,8 @@ interface DBTransaction {
 
 export default function WalletClient({ lang, dict }: { lang: Locale; dict: any }) {
   const router = useRouter();
+  const isAr = lang === "ar";
+
   const [userSession, setUserSession] = useState<any>(null);
   const [depositAmount, setDepositAmount] = useState<string>("10.00");
   const [depositSdgAmount, setDepositSdgAmount] = useState<string>("");
@@ -107,8 +113,17 @@ export default function WalletClient({ lang, dict }: { lang: Locale; dict: any }
   const [currencyConfig, setCurrencyConfig] = useState<CurrencyConfig | null>(null);
   const [isVerifyingPayPal, setIsVerifyingPayPal] = useState<boolean>(false);
   const [transactions, setTransactions] = useState<DBTransaction[]>([]);
+  const [historyFilter, setHistoryFilter] = useState("all");
+  const [historyQuery, setHistoryQuery] = useState("");
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  // Fetch Currency & Payment Settings from Backend
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => {
+      setToastMessage(null);
+    }, 2500);
+  };
+
   const fetchCurrencies = async () => {
     try {
       const res = await fetch("/api/currencies", {
@@ -140,14 +155,12 @@ export default function WalletClient({ lang, dict }: { lang: Locale; dict: any }
       }
     }
 
-    if (!currentUser) {
-      router.push(`/${lang}/login`);
-      return;
+    if (currentUser) {
+      fetchRealTransactions(currentUser?.id, currentUser?.email);
+    } else {
+      setIsFetchingTx(false);
     }
 
-    fetchRealTransactions(currentUser?.id, currentUser?.email);
-
-    // AUTO SELECT PAYMENT METHOD FROM URL IF SPECIFIED
     if (typeof window !== "undefined") {
       const urlParams = new URLSearchParams(window.location.search);
       const methodParam = urlParams.get("method");
@@ -161,12 +174,11 @@ export default function WalletClient({ lang, dict }: { lang: Locale; dict: any }
       if (paypalToken && (paypalStatus === "success" || paypalToken)) {
         handlePayPalReturnCapture(paypalToken, currentUser);
       } else if (paypalStatus === "cancel") {
-        setErrorMessage(lang === "ar" ? "تم إلغاء عملية الدفع عبر PayPal." : "PayPal payment was cancelled.");
+        setErrorMessage(isAr ? "تم إلغاء عملية الدفع عبر PayPal." : "PayPal payment was cancelled.");
       }
     }
   }, [lang, router]);
 
-  // Sync SDG amount when USD deposit amount or currency config changes
   useEffect(() => {
     if (currencyConfig?.usdToSdg) {
       const usd = parseFloat(depositAmount) || 0;
@@ -183,7 +195,6 @@ export default function WalletClient({ lang, dict }: { lang: Locale; dict: any }
     }
   };
 
-  // Build Dynamic Payment Methods from Live Config
   const paymentMethods: PaymentMethod[] = [
     {
       id: "bankak",
@@ -191,10 +202,14 @@ export default function WalletClient({ lang, dict }: { lang: Locale; dict: any }
       nameEn: "Bank of Khartoum (Bankak)",
       badge: "SD",
       icon: "account_balance",
-      color: "from-violet-600 to-purple-700",
+      color: "bg-blue-600",
       copyValue: currencyConfig?.bankak?.accountNumber || "",
-      detailLabelAr: currencyConfig?.bankak?.accountName ? `رقم حساب بنكك (باسم: ${currencyConfig.bankak.accountName}):` : "رقم حساب بنكك:",
-      detailLabelEn: currencyConfig?.bankak?.accountName ? `Bankak Account # (Name: ${currencyConfig.bankak.accountName}):` : "Bankak Account #:",
+      detailLabelAr: currencyConfig?.bankak?.accountName
+        ? `رقم حساب بنكك (باسم: ${currencyConfig.bankak.accountName}):`
+        : "رقم حساب بنكك:",
+      detailLabelEn: currencyConfig?.bankak?.accountName
+        ? `Bankak Account # (Name: ${currencyConfig.bankak.accountName}):`
+        : "Bankak Account #:",
       instructionsAr:
         currencyConfig?.bankak?.instructionsAr ||
         "حول المبلغ بالجنيه السوداني عبر تطبيق بنكك إلى رقم الحساب ثم ارفع صورة إشعار التحويل للتأكيد.",
@@ -205,11 +220,11 @@ export default function WalletClient({ lang, dict }: { lang: Locale; dict: any }
     },
     {
       id: "fawry",
-      nameAr: "فوري - بنك فيصل (الرقم الموحد)",
-      nameEn: "Fawri - Faisal Bank (Unified ID)",
+      nameAr: "فوري - بنك فيصل الإسلامي",
+      nameEn: "Fawri - Faisal Bank",
       badge: "FAWRI",
       icon: "account_balance",
-      color: "from-purple-700 to-indigo-800",
+      color: "bg-indigo-600",
       copyValue: currencyConfig?.fawry?.accountNumber || "51589889",
       detailLabelAr: "الرقم البنكي الموحد (تطبيق فوري):",
       detailLabelEn: "Unified Banking ID (Fawri App):",
@@ -227,7 +242,7 @@ export default function WalletClient({ lang, dict }: { lang: Locale; dict: any }
       nameEn: "Vodafone Cash",
       badge: "VF",
       icon: "phone_iphone",
-      color: "from-red-600 to-rose-700",
+      color: "bg-rose-600",
       copyValue: currencyConfig?.vodafone?.walletNumber || "",
       detailLabelAr: "رقم محفظة فودافون كاش:",
       detailLabelEn: "Vodafone Cash Wallet Number:",
@@ -244,7 +259,7 @@ export default function WalletClient({ lang, dict }: { lang: Locale; dict: any }
       nameEn: "Binance Pay",
       badge: "PAY",
       icon: "currency_exchange",
-      color: "from-amber-500 to-yellow-600",
+      color: "bg-amber-500",
       copyValue: currencyConfig?.binance?.payId || "",
       detailLabelAr: "معرف باينانس باي (Binance Pay ID):",
       detailLabelEn: "Binance Pay ID:",
@@ -257,20 +272,23 @@ export default function WalletClient({ lang, dict }: { lang: Locale; dict: any }
     },
     {
       id: "bnb",
-      nameAr: "تحويل BNB (شحن الألعاب، البطاقات، الاشتراكات، eSIM، و Rewarble)",
-      nameEn: "BNB Transfer (Top-ups, Cards, Subscriptions, eSIM & Rewarble)",
+      nameAr: "تحويل BNB (للألعاب والبطاقات والاشتراكات)",
+      nameEn: "BNB Transfer (Top-ups, Cards & Subscriptions)",
       badge: "BNB",
       icon: "account_balance_wallet",
-      color: "from-amber-500 to-yellow-600",
-      copyValue: currencyConfig?.cryptoBnb?.address || currencyConfig?.rewarble?.address || "0xaCc3ab6f0165B39Cf2F1286ED8A778735Ae8314f",
-      detailLabelAr: "اسم التحويل: BNB | الرابط (عنوان المحفظة BEP20):",
-      detailLabelEn: "Transfer Name: BNB | Address (BEP20 Link):",
+      color: "bg-amber-600",
+      copyValue:
+        currencyConfig?.cryptoBnb?.address ||
+        currencyConfig?.rewarble?.address ||
+        "0xaCc3ab6f0165B39Cf2F1286ED8A778735Ae8314f",
+      detailLabelAr: "عنوان المحفظة (BEP20 / BSC Link):",
+      detailLabelEn: "Wallet Address (BEP20 Link):",
       instructionsAr:
         currencyConfig?.cryptoBnb?.instructionsAr ||
-        "طريقة تحويل عبر BNB معتمدة لكافة الأقسام والخدمات (شحن الألعاب المباشر، متاجر التطبيقات، أكواد الألعاب، الاشتراكات والترفيه، شرائح eSIM، وقسائم Rewarble): اسم التحويل BNB، قم بالتحويل إلى رابط المحفظة (0xaCc3ab6f0165B39Cf2F1286ED8A778735Ae8314f) ثم ارفع صورة إشعار التحويل للتأكيد الفوري.",
+        "طريقة تحويل عبر BNB معتمدة لكافة الأقسام (شحن الألعاب المباشر، متاجر التطبيقات، أكواد الألعاب، الاشتراكات، و Rewarble): قم بالتحويل إلى رابط المحفظة (0xaCc3ab6f0165B39Cf2F1286ED8A778735Ae8314f) ثم ارفع صورة إشعار التحويل للتأكيد.",
       instructionsEn:
         currencyConfig?.cryptoBnb?.instructionsEn ||
-        "Approved BNB transfer method for all sections (In-Game Top-Ups, App Stores, Game Codes, Subscriptions, eSIMs, and Rewarble Vouchers): Transfer Name BNB, transfer to wallet address (0xaCc3ab6f0165B39Cf2F1286ED8A778735Ae8314f) then upload transfer receipt.",
+        "Approved BNB transfer method for all sections. Transfer to wallet address then upload receipt.",
       isBnbServices: true
     },
     {
@@ -279,17 +297,16 @@ export default function WalletClient({ lang, dict }: { lang: Locale; dict: any }
       nameEn: "PayPal (Instant Auto)",
       badge: "PP",
       icon: "payments",
-      color: "from-blue-600 to-indigo-600",
+      color: "bg-blue-600",
       copyValue: currencyConfig?.paypal?.email || "paypal@gsmteam.com",
-      detailLabelAr: "الدفع التلقائي المباشر عبر PayPal (داخل الموقع):",
-      detailLabelEn: "Direct PayPal Instant Payment (In-Page):",
-      instructionsAr: "ادخل المبلغ واضغط دفع لفتح نافذة PayPal الآمنة داخل الموقع دون مغادرة الصفحة.",
-      instructionsEn: "Enter amount and click Pay to open in-page secure PayPal window without leaving.",
+      detailLabelAr: "الدفع التلقائي المباشر عبر PayPal:",
+      detailLabelEn: "Direct PayPal Instant Payment:",
+      instructionsAr: "ادخل المبلغ واضغط زر الدفع عبر PayPal لإتمام العملية تلقائياً.",
+      instructionsEn: "Enter amount and click PayPal button to pay instantly.",
       isAutomaticPayPal: true
     }
   ];
 
-  // Handle Automatic Return Capture from PayPal Checkout
   const handlePayPalReturnCapture = async (orderId: string, userObj?: any) => {
     setIsLoading(true);
     setIsVerifyingPayPal(true);
@@ -301,17 +318,15 @@ export default function WalletClient({ lang, dict }: { lang: Locale; dict: any }
           "Content-Type": "application/json",
           ...(token ? { Authorization: `Bearer ${token}` } : {})
         },
-        body: JSON.stringify({
-          orderId
-        })
+        body: JSON.stringify({ orderId })
       });
 
       const data = await res.json();
 
       if (res.ok && data.success) {
         setSuccessMessage(
-          lang === "ar"
-            ? `تم الدفع واعتتماد الشحن التلقائي بمبلغ $${data.amount} USD بنجاح! رصيدك الجديد: $${data.balance}`
+          isAr
+            ? `تم الدفع واعتماد الشحن التلقائي بمبلغ $${data.amount} USD بنجاح! رصيدك الجديد: $${data.balance}`
             : `Payment successful! $${data.amount} USD added. New balance: $${data.balance}`
         );
 
@@ -328,10 +343,14 @@ export default function WalletClient({ lang, dict }: { lang: Locale; dict: any }
           window.history.replaceState({}, document.title, window.location.pathname);
         }
       } else {
-        setErrorMessage(data.error || (lang === "ar" ? "تعذر تأكيد عملية الدفع من PayPal" : "Failed to capture PayPal payment"));
+        setErrorMessage(
+          data.error || (isAr ? "تعذر تأكيد عملية الدفع من PayPal" : "Failed to capture PayPal payment")
+        );
       }
     } catch {
-      setErrorMessage(lang === "ar" ? "خطأ في الاتصال أثناء تأكيد الدفع عبر PayPal" : "Connection error capturing PayPal payment");
+      setErrorMessage(
+        isAr ? "خطأ في الاتصال أثناء تأكيد الدفع عبر PayPal" : "Connection error capturing PayPal payment"
+      );
     } finally {
       setIsLoading(false);
       setIsVerifyingPayPal(false);
@@ -375,12 +394,11 @@ export default function WalletClient({ lang, dict }: { lang: Locale; dict: any }
 
   const normalizedMethodId = selectedMethodId === "rewarble" ? "bnb" : selectedMethodId;
   const activeMethod = paymentMethods.find((m) => m.id === normalizedMethodId) || paymentMethods[0];
-  const bnbMethod = paymentMethods.find((m) => m.id === "bnb");
-  const otherMethods = paymentMethods.filter((m) => m.id !== "bnb");
 
   const handleCopy = (text: string, id: string) => {
     navigator.clipboard.writeText(text);
     setCopiedId(id);
+    showToast(isAr ? "تم النسخ إلى الحافظة بنجاح" : "Copied to clipboard!");
     setTimeout(() => {
       setCopiedId(null);
     }, 2000);
@@ -391,7 +409,7 @@ export default function WalletClient({ lang, dict }: { lang: Locale; dict: any }
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
-      setErrorMessage(lang === "ar" ? "يرجى اختيار ملف صورة صالح (JPG, PNG, WEBP)" : "Please select a valid image file");
+      setErrorMessage(isAr ? "يرجى اختيار ملف صورة صالح (JPG, PNG, WEBP)" : "Please select a valid image file");
       return;
     }
 
@@ -436,7 +454,7 @@ export default function WalletClient({ lang, dict }: { lang: Locale; dict: any }
       img.src = rawDataUrl;
     };
     reader.onerror = () => {
-      setErrorMessage(lang === "ar" ? "تعذر قراءة ملف الصورة، يُرجى تجربة ملف آخر" : "Could not read image file");
+      setErrorMessage(isAr ? "تعذر قراءة ملف الصورة" : "Could not read image file");
     };
     reader.readAsDataURL(file);
   };
@@ -448,25 +466,19 @@ export default function WalletClient({ lang, dict }: { lang: Locale; dict: any }
     setSuccessMessage("");
 
     if (!depositAmount || parseFloat(depositAmount) <= 0) {
-      setErrorMessage(lang === "ar" ? "الرجاء إدخال مبلغ إيداع صحيح! (حد أدنى $1.00 USD)" : "Please enter a valid deposit amount (min $1.00)!");
+      setErrorMessage(isAr ? "الرجاء إدخال مبلغ إيداع صحيح! (حد أدنى $1.00 USD)" : "Please enter a valid amount (min $1.00)!");
       return;
     }
 
-    if (activeMethod.isAutomaticPayPal) {
-      return;
-    }
+    if (activeMethod.isAutomaticPayPal) return;
 
     if (!transactionRef.trim()) {
-      setErrorMessage(lang === "ar" ? "الرجاء إدخال رقم المعاملة أو رقم الحساب/المحفظة المحول منها!" : "Please enter transaction reference / sender number!");
+      setErrorMessage(isAr ? "الرجاء إدخال رقم المعاملة أو رقم الحساب/المحفظة المحول منها!" : "Please enter transaction reference / sender number!");
       return;
     }
 
     if (!receiptImage) {
-      setErrorMessage(
-        lang === "ar"
-          ? "يرجى إرفاق صورة إشعار أو إيصال التحويل للمتابعة (إجباري)"
-          : "Please attach transfer receipt image (required)!"
-      );
+      setErrorMessage(isAr ? "يرجى إرفاق صورة إشعار أو إيصال التحويل للمتابعة (إجباري)" : "Please attach transfer receipt image (required)!");
       return;
     }
 
@@ -474,10 +486,7 @@ export default function WalletClient({ lang, dict }: { lang: Locale; dict: any }
 
     try {
       const token = localStorage.getItem("user_token") || localStorage.getItem("token");
-      const headers: Record<string, string> = {
-        "Content-Type": "application/json"
-      };
-
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
       if (token && token !== "null" && token !== "undefined") {
         headers["Authorization"] = `Bearer ${token}`;
       }
@@ -489,9 +498,9 @@ export default function WalletClient({ lang, dict }: { lang: Locale; dict: any }
         body: JSON.stringify({
           userId: userSession?.id,
           email: userSession?.email,
-          type: lang === "ar" ? "طلب شحن محفظة" : "Top-up Request",
+          type: isAr ? "طلب شحن محفظة" : "Top-up Request",
           amount: parseFloat(depositAmount),
-          method: lang === "ar" ? activeMethod.nameAr : activeMethod.nameEn,
+          method: isAr ? activeMethod.nameAr : activeMethod.nameEn,
           refNo: transactionRef.trim(),
           receiptImage: receiptImage || undefined
         })
@@ -500,27 +509,22 @@ export default function WalletClient({ lang, dict }: { lang: Locale; dict: any }
       const data = await res.json().catch(() => ({ success: false, error: "تعذر قراءة رد الخادم" }));
 
       if (res.ok && data.success) {
-        const successMsg = lang === "ar"
-          ? `تم إرسال طلب الشحن بقيمة $${parseFloat(depositAmount).toFixed(2)} وإرفاق إشعار التحويل بنجاح! جاري المراجعة والتفعيل فوراً.`
-          : `Deposit request of $${parseFloat(depositAmount).toFixed(2)} submitted & receipt attached successfully!`;
-        
+        const successMsg = isAr
+          ? `تم إرسال طلب الشحن بقيمة $${parseFloat(depositAmount).toFixed(2)} وإرفاق إشعار التحويل بنجاح! جاري المراجعة والتفعيل.`
+          : `Deposit request of $${parseFloat(depositAmount).toFixed(2)} submitted successfully!`;
+
         setSuccessMessage(successMsg);
-        
-        // Show an explicit alert and scroll to top to ensure user knows it succeeded
-        setTimeout(() => {
-          alert(successMsg);
-          window.scrollTo({ top: 0, behavior: "smooth" });
-        }, 100);
+        showToast(isAr ? "تم إرسال الطلب بنجاح!" : "Deposit submitted!");
 
         setTransactionRef("");
         setReceiptImage("");
         setReceiptFileName("");
         fetchRealTransactions(userSession?.id, userSession?.email);
       } else {
-        setErrorMessage(data.error || (lang === "ar" ? "فشل إرسال طلب الشحن" : "Failed to submit deposit request"));
+        setErrorMessage(data.error || (isAr ? "فشل إرسال طلب الشحن" : "Failed to submit deposit request"));
       }
     } catch {
-      setErrorMessage(lang === "ar" ? "تعذر الاتصال بالسيرفر لإتمام طلب الشحن. يرجى التحقق من اتصال الإنترنت." : "Connection error submitting deposit");
+      setErrorMessage(isAr ? "تعذر الاتصال بالسيرفر لإتمام طلب الشحن." : "Connection error submitting deposit");
     } finally {
       setIsLoading(false);
     }
@@ -530,618 +534,254 @@ export default function WalletClient({ lang, dict }: { lang: Locale; dict: any }
   const userBalanceUsd = userSession?.balance || 0.0;
   const userBalanceSdg = Math.round(userBalanceUsd * sdgRate);
 
+  const pendingCount = transactions.filter(tx => tx.status === "pending").length;
+  const visibleTransactions = transactions.filter(tx => {
+    const matches = historyFilter === "all" || (historyFilter === "failed" ? !["completed", "pending"].includes(tx.status) : tx.status === historyFilter);
+    const query = historyQuery.trim().toLocaleLowerCase();
+    return matches && (!query || [tx.refNo, tx.type, tx.method].some(value => (value || "").toLocaleLowerCase().includes(query)));
+  });
+  const methodIcons: Record<string, typeof Wallet> = { bankak: Banknote, fawry: Banknote, vodafone: Smartphone, binance: Bitcoin, bnb: Wallet, paypal: CreditCard };
+
   return (
-    <PayPalScriptProvider
-      options={{
-        clientId: PAYPAL_CLIENT_ID,
-        currency: "USD",
-        intent: "capture"
-      }}
-    >
-      <div className="container mx-auto px-4 py-8 max-w-6xl relative" dir="rtl">
-        {/* PAYPAL VERIFICATION OVERLAY */}
-        {isVerifyingPayPal && (
-          <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-xl flex items-center justify-center p-4 animate-in fade-in duration-300">
-            <div className="bg-surface-container-lowest border border-primary/40 rounded-3xl p-8 max-w-md w-full shadow-2xl space-y-4 text-center">
-              <span className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto block"></span>
-              <h3 className="text-xl font-bold text-white">
-                {lang === "ar" ? "جاري التحقق من عملية الدفع عبر PayPal..." : "Verifying PayPal payment..."}
-              </h3>
-              <p className="text-sm text-slate-300 leading-relaxed">
-                {lang === "ar"
-                  ? "يتم الآن التواصل مع خوادم PayPal للتحقق من وصول المبلغ وتأكيد الشحن الفوري في محفظتك."
-                  : "Contacting PayPal servers to confirm real payment receipt and credit your wallet."}
-              </p>
-            </div>
+    <PayPalScriptProvider options={{ clientId: PAYPAL_CLIENT_ID, currency: "USD", intent: "capture" }}>
+      <div className={styles.page} dir={isAr ? "rtl" : "ltr"}>
+        {toastMessage && <div className={styles.toast + " bg-slate-900 text-white"} role="status"><Check size={17} /><span>{toastMessage}</span></div>}
+        <header className={styles.pageHeader}>
+          <div><p className={styles.eyebrow}>{isAr ? "حسابك / المحفظة" : "Your account / Wallet"}</p><h1>{isAr ? "كل رصيدك. في مكان واحد." : "Your balance. All in one place."}</h1><p className={styles.subheading}>{isAr ? "اشحن بسهولة، وتابع كل حركة في محفظتك." : "Add funds easily and track every transaction."}</p></div>
+          <a href="#wallet-topup" className={styles.headerAction + " bg-blue-600 hover:bg-blue-700 text-white"}>{isAr ? "شحن المحفظة" : "Add funds"}<ArrowUpRight size={20} /></a>
+        </header>
+        <section className={styles.overview} aria-label={isAr ? "ملخص المحفظة" : "Wallet overview"}>
+          <div className={styles.balanceCard + " bg-surface-container shadow-sm"}>
+            <div className={styles.balanceTop}><span className={styles.iconTile + " text-blue-600 dark:text-blue-400"}><Wallet size={22} /></span><span className={styles.eyebrow}>BORAI WALLET</span><span className={styles.balanceCurrency}>USD</span></div>
+            <div className={styles.balanceContent}><span className={styles.muted}>{isAr ? "رصيدك المتاح" : "Available balance"}</span><div className={styles.balanceValue + " text-blue-600 dark:text-blue-400"} dir="ltr">{userSession ? "$" + userBalanceUsd.toFixed(2) : "—"}<span>USD</span></div><p className={styles.muted}>{userSession ? "≈ " + userBalanceSdg.toLocaleString() + " SDG" : isAr ? "سجّل الدخول لعرض رصيدك" : "Sign in to view your balance"}</p></div>
+            <div className={styles.balanceBottom}><span><ShieldCheck size={16} />{isAr ? "رصيد جاهز لخدماتك" : "Ready for your next service"}</span><Wallet size={19} /></div>
+            <div className={styles.cardArtwork} aria-hidden="true"><div /><div /><div /></div>
           </div>
-        )}
-
-        {/* Top Banner Header */}
-        <div className="glass-card rounded-3xl p-6 sm:p-8 mb-8 border border-outline-variant/30 shadow-2xl relative overflow-hidden">
-          <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary/15 rounded-full blur-3xl pointer-events-none"></div>
-          <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-secondary/15 rounded-full blur-3xl pointer-events-none"></div>
-
-          <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-            <div>
-              <div className="flex items-center gap-2.5 mb-2">
-                <span className="material-symbols-outlined text-primary text-3xl">account_balance_wallet</span>
-                <h1 className="text-2xl sm:text-3xl font-bold text-on-surface font-display">
-                  {lang === "ar" ? "إدارة المحفظة وشحن الرصيد" : "Wallet Management & Top-up"}
-                </h1>
-              </div>
-              <p className="text-on-surface-variant text-xs sm:text-sm">
-                {lang === "ar"
-                  ? "شحن فوري بالجنيه السوداني عبر بنكك، أو فودافون كاش وباينانس وباي بال"
-                  : "Instant top-up via Bankak (Sudan), Vodafone Cash, Binance, or PayPal"}
-              </p>
-            </div>
-
-            {/* Wallet Balance Hero Card with LIVE SUDANESE POUND EQUIVALENT */}
-            <div className="w-full md:w-auto p-5 rounded-2xl bg-surface-container-high/90 border border-primary/40 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between md:justify-start gap-4 sm:gap-6">
-              <div>
-                <p className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">
-                  {lang === "ar" ? "رصيد المحفظة الحالي" : "Current Balance"}
-                </p>
-                <div className="flex items-baseline gap-2.5 flex-wrap mt-1">
-                  <span className="text-2xl sm:text-3xl font-bold text-primary font-mono dir-ltr">
-                    ${userBalanceUsd.toFixed(2)} USD
-                  </span>
-                  <span className="text-xs font-bold text-violet-400 bg-violet-500/15 border border-violet-500/30 px-2.5 py-0.5 rounded-lg font-mono flex items-center gap-1">
-                    <span>≈ {userBalanceSdg.toLocaleString("en-US")} SDG</span>
-                  </span>
-                </div>
-              </div>
-
-              <div className="flex flex-col items-start sm:items-end gap-1.5 pt-2 sm:pt-0 border-t sm:border-t-0 border-outline-variant/20 w-full sm:w-auto">
-                {userSession?.membershipTier ? (
-                  <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/15 border border-amber-500/30 text-amber-300">
-                    <span className="material-symbols-outlined text-sm text-amber-400">workspace_premium</span>
-                    {userSession.membershipTier.nameAr || userSession.membershipTier.name} (-{userSession.membershipTier.discountPercentage}%)
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-violet-500/15 border border-violet-500/30 text-violet-400 text-xs font-bold">
-                    <span className="w-2 h-2 rounded-full bg-violet-400 animate-pulse"></span>
-                    {lang === "ar" ? "حساب فعال" : "Active"}
-                  </span>
-                )}
-                <span className="text-[11px] text-on-surface-variant font-mono">
-                  {userSession?.email || "guest@gsmteam.com"}
-                </span>
-              </div>
-            </div>
+          <div className={styles.accountCard + " bg-surface-container shadow-sm"}>
+            <div className={styles.accountIdentity}><span className={styles.avatar}>{(userSession?.fullName || "B").slice(0, 1).toUpperCase()}</span><div><h2>{userSession?.fullName || (isAr ? "محفظتك تبدأ من هنا" : "Your wallet starts here")}</h2><p className={styles.muted}>{userSession?.email || (isAr ? "دفع أسهل. متابعة أوضح." : "Easy payments. Clear tracking.")}</p></div></div>
+            <div className={styles.accountStats}><div><span className={styles.muted}>{isAr ? "قيد المراجعة في السجل" : "Pending in history"}</span><strong>{isFetchingTx ? "—" : pendingCount}<Clock3 size={17} className="text-amber-600 dark:text-amber-400" /></strong></div><div><span className={styles.muted}>{isAr ? "عمليات في السجل" : "History entries"}</span><strong>{isFetchingTx ? "—" : transactions.length}<ReceiptText size={17} /></strong></div></div>
+            <div className={styles.membership}><ShieldCheck size={16} /><span>{userSession?.membershipTier ? (isAr ? userSession.membershipTier.nameAr || userSession.membershipTier.name : userSession.membershipTier.name) + " · " + userSession.membershipTier.discountPercentage + "% " + (isAr ? "خصم" : "discount") : isAr ? "بنكك، فوري، كاش، باينانس وباي بال" : "Bankak, Fawri, Cash, Binance and PayPal"}</span></div>
           </div>
-        </div>
+        </section>
+        {!userSession && <div className={styles.signIn + " bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800/50 text-amber-800 dark:text-amber-300"}><ShieldCheck size={22} /><div><strong>{isAr ? "سجّل الدخول لإتمام الشحن" : "Sign in to add funds"}</strong><p>{isAr ? "تابع رصيدك وطلباتك من حسابك." : "View your balance and requests from your account."}</p></div><Link href={"/" + lang + "/login"}>{isAr ? "تسجيل الدخول" : "Sign in"}<ChevronRight size={16} /></Link></div>}
+        {errorMessage && <div className={styles.alert + " bg-rose-50 dark:bg-rose-950/30 border-rose-200 dark:border-rose-800/60 text-rose-700 dark:text-rose-300"} role="alert"><X size={20} /><span>{errorMessage}</span></div>}
+        {successMessage && <div className={styles.alert + " bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800/60 text-emerald-800 dark:text-emerald-300"} role="status"><Check size={20} /><span>{successMessage}</span></div>}
+        <section id="wallet-topup" className={styles.topup + " bg-surface-container shadow-sm"} aria-labelledby="topup-title">
+          <div className={styles.topupHeader}><div><span className={styles.eyebrow}>{isAr ? "أضف إلى رصيدك" : "ADD TO YOUR BALANCE"}</span><h2 id="topup-title">{isAr ? "شحن جديد، بخطوات بسيطة" : "A simple way to add funds"}</h2></div><span className={styles.secure}><ShieldCheck size={16} />{isAr ? "إيصال لكل عملية" : "A receipt for every transfer"}</span></div>
+          <div className={styles.topupGrid}>
+            <aside className={styles.methods}>
+              <div className={styles.sectionTitle}><span className={styles.step + " text-blue-600 dark:text-blue-400"}>01</span><div><h3>{isAr ? "اختر وسيلة الدفع" : "Choose how to pay"}</h3><p className={styles.muted}>{isAr ? "الطريقة المناسبة لك" : "Pick what works for you"}</p></div></div>
+              <div className={styles.methodList}>{paymentMethods.map(method => {
+                const selected = activeMethod.id === method.id; const Icon = methodIcons[method.id] || Wallet;
+                return <button key={method.id} type="button" aria-pressed={selected} aria-label={isAr ? method.nameAr : method.nameEn} onClick={() => { setSelectedMethodId(method.id); setErrorMessage(""); }} className={styles.method + " " + (selected ? styles.methodSelected + " bg-blue-50/70 dark:bg-blue-950/40 border-blue-600 dark:border-blue-500" : "dark:bg-background dark:border-white/10 hover:bg-slate-50/50 dark:hover:bg-surface-container-high/30")}><span className={styles.methodIcon + " text-white " + method.color}><Icon size={20} /></span><span className={styles.methodName}><strong>{isAr ? method.nameAr : method.nameEn}</strong><small>{method.badge} · {method.isAutomaticPayPal ? (isAr ? "دفع مباشر" : "Direct payment") : isAr ? "تحويل وإرفاق إيصال" : "Transfer with receipt"}</small></span><span className={styles.radio + " text-blue-600 dark:text-blue-400"}>{selected && <Check size={12} strokeWidth={3} />}</span></button>;
+              })}</div>
+              <div className={styles.rates}><div className={styles.ratesHeader}><span>{isAr ? "أسعار الصرف" : "Exchange rates"}</span><span className={styles.muted}>1 USD</span></div>{[{code:"SDG", value:sdgRate}, {code:"EGP", value:currencyConfig?.usdToEgp || 50}, {code:"SAR", value:currencyConfig?.usdToSar || 3.75}].map(rate => <div key={rate.code}><span className={styles.muted}>{rate.code}</span><strong dir="ltr">{rate.value.toLocaleString()}</strong></div>)}</div>
+            </aside>
+            <div className={styles.details}>
+              <div className={styles.sectionTitle}><span className={styles.step + " text-blue-600 dark:text-blue-400"}>02</span><div><h3>{isAr ? "المبلغ وتفاصيل التحويل" : "Amount and transfer details"}</h3><p className={styles.muted}>{isAr ? "كل التفاصيل قبل تأكيد طلبك" : "Everything you need before you confirm"}</p></div></div>
+              {!activeMethod.isAutomaticPayPal && <div className={styles.transferDetails + " dark:bg-background border dark:border-white/10"}><div className={styles.transferAccount}><div><span className={styles.muted}>{isAr ? activeMethod.detailLabelAr : activeMethod.detailLabelEn}</span><strong dir="ltr">{activeMethod.copyValue || "N/A"}</strong></div>{activeMethod.copyValue && <button type="button" aria-label={isAr ? "نسخ بيانات التحويل" : "Copy transfer details"} onClick={() => handleCopy(activeMethod.copyValue, "method-" + activeMethod.id)} className={styles.copyButton + " text-blue-600 dark:text-blue-400"}>{copiedId === "method-" + activeMethod.id ? <Check size={18} /> : <Copy size={18} />}<span>{copiedId === "method-" + activeMethod.id ? (isAr ? "تم النسخ" : "Copied") : isAr ? "نسخ" : "Copy"}</span></button>}</div><p>{cleanHtmlToText(isAr ? activeMethod.instructionsAr : activeMethod.instructionsEn)}</p></div>}
+                          <form onSubmit={handleDepositSubmit} className={styles.form}>
+              {/* AMOUNT FIELDS */}
+              <div className="space-y-2">
+                <label className="text-xs font-bold dark:text-slate-200 uppercase block">
+                  {isAr ? "تحديد مبلغ الشحن:" : "Deposit Amount:"}
+                </label>
 
-        {/* Main Grid: Deposit Form */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-          <div className="lg:col-span-2 glass-card rounded-3xl p-6 sm:p-8 border border-outline-variant/30 shadow-xl space-y-6">
-            <div className="flex items-center gap-2.5 pb-4 border-b border-outline-variant/20">
-              <span className="material-symbols-outlined text-primary text-2xl">add_card</span>
-              <h2 className="text-xl font-extrabold text-on-surface">
-                {lang === "ar" ? "طلب شحن محفظة جديد" : "New Deposit Request"}
-              </h2>
-            </div>
-
-            {/* Alerts */}
-            {errorMessage && (
-              <div className="p-4 rounded-xl bg-red-500/15 border-2 border-red-500/40 text-red-600 dark:text-red-200 text-sm font-bold flex items-center gap-2.5 shadow-md">
-                <span className="material-symbols-outlined text-lg shrink-0 text-red-500 dark:text-red-400">error</span>
-                <span>{errorMessage}</span>
-              </div>
-            )}
-
-            {successMessage && (
-              <div className="p-4 rounded-xl bg-emerald-500/15 border-2 border-emerald-500/40 text-emerald-700 dark:text-emerald-200 text-sm font-bold flex items-center gap-2.5 shadow-md">
-                <span className="material-symbols-outlined text-lg shrink-0 text-emerald-600 dark:text-emerald-400">check_circle</span>
-                <span>{successMessage}</span>
-              </div>
-            )}
-
-            <form onSubmit={handleDepositSubmit} className="space-y-6">
-              {/* PAYMENT METHODS SELECTOR */}
-              <div className="space-y-6">
-                {/* 1. DISTINGUISHED BNB METHOD (SEPARATED & HIGHLIGHTED) */}
-                {bnbMethod && (
-                  <div className="space-y-2.5">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping"></span>
-                        <label className="text-xs font-black text-amber-400 uppercase tracking-wider">
-                          {lang === "ar"
-                            ? "طريقة التحويل المعتمدة لخدمات الألعاب والبطاقات الرقمية و Rewarble:"
-                            : "Approved Payment Method for Gaming, Digital Cards & Rewarble:"}
-                        </label>
-                      </div>
-                      <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40">
-                        {lang === "ar" ? "طريقة موحدة مميزة" : "Featured Method"}
-                      </span>
-                    </div>
-
-                    <div
-                      role="button"
-                      tabIndex={0}
-                      onClick={() => setSelectedMethodId("bnb")}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") {
-                          setSelectedMethodId("bnb");
-                        }
-                      }}
-                      className={`w-full p-3 sm:py-3 sm:px-4 rounded-2xl border-2 text-start transition-all relative overflow-hidden cursor-pointer group ${
-                        normalizedMethodId === "bnb"
-                          ? "bg-gradient-to-br from-amber-500/20 via-surface-container-high to-yellow-500/10 border-amber-400 shadow-xl ring-2 ring-amber-400/40"
-                          : "bg-surface-container-high/60 border-amber-500/40 text-on-surface hover:border-amber-400 hover:bg-surface-container-high shadow-md"
-                      }`}
-                    >
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                        <div className="flex items-center gap-3 min-w-0">
-                          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 via-amber-600 to-yellow-600 text-white flex items-center justify-center text-xl shrink-0 shadow-md shadow-amber-500/20 group-hover:scale-105 transition-transform">
-                            <span className="material-symbols-outlined">account_balance_wallet</span>
-                          </div>
-
-                          <div className="space-y-0.5 min-w-0">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <h3 className="font-black text-sm sm:text-base text-on-surface">
-                                {lang === "ar"
-                                  ? "تحويل BNB (رابط الدفع والشحن المباشر)"
-                                  : "BNB Transfer (Direct Top-up Link)"}
-                              </h3>
-                              <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40">
-                                BEP20 / BSC
-                              </span>
-                            </div>
-
-                            <p className="text-[11px] sm:text-xs text-on-surface-variant font-mono font-medium dir-ltr text-right">
-                              {lang === "ar"
-                                ? "اسم التحويل: BNB | الرابط: 0xaCc3ab6f0165B39Cf2F1286ED8A778735Ae8314f"
-                                : "Transfer Name: BNB | Link: 0xaCc3ab6f0165B39Cf2F1286ED8A778735Ae8314f"}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleCopy(bnbMethod.copyValue, "bnb-btn-copy");
-                            }}
-                            className={`px-2.5 py-1 rounded-lg text-xs font-bold border transition-all flex items-center gap-1 active:scale-95 ${
-                              copiedId === "bnb-btn-copy"
-                                ? "bg-emerald-500 text-white border-emerald-400"
-                                : "bg-surface-container-lowest/80 text-amber-300 border-amber-500/40 hover:bg-amber-500/20"
-                            }`}
-                          >
-                            <span className="material-symbols-outlined text-sm">
-                              {copiedId === "bnb-btn-copy" ? "check" : "content_copy"}
-                            </span>
-                            <span>{copiedId === "bnb-btn-copy" ? (lang === "ar" ? "تم النسخ" : "Copied") : (lang === "ar" ? "نسخ الرابط" : "Copy Link")}</span>
-                          </button>
-
-                          <span
-                            className={`px-3 py-1 rounded-lg text-xs font-bold flex items-center gap-1 transition-all ${
-                              normalizedMethodId === "bnb"
-                                ? "bg-amber-500 text-slate-950 shadow-sm font-extrabold"
-                                : "bg-surface-container-highest text-on-surface-variant group-hover:text-amber-300"
-                            }`}
-                          >
-                            <span className="material-symbols-outlined text-sm">
-                              {normalizedMethodId === "bnb" ? "check_circle" : "radio_button_unchecked"}
-                            </span>
-                            <span>
-                              {normalizedMethodId === "bnb"
-                                ? (lang === "ar" ? "محدد للشحن" : "Selected")
-                                : (lang === "ar" ? "اختيار هذه الطريقة" : "Select")}
-                            </span>
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Supported services compact row showing FULL text without truncation */}
-                      <div className="mt-2.5 pt-2 border-t border-outline-variant/15 flex flex-wrap items-center gap-1.5 text-[11px]">
-                        <span className="font-bold text-amber-300/90 shrink-0 text-[11px] ml-1">
-                          {lang === "ar" ? "الخدمات المعتمدة:" : "Services:"}
-                        </span>
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-surface-container-lowest/80 border border-outline-variant/20 text-on-surface whitespace-nowrap font-medium">
-                          <span className="material-symbols-outlined text-amber-400 text-xs shrink-0">sports_esports</span>
-                          <span>{lang === "ar" ? "شحن الألعاب المباشر" : "Direct In-Game Topups"}</span>
-                        </span>
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-surface-container-lowest/80 border border-outline-variant/20 text-on-surface whitespace-nowrap font-medium">
-                          <span className="material-symbols-outlined text-amber-400 text-xs shrink-0">store</span>
-                          <span>{lang === "ar" ? "متاجر التطبيقات" : "App Stores"}</span>
-                        </span>
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-surface-container-lowest/80 border border-outline-variant/20 text-on-surface whitespace-nowrap font-medium">
-                          <span className="material-symbols-outlined text-amber-400 text-xs shrink-0">vpn_key</span>
-                          <span>{lang === "ar" ? "أكواد الألعاب" : "Game Codes"}</span>
-                        </span>
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-surface-container-lowest/80 border border-outline-variant/20 text-on-surface whitespace-nowrap font-medium">
-                          <span className="material-symbols-outlined text-amber-400 text-xs shrink-0">subscriptions</span>
-                          <span>{lang === "ar" ? "الاشتراكات والترفيه" : "Subscriptions & Entertainment"}</span>
-                        </span>
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-surface-container-lowest/80 border border-outline-variant/20 text-on-surface whitespace-nowrap font-medium">
-                          <span className="material-symbols-outlined text-amber-400 text-xs shrink-0">sim_card</span>
-                          <span>{lang === "ar" ? "شرائح الإنترنت eSIM" : "eSIM Internet"}</span>
-                        </span>
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-surface-container-lowest/80 border border-outline-variant/20 text-on-surface whitespace-nowrap font-medium">
-                          <span className="material-symbols-outlined text-amber-400 text-xs shrink-0">account_balance_wallet</span>
-                          <span>Rewarble</span>
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* 2. SEPARATOR */}
-                <div className="relative flex items-center justify-center pt-2">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-outline-variant/30"></div>
-                  </div>
-                  <div className="relative px-4 bg-surface-container-lowest text-xs font-bold text-on-surface-variant flex items-center gap-2">
-                    <span className="material-symbols-outlined text-sm text-on-surface-variant">credit_card</span>
-                    <span>
-                      {lang === "ar"
-                        ? "أو اختر من وسائل الدفع والتحويل الأخرى:"
-                        : "Or select from other payment methods:"}
-                    </span>
-                  </div>
-                </div>
-
-                {/* 3. OTHER PAYMENT METHODS GRID */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {otherMethods.map((m) => {
-                    const isSelected = selectedMethodId === m.id;
-                    return (
-                      <button
-                        key={m.id}
-                        type="button"
-                        onClick={() => setSelectedMethodId(m.id)}
-                        className={`p-4 rounded-2xl border text-xs font-semibold flex items-center gap-3.5 text-start transition-all ${
-                          isSelected
-                            ? "bg-primary/15 border-2 border-primary text-on-surface shadow-md ring-2 ring-primary/40"
-                            : "bg-surface-container-low border border-outline-variant/30 text-on-surface-variant hover:border-primary/50 hover:bg-surface-container"
-                        }`}
-                      >
-                        <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${m.color} text-white flex items-center justify-center text-lg shrink-0 shadow-md`}>
-                          <span className="material-symbols-outlined">{m.icon}</span>
-                        </div>
-
-                        <div className="overflow-hidden w-full">
-                          <div className="flex items-center justify-between gap-1">
-                            <p className="font-extrabold text-sm text-on-surface truncate">
-                              {lang === "ar" ? m.nameAr : m.nameEn}
-                            </p>
-                            <span className="text-base shrink-0">{m.badge}</span>
-                          </div>
-                          <p className={`text-[11px] mt-0.5 truncate font-medium ${isSelected ? "text-primary font-bold" : "text-on-surface-variant"}`}>
-                            {m.isBankak || m.isFawry
-                              ? `سعر الصرف: 1$ = ${sdgRate} SDG`
-                              : m.isAutomaticPayPal
-                              ? (lang === "ar" ? "شحن تلقائي داخل الموقع" : "In-Page Direct Top-up")
-                              : isSelected
-                              ? (lang === "ar" ? "محدد الآن" : "Selected")
-                              : (lang === "ar" ? "انقر لعرض البيانات والنسخ" : "Click to view details")}
-                          </p>
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* SPECIAL SPOTLIGHT FOR SUDAN METHODS (BANKAK & FAWRI - SDG CALCULATION) */}
-              {(activeMethod.isBankak || activeMethod.isFawry) && (
-                <div className="p-5 rounded-2xl bg-gradient-to-br from-violet-500/15 via-surface-container-high to-purple-500/15 border-2 border-violet-500/50 shadow-xl space-y-4 animate-in fade-in slide-in-from-top-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 font-bold text-sm text-violet-400">
-                      <span className="text-xs font-mono font-bold px-1.5 py-0.5 rounded bg-violet-500/20 text-violet-300">
-                        {activeMethod.badge}
-                      </span>
-                      <span>
-                        {activeMethod.isFawry
-                          ? (lang === "ar" ? "التحويل بالجنيه السوداني عبر فوري (الرقم البنكي الموحد)" : "Fawri Sudanese Transfer (Unified ID)")
-                          : (lang === "ar" ? "التحويل بالجنيه السوداني عبر بنكك (سعر الصرف المعتمد)" : "Bankak Sudanese Transfer")}
-                      </span>
-                    </div>
-
-                    <span className="text-xs font-mono font-bold text-violet-300 bg-violet-500/20 px-2.5 py-1 rounded-lg border border-violet-500/30">
-                      1 USD = {sdgRate.toLocaleString()} SDG
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {/* Amount in USD */}
-                    <div className="space-y-1.5">
-                      <label className="text-[11px] font-bold text-on-surface">المبلغ بالدولار ($ USD):</label>
-                      <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-violet-400">$</span>
-                        <input
-                          type="number"
-                          step="0.5"
-                          min="1"
-                          value={depositAmount}
-                          onChange={(e) => setDepositAmount(e.target.value)}
-                          className="w-full bg-surface-container-lowest border border-violet-400/50 rounded-xl py-2.5 pl-8 pr-3 text-on-surface font-mono font-bold text-sm focus:border-violet-500 outline-none"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Converted Amount in SDG */}
-                    <div className="space-y-1.5">
-                      <label className="text-[11px] font-bold text-on-surface">المعادل المطلوب بالجنيه السوداني (SDG):</label>
-                      <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-violet-400 text-xs font-mono">SDG</span>
-                        <input
-                          type="number"
-                          value={depositSdgAmount}
-                          onChange={(e) => handleSdgAmountChange(e.target.value)}
-                          className="w-full bg-surface-container-lowest border border-violet-400/50 rounded-xl py-2.5 pl-12 pr-3 text-violet-600 dark:text-violet-300 font-mono font-bold text-sm focus:border-violet-500 outline-none"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Beneficiary Account Details */}
-                  <div className="p-3.5 rounded-xl bg-surface-container-lowest border border-violet-400/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                    <div>
-                      <div className="text-[11px] text-on-surface-variant">
-                        {activeMethod.isFawry
-                          ? (lang === "ar" ? "الرقم البنكي الموحد (تطبيق فوري):" : "Fawri Unified Banking ID:")
-                          : (lang === "ar" ? "رقم حساب بنك الخرطوم (بنكك):" : "Bankak Account #:")}
-                      </div>
-                      <div className="text-base font-mono font-bold text-violet-600 dark:text-violet-300 select-all">{activeMethod.copyValue}</div>
-                      <div className="text-xs text-on-surface-variant font-semibold mt-0.5">
-                        {activeMethod.isFawry
-                          ? (lang === "ar" ? "تطبيق فوري - الرقم البنكي الموحد: 51589889" : "Fawri App - Unified ID: 51589889")
-                          : `باسم: ${currencyConfig?.bankak?.accountName || "حسن"}`}
-                      </div>
-                    </div>
-
+                {/* Quick Presets */}
+                <div className="flex flex-wrap items-center gap-2">
+                  {["5", "10", "25", "50", "100"].map((preset) => (
                     <button
+                      key={preset}
                       type="button"
-                      onClick={() => handleCopy(activeMethod.copyValue, activeMethod.id)}
-                      className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-md active:scale-95 ${
-                        copiedId === activeMethod.id ? "bg-violet-500 text-white" : "bg-violet-600 hover:bg-violet-500 text-white"
+                      onClick={() => setDepositAmount(parseFloat(preset).toFixed(2))}
+                      className={`px-3 py-1.5 rounded-lg font-mono text-xs font-bold border transition-all cursor-pointer ${
+                        parseFloat(depositAmount) === parseFloat(preset)
+                          ? "bg-blue-600 text-white border-blue-600"
+                          : "dark:bg-background dark:text-slate-300 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-surface-container-high"
                       }`}
                     >
-                      <span className="material-symbols-outlined text-sm">
-                        {copiedId === activeMethod.id ? "check" : "content_copy"}
-                      </span>
-                      <span>
-                        {copiedId === activeMethod.id
-                          ? (lang === "ar" ? "تم النسخ" : "Copied")
-                          : activeMethod.isFawry
-                          ? (lang === "ar" ? "نسخ الرقم الموحد" : "Copy Unified ID")
-                          : (lang === "ar" ? "نسخ رقم الحساب" : "Copy Account #")}
-                      </span>
+                      ${preset}
                     </button>
-                  </div>
-
-                  <p className="text-xs text-on-surface-variant leading-relaxed font-medium whitespace-pre-wrap block">
-                    {cleanHtmlToText(activeMethod.instructionsAr)}
-                  </p>
+                  ))}
                 </div>
-              )}
 
-              {/* OTHER MANUAL PAYMENT DETAILS CARD */}
-              {!activeMethod.isAutomaticPayPal && !activeMethod.isBankak && !activeMethod.isFawry && (
-                <div className="p-5 rounded-2xl bg-gradient-to-r from-primary/15 via-surface-container-high to-primary/15 border-2 border-primary/50 shadow-xl space-y-3 animate-in fade-in slide-in-from-top-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 font-extrabold text-sm text-primary">
-                      <span className="text-xl">{activeMethod.badge}</span>
-                      <span>{lang === "ar" ? activeMethod.detailLabelAr : activeMethod.detailLabelEn}</span>
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={() => handleCopy(activeMethod.copyValue, activeMethod.id)}
-                      className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all shadow-md active:scale-95 ${
-                        copiedId === activeMethod.id ? "bg-violet-500 text-white" : "bg-primary text-on-primary hover:bg-primary-container"
-                      }`}
-                    >
-                      <span className="material-symbols-outlined text-sm">
-                        {copiedId === activeMethod.id ? "check" : "content_copy"}
-                      </span>
-                      <span>{copiedId === activeMethod.id ? "تم النسخ" : "نسخ رقم/عنوان التحويل"}</span>
-                    </button>
-                  </div>
-
-                  <div className="p-3.5 rounded-xl bg-surface-container-lowest border border-primary/40 flex items-center justify-between gap-3">
-                    <code className="text-sm font-mono font-bold text-primary select-all break-all dir-ltr">
-                      {activeMethod.copyValue}
-                    </code>
-                  </div>
-
-                  {(activeMethod.isBnbServices || activeMethod.id === "bnb") && (
-                    <div className="p-4 rounded-2xl bg-surface-container-lowest border border-primary/30 space-y-3">
-                      <div className="flex items-center justify-between text-xs font-bold text-primary">
-                        <span className="flex items-center gap-1.5">
-                          <span className="material-symbols-outlined text-base">verified</span>
-                          <span>
-                            {lang === "ar"
-                              ? "طريقة التحويل والشحن المعتمدة لكافة الأقسام والخدمات:"
-                              : "Approved Top-Up Method for All Store Sections:"}
-                          </span>
-                        </span>
-                        <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-primary/15 text-primary">
-                          {lang === "ar" ? "اسم التحويل: BNB" : "Transfer: BNB"}
-                        </span>
-                      </div>
-
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
-                        <div className="p-2.5 rounded-xl bg-surface-container border border-outline-variant/30 flex items-center gap-2 text-on-surface">
-                          <span className="material-symbols-outlined text-primary text-base">sports_esports</span>
-                          <span className="font-semibold">{lang === "ar" ? "شحن الألعاب المباشر" : "In-Game Topups"}</span>
-                        </div>
-                        <div className="p-2.5 rounded-xl bg-surface-container border border-outline-variant/30 flex items-center gap-2 text-on-surface">
-                          <span className="material-symbols-outlined text-primary text-base">store</span>
-                          <span className="font-semibold">{lang === "ar" ? "متاجر التطبيقات" : "App Stores"}</span>
-                        </div>
-                        <div className="p-2.5 rounded-xl bg-surface-container border border-outline-variant/30 flex items-center gap-2 text-on-surface">
-                          <span className="material-symbols-outlined text-primary text-base">vpn_key</span>
-                          <span className="font-semibold">{lang === "ar" ? "أكواد الألعاب" : "Game Codes"}</span>
-                        </div>
-                        <div className="p-2.5 rounded-xl bg-surface-container border border-outline-variant/30 flex items-center gap-2 text-on-surface">
-                          <span className="material-symbols-outlined text-primary text-base">subscriptions</span>
-                          <span className="font-semibold">{lang === "ar" ? "الاشتراكات والترفيه" : "Subscriptions"}</span>
-                        </div>
-                        <div className="p-2.5 rounded-xl bg-surface-container border border-outline-variant/30 flex items-center gap-2 text-on-surface">
-                          <span className="material-symbols-outlined text-primary text-base">sim_card</span>
-                          <span className="font-semibold">{lang === "ar" ? "شرائح الإنترنت eSIM" : "eSIM"}</span>
-                        </div>
-                        <div className="p-2.5 rounded-xl bg-surface-container border border-outline-variant/30 flex items-center gap-2 text-on-surface">
-                          <span className="material-symbols-outlined text-primary text-base">account_balance_wallet</span>
-                          <span className="font-semibold">Rewarble</span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  <p className="text-xs text-on-surface-variant leading-relaxed font-medium whitespace-pre-wrap block">
-                    {cleanHtmlToText(lang === "ar" ? activeMethod.instructionsAr : activeMethod.instructionsEn)}
-                  </p>
-                </div>
-              )}
-
-              {/* Amount & Reference Input for Non-Sudan manual methods */}
-              {!activeMethod.isBankak && !activeMethod.isFawry && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  <div className="space-y-2">
-                    <label className="text-xs font-extrabold text-on-surface uppercase tracking-wider block">
-                      {lang === "ar" ? "المبلغ المطلوب إيداعه ($ USD)" : "Amount ($ USD)"}
-                    </label>
+                {/* Amount Inputs Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+                  {/* USD Amount */}
+                  <div className="space-y-1">
+                    <span className="text-[11px] font-bold text-slate-600 dark:text-slate-400">
+                      {isAr ? "المبلغ بالدولار ($ USD):" : "Amount ($ USD):"}
+                    </span>
                     <div className="relative">
-                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 font-bold text-primary text-lg">$</span>
+                      <span className="absolute start-3.5 top-1/2 -translate-y-1/2 font-bold text-blue-600 dark:text-blue-400">
+                        $
+                      </span>
                       <input
+                        aria-label={isAr ? "المبلغ بالدولار" : "Amount in USD"}
                         type="number"
                         step="0.01"
                         min="1"
                         value={depositAmount}
                         onChange={(e) => setDepositAmount(e.target.value)}
                         placeholder="10.00"
-                        className="w-full bg-surface-container-lowest border border-outline-variant/60 rounded-xl py-3 pl-8 pr-4 text-on-surface font-mono font-bold text-base focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-on-surface-variant/40"
+                        className="w-full dark:bg-background border dark:border-white/10 rounded-xl py-2.5 ps-8 pe-4 dark:text-white font-mono font-bold text-sm focus:outline-none focus:bg-white dark:focus:bg-background focus:border-blue-600 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/40 transition-all"
                       />
                     </div>
                   </div>
 
-                  {!activeMethod.isAutomaticPayPal && (
-                    <div className="space-y-2">
-                      <label className="text-xs font-extrabold text-on-surface uppercase tracking-wider block">
-                        {lang === "ar" ? "رقم التحويل / رقم المحفظة المحول منها" : "Transaction Ref / Sender Number"}
-                      </label>
-                      <input
-                        type="text"
-                        value={transactionRef}
-                        onChange={(e) => setTransactionRef(e.target.value)}
-                        placeholder={lang === "ar" ? "مثال: VF-984321 أو رقم الحساب" : "e.g. Ref #984321"}
-                        className="w-full bg-surface-container-lowest border border-outline-variant/60 rounded-xl py-3 px-4 text-on-surface font-mono text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-on-surface-variant/40"
-                      />
+                  {/* Sudan SDG Equivalent (for bankak / fawri) */}
+                  {(activeMethod.isBankak || activeMethod.isFawry) && (
+                    <div className="space-y-1">
+                      <span className="text-[11px] font-bold text-slate-600 dark:text-slate-400">
+                        {isAr ? "المعادل بالجنيه السوداني (SDG):" : "Equivalent (SDG):"}
+                      </span>
+                      <div className="relative">
+                        <input
+                          aria-label={isAr ? "المبلغ بالجنيه السوداني" : "Amount in SDG"}
+                          type="number"
+                          value={depositSdgAmount}
+                          onChange={(e) => handleSdgAmountChange(e.target.value)}
+                          placeholder="28500"
+                          className="w-full dark:bg-background border dark:border-white/10 rounded-xl py-2.5 px-4 dark:text-white font-mono font-bold text-sm focus:outline-none focus:bg-white dark:focus:bg-background focus:border-blue-600 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/40 transition-all"
+                        />
+                        <span className="absolute end-3.5 top-1/2 -translate-y-1/2 text-[11px] font-bold text-slate-400 dark:text-slate-500">
+                          SDG
+                        </span>
+                      </div>
                     </div>
                   )}
                 </div>
-              )}
+              </div>
 
-              {/* Reference input for Bankak & Fawri */}
-              {(activeMethod.isBankak || activeMethod.isFawry) && (
-                <div className="space-y-2">
-                  <label className="text-xs font-extrabold text-on-surface uppercase tracking-wider block">
-                    {activeMethod.isFawry
-                      ? (lang === "ar" ? "رقم المعاملة في إشعار فوري (Transaction ID / Reference):" : "Fawri Reference #:")
-                      : (lang === "ar" ? "رقم المعاملة في إشعار بنكك (Transaction ID / Reference):" : "Bankak Reference #:")}
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={transactionRef}
-                    onChange={(e) => setTransactionRef(e.target.value)}
-                    placeholder={
-                      activeMethod.isFawry
-                        ? (lang === "ar" ? "مثال: رقم العملية في إشعار فوري أو رقم حسابك المحول منه" : "e.g. Fawri Transaction ID or sender number")
-                        : (lang === "ar" ? "مثال: رقم العملية في إشعار بنكك أو رقم حسابك المحول منه" : "e.g. Bankak Transaction ID or sender number")
-                    }
-                    className="w-full bg-surface-container-lowest border border-violet-400/60 rounded-xl py-3 px-4 text-on-surface font-mono text-sm focus:border-violet-500 outline-none"
-                  />
-                </div>
-              )}
-
-              {/* RECEIPT FILE UPLOAD FIELD - MANDATORY */}
+              {/* NON-PAYPAL FIELDS */}
               {!activeMethod.isAutomaticPayPal && (
-                <div className="space-y-2 pt-2 border-t border-outline-variant/20">
-                  <div className="flex items-center justify-between">
-                    <label className="text-xs font-extrabold text-on-surface uppercase tracking-wider flex items-center gap-1.5">
-                      <span>{lang === "ar" ? "إرفاق صورة إشعار أو إيصال التحويل" : "Attach Receipt Screenshot"}</span>
-                      <span className="text-rose-500 font-bold">* ({lang === "ar" ? "إجباري" : "Required"})</span>
+                <>
+                  {/* Transaction Ref Number */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold dark:text-slate-200 uppercase block">
+                      {activeMethod.isBankak
+                        ? (isAr ? "رقم إشعار أو عملية بنكك (Transaction ID / Reference):" : "Bankak Reference #:")
+                        : activeMethod.isFawry
+                        ? (isAr ? "رقم عملية فوري (Transaction ID / Reference):" : "Fawri Reference #:")
+                        : (isAr ? "رقم التحويل / رقم المحفظة المحول منها:" : "Transaction Ref / Sender #:")}
                     </label>
-                    <span className="text-[11px] font-bold text-rose-500 bg-rose-500/10 px-2.5 py-0.5 rounded-lg border border-rose-500/20">
-                      {lang === "ar" ? "مطلوب لتأكيد الشحن" : "Required for confirmation"}
-                    </span>
-                  </div>
-
-                  <div className={`relative flex flex-col items-center justify-center p-6 border-2 border-dashed rounded-2xl bg-surface-container-lowest transition-all text-center group cursor-pointer ${
-                    receiptImage
-                      ? "border-emerald-500/60 bg-emerald-500/5"
-                      : "border-primary/50 hover:border-primary ring-1 ring-primary/20"
-                  }`}>
                     <input
-                      type="file"
+                      aria-label={isAr ? "رقم المعاملة أو المحفظة" : "Transaction reference or sender number"}
+                      type="text"
                       required
-                      accept="image/*"
-                      onChange={handleImageChange}
-                      className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
+                      value={transactionRef}
+                      onChange={(e) => setTransactionRef(e.target.value)}
+                      placeholder={
+                        isAr
+                          ? "مثال: رقم العملية في الإشعار أو رقم حسابك المحول منه"
+                          : "e.g. Transaction ID or sender number"
+                      }
+                      className="w-full dark:bg-background border dark:border-white/10 rounded-xl py-2.5 px-4 dark:text-white font-mono text-sm focus:outline-none focus:bg-white dark:focus:bg-background focus:border-blue-600 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/40 transition-all"
                     />
-
-                    {receiptImage ? (
-                      <div className="flex flex-col items-center gap-3">
-                        <img
-                          src={receiptImage}
-                          alt="Receipt Preview"
-                          className="h-28 w-auto object-contain rounded-xl border-2 border-primary shadow-lg"
-                        />
-                        <div className="flex items-center gap-2 text-xs font-bold text-violet-500">
-                          <span className="material-symbols-outlined text-base">check_circle</span>
-                          <span>{receiptFileName || "تم إرفاق صورة الإيصال بنجاح!"}</span>
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setReceiptImage("");
-                              setReceiptFileName("");
-                            }}
-                            className="text-red-500 hover:underline text-[11px] font-bold z-20"
-                          >
-                            (حذف الصورة)
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="flex flex-col items-center gap-2">
-                        <div className="w-12 h-12 rounded-full bg-primary/15 text-primary flex items-center justify-center group-hover:scale-110 transition-transform">
-                          <span className="material-symbols-outlined text-2xl">add_photo_alternate</span>
-                        </div>
-                        <p className="font-bold text-sm text-on-surface flex items-center gap-1.5">
-                          <span>{lang === "ar" ? "انقر هنا لاختيار صورة الإيصال من جهازك" : "Click to select receipt screenshot"}</span>
-                          <span className="text-rose-500 text-xs font-bold">({lang === "ar" ? "إجباري *" : "Required *"})</span>
-                        </p>
-                        <p className="text-xs text-on-surface-variant">
-                          {lang === "ar" ? "مفتوح الحجم والأبعاد: جميع صيغ الصور (PNG, JPG, WEBP وغيرها) بدقتها الكاملة" : "Open size & dimensions: all image formats supported in full resolution"}
-                        </p>
-                      </div>
-                    )}
                   </div>
-                </div>
+
+                  {/* RECEIPT UPLOAD BOX */}
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-bold dark:text-slate-200 uppercase flex items-center gap-1.5">
+                        <span>{isAr ? "إرفاق صورة إشعار أو إيصال التحويل" : "Attach Transfer Receipt"}</span>
+                        <span className="text-rose-600 dark:text-rose-400 font-bold">* ({isAr ? "إجباري" : "Required"})</span>
+                      </label>
+                      <span className="text-[10px] font-bold text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/60 px-2 py-0.5 rounded-md">
+                        {isAr ? "مطلوب للمراجعة" : "Required"}
+                      </span>
+                    </div>
+
+                    <div
+                      className={`${styles.upload} relative flex flex-col items-center justify-center p-5 border-2 border-dashed rounded-2xl transition-all text-center cursor-pointer ${
+                        receiptImage
+                          ? "border-emerald-500 bg-emerald-50/30 dark:bg-emerald-950/20"
+                          : "border-slate-300 dark:border-white/15 hover:border-blue-500 dark:bg-background"
+                      }`}
+                    >
+                      <input
+                        type="file"
+                        aria-label={isAr ? "اختيار صورة الإيصال" : "Choose receipt image"}
+                        required={!receiptImage}
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
+                      />
+
+                      {receiptImage ? (
+                        <div className="flex flex-col items-center gap-2.5 w-full">
+                          <img
+                            src={receiptImage}
+                            alt="Receipt Preview"
+                            className="max-h-32 w-auto object-contain rounded-xl border dark:border-white/10 shadow-xs"
+                          />
+                          <div className="flex items-center gap-2 text-xs font-bold text-emerald-700 dark:text-emerald-400">
+                            <span className="material-symbols-outlined text-base">check_circle</span>
+                            <span>{receiptFileName || (isAr ? "تم تجهيز صورة الإيصال" : "Receipt selected")}</span>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setReceiptImage("");
+                                setReceiptFileName("");
+                              }}
+                              className="text-rose-600 dark:text-rose-400 hover:underline ms-2 cursor-pointer z-20"
+                            >
+                              {isAr ? "حذف" : "Remove"}
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="space-y-1 py-2">
+                          <Upload size={28} className="mx-auto mb-3 text-slate-400 dark:text-slate-500" aria-hidden="true" />
+                          <p className="text-xs font-bold dark:text-slate-300">
+                            {isAr ? "اضغط هنا لاختيار صورة الإشعار من جهازك" : "Click here to upload receipt image"}
+                          </p>
+                          <p className="text-[11px] text-slate-400 dark:text-slate-500">
+                            JPG, PNG, WEBP (يتم الضغط تلقائياً)
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Manual Submit Button */}
+                  <button
+                    type="submit"
+                    disabled={
+                      isLoading ||
+                      !transactionRef.trim() ||
+                      !depositAmount ||
+                      parseFloat(depositAmount) <= 0
+                    }
+                    className={`${styles.submit} w-full bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer`}
+                  >
+                    {isLoading ? (
+                      <>
+                        <span className="material-symbols-outlined animate-spin text-lg">refresh</span>
+                        <span>{isAr ? "جاري إرسال الطلب..." : "Submitting..."}</span>
+                      </>
+                    ) : (
+                      <>
+                        <ArrowUpRight size={20} aria-hidden="true" />
+                        <span>
+                          {isAr
+                            ? `تأكيد وإرسال طلب الشحن (${parseFloat(depositAmount || "0").toFixed(2)} USD)`
+                            : `Submit Deposit Request (${parseFloat(depositAmount || "0").toFixed(2)} USD)`}
+                        </span>
+                      </>
+                    )}
+                  </button>
+                </>
               )}
 
-              {/* Submit Button / In-Page PayPal Smart Buttons */}
-              {activeMethod.isAutomaticPayPal ? (
-                <div className="space-y-3 pt-2">
-                  <div className="p-4 rounded-2xl bg-amber-500/15 border-2 border-amber-400/50 shadow-lg text-amber-200 space-y-1">
-                    <div className="flex items-center gap-2 text-amber-300 font-extrabold text-sm">
-                      <span className="material-symbols-outlined text-xl text-amber-400 shrink-0">bolt</span>
-                      <span>{lang === "ar" ? "الدفع المباشر داخل الموقع عبر PayPal" : "In-Page Direct PayPal Checkout"}</span>
-                    </div>
-                    <p className="text-xs text-slate-200 font-medium leading-relaxed">
-                      {lang === "ar"
-                        ? `المبلغ المطلوب إيداعه: $${parseFloat(depositAmount || "10.00").toFixed(2)} USD. اضغط على زر PayPal بالأسفل لإتمام الدفع فوراً داخل الموقع.`
-                        : `Top-up Amount: $${parseFloat(depositAmount || "10.00").toFixed(2)} USD. Click PayPal button below to pay directly.`}
-                    </p>
+              {/* PAYPAL AUTOMATIC IN-PAGE BUTTON */}
+              {activeMethod.isAutomaticPayPal && (
+                <div className="space-y-3 pt-2 border-t dark:border-white/5">
+                  <div className="p-3.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 text-xs text-blue-900 dark:text-blue-300 font-medium">
+                    {isAr
+                      ? `مبلغ الشحن المعتمد: ${parseFloat(depositAmount || "10.00").toFixed(2)} USD. اضغط زر PayPal أدناه للدفع المباشر.`
+                      : `Top-up Amount: ${parseFloat(depositAmount || "10.00").toFixed(2)} USD. Click PayPal button below.`}
                   </div>
 
                   <div className="w-full relative z-10">
@@ -1160,7 +800,7 @@ export default function WalletClient({ lang, dict }: { lang: Locale; dict: any }
                         setSuccessMessage("");
                         const num = parseFloat(depositAmount || "0");
                         if (isNaN(num) || num < 1.0) {
-                          setErrorMessage(lang === "ar" ? "الحد الأدنى للإيداع هو $1.00 USD" : "Minimum deposit is $1.00 USD");
+                          setErrorMessage(isAr ? "الحد الأدنى للإيداع هو $1.00 USD" : "Minimum deposit is $1.00 USD");
                           throw new Error("Invalid deposit amount");
                         }
 
@@ -1171,14 +811,13 @@ export default function WalletClient({ lang, dict }: { lang: Locale; dict: any }
                             "Content-Type": "application/json",
                             ...(token ? { Authorization: `Bearer ${token}` } : {})
                           },
-                          body: JSON.stringify({
-                            amount: num
-                          })
+                          body: JSON.stringify({ amount: num })
                         });
 
                         const data = await res.json();
                         if (!res.ok || !data.success || !data.orderId) {
-                          const errMsg = data.error || (lang === "ar" ? "فشل إنشاء طلب الدفع عبر PayPal" : "Failed to create PayPal order");
+                          const errMsg =
+                            data.error || (isAr ? "فشل إنشاء طلب الدفع عبر PayPal" : "Failed to create PayPal order");
                           setErrorMessage(errMsg);
                           throw new Error(errMsg);
                         }
@@ -1191,173 +830,23 @@ export default function WalletClient({ lang, dict }: { lang: Locale; dict: any }
                         }
                       }}
                       onError={() => {
-                        setErrorMessage(lang === "ar" ? "حدث خطأ أثناء الاتصال ببوابة PayPal" : "Error connecting to PayPal");
+                        setErrorMessage(isAr ? "حدث خطأ أثناء الاتصال ببوابة PayPal" : "Error connecting to PayPal");
                       }}
                     />
                   </div>
                 </div>
-              ) : (
-                <button
-                  type="submit"
-                  disabled={isLoading || !transactionRef.trim() || !depositAmount || parseFloat(depositAmount) <= 0}
-                  className="w-full bg-gradient-to-r from-primary to-secondary text-on-primary py-4 rounded-2xl font-bold text-sm hover:shadow-xl hover:shadow-primary/30 transition-all flex items-center justify-center gap-2 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
-                >
-                  {isLoading ? (
-                    <>
-                      <span className="material-symbols-outlined animate-spin text-lg">refresh</span>
-                      <span>
-                        {lang === "ar"
-                          ? "جاري إرفاق الإشعار وتسجيل طلب الشحن..."
-                          : "Submitting deposit & receipt..."}
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      <span className="material-symbols-outlined text-lg">send</span>
-                      <span>
-                        {lang === "ar"
-                          ? `تأكيد وإرسال طلب الشحن ($${parseFloat(depositAmount || "0").toFixed(2)} USD)`
-                          : `Submit Top-up Request ($${parseFloat(depositAmount || "0").toFixed(2)} USD)`}
-                      </span>
-                    </>
-                  )}
-                </button>
               )}
             </form>
-          </div>
-
-          {/* Right Column: Exchange Rates & Quick Deposit Info Widget */}
-          <div className="space-y-6">
-            <div className="glass-card rounded-3xl p-6 border border-outline-variant/30 shadow-xl space-y-4">
-              <h3 className="font-bold text-sm text-on-surface flex items-center gap-2">
-                <span className="material-symbols-outlined text-primary text-lg">currency_exchange</span>
-                <span>أسعار الصرف المعتمدة بالموقع</span>
-              </h3>
-
-              <div className="space-y-2.5 text-xs">
-                <div className="p-3 rounded-xl bg-surface-container-high border border-outline-variant/20 flex items-center justify-between">
-                  <span className="font-bold text-on-surface flex items-center gap-1.5">
-                    <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-surface-container-highest text-primary">SD</span>
-                    <span>الجنيه السوداني (SDG)</span>
-                  </span>
-                  <span className="font-mono font-bold text-primary">1$ = {sdgRate.toLocaleString()} SDG</span>
-                </div>
-
-                <div className="p-3 rounded-xl bg-surface-container-high border border-outline-variant/20 flex items-center justify-between">
-                  <span className="font-bold text-on-surface flex items-center gap-1.5">
-                    <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-surface-container-highest text-primary">EG</span>
-                    <span>الجنيه المصري (EGP)</span>
-                  </span>
-                  <span className="font-mono font-bold text-on-surface-variant">1$ = {currencyConfig?.usdToEgp || 50} EGP</span>
-                </div>
-
-                <div className="p-3 rounded-xl bg-surface-container-high border border-outline-variant/20 flex items-center justify-between">
-                  <span className="font-bold text-on-surface flex items-center gap-1.5">
-                    <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-surface-container-highest text-primary">SA</span>
-                    <span>الريال السعودي (SAR)</span>
-                  </span>
-                  <span className="font-mono font-bold text-on-surface-variant">1$ = {currencyConfig?.usdToSar || 3.75} SAR</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Quick Support Card */}
-            <div className="glass-card rounded-3xl p-6 border border-outline-variant/30 shadow-xl space-y-3">
-              <h3 className="font-bold text-sm text-on-surface flex items-center gap-2">
-                <span className="material-symbols-outlined text-violet-400 text-lg">support_agent</span>
-                <span>{lang === "ar" ? "تحتاج مساعدة في الشحن؟" : "Need help with deposit?"}</span>
-              </h3>
-              <p className="text-xs text-on-surface-variant leading-relaxed">
-                {lang === "ar"
-                  ? "إذا واجهتك أي مشكلة أثناء التحويل عبر بنكك أو المحافظ الرقمية، يمكنك التواصل مباشرة مع خدمة العملاء على واتساب."
-                  : "If you encounter any issues during transfer via Bankak or digital wallets, you can contact customer service directly on WhatsApp."}
-              </p>
-              <a
-                href="https://wa.me/16728972935"
-                target="_blank"
-                rel="noreferrer"
-                className="w-full py-2.5 rounded-xl bg-violet-500/15 hover:bg-violet-500/25 border border-violet-500/30 text-violet-400 font-bold text-xs flex items-center justify-center gap-2 transition-all"
-              >
-                <span className="material-symbols-outlined text-base">chat</span>
-                <span>{lang === "ar" ? "تواصل معنا عبر واتساب" : "Contact us on WhatsApp"}</span>
-              </a>
+              <div className={styles.reviewNote}><ShieldCheck size={16} /><span>{activeMethod.isAutomaticPayPal ? (isAr ? "يُضاف الرصيد بعد تأكيد الدفع من PayPal." : "Funds are added after PayPal confirms payment.") : isAr ? "تُراجع الإدارة الإيصال قبل إضافة الرصيد لمحفظتك." : "Your receipt is reviewed before funds are added to your wallet."}</span></div>
             </div>
           </div>
-        </div>
-
-        {/* Transactions History Table */}
-        <div className="glass-card rounded-3xl p-6 sm:p-8 border border-outline-variant/30 shadow-xl space-y-6">
-          <div className="flex items-center justify-between pb-4 border-b border-outline-variant/20">
-            <div className="flex items-center gap-2.5">
-              <span className="material-symbols-outlined text-primary text-2xl">history</span>
-              <h3 className="text-lg font-bold text-on-surface">سجل حركات ومعاملات المحفظة</h3>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => fetchRealTransactions(userSession?.id, userSession?.email)}
-              className="text-xs font-bold text-primary flex items-center gap-1 hover:underline"
-            >
-              <span className="material-symbols-outlined text-sm">refresh</span>
-              <span>تحديث السجل</span>
-            </button>
-          </div>
-
-          {isFetchingTx ? (
-            <div className="p-12 text-center text-xs text-on-surface-variant flex items-center justify-center gap-2">
-              <span className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin"></span>
-              <span>جاري تحميل المعاملات...</span>
-            </div>
-          ) : transactions.length === 0 ? (
-            <div className="p-12 text-center text-xs text-on-surface-variant space-y-2">
-              <span className="material-symbols-outlined text-3xl opacity-40">receipt</span>
-              <p>لا توجد معاملات مسجلة في المحفظة حتى الآن.</p>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-right text-xs">
-                <thead className="bg-surface-container-high/50 text-on-surface-variant border-b border-outline-variant/20 font-bold">
-                  <tr>
-                    <th className="p-3.5">رقم المعاملة</th>
-                    <th className="p-3.5">النوع والبيان</th>
-                    <th className="p-3.5">طريقة الدفع</th>
-                    <th className="p-3.5">المبلغ</th>
-                    <th className="p-3.5">الحالة</th>
-                    <th className="p-3.5">التاريخ</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-outline-variant/10">
-                  {transactions.map((tx) => (
-                    <tr key={tx.id} className="hover:bg-surface-container-high/30 transition-colors">
-                      <td className="p-3.5 font-mono font-bold text-primary">{tx.refNo || `#${tx.id.slice(-6)}`}</td>
-                      <td className="p-3.5 font-bold text-on-surface">{tx.type}</td>
-                      <td className="p-3.5 text-on-surface-variant">{tx.method}</td>
-                      <td className="p-3.5 font-mono font-bold text-violet-400">${(tx.amount || 0).toFixed(2)} USD</td>
-                      <td className="p-3.5">
-                        {tx.status === "completed" ? (
-                          <span className="px-2.5 py-0.5 rounded-full bg-violet-500/15 border border-violet-500/30 text-violet-400 text-[10px] font-bold">
-                            مكتمل
-                          </span>
-                        ) : tx.status === "pending" ? (
-                          <span className="px-2.5 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-400 text-[10px] font-bold">
-                            قيد المراجعة
-                          </span>
-                        ) : (
-                          <span className="px-2.5 py-0.5 rounded-full bg-red-500/15 border border-red-500/30 text-red-400 text-[10px] font-bold">
-                            مرفوض
-                          </span>
-                        )}
-                      </td>
-                      <td className="p-3.5 text-on-surface-variant text-[11px]">
-                        {new Date(tx.createdAt).toLocaleString("ar-EG")}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
+        </section>
+        <section className={styles.history + " bg-surface-container shadow-sm"} aria-labelledby="wallet-history-title">
+          <div className={styles.historyHeader}><div><span className={styles.eyebrow}>{isAr ? "نشاط المحفظة" : "WALLET ACTIVITY"}</span><h2 id="wallet-history-title">{isAr ? "سجل معاملاتك" : "Your transactions"}</h2></div><button type="button" onClick={() => fetchRealTransactions(userSession?.id, userSession?.email)} disabled={isFetchingTx} className={styles.refresh + " text-blue-600 dark:text-blue-400"}><RefreshCw size={17} className={isFetchingTx ? "animate-spin" : ""} />{isAr ? "تحديث" : "Refresh"}</button></div>
+          <div className={styles.historyToolbar}><div className={styles.filters} role="group" aria-label={isAr ? "تصفية المعاملات" : "Filter transactions"}>{[{id:"all", ar:"الكل", en:"All"},{id:"pending", ar:"قيد المراجعة", en:"Pending"},{id:"completed", ar:"مكتملة", en:"Completed"},{id:"failed", ar:"مرفوضة", en:"Failed"}].map(filter => <button key={filter.id} type="button" aria-pressed={historyFilter === filter.id} onClick={() => setHistoryFilter(filter.id)} className={historyFilter === filter.id ? styles.filterActive + " bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400" : "text-slate-500 dark:text-slate-400"}>{isAr ? filter.ar : filter.en}</button>)}</div><label className={styles.search}><Search size={16} /><input type="search" value={historyQuery} onChange={e => setHistoryQuery(e.target.value)} placeholder={isAr ? "ابحث عن معاملة…" : "Find a transaction…"} aria-label={isAr ? "البحث في معاملات المحفظة" : "Search wallet transactions"} /></label></div>
+          {isFetchingTx ? <div className={styles.empty}><RefreshCw size={28} className="animate-spin text-blue-600 dark:text-blue-400" /><strong>{isAr ? "جاري تحميل معاملاتك…" : "Loading your transactions…"}</strong></div> : visibleTransactions.length === 0 ? <div className={styles.empty}><span className={styles.emptyIcon}><ReceiptText size={30} strokeWidth={1.5} /></span><strong>{transactions.length ? (isAr ? "لا توجد معاملات مطابقة" : "No matching transactions") : isAr ? "أول معاملة ليك هتظهر هنا" : "Your first transaction will appear here"}</strong><p>{transactions.length ? (isAr ? "جرّب تغيير البحث أو التصفية." : "Try another search or filter.") : isAr ? "تابع المبلغ، وسيلة الدفع، وحالة كل طلب." : "Track the amount, payment method and status of each request."}</p></div> : <div className={styles.transactionList}>{visibleTransactions.map(tx => <article key={tx.id} className={styles.transaction}><span className={styles.transactionIcon + " text-blue-600 dark:text-blue-400"}><ArrowDownLeft size={21} /></span><div className={styles.transactionDescription}><h3>{tx.type}</h3><p>{tx.method}<span>·</span><span dir="ltr">#{tx.refNo || tx.id.slice(-6).toUpperCase()}</span></p></div><time className={styles.transactionDate} dateTime={tx.createdAt}>{new Date(tx.createdAt).toLocaleDateString(isAr ? "ar-EG" : "en-US", {month:"short", day:"numeric", hour:"2-digit", minute:"2-digit"})}</time><div className={styles.transactionAmount}><strong dir="ltr">${(tx.amount || 0).toFixed(2)}<small>USD</small></strong><span className={styles.status + " " + (tx.status === "completed" ? "text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40" : tx.status === "pending" ? "text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40" : "text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/40")}><span />{tx.status === "completed" ? (isAr ? "مكتمل" : "Completed") : tx.status === "pending" ? (isAr ? "قيد المراجعة" : "Pending") : isAr ? "مرفوض" : "Failed"}</span></div></article>)}</div>}
+        </section>
+        <div className={styles.support}><Headphones size={22} /><div><strong>{isAr ? "محتاج مساعدة في الشحن؟" : "Need a hand adding funds?"}</strong><p>{isAr ? "فريقنا يساعدك في تفاصيل التحويل ومتابعة طلبك." : "Our team can help with transfer details and your request."}</p></div><a href={SITE_CONTACTS.whatsappUrl} target="_blank" rel="noreferrer" className="text-emerald-700 dark:text-emerald-400">{isAr ? "تواصل معنا" : "Get in touch"}<ArrowUpRight size={17} /></a></div>
       </div>
     </PayPalScriptProvider>
   );

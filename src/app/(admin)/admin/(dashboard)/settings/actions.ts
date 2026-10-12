@@ -6,10 +6,12 @@ export async function getAdminProfile() {
   const token = (await cookies()).get('admin_token')?.value;
   if (!token) return null;
 
+  const apiUrl = process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
   try {
     const headers: Record<string, string> = {};
     if (token) headers['Authorization'] = `Bearer ${token}`;
-    const res = await fetch('https://api.arabtechproserver.tech/api/users/profile', {
+    const res = await fetch(`${apiUrl}/api/users/profile`, {
       headers,
       cache: 'no-store'
     });
@@ -27,12 +29,14 @@ export async function updateAdminCredentials(data: any) {
   const token = (await cookies()).get('admin_token')?.value;
   if (!token) return { success: false, error: "غير مصرح لك" };
 
+  const apiUrl = process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
   try {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json'
     };
     if (token) headers['Authorization'] = `Bearer ${token}`;
-    const res = await fetch('https://api.arabtechproserver.tech/api/users/update-credentials', {
+    const res = await fetch(`${apiUrl}/api/users/update-credentials`, {
       method: 'POST',
       headers,
       body: JSON.stringify(data)

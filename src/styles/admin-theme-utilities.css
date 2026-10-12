@@ -1,0 +1,51 @@
+/* Administrative neutral surfaces. Regenerate with:
+ * node scripts/generate-admin-theme-utilities.cjs
+ */
+.admin-theme [class~="bg-gray-400"]:not([class*="dark:bg-"]),
+.admin-theme [class~="bg-gray-600"]:not([class*="dark:bg-"]),
+.admin-theme [class~="bg-slate-500"]:not([class*="dark:bg-"]),
+.admin-theme [class~="bg-slate-800"]:not([class*="dark:bg-"]),
+.admin-theme [class~="bg-slate-900"]:not([class*="dark:bg-"]),
+.admin-theme [class~="bg-slate-950"]:not([class*="dark:bg-"]),
+.admin-theme [class~="hover:bg-slate-300"]:not([class*="dark:hover:bg-"]):hover,
+.admin-theme [class~="hover:bg-slate-700"]:not([class*="dark:hover:bg-"]):hover,
+.admin-theme [class~="hover:bg-slate-800"]:not([class*="dark:hover:bg-"]):hover { background-color: rgb(var(--surface-container-lowest) / var(--tw-bg-opacity, 1)); }
+
+.admin-theme [class~="bg-slate-200"]:not([class*="dark:bg-"]),
+.admin-theme [class~="hover:bg-slate-100"]:not([class*="dark:hover:bg-"]):hover,
+.admin-theme [class~="hover:bg-slate-200"]:not([class*="dark:hover:bg-"]):hover { background-color: rgb(var(--surface-container-high) / var(--tw-bg-opacity, 1)); }
+
+.admin-theme [class~="bg-slate-50/40"]:not([class*="dark:bg-"]) { background-color: rgb(var(--surface-container) / 0.4); }
+
+.admin-theme [class~="bg-slate-50/50"]:not([class*="dark:bg-"]) { background-color: rgb(var(--surface-container) / 0.5); }
+
+.admin-theme [class~="bg-slate-800/80"]:not([class*="dark:bg-"]) { background-color: rgb(var(--surface-container-lowest) / 0.8); }
+
+.admin-theme [class~="bg-slate-900/60"]:not([class*="dark:bg-"]),
+.admin-theme [class~="bg-slate-950/60"]:not([class*="dark:bg-"]) { background-color: rgb(var(--surface-container-lowest) / 0.6); }
+
+.admin-theme [class~="bg-slate-950/70"]:not([class*="dark:bg-"]) { background-color: rgb(var(--surface-container-lowest) / 0.7); }
+
+.admin-theme [class~="border-slate-300"]:not([class*="dark:border-"]),
+.admin-theme [class~="border-slate-700"]:not([class*="dark:border-"]),
+.admin-theme [class~="border-slate-800"]:not([class*="dark:border-"]),
+.admin-theme [class~="border-white"]:not([class*="dark:border-"]),
+.admin-theme [class~="divide-slate-100"]:not([class*="dark:divide-"]) > :not([hidden]) ~ :not([hidden]) { border-color: rgb(var(--outline-variant) / .55); }
+
+.admin-theme [class~="border-slate-800/60"]:not([class*="dark:border-"]) { border-color: rgb(var(--outline-variant) / 0.6); }
+
+.admin-theme [class~="border-slate-800/80"]:not([class*="dark:border-"]) { border-color: rgb(var(--outline-variant) / 0.8); }
+
+.admin-theme [class~="hover:bg-slate-50"]:not([class*="dark:hover:bg-"]):hover { background-color: rgb(var(--surface-container) / var(--tw-bg-opacity, 1)); }
+
+.admin-theme [class~="hover:bg-slate-50/60"]:not([class*="dark:hover:bg-"]):hover { background-color: rgb(var(--surface-container) / 0.6); }
+
+.admin-theme [class~="hover:text-slate-200"]:not([class*="dark:hover:text-"]):hover,
+.admin-theme [class~="text-slate-200"]:not([class*="dark:text-"]),
+.admin-theme [class~="text-slate-300"]:not([class*="dark:text-"]),
+.admin-theme [class~="text-slate-400"]:not([class*="dark:text-"]),
+.admin-theme [class~="text-slate-500"]:not([class*="dark:text-"]),
+.admin-theme [class~="text-slate-600"]:not([class*="dark:text-"]) { color: rgb(var(--on-surface-variant) / 1); }
+
+.admin-theme [class~="hover:text-slate-700"]:not([class*="dark:hover:text-"]):hover,
+.admin-theme [class~="hover:text-slate-800"]:not([class*="dark:hover:text-"]):hover { color: rgb(var(--on-surface) / 1); }

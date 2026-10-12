@@ -44,6 +44,8 @@ async function loadProviderServicesForBrowse(providerId, request, sourcePreferen
     }
     storedError = storedResponse.data?.error || "";
   } catch (error) {
+    // A cancelled browse must not start another remote request.
+    if (error?.name === "AbortError") throw error;
     storedError = error instanceof Error ? error.message : String(error || "");
   }
 

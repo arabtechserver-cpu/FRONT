@@ -1,2069 +1,1817 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import CampaignBanner from "@/components/CampaignBanner";
+import { SITE_CONTACTS } from "@/lib/site-contacts";
 
-// Preset icon suggestions for quick picking
-const PRESET_ICONS = [
-  { label: "Chimera", url: "/images/tools/tool_chimera.png" },
-  { label: "UnlockTool", url: "/images/tools/tool_unlocktool.png" },
-  { label: "Borneo", url: "/images/tools/tool_borneo.png" },
-  { label: "iRemoval", url: "/images/tools/tool_iremoval.png" },
-  { label: "DFT Pro", url: "/images/tools/tool_dft.png" },
-  { label: "MobileSea", url: "/images/tools/tool_mobilesea.png" },
-  { label: "AMT", url: "/images/tools/tool_amt.png" },
-  { label: "Phoenix", url: "/images/tools/tool_phoenix.png" },
-  { label: "Cheetah", url: "/images/tools/tool_cheetah.png" },
-  { label: "FKey", url: "/images/tools/tool_fkey.png" },
-  { label: "Samsung", url: "/images/promo_samsung_clean.png" },
-  { label: "Gift Box", url: "/images/promo_gift_box_clean.png" }
-];
+import React, { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 
-// Preset high-resolution graphics for campaign offers
-const PRESET_CAMPAIGN_IMAGES = [
-  { label: "Samsung FRP", url: "/images/promo_samsung_clean.png" },
-  { label: "Gift Box", url: "/images/promo_gift_box_clean.png" },
-  { label: "Chimera Tool", url: "/images/promo_chimera.png" },
-  { label: "Borneo Schematics", url: "/images/promo_borneo.png" },
-  { label: "Server Rack", url: "/images/promo_server.png" },
-  { label: "Tools Store", url: "/images/promo_store.png" },
-  { label: "IMEI Unlock", url: "/images/promo_imei.png" },
-  { label: "Remote Support", url: "/images/promo_remote.png" }
-];
-
-// Default 4 Modern Animated Campaigns
-const DEFAULT_CAMPAIGNS = [
-  {
-    id: "samsung_frp",
-    tagEn: "Limited Time Offer",
-    tagAr: "عرض حصري لفترة محدودة",
-    titleEn: "Samsung FRP Remove",
-    titleAr: "حذف حساب سامسونج FRP الفوري",
-    descEn: "Instant removal for all Samsung models via direct official server API.",
-    descAr: "فك فوري وتلقائي لجميع طرازات سامسونج عبر السيرفر الرسمي بأعلى سرعة وأمان.",
-    badgeEn: "Direct API Link",
-    badgeAr: "ربط سيرفر مباشر",
-    turnaroundEn: "1 - 5 Mins",
-    turnaroundAr: "1 - 5 دقائق",
-    guaranteeEn: "100% REFUND",
-    guaranteeAr: "ضمان مالي 100%",
-    connectionEn: "DIRECT API",
-    connectionAr: "ربط فوري API",
-    theme: "purple",
-    image: "/images/promo_samsung_clean.png",
-    url: "/pricing?search=Samsung",
-    buttonTextEn: "Order & Activate Now",
-    buttonTextAr: "اطلب الآن وابدأ التفعيل"
-  },
-  {
-    id: "reseller_bundles",
-    tagEn: "Official Reseller",
-    tagAr: "موزع رسمي معتمد",
-    titleEn: "Official Reseller Campaigns",
-    titleAr: "عروض وحملات الموزعين الرسمية",
-    descEn: "Best wholesale rates, instant activations, and full warranty on tools.",
-    descAr: "أفضل أسعار الجملة المعتمدة، إصدارات جديدة، وتفعيل فوري مع ضمان كامل.",
-    badgeEn: "Full Warranty",
-    badgeAr: "ضمان معتمد كامل",
-    turnaroundEn: "Instant Delivery",
-    turnaroundAr: "تسليم فوري 24/7",
-    guaranteeEn: "100% Guaranteed",
-    guaranteeAr: "ضمان رسمي كامل",
-    connectionEn: "AUTO SERVER",
-    connectionAr: "سيرفر مؤتمت",
-    theme: "cyan",
-    image: "/images/promo_gift_box_clean.png",
-    url: "/pricing",
-    buttonTextEn: "View All Offers",
-    buttonTextAr: "عرض جميع العروض"
-  },
-  {
-    id: "chimera_tool",
-    tagEn: "Best Seller Tool",
-    tagAr: "الأداة الأكثر طلباً",
-    titleEn: "Chimera Tool Pro",
-    titleAr: "أداة شيميرا (Chimera Tool)",
-    descEn: "All Brands and Samsung activations with instant server token generation.",
-    descAr: "تراخيص سنوية وتعبئة أرصدة شيميرا بأسعار منافسة وتسليم فوري خلال دقيقة.",
-    badgeEn: "Instant License",
-    badgeAr: "ترخيص فوري مباشر",
-    turnaroundEn: "Under 1 Min",
-    turnaroundAr: "أقل من دقيقة",
-    guaranteeEn: "100% REFUND",
-    guaranteeAr: "ضمان استرجاع 100%",
-    connectionEn: "GSM SERVER",
-    connectionAr: "سيرفر رسمي",
-    theme: "blue",
-    image: "/images/promo_chimera.png",
-    url: "/pricing?section=Chimera%20Tool",
-    buttonTextEn: "Get Chimera License",
-    buttonTextAr: "احصل على ترخيص شيميرا"
-  },
-  {
-    id: "borneo_schematics",
-    tagEn: "Hardware Diagnostics",
-    tagAr: "مخططات الهاردوير",
-    titleEn: "Borneo Schematics",
-    titleAr: "مخططات بورنيو (Borneo)",
-    descEn: "Official activation codes for 1-PC and 2-PC with instant daily updates.",
-    descAr: "تفعيل رسمي لمخططات بورنيو مع تحديثات يومية ودعم لجميع اللوحات الإلكترونية.",
-    badgeEn: "Daily Updates",
-    badgeAr: "تحديثات يومية متواصلة",
-    turnaroundEn: "Instant 24/7",
-    turnaroundAr: "فوري على مدار الساعة",
-    guaranteeEn: "Official Code",
-    guaranteeAr: "كود تفعيل أصلي",
-    connectionEn: "OFFICIAL DB",
-    connectionAr: "قاعدة بيانات رسمية",
-    theme: "emerald",
-    image: "/images/promo_borneo.png",
-    url: "/pricing?search=Borneo",
-    buttonTextEn: "Activate Borneo",
-    buttonTextAr: "تفعيل باقة بورنيو"
-  }
-];
-
-// Default 3 Featured Packages matching the production homepage
-const DEFAULT_FEATURED_PACKAGES = [
-  {
-    id: "chimera",
-    nameAr: "Chimera Tool",
-    nameEn: "Chimera Tool",
-    subAr: "Activation / Credits",
-    subEn: "Activation / Credits",
-    badgeAr: "Best Seller",
-    badgeEn: "Best Seller",
-    isPopular: true,
-    startingPrice: "$106.59",
-    categoryAr: "Official",
-    categoryEn: "Official",
-    deliveryTimeAr: "فوري 24/7",
-    deliveryTimeEn: "Instant 24/7",
-    iconName: "build",
-    image: "/images/tools/tool_chimera.png",
-    url: "/pricing?section=Chimera%20Tool",
-    featuresAr: [
-      "تراخيص Chimera Basic و Samsung و All Brands Pro",
-      "فك شبكات وتصليح السيريال وإصلاح IMEI وتعديل الموديل",
-      "تفعيل رسمي مباشر على حساب المستخدم خلال دقيقة",
-      "تحديثات متواصلة لدعم أحدث إصدارات الأندرويد"
-    ],
-    featuresEn: [
-      "Chimera Basic, Samsung, and All Brands Pro licenses",
-      "Carrier unlock, serial repair, and network patching",
-      "Official 1-minute automated account activation",
-      "Continuous support for latest Android security patches"
-    ]
-  },
-  {
-    id: "amt",
-    nameAr: "Android Multi Tool",
-    nameEn: "Android Multi Tool",
-    subAr: "AMT Credits",
-    subEn: "AMT Credits",
-    badgeAr: "Popular",
-    badgeEn: "Popular",
-    isPopular: false,
-    startingPrice: "$0.92",
-    categoryAr: "Instant",
-    categoryEn: "Instant",
-    deliveryTimeAr: "فوري 24/7",
-    deliveryTimeEn: "Instant 24/7",
-    iconName: "bolt",
-    image: "/images/tools/tool_amt.png",
-    url: "/pricing?section=Android%20Multi%20Tool",
-    featuresAr: [
-      "دعم كامل لهواتف VIVO و XIAOMI و TECNO و INFINIX",
-      "عمليات FRP وتخطي حسابات وحذف الديمو (Demo Removal)",
-      "شحن فوري بالكريدت مباشرة إلى اسم المستخدم لحسابك",
-      "لا يحتاج إلى بوكس أو دونجل خارجي للعمل"
-    ],
-    featuresEn: [
-      "Full support for Vivo, Xiaomi, Tecno & Infinix",
-      "One-click FRP bypass, factory reset, and demo removal",
-      "Instant credit top-up directly to your username",
-      "No hardware box or dongle required to run"
-    ]
-  },
-  {
-    id: "xiaomi",
-    nameAr: "Xiaomi Remove Account",
-    nameEn: "Xiaomi Remove Account",
-    subAr: "",
-    subEn: "",
-    badgeAr: "Official",
-    badgeEn: "Official",
-    isPopular: false,
-    startingPrice: "$3.41",
-    categoryAr: "Fast Service",
-    categoryEn: "Fast Service",
-    deliveryTimeAr: "1 - 12 ساعة",
-    deliveryTimeEn: "1 - 12 Hours",
-    iconName: "smartphone",
-    image: "",
-    url: "/pricing?section=Xiaomi%20Remove%20Account",
-    featuresAr: [
-      "حذف دائم ونظيف من سيرفر شاومي الرسمي (Clean IMEI)",
-      "دعم الأجهزة من جميع دول العالم (Worldwide Support)",
-      "إمكانية إعادة ضبط المصنع والتحديث بعد الحذف بأمان",
-      "تنفيذ تلقائي عبر الـ API مع استرجاع الرصيد في حال الرفض"
-    ],
-    featuresEn: [
-      "Permanent clean removal from official Xiaomi servers",
-      "Worldwide device support across all regions",
-      "Safe factory reset and OTA updates after completion",
-      "Automated API execution with full refund protection"
-    ]
-  }
-];
-
-// Default 10 Supported Tools matching the production homepage
-const DEFAULT_SUPPORTED_TOOLS = [
-  { id: "chimera", name: "Chimera", url: "/pricing?search=Chimera", image: "/images/tools/tool_chimera.png" },
-  { id: "unlocktool", name: "UnlockTool", url: "/pricing?search=UnlockTool", image: "/images/tools/tool_unlocktool.png" },
-  { id: "borneo", name: "Borneo", url: "/pricing?search=Borneo", image: "/images/tools/tool_borneo.png" },
-  { id: "iremoval", name: "iRemoval Pro", url: "/pricing?search=iRemoval%20Pro", image: "/images/tools/tool_iremoval.png" },
-  { id: "dft", name: "DFT Pro", url: "/pricing?search=DFT%20Pro", image: "/images/tools/tool_dft.png" },
-  { id: "mobilesea", name: "MobileSea Tool", url: "/pricing?search=MobileSea%20Tool", image: "/images/tools/tool_mobilesea.png" },
-  { id: "amt", name: "AMT", url: "/pricing?search=AMT", image: "/images/tools/tool_amt.png" },
-  { id: "phoenix", name: "Phoenix", url: "/pricing?search=Phoenix", image: "/images/tools/tool_phoenix.png" },
-  { id: "cheetah", name: "Cheetah", url: "/pricing?search=Cheetah", image: "/images/tools/tool_cheetah.png" },
-  { id: "fkey", name: "FKey", url: "/pricing?search=FKey", image: "/images/tools/tool_fkey.png" }
-];
-
-// Reusable Image Picker Component with direct device file upload and auth header
-function ImagePickerInput({ 
-  label, 
-  value, 
-  onChange 
-}: { 
-  label: string; 
-  value: string; 
-  onChange: (newUrl: string) => void;
-}) {
-  const [uploading, setUploading] = useState(false);
-  const [showPresets, setShowPresets] = useState(false);
-
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setUploading(true);
-
-    try {
-      const reader = new FileReader();
-      reader.onload = async () => {
-        const base64 = reader.result as string;
-        const token = typeof window !== "undefined" ? (localStorage.getItem("admin_token") || localStorage.getItem("token")) : null;
-
-        const res = await fetch("/api/upload", {
-          method: "POST",
-          headers: { 
-            "Content-Type": "application/json",
-            ...(token ? { "Authorization": `Bearer ${token}`, "x-admin-token": token } : {})
-          },
-          body: JSON.stringify({ image: base64, filename: file.name })
-        });
-
-        if (res.ok) {
-          const data = await res.json();
-          if (data.url) {
-            onChange(data.url);
-          }
-        } else {
-          const errData = await res.json().catch(() => ({}));
-          alert(errData.error || "فشل رفع الصورة على السيرفر، يرجى التأكد من تسجيل الدخول.");
-        }
-        setUploading(false);
-      };
-      reader.readAsDataURL(file);
-    } catch (err) {
-      console.error("Upload error:", err);
-      alert("حدث خطأ أثناء رفع الصورة.");
-      setUploading(false);
-    }
-  };
-
-  return (
-    <div className="flex flex-col gap-2 p-3.5 bg-surface-container-low rounded-2xl border border-outline-variant/30">
-      <div className="flex items-center justify-between">
-        <label className="text-xs font-bold uppercase text-on-surface-variant flex items-center gap-1.5">
-          <span className="material-symbols-outlined text-sm text-primary">image</span>
-          <span>{label}</span>
-        </label>
-        <button
-          type="button"
-          onClick={() => setShowPresets(!showPresets)}
-          className="text-[11px] text-primary hover:underline flex items-center gap-1"
-        >
-          <span className="material-symbols-outlined text-xs">auto_awesome</span>
-          <span>{showPresets ? "إخفاء الأيقونات الجاهزة" : "اختيار أيقونة جاهزة"}</span>
-        </button>
-      </div>
-
-      {/* Preset Icons Selection */}
-      {showPresets && (
-        <div className="p-2.5 bg-surface-container-lowest rounded-xl border border-outline-variant/20 flex flex-wrap gap-2 animate-in fade-in">
-          {PRESET_ICONS.map((preset) => (
-            <button
-              key={preset.label}
-              type="button"
-              onClick={() => {
-                onChange(preset.url);
-                setShowPresets(false);
-              }}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-surface-container hover:bg-primary/20 hover:text-primary text-xs border border-outline-variant/20 transition-colors"
-            >
-              <img src={preset.url} alt={preset.label} className="w-4 h-4 object-contain rounded" />
-              <span>{preset.label}</span>
-            </button>
-          ))}
-        </div>
-      )}
-
-      {/* Image Preview Box */}
-      {value && (
-        <div className="relative w-full max-h-[140px] rounded-xl overflow-hidden bg-black/40 border border-outline-variant/20 flex items-center justify-center p-2 group">
-          <img src={value} alt="Preview" className="max-h-[120px] object-contain rounded-lg" />
-          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-            <span className="text-[10px] text-white font-mono break-all px-3 text-center">{value}</span>
-            <button
-              type="button"
-              onClick={() => onChange("")}
-              className="bg-error/80 hover:bg-error text-white p-1.5 rounded-lg text-xs flex items-center"
-              title="إزالة الصورة"
-            >
-              <span className="material-symbols-outlined text-sm">delete</span>
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Inputs: URL + Upload Button */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-        <input
-          type="text"
-          placeholder="رابط الصورة (URL) أو ارفع من جهازك..."
-          value={value || ""}
-          onChange={(e) => onChange(e.target.value)}
-          className="flex-1 bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-2.5 text-xs text-on-surface font-mono"
-        />
-
-        <label className="btn-secondary py-2 px-3.5 rounded-xl text-xs font-bold cursor-pointer shrink-0 flex items-center justify-center gap-1.5 hover:border-primary">
-          <span className="material-symbols-outlined text-base">{uploading ? "sync" : "upload_file"}</span>
-          <span>{uploading ? "جاري الرفع..." : "رفع من جهازك"}</span>
-          <input 
-            type="file" 
-            accept="image/*" 
-            onChange={handleFileUpload} 
-            disabled={uploading} 
-            className="hidden" 
-          />
-        </label>
-      </div>
-    </div>
-  );
+interface SlideItem {
+  id: number | string;
+  image: string;
+  link: string;
+  alt: string;
 }
 
+interface SideMenuItem {
+  icon: string;
+  text: string;
+  link: string;
+}
+
+interface ItemCard {
+  title: string;
+  image: string;
+  href: string;
+  query: string;
+}
+
+interface BannerItem {
+  image: string;
+  alt: string;
+  link: string;
+}
+
+interface HomepageConfig {
+  announcementBar: {
+    enabled: boolean;
+    title: string;
+    linkText: string;
+    linkUrl: string;
+  };
+  heroSlider: SlideItem[];
+  sideMenu: SideMenuItem[];
+  searchPlaceholder: string;
+  banner1: BannerItem;
+  gamesGroup1: ItemCard[];
+  banner2: BannerItem;
+  gamesGroup2: ItemCard[];
+  banner3: BannerItem;
+  digitalCards: ItemCard[];
+  subscriptionsCard: {
+    image: string;
+    title: string;
+    description: string;
+    buttonText: string;
+    buttonUrl: string;
+  };
+  floatingWhatsapp: {
+    enabled: boolean;
+    phone: string;
+    label: string;
+  };
+  appModal: {
+    enabled: boolean;
+    title: string;
+    description: string;
+    buttonText: string;
+    downloadUrl: string;
+  };
+}
+
+const DEFAULT_CONFIG: HomepageConfig = {
+  announcementBar: {
+    enabled: true,
+    title: "تطبيق BORAI STORE:",
+    linkText: "لتحميل تطبيقنا اضغط هنا",
+    linkUrl: "#"
+  },
+  heroSlider: [
+    { id: 1, image: "/images/zoalna/slide_1.png", link: "/pricing", alt: "شريحة 1" },
+    { id: 2, image: "/images/zoalna/slide_2.png", link: "/pricing?cat=imei", alt: "شريحة 2" },
+    { id: 3, image: "/images/zoalna/slide_3.png", link: "/pricing?cat=server", alt: "شريحة 3" }
+  ],
+  sideMenu: [
+    { icon: "account", text: "الحساب", link: "/profile" },
+    { icon: "wallet", text: "المحفظة", link: "/wallet" },
+    { icon: "orders", text: "الطلبات", link: "/orders" }
+  ],
+  searchPlaceholder: "ابحث عن لعبتك أو بطاقتك المفضلة (فري فاير، ببجي، ايتونز، ستيم...)",
+  banner1: {
+    image: "/images/zoalna/banner_hero_1.webp",
+    alt: "شحن الألعاب الفوري",
+    link: ""
+  },
+  gamesGroup1: [
+    { title: "فري فاير", image: "/images/zoalna/game_freefire.webp", href: "/pricing?search=Free%20Fire", query: "فري فاير free fire" },
+    { title: "ببجي موبايل", image: "/images/zoalna/game_pubg.webp", href: "/pricing?search=PUBG", query: "ببجي pubg mobile" },
+    { title: "موبايل ليجند", image: "/images/zoalna/game_mobilelegends.webp", href: "/pricing?search=Mobile%20Legends", query: "موبايل ليجند mobile legends" },
+    { title: "جنشن امباكت", image: "/images/zoalna/game_genshin.webp", href: "/pricing?search=Genshin", query: "جنشن genshin impact" },
+    { title: "يلا ليدو", image: "/images/zoalna/game_yallaludo.webp", href: "/pricing?search=Yalla%20Ludo", query: "يلا ليدو yalla ludo" },
+    { title: "جواكر", image: "/images/zoalna/game_jawaker.webp", href: "/pricing?search=Jawaker", query: "جواكر jawaker" },
+    { title: "لوردس موبايل", image: "/images/zoalna/game_lordsmobile.webp", href: "/pricing?search=Lords%20Mobile", query: "لوردس lords mobile" },
+    { title: "بلود استريك", image: "/images/zoalna/game_bloodstrike.webp", href: "/pricing?search=Blood%20Strike", query: "بلود استريك blood strike" },
+    { title: "فيزا", image: "/images/zoalna/game_redotpay.webp", href: "/pricing?search=Visa", query: "فيزا redotpay visa" }
+  ],
+  banner2: {
+    image: "/images/zoalna/banner_hero_2.webp",
+    alt: "عروض وتحديثات الألعاب",
+    link: ""
+  },
+  gamesGroup2: [
+    { title: "كلاش اوف كلانس", image: "/images/zoalna/game_clashofclans.webp", href: "/pricing?search=Clash%20of%20Clans", query: "كلاش اوف كلانس clash of clans" },
+    { title: "كلاش رويال", image: "/images/zoalna/game_clashroyale.webp", href: "/pricing?search=Clash%20Royale", query: "كلاش رويال clash royale" },
+    { title: "فيفا موبايل", image: "/images/zoalna/game_fifa.webp", href: "/pricing?search=FC%20Mobile", query: "فيفا fifa ea fc mobile" },
+    { title: "بيس موبايل", image: "/images/zoalna/game_pes.webp", href: "/pricing?search=eFootball", query: "بيس pes efootball mobile" },
+    { title: "براول ستارز", image: "/images/zoalna/game_brawlstars.webp", href: "/pricing?search=Brawl%20Stars", query: "براول ستارز brawl stars" },
+    { title: "تيك توك", image: "/images/zoalna/game_tiktok.webp", href: "/pricing?search=TikTok", query: "تيك توك tiktok coins" },
+    { title: "تجديد استارلينك", image: "/images/zoalna/game_starlink.webp", href: "/pricing?search=Starlink", query: "استارلينك starlink internet" }
+  ],
+  banner3: {
+    image: "/images/zoalna/banner_hero_3.webp",
+    alt: "كروت الألعاب والاشتراكات",
+    link: ""
+  },
+  digitalCards: [
+    { title: "كروت ايتونز", image: "/images/zoalna/card_itunes.webp", href: "/pricing?search=iTunes", query: "ايتونز itunes apple" },
+    { title: "ريزر جولد", image: "/images/zoalna/card_razergold.webp", href: "/pricing?search=Razer%20Gold", query: "ريزر جولد razer gold" },
+    { title: "كروت استيم", image: "/images/zoalna/card_steam.webp", href: "/pricing?search=Steam", query: "استيم steam wallet" },
+    { title: "كروت بلايستيشن", image: "/images/zoalna/card_playstation.webp", href: "/pricing?search=PlayStation", query: "بلايستيشن playstation psn" },
+    { title: "كروت اكس بوكس", image: "/images/zoalna/card_xbox.webp", href: "/pricing?search=Xbox", query: "اكس بوكس xbox live" }
+  ],
+  subscriptionsCard: {
+    image: "/images/zoalna/card_subscriptions.webp",
+    title: "الاشتراكات الرقمية",
+    description: "خدمات بث، موسيقى، ترفيه وألعاب… معالجة سريعة ودعم فني.",
+    buttonText: "تصفح الآن",
+    buttonUrl: "/pricing?cat=store"
+  },
+  floatingWhatsapp: {
+    enabled: true,
+    phone: SITE_CONTACTS.phone,
+    label: "واتساب"
+  },
+  appModal: {
+    enabled: true,
+    title: "جرّب تطبيق BORAI STORE الجديد!",
+    description: "تم إطلاق التحديث الجديد لتجربة شحن أسرع، متابعة لحظية لطلباتك، وإشعارات مباشرة بمحفظتك.",
+    buttonText: "تنزيل التطبيق الآن",
+    downloadUrl: "#"
+  }
+};
+
+type ActiveTab =
+  | "announcement"
+  | "hero"
+  | "search_banner1"
+  | "games1"
+  | "banner2_games2"
+  | "banner3_cards"
+  | "subscriptions_whatsapp";
+
 export default function AdminHomepageManager() {
-  const [config, setConfig] = useState<any>(null);
+  const [config, setConfig] = useState<HomepageConfig>(DEFAULT_CONFIG);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  // Default to the requested controls tab
-  const [activeTab, setActiveTab] = useState<string>("packages");
+  const [activeTab, setActiveTab] = useState<ActiveTab>("hero");
   const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const [previewLang, setPreviewLang] = useState<"ar" | "en">("ar");
+  const [toastType, setToastType] = useState<"success" | "error">("success");
+  const [uploadingField, setUploadingField] = useState<string | null>(null);
 
-  // Service picker modal states
-  const [siteItems, setSiteItems] = useState<Array<{ name: string; minPrice: number; count: number; time: string; categoryName: string }>>([]);
-  const [loadingServices, setLoadingServices] = useState(false);
-  const [showPickerModal, setShowPickerModal] = useState(false);
-  const [pickerSearch, setPickerSearch] = useState("");
-  const [pickerTargetIndex, setPickerTargetIndex] = useState<number | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const pendingUploadCallback = useRef<((url: string) => void) | null>(null);
+
+  const showToast = (message: string, type: "success" | "error" = "success") => {
+    setToastMessage(message);
+    setToastType(type);
+    setTimeout(() => setToastMessage(null), 4000);
+  };
+
+  const getAuthToken = () => {
+    if (typeof window === "undefined") return null;
+    let token =
+      localStorage.getItem("admin_token") ||
+      localStorage.getItem("user_token") ||
+      localStorage.getItem("token") ||
+      sessionStorage.getItem("admin_token");
+    if (!token && document.cookie) {
+      const match = document.cookie.match(/(?:^|;\s*)admin_token=([^;]+)/);
+      if (match) token = decodeURIComponent(match[1]);
+    }
+    return token;
+  };
 
   useEffect(() => {
-    async function fetchConfig() {
+    const fetchConfig = async () => {
       try {
+        setLoading(true);
         const res = await fetch("/api/homepage");
         if (res.ok) {
           const data = await res.json();
-
-          // Normalization: Ensure campaigns is an array
-          let campaignsArray = Array.isArray(data.campaigns) ? data.campaigns : [];
-          if (campaignsArray.length === 0 && data.campaigns && typeof data.campaigns === "object") {
-            const c = data.campaigns;
-            if (c.promo1Image || c.promo1TitleAr || c.promo1TitleEn) {
-              campaignsArray.push({
-                tagEn: c.promo1TagEn || "Limited Time Offer",
-                tagAr: c.promo1TagAr || "عرض حصري",
-                titleEn: c.promo1TitleEn || "Samsung FRP Remove",
-                titleAr: c.promo1TitleAr || "حذف حساب سامسونج FRP",
-                descEn: c.promo1DescEn || "",
-                descAr: c.promo1DescAr || "",
-                image: c.promo1Image || "/images/promo_samsung_clean.png",
-                url: c.promo1Url || "/pricing"
-              });
-            }
-          }
-          if (campaignsArray.length === 0) {
-            campaignsArray = DEFAULT_CAMPAIGNS;
-          }
-          data.campaigns = campaignsArray;
-
-          // Normalization: Ensure featuredPackages has at least default 3 cards
-          if (!Array.isArray(data.featuredPackages) || data.featuredPackages.length === 0) {
-            data.featuredPackages = DEFAULT_FEATURED_PACKAGES;
-          }
-
-          // Normalization: Ensure supportedTools has default 10 tools
-          if (!Array.isArray(data.supportedTools) || data.supportedTools.length === 0) {
-            data.supportedTools = DEFAULT_SUPPORTED_TOOLS;
-          }
-
-          setConfig(data);
+          setConfig({
+            announcementBar: { ...DEFAULT_CONFIG.announcementBar, ...data.announcementBar },
+            heroSlider: Array.isArray(data.heroSlider) && data.heroSlider.length > 0 ? data.heroSlider : DEFAULT_CONFIG.heroSlider,
+            sideMenu: Array.isArray(data.sideMenu) && data.sideMenu.length > 0 ? data.sideMenu : DEFAULT_CONFIG.sideMenu,
+            searchPlaceholder: data.searchPlaceholder || DEFAULT_CONFIG.searchPlaceholder,
+            banner1: { ...DEFAULT_CONFIG.banner1, ...data.banner1 },
+            gamesGroup1: Array.isArray(data.gamesGroup1) && data.gamesGroup1.length > 0 ? data.gamesGroup1 : DEFAULT_CONFIG.gamesGroup1,
+            banner2: { ...DEFAULT_CONFIG.banner2, ...data.banner2 },
+            gamesGroup2: Array.isArray(data.gamesGroup2) && data.gamesGroup2.length > 0 ? data.gamesGroup2 : DEFAULT_CONFIG.gamesGroup2,
+            banner3: { ...DEFAULT_CONFIG.banner3, ...data.banner3 },
+            digitalCards: Array.isArray(data.digitalCards) && data.digitalCards.length > 0 ? data.digitalCards : DEFAULT_CONFIG.digitalCards,
+            subscriptionsCard: { ...DEFAULT_CONFIG.subscriptionsCard, ...data.subscriptionsCard },
+            floatingWhatsapp: { ...DEFAULT_CONFIG.floatingWhatsapp, ...data.floatingWhatsapp },
+            appModal: { ...DEFAULT_CONFIG.appModal, ...data.appModal },
+          });
         }
       } catch (err) {
-        console.error("Failed to load homepage config:", err);
+        showToast("تعذر تحميل البيانات من الخادم، يتم عرض البيانات الحالية", "error");
       } finally {
         setLoading(false);
       }
-    }
+    };
     fetchConfig();
   }, []);
 
-  // Fetch site services and groups for the package & tool picker
-  useEffect(() => {
-    async function fetchSiteServices() {
-      try {
-        setLoadingServices(true);
-        const res = await fetch("/api/dhru/services?view=pricing");
-        if (res.ok) {
-          const categories = await res.json();
-          const itemMap = new Map<string, { name: string; minPrice: number; count: number; time: string; categoryName: string }>();
-
-          if (Array.isArray(categories)) {
-            for (const cat of categories) {
-              const services = Array.isArray(cat.dhruServices) 
-                ? cat.dhruServices 
-                : (Array.isArray(cat.services) ? cat.services : []);
-
-              for (const s of services) {
-                const group = (s.groupName || s.name || "").trim();
-                if (!group) continue;
-                const credit = typeof s.credit === "number" ? s.credit : 0;
-                const existing = itemMap.get(group);
-
-                if (!existing) {
-                  itemMap.set(group, {
-                    name: group,
-                    minPrice: credit,
-                    count: 1,
-                    time: s.time || "",
-                    categoryName: cat.name || ""
-                  });
-                } else {
-                  existing.count += 1;
-                  if (credit > 0 && (existing.minPrice === 0 || credit < existing.minPrice)) {
-                    existing.minPrice = credit;
-                  }
-                  if (!existing.time && s.time) {
-                    existing.time = s.time;
-                  }
-                }
-              }
-            }
-          }
-
-          const sorted = Array.from(itemMap.values()).sort((a, b) => a.name.localeCompare(b.name));
-          setSiteItems(sorted);
-        }
-      } catch (err) {
-        console.error("Failed to load site services for picker:", err);
-      } finally {
-        setLoadingServices(false);
-      }
-    }
-    fetchSiteServices();
-  }, []);
-
   const handleSave = async () => {
-    setSaving(true);
     try {
-      const token = typeof window !== "undefined" ? (localStorage.getItem("admin_token") || localStorage.getItem("token")) : null;
+      setSaving(true);
+      const token = getAuthToken();
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+        headers["x-admin-token"] = token;
+      }
+
       const res = await fetch("/api/homepage", {
         method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          ...(token ? { "Authorization": `Bearer ${token}`, "x-admin-token": token } : {})
-        },
-        body: JSON.stringify(config)
+        headers,
+        body: JSON.stringify(config),
       });
-      if (res.ok) {
-        setToastMessage("تم حفظ وتطبيق تعديلات الصفحة الرئيسية بنجاح!");
-        setTimeout(() => setToastMessage(null), 4000);
+
+      const data = await res.json().catch(() => null);
+
+      if (res.ok && data?.success !== false) {
+        showToast("تم حفظ جميع إعدادات الصفحة الرئيسية بنجاح");
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new Event("homepage_config_updated"));
+        }
       } else {
-        const errData = await res.json().catch(() => ({}));
-        alert(errData.error || "فشل حفظ التعديلات. يرجى التأكد من تسجيل دخولك كمسؤول.");
+        const errMsg = data?.error || data?.message || "فشل حفظ التغييرات";
+        showToast(errMsg, "error");
       }
     } catch (err) {
-      console.error(err);
-      alert("حدث خطأ أثناء الاتصال بالسيرفر لحفظ التغييرات.");
+      showToast("حدث خطأ أثناء الاتصال بالخادم لحفظ الإعدادات", "error");
     } finally {
       setSaving(false);
     }
   };
 
-  const updateSectionField = (section: string, field: string, value: any) => {
-    setConfig((prev: any) => ({
-      ...prev,
-      [section]: {
-        ...prev[section],
-        [field]: value
-      }
-    }));
+  const handleResetDefaults = () => {
+    if (confirm("هل أنت متأكد من رغبتك في استعادة جميع الإعدادات الافتراضية للمتجر؟")) {
+      setConfig(DEFAULT_CONFIG);
+      showToast("تمت استعادة الإعدادات الافتراضية، يرجى الضغط على حفظ لتأكيد التغيير");
+    }
   };
 
-  // -------------------------------------------------------------
-  // Package Management Handlers
-  // -------------------------------------------------------------
-  const addPackage = () => {
-    setConfig((prev: any) => {
-      const pkgs = Array.isArray(prev.featuredPackages) ? [...prev.featuredPackages] : [];
-      pkgs.push({
-        id: `pkg_${Date.now()}`,
-        nameAr: "باقة جديدة",
-        nameEn: "New Package",
-        subAr: "",
-        subEn: "",
-        badgeAr: "متاح الآن",
-        badgeEn: "Available",
-        isPopular: false,
-        startingPrice: "$1.00",
-        categoryAr: "سيرفر رسمي",
-        categoryEn: "Official",
-        deliveryTimeAr: "فوري 24/7",
-        deliveryTimeEn: "Instant 24/7",
-        iconName: "inventory_2",
-        image: "",
-        url: "/pricing",
-        featuresAr: ["تفعيل فوري تلقائي", "دعم كامل ومباشر"],
-        featuresEn: ["Instant automated delivery", "Full direct support"]
-      });
-      return { ...prev, featuredPackages: pkgs };
-    });
+  const triggerUpload = (fieldIdentifier: string, onUploaded: (url: string) => void) => {
+    setUploadingField(fieldIdentifier);
+    pendingUploadCallback.current = onUploaded;
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+      fileInputRef.current.click();
+    }
   };
 
-  const removePackage = (index: number) => {
-    if (!confirm("هل أنت متأكد من حذف هذه الباقة؟")) return;
-    setConfig((prev: any) => {
-      const pkgs = Array.isArray(prev.featuredPackages) ? [...prev.featuredPackages] : [];
-      pkgs.splice(index, 1);
-      return { ...prev, featuredPackages: pkgs };
-    });
-  };
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) {
+      setUploadingField(null);
+      return;
+    }
 
-  const updatePackageField = (index: number, field: string, value: any) => {
-    setConfig((prev: any) => {
-      const pkgs = Array.isArray(prev.featuredPackages) ? [...prev.featuredPackages] : [];
-      if (!pkgs[index]) return prev;
-      pkgs[index] = { ...pkgs[index], [field]: value };
-      return { ...prev, featuredPackages: pkgs };
-    });
-  };
+    if (!file.type.startsWith("image/")) {
+      showToast("الرجاء اختيار ملف صورة صالح", "error");
+      setUploadingField(null);
+      return;
+    }
 
-  const selectServiceForPackage = (item: { name: string; minPrice: number; time: string; categoryName: string }) => {
-    const formattedPrice = item.minPrice > 0 ? `$${item.minPrice.toFixed(2)}` : "$0.99";
+    try {
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const base64Data = reader.result as string;
+        try {
+          const token = getAuthToken();
+          const headers: Record<string, string> = {
+            "Content-Type": "application/json",
+          };
+          if (token) {
+            headers["Authorization"] = `Bearer ${token}`;
+          }
 
-    // Auto-detect image from preset list if matching
-    const matchingPreset = PRESET_ICONS.find(p => item.name.toLowerCase().includes(p.label.toLowerCase()));
-    const autoImage = matchingPreset ? matchingPreset.url : "";
+          const res = await fetch("/api/upload", {
+            method: "POST",
+            headers,
+            body: JSON.stringify({
+              image: base64Data,
+              filename: file.name,
+            }),
+          });
 
-    setConfig((prev: any) => {
-      const pkgs = Array.isArray(prev.featuredPackages) ? [...prev.featuredPackages] : [];
-      if (pickerTargetIndex !== null && pkgs[pickerTargetIndex]) {
-        pkgs[pickerTargetIndex] = {
-          ...pkgs[pickerTargetIndex],
-          nameAr: item.name,
-          nameEn: item.name,
-          subAr: item.categoryName || item.name,
-          subEn: item.categoryName || item.name,
-          startingPrice: formattedPrice,
-          categoryAr: item.categoryName || "سيرفر رسمي",
-          categoryEn: item.categoryName || "Official Server",
-          deliveryTimeAr: item.time || "فوري 24/7",
-          deliveryTimeEn: item.time || "Instant 24/7",
-          image: pkgs[pickerTargetIndex].image || autoImage,
-          url: `/pricing?section=${encodeURIComponent(item.name)}`
-        };
-      } else {
-        pkgs.push({
-          id: `pkg_${Date.now()}`,
-          nameAr: item.name,
-          nameEn: item.name,
-          subAr: item.categoryName || item.name,
-          subEn: item.categoryName || item.name,
-          badgeAr: "الأكثر طلباً",
-          badgeEn: "Best Seller",
-          isPopular: false,
-          startingPrice: formattedPrice,
-          categoryAr: item.categoryName || "سيرفر رسمي",
-          categoryEn: item.categoryName || "Official Server",
-          deliveryTimeAr: item.time || "فوري 24/7",
-          deliveryTimeEn: item.time || "Instant 24/7",
-          iconName: "bolt",
-          image: autoImage,
-          url: `/pricing?section=${encodeURIComponent(item.name)}`,
-          featuresAr: [
-            `خدمة ${item.name} المعتمدة`,
-            "تنفيذ تلقائي وفوري عبر السيرفر",
-            "ضمان استرجاع الرصيد في حال عدم الإنجاز"
-          ],
-          featuresEn: [
-            `Official ${item.name} service`,
-            "Instant automated server execution",
-            "Full refund protection on rejection"
-          ]
-        });
-      }
-      return { ...prev, featuredPackages: pkgs };
-    });
-
-    setShowPickerModal(false);
-    setPickerTargetIndex(null);
-  };
-
-  const resetDefaultPackages = () => {
-    if (!confirm("هل أنت متأكد من استعادة الباقات الـ 3 الافتراضية (Chimera, AMT, Xiaomi)؟")) return;
-    setConfig((prev: any) => ({
-      ...prev,
-      featuredPackages: DEFAULT_FEATURED_PACKAGES
-    }));
-  };
-
-  const updatePackageFeature = (pkgIdx: number, featKey: "featuresAr" | "featuresEn", featIdx: number, value: string) => {
-    setConfig((prev: any) => {
-      const pkgs = Array.isArray(prev.featuredPackages) ? [...prev.featuredPackages] : [];
-      if (!pkgs[pkgIdx]) return prev;
-      const feats = Array.isArray(pkgs[pkgIdx][featKey]) ? [...pkgs[pkgIdx][featKey]] : [];
-      feats[featIdx] = value;
-      pkgs[pkgIdx] = { ...pkgs[pkgIdx], [featKey]: feats };
-      return { ...prev, featuredPackages: pkgs };
-    });
-  };
-
-  const addPackageFeature = (pkgIdx: number, featKey: "featuresAr" | "featuresEn") => {
-    setConfig((prev: any) => {
-      const pkgs = Array.isArray(prev.featuredPackages) ? [...prev.featuredPackages] : [];
-      if (!pkgs[pkgIdx]) return prev;
-      const feats = Array.isArray(pkgs[pkgIdx][featKey]) ? [...pkgs[pkgIdx][featKey]] : [];
-      feats.push("");
-      pkgs[pkgIdx] = { ...pkgs[pkgIdx], [featKey]: feats };
-      return { ...prev, featuredPackages: pkgs };
-    });
-  };
-
-  const removePackageFeature = (pkgIdx: number, featKey: "featuresAr" | "featuresEn", featIdx: number) => {
-    setConfig((prev: any) => {
-      const pkgs = Array.isArray(prev.featuredPackages) ? [...prev.featuredPackages] : [];
-      if (!pkgs[pkgIdx]) return prev;
-      const feats = Array.isArray(pkgs[pkgIdx][featKey]) ? [...pkgs[pkgIdx][featKey]] : [];
-      feats.splice(featIdx, 1);
-      pkgs[pkgIdx] = { ...pkgs[pkgIdx], [featKey]: feats };
-      return { ...prev, featuredPackages: pkgs };
-    });
-  };
-
-  // -------------------------------------------------------------
-  // Supported Tools Handlers
-  // -------------------------------------------------------------
-  const addTool = () => {
-    setConfig((prev: any) => {
-      const tools = Array.isArray(prev.supportedTools) ? [...prev.supportedTools] : [];
-      tools.push({
-        id: `tool_${Date.now()}`,
-        name: "أداة جديدة",
-        url: "/pricing",
-        image: ""
-      });
-      return { ...prev, supportedTools: tools };
-    });
-  };
-
-  const addToolFromItem = (itemName: string) => {
-    const matchingPreset = PRESET_ICONS.find(p => itemName.toLowerCase().includes(p.label.toLowerCase()));
-    setConfig((prev: any) => {
-      const tools = Array.isArray(prev.supportedTools) ? [...prev.supportedTools] : [];
-      tools.push({
-        id: `tool_${Date.now()}`,
-        name: itemName,
-        url: `/pricing?search=${encodeURIComponent(itemName)}`,
-        image: matchingPreset ? matchingPreset.url : ""
-      });
-      return { ...prev, supportedTools: tools };
-    });
-  };
-
-  const removeTool = (index: number) => {
-    if (!confirm("هل أنت متأكد من حذف هذه الأداة من الشريط؟")) return;
-    setConfig((prev: any) => {
-      const tools = Array.isArray(prev.supportedTools) ? [...prev.supportedTools] : [];
-      tools.splice(index, 1);
-      return { ...prev, supportedTools: tools };
-    });
-  };
-
-  const updateToolField = (index: number, field: string, value: any) => {
-    setConfig((prev: any) => {
-      const tools = Array.isArray(prev.supportedTools) ? [...prev.supportedTools] : [];
-      if (!tools[index]) return prev;
-      tools[index] = { ...tools[index], [field]: value };
-      return { ...prev, supportedTools: tools };
-    });
-  };
-
-  const moveTool = (index: number, direction: "up" | "down") => {
-    setConfig((prev: any) => {
-      const tools = Array.isArray(prev.supportedTools) ? [...prev.supportedTools] : [];
-      const targetIndex = direction === "up" ? index - 1 : index + 1;
-      if (targetIndex < 0 || targetIndex >= tools.length) return prev;
-      const temp = tools[index];
-      tools[index] = tools[targetIndex];
-      tools[targetIndex] = temp;
-      return { ...prev, supportedTools: tools };
-    });
-  };
-
-  const resetDefaultTools = () => {
-    if (!confirm("هل أنت متأكد من استعادة قائمة الـ 10 أدوات الافتراضية بصورها الرسمية؟")) return;
-    setConfig((prev: any) => ({
-      ...prev,
-      supportedTools: DEFAULT_SUPPORTED_TOOLS
-    }));
+          const data = await res.json();
+          if (res.ok && data.success) {
+            const cleanUrl = data.url.replace(/^https?:\/\/[^/]+/, "");
+            if (pendingUploadCallback.current) {
+              pendingUploadCallback.current(cleanUrl);
+            }
+            showToast("تم رفع الصورة بنجاح");
+          } else {
+            showToast(data.error || "فشل رفع الصورة", "error");
+          }
+        } catch {
+          showToast("خطأ أثناء رفع الصورة إلى الخادم", "error");
+        } finally {
+          setUploadingField(null);
+        }
+      };
+      reader.readAsDataURL(file);
+    } catch {
+      showToast("فشل معالجة ملف الصورة", "error");
+      setUploadingField(null);
+    }
   };
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-[400px]">
-        <span className="material-symbols-outlined animate-spin text-4xl text-primary">refresh</span>
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center space-y-3">
+          <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-sm font-bold text-slate-400">جاري تحميل إعدادات الصفحة الرئيسية...</p>
+        </div>
       </div>
     );
   }
 
-  if (!config) {
-    return <div className="text-error">فشل تحميل إعدادات الصفحة الرئيسية.</div>;
-  }
-
   return (
-    <div className="flex flex-col gap-8 pb-16 font-sans" dir="rtl">
-      {/* Toast Notification */}
+    <div className="space-y-6 pb-20">
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileChange}
+        accept="image/*"
+        className="hidden"
+      />
+
+      {/* Toast Alert */}
       {toastMessage && (
-        <div className="fixed bottom-8 left-8 z-50 bg-primary text-surface font-bold px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 animate-in fade-in slide-in-from-bottom-4">
-          <span className="material-symbols-outlined text-2xl">check_circle</span>
+        <div
+          className={`fixed bottom-6 left-6 z-50 px-5 py-3 rounded-xl shadow-2xl border text-sm font-bold transition-all flex items-center gap-3 ${
+            toastType === "success"
+              ? "bg-emerald-950/90 text-emerald-200 border-emerald-800"
+              : "bg-rose-950/90 text-rose-200 border-rose-800"
+          }`}
+        >
+          <span className="w-2 h-2 rounded-full bg-current animate-pulse" />
           <span>{toastMessage}</span>
         </div>
       )}
 
-      {/* Page Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-outline-variant/20 pb-6">
+      {/* Top Header Card */}
+      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-display font-bold text-on-surface">إدارة وتخصيص الصفحة الرئيسية</h1>
-          <p className="text-on-surface-variant text-sm mt-1">
-            تحكم كامل وسهل في بطاقات الباقات المميزة، شريط الأدوات المدعومة، العروض، وكافة الصور مع إمكانية الرفع المباشر من جهازك.
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-black text-white">إدارة الصفحة الرئيسية</h1>
+            <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
+              واجهة المتجر المباشرة
+            </span>
+          </div>
+          <p className="text-xs text-slate-400 mt-1">
+            تحكم كامل في جميع أقسام الصفحة الرئيسية: السلايدر، شبكات الألعاب، البطاقات الرقمية، الإعلانات، وبانرات العروض.
           </p>
         </div>
 
-        <button
-          onClick={handleSave}
-          disabled={saving}
-          className="btn-primary flex items-center gap-2 shadow-lg disabled:opacity-50 px-6 py-3 text-sm font-bold rounded-xl shrink-0"
-        >
-          <span className="material-symbols-outlined text-lg">{saving ? "sync" : "save"}</span>
-          <span>{saving ? "جاري الحفظ..." : "حفظ والتطبيق المباشر"}</span>
-        </button>
+        <div className="flex items-center gap-3 w-full md:w-auto">
+          <Link
+            href="/ar"
+            target="_blank"
+            className="flex-1 md:flex-initial px-4 py-2.5 rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-slate-800 text-slate-200 text-xs font-bold transition-all text-center flex items-center justify-center gap-2"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
+              <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" />
+            </svg>
+            معاينة المتجر
+          </Link>
+
+          <button
+            type="button"
+            onClick={handleResetDefaults}
+            className="px-4 py-2.5 rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-slate-800 text-slate-300 text-xs font-bold transition-all"
+          >
+            استعادة الافتراضيات
+          </button>
+
+          <button
+            type="button"
+            onClick={handleSave}
+            disabled={saving}
+            className="flex-1 md:flex-initial px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-black shadow-lg shadow-blue-600/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+          >
+            {saving ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                جاري الحفظ...
+              </>
+            ) : (
+              <>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-4 h-4">
+                  <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                حفظ التغييرات
+              </>
+            )}
+          </button>
+        </div>
       </div>
 
-      {/* Tabs Navigation */}
-      <div className="flex flex-wrap gap-2 border-b border-outline-variant/20 pb-3">
-        <button
-          onClick={() => setActiveTab("packages")}
-          className={`px-4 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 border ${
-            activeTab === "packages" 
-              ? "bg-primary text-surface border-primary shadow-md" 
-              : "bg-surface-container text-on-surface hover:bg-surface-container-high border-outline-variant/30"
-          }`}
-        >
-          <span className="material-symbols-outlined text-lg">package_2</span>
-          1. بطاقات الباقات المميزة (Featured Packages)
-        </button>
-
-        <button
-          onClick={() => setActiveTab("tools")}
-          className={`px-4 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 border ${
-            activeTab === "tools" 
-              ? "bg-primary text-surface border-primary shadow-md" 
-              : "bg-surface-container text-on-surface hover:bg-surface-container-high border-outline-variant/30"
-          }`}
-        >
-          <span className="material-symbols-outlined text-lg">construction</span>
-          2. أبرز الأدوات المدعومة (Supported Tools Bar)
-        </button>
-
-        <button
-          onClick={() => setActiveTab("campaigns")}
-          className={`px-4 py-2.5 rounded-xl font-medium text-sm transition-all flex items-center gap-2 ${
-            activeTab === "campaigns" ? "bg-primary text-surface font-bold shadow-md" : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"
-          }`}
-        >
-          <span className="material-symbols-outlined text-lg">local_fire_department</span>
-          3. بنرات وعروض الترويج (Campaign Offers)
-        </button>
+      {/* Tabs Navigation Strip */}
+      <div className="flex overflow-x-auto gap-2 border-b border-slate-800 pb-2 scrollbar-thin">
+        {[
+          { id: "hero", label: "السلايدر والقائمة الجانبية" },
+          { id: "announcement", label: "شريط الإعلانات والنافذة المنبثقة" },
+          { id: "search_banner1", label: "البحث والبانر الأول" },
+          { id: "games1", label: "شبكة الألعاب 1" },
+          { id: "banner2_games2", label: "البانر الثاني وشبكة الألعاب 2" },
+          { id: "banner3_cards", label: "البانر الثالث والبطاقات الرقمية" },
+          { id: "subscriptions_whatsapp", label: "الاشتراكات وزر واتساب" },
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            type="button"
+            onClick={() => setActiveTab(tab.id as ActiveTab)}
+            className={`px-4 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all border ${
+              activeTab === tab.id
+                ? "bg-blue-600 text-white border-blue-500 shadow-md shadow-blue-600/20"
+                : "bg-slate-900/60 text-slate-400 border-slate-800 hover:text-slate-200 hover:bg-slate-800"
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
       </div>
 
-      {/* ============================================================= */}
-      {/* TAB 1: FEATURED PACKAGES (الكروت الثلاثة)                      */}
-      {/* ============================================================= */}
-      {activeTab === "packages" && (
-        <div className="glass-card rounded-3xl p-6 md:p-8 border border-outline-variant/30 flex flex-col gap-8">
-          <div className="border-b border-outline-variant/20 pb-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <h2 className="text-xl font-bold text-primary flex items-center gap-2">
-                <span className="material-symbols-outlined">package_2</span>
-                بطاقات الباقات الأكثر طلباً (Featured Packages)
-              </h2>
-              <p className="text-xs text-on-surface-variant mt-1">
-                تحكم كامل في الكروت المعروضة على الواجهة (مثل Chimera و AMT و Xiaomi). يمكنك اختيار الباقة مباشرة من خدمات الموقع ورفع صورة مخصصة لها.
-              </p>
-            </div>
-
-            <div className="flex items-center gap-2 flex-wrap">
-              <button
-                type="button"
-                onClick={() => {
-                  setPickerTargetIndex(null);
-                  setShowPickerModal(true);
-                }}
-                className="btn-primary text-xs px-4 py-2.5 flex items-center gap-1.5 rounded-xl shrink-0 shadow-md font-bold"
-              >
-                <span className="material-symbols-outlined text-sm">hub</span>
-                اختيار باقة من خدمات الموقع
-              </button>
-              <button
-                type="button"
-                onClick={addPackage}
-                className="btn-secondary text-xs px-3.5 py-2.5 flex items-center gap-1.5 rounded-xl shrink-0"
-              >
-                <span className="material-symbols-outlined text-sm">add</span>
-                إضافة باقة يدوية
-              </button>
-              <button
-                type="button"
-                onClick={resetDefaultPackages}
-                className="text-xs px-3 py-2 rounded-xl bg-surface-container-high hover:bg-surface-container-highest text-on-surface-variant border border-outline-variant/30 flex items-center gap-1"
-                title="استعادة الباقات الـ 3 الافتراضية"
-              >
-                <span className="material-symbols-outlined text-xs">restart_alt</span>
-                استعادة الافتراضي
-              </button>
-            </div>
-          </div>
-
-          {/* Live Visual Preview of Cards */}
-          <div className="p-4 sm:p-6 bg-surface-container-lowest/80 rounded-2xl border border-primary/20 flex flex-col gap-3">
+      {/* TAB 1: Hero Slider & Side Menu */}
+      {activeTab === "hero" && (
+        <div className="space-y-6">
+          {/* Hero Slider Management */}
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-primary flex items-center gap-1.5">
-                <span className="material-symbols-outlined text-sm">visibility</span>
-                معاينة حية لشكل الكروت بالواجهة الرئيسية:
-              </span>
-              <span className="text-[10px] text-on-surface-variant font-mono">
-                عدد الباقات: {config.featuredPackages?.length || 0}
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 mt-1">
-              {Array.isArray(config.featuredPackages) && config.featuredPackages.map((pkg: any, idx: number) => (
-                <div 
-                  key={pkg.id || idx}
-                  className="p-3.5 sm:p-4 rounded-2xl bg-surface-container border border-outline-variant/30 flex flex-col justify-between shadow-xs"
-                >
-                  <div className="flex items-start gap-3">
-                    {/* Logo preview */}
-                    <div className="w-12 h-12 rounded-xl bg-surface-container-high border border-outline-variant/30 flex items-center justify-center shrink-0 overflow-hidden">
-                      {pkg.image ? (
-                        <img src={pkg.image} alt={pkg.nameAr} className="w-full h-full object-contain p-1" />
-                      ) : (
-                        <span className="material-symbols-outlined text-primary text-xl">
-                          {pkg.iconName || "inventory_2"}
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="min-w-0 flex-1">
-                      <h4 className="font-bold text-on-surface text-sm truncate">{pkg.nameAr || "اسم الباقة"}</h4>
-                      <span className="text-[10px] text-on-surface-variant block truncate">{pkg.subAr || pkg.nameEn || "وصف فرعي"}</span>
-                      <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
-                        {pkg.badgeAr && (
-                          <span className="px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 text-[9px] font-bold">
-                            {pkg.badgeAr}
-                          </span>
-                        )}
-                        {pkg.categoryAr && (
-                          <span className="px-1.5 py-0.5 rounded bg-primary/10 text-primary border border-primary/20 text-[9px]">
-                            {pkg.categoryAr}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="pt-3 mt-3 border-t border-outline-variant/20 flex items-center justify-between">
-                    <div>
-                      <span className="text-base font-black text-primary font-mono">{pkg.startingPrice || "$0.00"}</span>
-                      <span className="text-[9px] text-on-surface-variant block">يبدأ من</span>
-                    </div>
-                    <span className="px-3 py-1 rounded-lg bg-emerald-500/20 text-emerald-400 font-bold text-xs">
-                      اطلب الآن
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Cards Editor List */}
-          <div className="flex flex-col gap-6">
-            {Array.isArray(config.featuredPackages) && config.featuredPackages.map((pkg: any, idx: number) => (
-              <div 
-                key={pkg.id || idx} 
-                className="p-5 bg-surface-container-low rounded-2xl border border-outline-variant/30 flex flex-col gap-5 relative shadow-xs"
-              >
-                {/* Header */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-outline-variant/20 pb-3">
-                  <div className="flex items-center gap-2">
-                    <span className="bg-primary/20 text-primary font-bold px-2.5 py-0.5 rounded-lg text-xs font-mono">
-                      باقة #{idx + 1}
-                    </span>
-                    <h3 className="font-bold text-on-surface text-base">
-                      {pkg.nameAr || "باقة جديدة"}
-                    </h3>
-                    {pkg.isPopular && (
-                      <span className="text-xs bg-amber-500/20 text-amber-300 border border-amber-400/30 px-2 py-0.5 rounded-full font-bold">
-                        الأكثر طلباً
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setPickerTargetIndex(idx);
-                        setShowPickerModal(true);
-                      }}
-                      className="text-xs bg-primary/10 hover:bg-primary/20 text-primary px-3 py-1.5 rounded-xl border border-primary/30 flex items-center gap-1.5 transition-all font-bold"
-                    >
-                      <span className="material-symbols-outlined text-sm">hub</span>
-                      ربط بخدمة من الموقع
-                    </button>
-                    <label className="flex items-center gap-1.5 cursor-pointer text-xs font-bold text-on-surface-variant px-2 py-1 bg-surface-container rounded-lg">
-                      <input
-                        type="checkbox"
-                        checked={Boolean(pkg.isPopular)}
-                        onChange={(e) => updatePackageField(idx, "isPopular", e.target.checked)}
-                        className="w-4 h-4 accent-primary"
-                      />
-                      الأكثر طلباً
-                    </label>
-                    <button
-                      type="button"
-                      onClick={() => removePackage(idx)}
-                      className="text-error hover:bg-error/10 p-1.5 rounded-lg transition-colors"
-                      title="حذف الباقة"
-                    >
-                      <span className="material-symbols-outlined text-sm">delete</span>
-                    </button>
-                  </div>
-                </div>
-
-                {/* Package Image Picker */}
-                <ImagePickerInput
-                  label={`صورة أو شعار الباقة #${idx + 1} (يمكنك الرفع من جهازك)`}
-                  value={pkg.image || ""}
-                  onChange={(newUrl) => updatePackageField(idx, "image", newUrl)}
-                />
-
-                {/* Main Fields */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="flex flex-col gap-1">
-                    <label className="text-[10px] text-on-surface-variant uppercase font-bold">الاسم (بالعربية)</label>
-                    <input
-                      type="text"
-                      value={pkg.nameAr || ""}
-                      onChange={(e) => updatePackageField(idx, "nameAr", e.target.value)}
-                      className="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-2.5 text-sm font-bold text-on-surface"
-                      placeholder="مثال: Chimera Tool"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <label className="text-[10px] text-on-surface-variant uppercase font-bold">الاسم (بالإنجليزية)</label>
-                    <input
-                      type="text"
-                      value={pkg.nameEn || ""}
-                      onChange={(e) => updatePackageField(idx, "nameEn", e.target.value)}
-                      className="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-2.5 text-sm font-bold text-on-surface"
-                      placeholder="e.g. Chimera Tool"
-                    />
-                  </div>
-
-                  <div className="flex flex-col gap-1">
-                    <label className="text-[10px] text-on-surface-variant uppercase font-bold">العنوان الفرعي (بالعربية)</label>
-                    <input
-                      type="text"
-                      value={pkg.subAr || ""}
-                      onChange={(e) => updatePackageField(idx, "subAr", e.target.value)}
-                      className="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-2.5 text-xs text-on-surface-variant"
-                      placeholder="مثال: Activation / Credits"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <label className="text-[10px] text-on-surface-variant uppercase font-bold">العنوان الفرعي (بالإنجليزية)</label>
-                    <input
-                      type="text"
-                      value={pkg.subEn || ""}
-                      onChange={(e) => updatePackageField(idx, "subEn", e.target.value)}
-                      className="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-2.5 text-xs text-on-surface-variant"
-                      placeholder="e.g. Activation / Credits"
-                    />
-                  </div>
-
-                  <div className="flex flex-col gap-1">
-                    <label className="text-[10px] text-amber-400 uppercase font-bold">الشارة / البادج (بالعربية)</label>
-                    <input
-                      type="text"
-                      placeholder="مثال: Best Seller أو الأكثر طلباً"
-                      value={pkg.badgeAr || ""}
-                      onChange={(e) => updatePackageField(idx, "badgeAr", e.target.value)}
-                      className="bg-surface-container-lowest border border-amber-400/30 rounded-xl p-2.5 text-xs text-amber-300 font-bold"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <label className="text-[10px] text-amber-400 uppercase font-bold">الشارة / البادج (بالإنجليزية)</label>
-                    <input
-                      type="text"
-                      placeholder="e.g. Best Seller"
-                      value={pkg.badgeEn || ""}
-                      onChange={(e) => updatePackageField(idx, "badgeEn", e.target.value)}
-                      className="bg-surface-container-lowest border border-amber-400/30 rounded-xl p-2.5 text-xs text-amber-300 font-bold"
-                    />
-                  </div>
-
-                  <div className="flex flex-col gap-1">
-                    <label className="text-[10px] text-emerald-400 uppercase font-bold">السعر المبدئي (مثال: $106.59)</label>
-                    <input
-                      type="text"
-                      placeholder="$106.59"
-                      value={pkg.startingPrice || ""}
-                      onChange={(e) => updatePackageField(idx, "startingPrice", e.target.value)}
-                      className="bg-surface-container-lowest border border-emerald-400/30 rounded-xl p-2.5 text-sm font-mono text-emerald-400 font-bold"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <label className="text-[10px] text-primary uppercase font-bold">رابط التوجيه (URL)</label>
-                    <input
-                      type="text"
-                      placeholder="/pricing?section=Chimera%20Tool"
-                      value={pkg.url || "/pricing"}
-                      onChange={(e) => updatePackageField(idx, "url", e.target.value)}
-                      className="bg-surface-container-lowest border border-primary/40 rounded-xl p-2.5 text-xs font-mono text-primary"
-                    />
-                  </div>
-
-                  <div className="flex flex-col gap-1">
-                    <label className="text-[10px] text-on-surface-variant uppercase font-bold">الفئة (بالعربية)</label>
-                    <input
-                      type="text"
-                      value={pkg.categoryAr || ""}
-                      onChange={(e) => updatePackageField(idx, "categoryAr", e.target.value)}
-                      className="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-2.5 text-xs text-on-surface"
-                      placeholder="مثال: Official أو سيرفر معتمد"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <label className="text-[10px] text-on-surface-variant uppercase font-bold">الفئة (بالإنجليزية)</label>
-                    <input
-                      type="text"
-                      value={pkg.categoryEn || ""}
-                      onChange={(e) => updatePackageField(idx, "categoryEn", e.target.value)}
-                      className="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-2.5 text-xs text-on-surface"
-                      placeholder="e.g. Official Server"
-                    />
-                  </div>
-
-                  <div className="flex flex-col gap-1">
-                    <label className="text-[10px] text-on-surface-variant uppercase font-bold">وقت التسليم (بالعربية)</label>
-                    <input
-                      type="text"
-                      value={pkg.deliveryTimeAr || ""}
-                      onChange={(e) => updatePackageField(idx, "deliveryTimeAr", e.target.value)}
-                      className="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-2.5 text-xs text-on-surface"
-                      placeholder="مثال: فوري 24/7 أو 1 - 12 ساعة"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <label className="text-[10px] text-on-surface-variant uppercase font-bold">وقت التسليم (بالإنجليزية)</label>
-                    <input
-                      type="text"
-                      value={pkg.deliveryTimeEn || ""}
-                      onChange={(e) => updatePackageField(idx, "deliveryTimeEn", e.target.value)}
-                      className="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-2.5 text-xs text-on-surface"
-                      placeholder="e.g. Instant 24/7"
-                    />
-                  </div>
-                </div>
-
-                {/* Features (المميزات) */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-3 border-t border-outline-variant/15">
-                  <div className="flex flex-col gap-2">
-                    <div className="flex justify-between items-center">
-                      <label className="text-xs font-bold text-on-surface-variant uppercase">المميزات (بالعربية)</label>
-                      <button
-                        type="button"
-                        onClick={() => addPackageFeature(idx, "featuresAr")}
-                        className="text-[11px] text-primary hover:underline flex items-center gap-1 font-bold"
-                      >
-                        <span className="material-symbols-outlined text-xs">add</span> إضافة ميزة
-                      </button>
-                    </div>
-                    {Array.isArray(pkg.featuresAr) && pkg.featuresAr.map((feat: string, fIdx: number) => (
-                      <div key={fIdx} className="flex items-center gap-2">
-                        <input
-                          type="text"
-                          value={feat}
-                          onChange={(e) => updatePackageFeature(idx, "featuresAr", fIdx, e.target.value)}
-                          className="flex-1 bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-2 text-xs text-on-surface"
-                          placeholder={`الميزة ${fIdx + 1}`}
-                        />
-                        <button
-                          type="button"
-                          onClick={() => removePackageFeature(idx, "featuresAr", fIdx)}
-                          className="text-error p-1 hover:bg-error/10 rounded-lg transition-colors"
-                        >
-                          <span className="material-symbols-outlined text-sm">close</span>
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="flex flex-col gap-2">
-                    <div className="flex justify-between items-center">
-                      <label className="text-xs font-bold text-on-surface-variant uppercase">Features (English)</label>
-                      <button
-                        type="button"
-                        onClick={() => addPackageFeature(idx, "featuresEn")}
-                        className="text-[11px] text-primary hover:underline flex items-center gap-1 font-bold"
-                      >
-                        <span className="material-symbols-outlined text-xs">add</span> Add feature
-                      </button>
-                    </div>
-                    {Array.isArray(pkg.featuresEn) && pkg.featuresEn.map((feat: string, fIdx: number) => (
-                      <div key={fIdx} className="flex items-center gap-2">
-                        <input
-                          type="text"
-                          value={feat}
-                          onChange={(e) => updatePackageFeature(idx, "featuresEn", fIdx, e.target.value)}
-                          className="flex-1 bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-2 text-xs text-on-surface"
-                          placeholder={`Feature ${fIdx + 1}`}
-                        />
-                        <button
-                          type="button"
-                          onClick={() => removePackageFeature(idx, "featuresEn", fIdx)}
-                          className="text-error p-1 hover:bg-error/10 rounded-lg transition-colors"
-                        >
-                          <span className="material-symbols-outlined text-sm">close</span>
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* ============================================================= */}
-      {/* TAB 2: SUPPORTED TOOLS BAR (شريط الأدوات المدعومة)            */}
-      {/* ============================================================= */}
-      {activeTab === "tools" && (
-        <div className="glass-card rounded-3xl p-6 md:p-8 border border-outline-variant/30 flex flex-col gap-8">
-          <div className="border-b border-outline-variant/20 pb-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <h2 className="text-xl font-bold text-primary flex items-center gap-2">
-                <span className="material-symbols-outlined">construction</span>
-                أبرز الأدوات المدعومة (Supported Tools Bar)
-              </h2>
-              <p className="text-xs text-on-surface-variant mt-1">
-                التحكم في شريط الأدوات الظاهر أعلى الصفحة (Chimera, UnlockTool, Borneo, iRemoval, DFT, MobileSea, AMT...). يمكنك رفع صورة لكل أداة وتعديل رابطها أو إضافة أدوات جديدة.
-              </p>
-            </div>
-
-            <div className="flex items-center gap-2 flex-wrap">
-              <button
-                type="button"
-                onClick={addTool}
-                className="btn-primary text-xs px-4 py-2.5 flex items-center gap-1.5 rounded-xl shrink-0 shadow-md font-bold"
-              >
-                <span className="material-symbols-outlined text-sm">add</span> إضافة أداة جديدة
-              </button>
-              <button
-                type="button"
-                onClick={resetDefaultTools}
-                className="btn-secondary text-xs px-3.5 py-2.5 flex items-center gap-1.5 rounded-xl shrink-0"
-              >
-                <span className="material-symbols-outlined text-sm">restart_alt</span> استعادة الأدوات الافتراضية
-              </button>
-            </div>
-          </div>
-
-          {/* Live Visual Preview of Supported Tools */}
-          <div className="p-4 sm:p-6 bg-surface-container-lowest/80 rounded-2xl border border-primary/20 flex flex-col gap-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-primary flex items-center gap-1.5">
-                <span className="material-symbols-outlined text-sm">visibility</span>
-                معاينة حية لشريط الأدوات بالواجهة الرئيسية:
-              </span>
-              <span className="text-[10px] text-on-surface-variant font-mono">
-                العدد: {config.supportedTools?.length || 0} أدوات
-              </span>
-            </div>
-
-            <div className="grid grid-cols-5 lg:grid-cols-10 gap-2 sm:gap-3 mt-1">
-              {Array.isArray(config.supportedTools) && config.supportedTools.map((tool: any, idx: number) => (
-                <div
-                  key={tool.id || idx}
-                  className="p-2 sm:p-2.5 rounded-xl bg-surface-container border border-outline-variant/30 flex flex-col items-center justify-center text-center shadow-xs"
-                >
-                  <div className="w-8 h-8 rounded-lg bg-surface-container-high border border-outline-variant/20 flex items-center justify-center overflow-hidden mb-1">
-                    {tool.image ? (
-                      <img src={tool.image} alt={tool.name} className="w-full h-full object-contain p-0.5" />
-                    ) : (
-                      <span className="material-symbols-outlined text-xs text-primary">build</span>
-                    )}
-                  </div>
-                  <span className="text-[10px] sm:text-xs font-bold text-on-surface truncate w-full">
-                    {tool.name || "أداة"}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Quick-add from site service groups */}
-          {siteItems.length > 0 && (
-            <div className="p-4 bg-surface-container-low rounded-2xl border border-outline-variant/30 flex flex-col gap-2">
-              <span className="text-xs font-bold text-on-surface flex items-center gap-1.5">
-                <span className="material-symbols-outlined text-sm text-primary">add_circle</span>
-                إضافة سريعة من مجموعات وأدوات الموقع المسجلة:
-              </span>
-              <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto pr-1">
-                {siteItems.slice(0, 30).map((item) => (
-                  <button
-                    key={item.name}
-                    type="button"
-                    onClick={() => addToolFromItem(item.name)}
-                    className="text-xs px-2.5 py-1.5 rounded-lg bg-surface-container hover:bg-primary/20 hover:text-primary transition-colors border border-outline-variant/20 flex items-center gap-1"
-                  >
-                    <span className="material-symbols-outlined text-xs">add</span>
-                    <span className="truncate max-w-[150px]">{item.name}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Tools List Editor */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {Array.isArray(config.supportedTools) && config.supportedTools.map((tool: any, tIdx: number) => (
-              <div
-                key={tool.id || tIdx}
-                className="p-4 bg-surface-container-low rounded-2xl border border-outline-variant/30 flex flex-col gap-3 relative shadow-xs"
-              >
-                {/* Header */}
-                <div className="flex justify-between items-center">
-                  <span className="font-bold text-on-surface text-sm flex items-center gap-2">
-                    <span className="bg-primary/20 text-primary font-mono px-2 py-0.5 rounded text-xs">
-                      #{tIdx + 1}
-                    </span>
-                    {tool.name || "أداة جديدة"}
-                  </span>
-
-                  <div className="flex items-center gap-1">
-                    <button
-                      type="button"
-                      onClick={() => moveTool(tIdx, "up")}
-                      disabled={tIdx === 0}
-                      className="p-1.5 rounded-lg hover:bg-surface-container-high disabled:opacity-30 transition-colors"
-                      title="تحريك لأعلى"
-                    >
-                      <span className="material-symbols-outlined text-sm">arrow_upward</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => moveTool(tIdx, "down")}
-                      disabled={tIdx === config.supportedTools.length - 1}
-                      className="p-1.5 rounded-lg hover:bg-surface-container-high disabled:opacity-30 transition-colors"
-                      title="تحريك لأسفل"
-                    >
-                      <span className="material-symbols-outlined text-sm">arrow_downward</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => removeTool(tIdx)}
-                      className="text-error hover:bg-error/10 p-1.5 rounded-lg transition-colors"
-                      title="حذف الأداة"
-                    >
-                      <span className="material-symbols-outlined text-sm">delete</span>
-                    </button>
-                  </div>
-                </div>
-
-                {/* Tool Image Picker */}
-                <ImagePickerInput
-                  label="أيقونة الأداة (رفع من جهازك أو اختيار أيقونة)"
-                  value={tool.image || ""}
-                  onChange={(newUrl) => updateToolField(tIdx, "image", newUrl)}
-                />
-
-                {/* Name & URL */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="flex flex-col gap-1">
-                    <label className="text-[10px] text-on-surface-variant uppercase font-bold">اسم الأداة</label>
-                    <input
-                      type="text"
-                      value={tool.name || ""}
-                      onChange={(e) => updateToolField(tIdx, "name", e.target.value)}
-                      placeholder="مثال: Chimera"
-                      className="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-2 text-xs font-bold text-on-surface"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <label className="text-[10px] text-primary uppercase font-bold">رابط التوجيه (URL)</label>
-                    <input
-                      type="text"
-                      value={tool.url || ""}
-                      onChange={(e) => updateToolField(tIdx, "url", e.target.value)}
-                      placeholder={`/pricing?search=${encodeURIComponent(tool.name || "")}`}
-                      className="bg-surface-container-lowest border border-primary/40 rounded-xl p-2 text-xs font-mono text-primary"
-                    />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* ============================================================= */}
-      {/* TAB 3: CAMPAIGN OFFERS (العروض وبنرات الترويج)                 */}
-      {/* ============================================================= */}
-      {activeTab === "campaigns" && (
-        <div className="glass-card rounded-3xl p-6 md:p-8 border border-outline-variant/30 flex flex-col gap-6">
-          <div className="border-b border-outline-variant/20 pb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-            <div>
-              <h2 className="text-xl font-bold text-primary flex items-center gap-2">
-                <span className="material-symbols-outlined">local_fire_department</span>
-                3. بنرات وعروض الترويج الساخنة (Campaign Offers)
-              </h2>
-              <p className="text-xs text-on-surface-variant mt-1">
-                إدارة البنرات الإعلانية الترويجية التفاعلية مع دعم السلايدر المتحرك والتأثيرات الحديثة.
-              </p>
-            </div>
-            
-            <div className="flex flex-wrap items-center gap-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setConfig((prev: any) => ({
-                    ...prev,
-                    campaigns: DEFAULT_CAMPAIGNS
-                  }));
-                  setToastMessage("تمت استعادة البنرات النموذجية الافتراضية بنجاح");
-                  setTimeout(() => setToastMessage(null), 3000);
-                }}
-                className="btn-secondary text-xs px-3 py-2 rounded-xl flex items-center gap-1.5"
-              >
-                <span className="material-symbols-outlined text-sm">restart_alt</span>
-                استعادة البنرات النموذجية
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setConfig((prev: any) => {
-                    const campaigns = Array.isArray(prev.campaigns) ? [...prev.campaigns] : [];
-                    campaigns.push({
-                      id: `camp_${Date.now()}`,
-                      tagEn: "Limited Time Offer",
-                      tagAr: "عرض حصري لفترة محدودة",
-                      titleEn: "New Service Promo",
-                      titleAr: "عرض ترويجي جديد",
-                      descEn: "Fast automated fulfillment with official server integration.",
-                      descAr: "تنفيذ فوري وتلقائي عبر السيرفر الرسمي بأعلى كفاءة وأمان.",
-                      badgeEn: "Direct API Link",
-                      badgeAr: "ربط سيرفر مباشر",
-                      turnaroundEn: "1 - 5 Mins",
-                      turnaroundAr: "1 - 5 دقائق",
-                      guaranteeEn: "100% REFUND",
-                      guaranteeAr: "ضمان مالي 100%",
-                      connectionEn: "DIRECT API",
-                      connectionAr: "ربط فوري API",
-                      theme: "purple",
-                      image: "/images/promo_samsung_clean.png",
-                      url: "/pricing",
-                      buttonTextEn: "Order & Activate Now",
-                      buttonTextAr: "اطلب الآن وابدأ التفعيل"
-                    });
-                    return { ...prev, campaigns };
-                  });
-                }}
-                className="btn-primary text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5"
-              >
-                <span className="material-symbols-outlined text-sm">add</span>
-                إضافة إعلان جديد
-              </button>
-            </div>
-          </div>
-
-          {/* Live Interactive Animated Preview Box */}
-          <div className="rounded-2xl p-4 sm:p-5 bg-surface-container-lowest border border-outline-variant/30 flex flex-col gap-3 shadow-inner">
-            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-outline-variant/20 pb-2.5">
-              <div className="flex items-center gap-2">
-                <span className="relative flex h-2.5 w-2.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary" />
-                </span>
-                <span className="text-xs font-bold text-on-surface">معاينة حية ومتحركة على الموقع (Live Interactive Preview)</span>
-              </div>
-
-              <div className="flex items-center gap-1 bg-surface-container p-1 rounded-xl border border-outline-variant/20">
-                <button
-                  type="button"
-                  onClick={() => setPreviewLang("ar")}
-                  className={`text-[11px] px-2.5 py-1 rounded-lg font-bold transition-all ${
-                    previewLang === "ar"
-                      ? "bg-primary text-on-primary shadow-xs"
-                      : "text-on-surface-variant hover:text-on-surface"
-                  }`}
-                >
-                  العربية (RTL)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setPreviewLang("en")}
-                  className={`text-[11px] px-2.5 py-1 rounded-lg font-bold transition-all ${
-                    previewLang === "en"
-                      ? "bg-primary text-on-primary shadow-xs"
-                      : "text-on-surface-variant hover:text-on-surface"
-                  }`}
-                >
-                  English (LTR)
-                </button>
-              </div>
-            </div>
-
-            <div className="w-full">
-              <CampaignBanner
-                lang={previewLang}
-                campaigns={config.campaigns}
-                isPreview={true}
-              />
-            </div>
-          </div>
-
-          {/* Campaign List Editor */}
-          <div className="flex flex-col gap-6">
-            {Array.isArray(config.campaigns) && config.campaigns.map((camp: any, idx: number) => (
-              <div
-                key={camp.id || idx}
-                className="p-5 bg-surface-container-low rounded-2xl border border-outline-variant/30 flex flex-col gap-4 relative shadow-xs"
-              >
-                {/* Item Top Bar */}
-                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-outline-variant/20 pb-2.5">
-                  <div className="flex items-center gap-2">
-                    <span className="px-2.5 py-0.5 rounded-lg bg-primary/10 border border-primary/30 text-primary font-mono font-bold text-xs">
-                      #{idx + 1}
-                    </span>
-                    <span className="font-bold text-on-surface text-sm">
-                      {camp.titleAr || camp.titleEn || `إعلان #${idx + 1}`}
-                    </span>
-                    <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant">
-                      {camp.theme || "purple"}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-1">
-                    {/* Move Up */}
-                    <button
-                      type="button"
-                      disabled={idx === 0}
-                      onClick={() => {
-                        setConfig((prev: any) => {
-                          const campaigns = [...prev.campaigns];
-                          const temp = campaigns[idx];
-                          campaigns[idx] = campaigns[idx - 1];
-                          campaigns[idx - 1] = temp;
-                          return { ...prev, campaigns };
-                        });
-                      }}
-                      className="p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface disabled:opacity-30 transition-colors"
-                      title="تحريك لأعلى"
-                    >
-                      <span className="material-symbols-outlined text-sm">arrow_upward</span>
-                    </button>
-
-                    {/* Move Down */}
-                    <button
-                      type="button"
-                      disabled={idx === config.campaigns.length - 1}
-                      onClick={() => {
-                        setConfig((prev: any) => {
-                          const campaigns = [...prev.campaigns];
-                          const temp = campaigns[idx];
-                          campaigns[idx] = campaigns[idx + 1];
-                          campaigns[idx + 1] = temp;
-                          return { ...prev, campaigns };
-                        });
-                      }}
-                      className="p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface disabled:opacity-30 transition-colors"
-                      title="تحريك لأسفل"
-                    >
-                      <span className="material-symbols-outlined text-sm">arrow_downward</span>
-                    </button>
-
-                    {/* Duplicate */}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setConfig((prev: any) => {
-                          const campaigns = [...prev.campaigns];
-                          const copy = { ...campaigns[idx], id: `camp_${Date.now()}` };
-                          campaigns.splice(idx + 1, 0, copy);
-                          return { ...prev, campaigns };
-                        });
-                      }}
-                      className="p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-primary transition-colors"
-                      title="نسخ البنر"
-                    >
-                      <span className="material-symbols-outlined text-sm">content_copy</span>
-                    </button>
-
-                    {/* Delete */}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setConfig((prev: any) => {
-                          const campaigns = [...prev.campaigns];
-                          campaigns.splice(idx, 1);
-                          return { ...prev, campaigns };
-                        });
-                      }}
-                      className="p-1.5 rounded-lg text-error hover:bg-error/10 transition-colors"
-                      title="حذف البنر"
-                    >
-                      <span className="material-symbols-outlined text-sm">delete</span>
-                    </button>
-                  </div>
-                </div>
-
-                {/* Theme Selector */}
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-[10px] text-on-surface-variant uppercase font-bold">
-                    طابع وتدرج الألوان (Color Theme)
-                  </label>
-                  <div className="flex flex-wrap items-center gap-2">
-                    {[
-                      { key: "purple", label: "كحلي ملكي داكن (Royal Cobalt)", dot: "bg-blue-800" },
-                      { key: "cyan", label: "سيان سايبر (Cyan)", dot: "bg-cyan-400" },
-                      { key: "blue", label: "أزرق كهربائي (Electric Blue)", dot: "bg-blue-600" },
-                      { key: "emerald", label: "زمردي سريع (Emerald)", dot: "bg-emerald-500" },
-                      { key: "amber", label: "ذهبي برونزي (Amber)", dot: "bg-amber-500" }
-                    ].map((t) => (
-                      <button
-                        key={t.key}
-                        type="button"
-                        onClick={() => {
-                          setConfig((prev: any) => {
-                            const campaigns = [...prev.campaigns];
-                            campaigns[idx] = { ...campaigns[idx], theme: t.key };
-                            return { ...prev, campaigns };
-                          });
-                        }}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border ${
-                          (camp.theme || "purple") === t.key
-                            ? "bg-primary text-on-primary border-primary shadow-xs"
-                            : "bg-surface-container-lowest text-on-surface-variant border-outline-variant/30 hover:border-primary/50"
-                        }`}
-                      >
-                        <span className={`w-2.5 h-2.5 rounded-full ${t.dot}`} />
-                        <span>{t.label}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Preset Images Quick Pick */}
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-[10px] text-on-surface-variant uppercase font-bold">
-                    اختيار سريع لصورة ثلاثية الأبعاد جاهزة (Preset 3D Graphics)
-                  </label>
-                  <div className="flex flex-wrap items-center gap-1.5">
-                    {PRESET_CAMPAIGN_IMAGES.map((p, pIdx) => (
-                      <button
-                        key={pIdx}
-                        type="button"
-                        onClick={() => {
-                          setConfig((prev: any) => {
-                            const campaigns = [...prev.campaigns];
-                            campaigns[idx] = { ...campaigns[idx], image: p.url };
-                            return { ...prev, campaigns };
-                          });
-                        }}
-                        className={`text-[11px] px-2.5 py-1 rounded-lg font-bold border transition-all flex items-center gap-1.5 ${
-                          camp.image === p.url
-                            ? "bg-primary/15 text-primary border-primary"
-                            : "bg-surface-container-lowest text-on-surface-variant border-outline-variant/30 hover:text-on-surface hover:border-primary/40"
-                        }`}
-                      >
-                        <img src={p.url} alt={p.label} className="w-4 h-4 object-contain" />
-                        <span>{p.label}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Image Picker Input (Upload or Custom URL) */}
-                <ImagePickerInput
-                  label={`رابط صورة الإعلان رقم ${idx + 1}`}
-                  value={camp.image || ""}
-                  onChange={(newUrl) => {
-                    setConfig((prev: any) => {
-                      const campaigns = [...prev.campaigns];
-                      campaigns[idx] = { ...campaigns[idx], image: newUrl };
-                      return { ...prev, campaigns };
-                    });
-                  }}
-                />
-
-                {/* Main Titles & Tags Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-                  {/* Title Ar */}
-                  <div className="flex flex-col gap-1">
-                    <label className="text-[10px] text-on-surface-variant uppercase font-bold">
-                      العنوان الرئيسي (بالعربية)
-                    </label>
-                    <input
-                      type="text"
-                      value={camp.titleAr || ""}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        setConfig((prev: any) => {
-                          const campaigns = [...prev.campaigns];
-                          campaigns[idx] = { ...campaigns[idx], titleAr: val };
-                          return { ...prev, campaigns };
-                        });
-                      }}
-                      className="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-2.5 text-xs text-on-surface"
-                      placeholder="مثال: حذف حساب سامسونج FRP الفوري"
-                    />
-                  </div>
-
-                  {/* Title En */}
-                  <div className="flex flex-col gap-1">
-                    <label className="text-[10px] text-on-surface-variant uppercase font-bold">
-                      العنوان الرئيسي (بالإنجليزية)
-                    </label>
-                    <input
-                      type="text"
-                      value={camp.titleEn || ""}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        setConfig((prev: any) => {
-                          const campaigns = [...prev.campaigns];
-                          campaigns[idx] = { ...campaigns[idx], titleEn: val };
-                          return { ...prev, campaigns };
-                        });
-                      }}
-                      className="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-2.5 text-xs text-on-surface"
-                      placeholder="e.g. Samsung FRP Remove"
-                    />
-                  </div>
-
-                  {/* Tag Ar */}
-                  <div className="flex flex-col gap-1">
-                    <label className="text-[10px] text-on-surface-variant uppercase font-bold">
-                      شارة التمييز / التاج (بالعربية)
-                    </label>
-                    <input
-                      type="text"
-                      value={camp.tagAr || ""}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        setConfig((prev: any) => {
-                          const campaigns = [...prev.campaigns];
-                          campaigns[idx] = { ...campaigns[idx], tagAr: val };
-                          return { ...prev, campaigns };
-                        });
-                      }}
-                      className="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-2 text-xs text-on-surface"
-                      placeholder="مثال: عرض حصري لفترة محدودة"
-                    />
-                  </div>
-
-                  {/* Tag En */}
-                  <div className="flex flex-col gap-1">
-                    <label className="text-[10px] text-on-surface-variant uppercase font-bold">
-                      شارة التمييز / التاج (بالإنجليزية)
-                    </label>
-                    <input
-                      type="text"
-                      value={camp.tagEn || ""}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        setConfig((prev: any) => {
-                          const campaigns = [...prev.campaigns];
-                          campaigns[idx] = { ...campaigns[idx], tagEn: val };
-                          return { ...prev, campaigns };
-                        });
-                      }}
-                      className="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-2 text-xs text-on-surface"
-                      placeholder="e.g. Limited Time Offer"
-                    />
-                  </div>
-
-                  {/* Description Ar */}
-                  <div className="flex flex-col gap-1">
-                    <label className="text-[10px] text-on-surface-variant uppercase font-bold">
-                      الوصف المختصر (بالعربية)
-                    </label>
-                    <textarea
-                      rows={2}
-                      value={camp.descAr || ""}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        setConfig((prev: any) => {
-                          const campaigns = [...prev.campaigns];
-                          campaigns[idx] = { ...campaigns[idx], descAr: val };
-                          return { ...prev, campaigns };
-                        });
-                      }}
-                      className="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-2 text-xs text-on-surface"
-                      placeholder="فك فوري وتلقائي لجميع طرازات سامسونج عبر السيرفر الرسمي بأعلى سرعة وأمان."
-                    />
-                  </div>
-
-                  {/* Description En */}
-                  <div className="flex flex-col gap-1">
-                    <label className="text-[10px] text-on-surface-variant uppercase font-bold">
-                      الوصف المختصر (بالإنجليزية)
-                    </label>
-                    <textarea
-                      rows={2}
-                      value={camp.descEn || ""}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        setConfig((prev: any) => {
-                          const campaigns = [...prev.campaigns];
-                          campaigns[idx] = { ...campaigns[idx], descEn: val };
-                          return { ...prev, campaigns };
-                        });
-                      }}
-                      className="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-2 text-xs text-on-surface"
-                      placeholder="Instant removal for all Samsung models via direct official server API."
-                    />
-                  </div>
-
-                  {/* Target URL */}
-                  <div className="flex flex-col gap-1 md:col-span-2">
-                    <div className="flex justify-between items-center">
-                      <label className="text-[10px] text-primary uppercase font-bold">رابط التوجيه (URL)</label>
-                      <div className="flex items-center gap-1 text-[10px]">
-                        <span className="text-on-surface-variant">مقترحات:</span>
-                        {[
-                          { label: "Samsung", url: "/pricing?search=Samsung" },
-                          { label: "Chimera", url: "/pricing?section=Chimera%20Tool" },
-                          { label: "Borneo", url: "/pricing?search=Borneo" },
-                          { label: "Pricing", url: "/pricing" }
-                        ].map((link, lIdx) => (
-                          <button
-                            key={lIdx}
-                            type="button"
-                            onClick={() => {
-                              setConfig((prev: any) => {
-                                const campaigns = [...prev.campaigns];
-                                campaigns[idx] = { ...campaigns[idx], url: link.url };
-                                return { ...prev, campaigns };
-                              });
-                            }}
-                            className="px-1.5 py-0.5 rounded-md bg-surface-container text-primary hover:bg-primary/10 font-mono"
-                          >
-                            {link.label}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                    <input
-                      type="text"
-                      value={camp.url || "/pricing"}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        setConfig((prev: any) => {
-                          const campaigns = [...prev.campaigns];
-                          campaigns[idx] = { ...campaigns[idx], url: val };
-                          return { ...prev, campaigns };
-                        });
-                      }}
-                      className="bg-surface-container-lowest border border-primary/40 rounded-xl p-2 text-xs font-mono text-primary"
-                    />
-                  </div>
-                </div>
-
-                {/* Operational Badges & Metrics Row */}
-                <div className="p-3 bg-surface-container rounded-xl border border-outline-variant/20 flex flex-col gap-2.5">
-                  <span className="text-[10px] font-bold text-on-surface-variant uppercase">
-                    بيانات الأداء والضمان السريعة (Operational Performance Badges)
-                  </span>
-                  
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                    {/* Speed / Turnaround */}
-                    <div className="flex flex-col gap-1">
-                      <label className="text-[9px] text-on-surface-variant">سرعة الإنجاز (عربي / إنجليزي)</label>
-                      <div className="grid grid-cols-2 gap-1">
-                        <input
-                          type="text"
-                          value={camp.turnaroundAr || ""}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setConfig((prev: any) => {
-                              const campaigns = [...prev.campaigns];
-                              campaigns[idx] = { ...campaigns[idx], turnaroundAr: val };
-                              return { ...prev, campaigns };
-                            });
-                          }}
-                          placeholder="1 - 5 دقائق"
-                          className="bg-surface-container-lowest border border-outline-variant/30 rounded-lg p-1.5 text-[11px]"
-                        />
-                        <input
-                          type="text"
-                          value={camp.turnaroundEn || ""}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setConfig((prev: any) => {
-                              const campaigns = [...prev.campaigns];
-                              campaigns[idx] = { ...campaigns[idx], turnaroundEn: val };
-                              return { ...prev, campaigns };
-                            });
-                          }}
-                          placeholder="1 - 5 Mins"
-                          className="bg-surface-container-lowest border border-outline-variant/30 rounded-lg p-1.5 text-[11px]"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Guarantee */}
-                    <div className="flex flex-col gap-1">
-                      <label className="text-[9px] text-on-surface-variant">الضمان المالي (عربي / إنجليزي)</label>
-                      <div className="grid grid-cols-2 gap-1">
-                        <input
-                          type="text"
-                          value={camp.guaranteeAr || ""}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setConfig((prev: any) => {
-                              const campaigns = [...prev.campaigns];
-                              campaigns[idx] = { ...campaigns[idx], guaranteeAr: val };
-                              return { ...prev, campaigns };
-                            });
-                          }}
-                          placeholder="ضمان مالي 100%"
-                          className="bg-surface-container-lowest border border-outline-variant/30 rounded-lg p-1.5 text-[11px]"
-                        />
-                        <input
-                          type="text"
-                          value={camp.guaranteeEn || ""}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setConfig((prev: any) => {
-                              const campaigns = [...prev.campaigns];
-                              campaigns[idx] = { ...campaigns[idx], guaranteeEn: val };
-                              return { ...prev, campaigns };
-                            });
-                          }}
-                          placeholder="100% REFUND"
-                          className="bg-surface-container-lowest border border-outline-variant/30 rounded-lg p-1.5 text-[11px]"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Gateway */}
-                    <div className="flex flex-col gap-1">
-                      <label className="text-[9px] text-on-surface-variant">نوع الربط (عربي / إنجليزي)</label>
-                      <div className="grid grid-cols-2 gap-1">
-                        <input
-                          type="text"
-                          value={camp.connectionAr || ""}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setConfig((prev: any) => {
-                              const campaigns = [...prev.campaigns];
-                              campaigns[idx] = { ...campaigns[idx], connectionAr: val };
-                              return { ...prev, campaigns };
-                            });
-                          }}
-                          placeholder="ربط فوري API"
-                          className="bg-surface-container-lowest border border-outline-variant/30 rounded-lg p-1.5 text-[11px]"
-                        />
-                        <input
-                          type="text"
-                          value={camp.connectionEn || ""}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setConfig((prev: any) => {
-                              const campaigns = [...prev.campaigns];
-                              campaigns[idx] = { ...campaigns[idx], connectionEn: val };
-                              return { ...prev, campaigns };
-                            });
-                          }}
-                          placeholder="DIRECT API"
-                          className="bg-surface-container-lowest border border-outline-variant/30 rounded-lg p-1.5 text-[11px]"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-
-      {/* ============================================================= */}
-      {/* SERVICE PICKER MODAL                                          */}
-      {/* ============================================================= */}
-      {showPickerModal && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-surface-container rounded-3xl border border-outline-variant/30 max-w-2xl w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
-            {/* Modal Header */}
-            <div className="p-6 border-b border-outline-variant/20 flex items-center justify-between">
               <div>
-                <h3 className="text-xl font-bold text-on-surface flex items-center gap-2">
-                  <span className="material-symbols-outlined text-primary">hub</span>
-                  {pickerTargetIndex !== null
-                    ? `تحديث بيانات الباقة #${pickerTargetIndex + 1} من خدمات الموقع`
-                    : "اختيار باقة من خدمات وسيرفرات الموقع"}
-                </h3>
-                <p className="text-xs text-on-surface-variant mt-1">
-                  اختر من بين مجموعات وخدمات الموقع المسجلة لديك ليتم تعبئة الاسم والسعر والرابط تلقائياً.
+                <h2 className="text-base font-black text-white">شرائح السلايدر الرئيسي (Hero Slider)</h2>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  الشرائح التفاعلية التي تعرض العروض الرئيسية في أعلى الصفحة.
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => {
-                  setShowPickerModal(false);
-                  setPickerTargetIndex(null);
+                  const newId = Date.now();
+                  setConfig({
+                    ...config,
+                    heroSlider: [
+                      ...config.heroSlider,
+                      { id: newId, image: "/images/zoalna/slide_1.png", link: "/pricing", alt: `شريحة ${config.heroSlider.length + 1}` },
+                    ],
+                  });
                 }}
-                className="text-on-surface-variant hover:text-on-surface p-2 rounded-full hover:bg-surface-container-high transition-colors"
+                className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-blue-400 border border-slate-700 text-xs font-bold flex items-center gap-1.5 transition-all"
               >
-                <span className="material-symbols-outlined">close</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-3.5 h-3.5">
+                  <path d="M12 5v14M5 12h14" strokeLinecap="round" />
+                </svg>
+                إضافة شريحة جديدة
               </button>
             </div>
 
-            {/* Search Input */}
-            <div className="p-4 border-b border-outline-variant/20 bg-surface-container-low">
-              <div className="relative">
-                <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+            <div className="space-y-4">
+              {config.heroSlider.map((slide, idx) => (
+                <div
+                  key={slide.id || idx}
+                  className="bg-slate-950/60 border border-slate-800/80 rounded-xl p-4 flex flex-col md:flex-row items-start md:items-center gap-4"
+                >
+                  <div className="relative w-full md:w-44 h-24 rounded-lg overflow-hidden border border-slate-800 bg-slate-900 shrink-0">
+                    <img src={slide.image} alt={slide.alt} className="w-full h-full object-cover" />
+                    <span className="absolute top-1.5 right-1.5 bg-black/70 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">
+                      #{idx + 1}
+                    </span>
+                  </div>
+
+                  <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3 w-full">
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-400 mb-1">مسار أو رابط الصورة</label>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={slide.image}
+                          onChange={(e) => {
+                            const updated = [...config.heroSlider];
+                            updated[idx].image = e.target.value;
+                            setConfig({ ...config, heroSlider: updated });
+                          }}
+                          className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
+                        />
+                        <button
+                          type="button"
+                          onClick={() =>
+                            triggerUpload(`slide_${idx}`, (url) => {
+                              const updated = [...config.heroSlider];
+                              updated[idx].image = url;
+                              setConfig({ ...config, heroSlider: updated });
+                            })
+                          }
+                          disabled={uploadingField === `slide_${idx}`}
+                          className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg text-xs font-bold shrink-0 transition-all"
+                        >
+                          {uploadingField === `slide_${idx}` ? "جاري الرفع..." : "رفع صورة"}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-400 mb-1">رابط الوجهة عند النقر</label>
+                      <input
+                        type="text"
+                        value={slide.link}
+                        onChange={(e) => {
+                          const updated = [...config.heroSlider];
+                          updated[idx].link = e.target.value;
+                          setConfig({ ...config, heroSlider: updated });
+                        }}
+                        placeholder="/pricing"
+                        className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-1 self-end md:self-center shrink-0">
+                    <button
+                      type="button"
+                      disabled={idx === 0}
+                      onClick={() => {
+                        const updated = [...config.heroSlider];
+                        const temp = updated[idx - 1];
+                        updated[idx - 1] = updated[idx];
+                        updated[idx] = temp;
+                        setConfig({ ...config, heroSlider: updated });
+                      }}
+                      className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 disabled:opacity-30"
+                      title="تحريك لأعلى"
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
+                        <path d="M5 15l7-7 7 7" />
+                      </svg>
+                    </button>
+                    <button
+                      type="button"
+                      disabled={idx === config.heroSlider.length - 1}
+                      onClick={() => {
+                        const updated = [...config.heroSlider];
+                        const temp = updated[idx + 1];
+                        updated[idx + 1] = updated[idx];
+                        updated[idx] = temp;
+                        setConfig({ ...config, heroSlider: updated });
+                      }}
+                      className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 disabled:opacity-30"
+                      title="تحريك لأسفل"
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
+                        <path d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (config.heroSlider.length <= 1) {
+                          showToast("يجب أن يحتوي السلايدر على شريحة واحدة على الأقل", "error");
+                          return;
+                        }
+                        const updated = config.heroSlider.filter((_, i) => i !== idx);
+                        setConfig({ ...config, heroSlider: updated });
+                      }}
+                      className="p-2 rounded-lg bg-rose-950/40 hover:bg-rose-900/60 text-rose-400 border border-rose-800/40"
+                      title="حذف الشريحة"
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
+                        <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Side Menu Cards */}
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+            <div>
+              <h2 className="text-base font-black text-white">البطاقات الجانبية للسلايدر (Side Menu)</h2>
+              <p className="text-xs text-slate-400 mt-0.5">
+                البطاقات السريعة الثلاث المجاورة للسلايدر: الحساب، المحفظة، والطلبات.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {config.sideMenu.map((card, idx) => (
+                <div key={idx} className="bg-slate-950/60 border border-slate-800 p-4 rounded-xl space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-blue-400">بطاقة #{idx + 1}</span>
+                    <select
+                      value={card.icon}
+                      onChange={(e) => {
+                        const updated = [...config.sideMenu];
+                        updated[idx].icon = e.target.value;
+                        setConfig({ ...config, sideMenu: updated });
+                      }}
+                      className="bg-slate-900 border border-slate-800 rounded-lg px-2 py-1 text-xs text-slate-300"
+                    >
+                      <option value="account">أيقونة الحساب</option>
+                      <option value="wallet">أيقونة المحفظة</option>
+                      <option value="orders">أيقونة الطلبات</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-400 mb-1">النص الظاهر</label>
+                    <input
+                      type="text"
+                      value={card.text}
+                      onChange={(e) => {
+                        const updated = [...config.sideMenu];
+                        updated[idx].text = e.target.value;
+                        setConfig({ ...config, sideMenu: updated });
+                      }}
+                      className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-400 mb-1">رابط التوجيه</label>
+                    <input
+                      type="text"
+                      value={card.link}
+                      onChange={(e) => {
+                        const updated = [...config.sideMenu];
+                        updated[idx].link = e.target.value;
+                        setConfig({ ...config, sideMenu: updated });
+                      }}
+                      className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 2: Announcement Bar & App Download Modal */}
+      {activeTab === "announcement" && (
+        <div className="space-y-6">
+          {/* Announcement Bar */}
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-5">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-base font-black text-white">شريط الإعلانات العلوي (Announcement Bar)</h2>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  الشريط الترويجي الظاهر في أعلى الصفحة الرئيسية فوق قائمة التنقل.
+                </p>
+              </div>
+
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={config.announcementBar.enabled}
+                  onChange={(e) =>
+                    setConfig({
+                      ...config,
+                      announcementBar: { ...config.announcementBar, enabled: e.target.checked },
+                    })
+                  }
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                <span className="mr-3 text-xs font-bold text-slate-300">
+                  {config.announcementBar.enabled ? "مفعل" : "معطل"}
+                </span>
+              </label>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-[11px] font-bold text-slate-400 mb-1">النص البارز (العنوان)</label>
                 <input
                   type="text"
-                  placeholder="ابحث بالاسم مثل: Chimera, Xiaomi, UnlockTool, AMT, UMT, Samsung..."
-                  value={pickerSearch}
-                  onChange={(e) => setPickerSearch(e.target.value)}
-                  className="w-full bg-surface-container-lowest border border-outline-variant/30 rounded-xl pr-10 pl-4 py-3 text-sm text-on-surface focus:outline-none focus:border-primary"
-                  autoFocus
+                  value={config.announcementBar.title}
+                  onChange={(e) =>
+                    setConfig({
+                      ...config,
+                      announcementBar: { ...config.announcementBar, title: e.target.value },
+                    })
+                  }
+                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-bold text-slate-400 mb-1">نص الرابط</label>
+                <input
+                  type="text"
+                  value={config.announcementBar.linkText}
+                  onChange={(e) =>
+                    setConfig({
+                      ...config,
+                      announcementBar: { ...config.announcementBar, linkText: e.target.value },
+                    })
+                  }
+                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-bold text-slate-400 mb-1">رابط الوجهة</label>
+                <input
+                  type="text"
+                  value={config.announcementBar.linkUrl}
+                  onChange={(e) =>
+                    setConfig({
+                      ...config,
+                      announcementBar: { ...config.announcementBar, linkUrl: e.target.value },
+                    })
+                  }
+                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white"
                 />
               </div>
             </div>
+          </div>
 
-            {/* Services / Groups List */}
-            <div className="p-4 overflow-y-auto flex-1 flex flex-col gap-2.5 divide-y divide-outline-variant/10">
-              {loadingServices ? (
-                <div className="py-12 flex flex-col items-center justify-center gap-3 text-on-surface-variant">
-                  <span className="material-symbols-outlined animate-spin text-3xl text-primary">sync</span>
-                  <span className="text-xs">جاري تحميل قائمة الخدمات والمجموعات من الموقع...</span>
-                </div>
-              ) : (
-                <>
-                  {siteItems
-                    .filter((item) =>
-                      !pickerSearch || item.name.toLowerCase().includes(pickerSearch.toLowerCase())
-                    )
-                    .map((item) => (
-                      <div
-                        key={item.name}
-                        className="pt-2.5 first:pt-0 flex items-center justify-between gap-4 hover:bg-surface-container-high/40 p-3 rounded-2xl transition-colors"
-                      >
-                        <div className="min-w-0 flex-1">
-                          <h4 className="font-bold text-on-surface text-sm truncate">{item.name}</h4>
-                          <div className="flex items-center gap-3 mt-1 text-xs text-on-surface-variant flex-wrap">
-                            {item.categoryName && (
-                              <span className="bg-surface-container-high px-2 py-0.5 rounded text-[11px] text-primary">
-                                {item.categoryName}
-                              </span>
-                            )}
-                            <span>{item.count} خدمات فرعية</span>
-                            {item.minPrice > 0 && (
-                              <span className="text-emerald-400 font-mono font-bold">
-                                يبدأ من ${item.minPrice.toFixed(2)}
-                              </span>
-                            )}
-                            {item.time && <span>التسليم: {item.time}</span>}
-                          </div>
-                        </div>
+          {/* App Modal */}
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-5">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-base font-black text-white">النافذة المنبثقة لتحميل التطبيق (App Download Modal)</h2>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  النافذة الترحيبية الترويجية التي تدعو المستخدمين لتنزيل تطبيق الهاتف.
+                </p>
+              </div>
 
-                        <button
-                          type="button"
-                          onClick={() => selectServiceForPackage(item)}
-                          className="btn-primary text-xs px-4 py-2 rounded-xl flex items-center gap-1.5 shrink-0 font-bold shadow-xs"
-                        >
-                          <span className="material-symbols-outlined text-sm">check</span>
-                          تحديد هذه الباقة
-                        </button>
-                      </div>
-                    ))}
-
-                  {siteItems.filter((item) =>
-                    !pickerSearch || item.name.toLowerCase().includes(pickerSearch.toLowerCase())
-                  ).length === 0 && (
-                    <div className="text-center py-12 text-on-surface-variant text-sm">
-                      لا توجد خدمات مطابقة لبحثك.
-                    </div>
-                  )}
-                </>
-              )}
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={config.appModal.enabled}
+                  onChange={(e) =>
+                    setConfig({
+                      ...config,
+                      appModal: { ...config.appModal, enabled: e.target.checked },
+                    })
+                  }
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                <span className="mr-3 text-xs font-bold text-slate-300">
+                  {config.appModal.enabled ? "مفعل" : "معطل"}
+                </span>
+              </label>
             </div>
 
-            {/* Modal Footer */}
-            <div className="p-4 border-t border-outline-variant/20 bg-surface-container-low flex justify-between items-center text-xs text-on-surface-variant">
-              <span>إجمالي المجموعات والخدمات المتاحة: {siteItems.length}</span>
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-400 mb-1">عنوان النافذة</label>
+                  <input
+                    type="text"
+                    value={config.appModal.title}
+                    onChange={(e) =>
+                      setConfig({
+                        ...config,
+                        appModal: { ...config.appModal, title: e.target.value },
+                      })
+                    }
+                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-400 mb-1">نص زر التحميل</label>
+                  <input
+                    type="text"
+                    value={config.appModal.buttonText}
+                    onChange={(e) =>
+                      setConfig({
+                        ...config,
+                        appModal: { ...config.appModal, buttonText: e.target.value },
+                      })
+                    }
+                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-bold text-slate-400 mb-1">نص الوصف والرسالة</label>
+                <textarea
+                  rows={2}
+                  value={config.appModal.description}
+                  onChange={(e) =>
+                    setConfig({
+                      ...config,
+                      appModal: { ...config.appModal, description: e.target.value },
+                    })
+                  }
+                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white resize-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-bold text-slate-400 mb-1">رابط تحميل التطبيق المباشر (APK أو المتجر)</label>
+                <input
+                  type="text"
+                  value={config.appModal.downloadUrl}
+                  onChange={(e) =>
+                    setConfig({
+                      ...config,
+                      appModal: { ...config.appModal, downloadUrl: e.target.value },
+                    })
+                  }
+                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 3: Search Bar & Banner 1 */}
+      {activeTab === "search_banner1" && (
+        <div className="space-y-6">
+          {/* Search Placeholder */}
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-3">
+            <h2 className="text-base font-black text-white">نص شريط البحث الرئيسي</h2>
+            <p className="text-xs text-slate-400">
+              النص التوضيحي الذي يظهر داخل خانة البحث المباشرة في الصفحة الرئيسية.
+            </p>
+            <input
+              type="text"
+              value={config.searchPlaceholder}
+              onChange={(e) => setConfig({ ...config, searchPlaceholder: e.target.value })}
+              className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2.5 text-xs text-white"
+            />
+          </div>
+
+          {/* Banner 1 */}
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+            <div>
+              <h2 className="text-base font-black text-white">البانر الإعلاني الأول (Banner 1)</h2>
+              <p className="text-xs text-slate-400 mt-0.5">
+                البانر الفاصل الظاهر أسفل شريط البحث وفوق المجموعة الأولى من الألعاب.
+              </p>
+            </div>
+
+            <div className="flex flex-col md:flex-row gap-5 items-start">
+              <div className="relative w-full md:w-80 h-36 rounded-xl overflow-hidden border border-slate-800 bg-slate-950 shrink-0">
+                <img src={config.banner1.image} alt={config.banner1.alt} className="w-full h-full object-cover" />
+              </div>
+
+              <div className="flex-1 space-y-3 w-full">
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-400 mb-1">مسار صورة البانر</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={config.banner1.image}
+                      onChange={(e) =>
+                        setConfig({
+                          ...config,
+                          banner1: { ...config.banner1, image: e.target.value },
+                        })
+                      }
+                      className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white"
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        triggerUpload("banner1", (url) => {
+                          setConfig({ ...config, banner1: { ...config.banner1, image: url } });
+                        })
+                      }
+                      disabled={uploadingField === "banner1"}
+                      className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg text-xs font-bold shrink-0 transition-all"
+                    >
+                      {uploadingField === "banner1" ? "جاري الرفع..." : "رفع صورة"}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-400 mb-1">النص البديل (Alt)</label>
+                    <input
+                      type="text"
+                      value={config.banner1.alt}
+                      onChange={(e) =>
+                        setConfig({
+                          ...config,
+                          banner1: { ...config.banner1, alt: e.target.value },
+                        })
+                      }
+                      className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-400 mb-1">رابط النقر الاختياري</label>
+                    <input
+                      type="text"
+                      value={config.banner1.link}
+                      onChange={(e) =>
+                        setConfig({
+                          ...config,
+                          banner1: { ...config.banner1, link: e.target.value },
+                        })
+                      }
+                      placeholder="/pricing"
+                      className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 4: Games Group 1 */}
+      {activeTab === "games1" && (
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-base font-black text-white">شبكة الألعاب - المجموعة الأولى</h2>
+              <p className="text-xs text-slate-400 mt-0.5">
+                تضم الألعاب الأكثر شهرة (فري فاير، ببجي، موبايل ليجند، جنشن، يلا ليدو، جواكر، لوردس، بلود استريك، فيزا).
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setConfig({
+                  ...config,
+                  gamesGroup1: [
+                    ...config.gamesGroup1,
+                    {
+                      title: "لعبة جديدة",
+                      image: "/images/zoalna/game_freefire.webp",
+                      href: "/pricing",
+                      query: "لعبة new game",
+                    },
+                  ],
+                });
+              }}
+              className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-blue-400 border border-slate-700 text-xs font-bold flex items-center gap-1.5 transition-all"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-3.5 h-3.5">
+                <path d="M12 5v14M5 12h14" strokeLinecap="round" />
+              </svg>
+              إضافة عنصر جديد
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {config.gamesGroup1.map((item, idx) => (
+              <div
+                key={idx}
+                className="bg-slate-950/70 border border-slate-800/80 rounded-xl p-4 space-y-3 relative group"
+              >
+                <div className="flex items-center justify-between border-b border-slate-800/60 pb-2">
+                  <span className="text-[11px] font-bold text-slate-400">عنصر #{idx + 1}</span>
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      disabled={idx === 0}
+                      onClick={() => {
+                        const updated = [...config.gamesGroup1];
+                        const temp = updated[idx - 1];
+                        updated[idx - 1] = updated[idx];
+                        updated[idx] = temp;
+                        setConfig({ ...config, gamesGroup1: updated });
+                      }}
+                      className="p-1 text-slate-400 hover:text-white disabled:opacity-20"
+                      title="تحريك للأمام"
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3.5 h-3.5">
+                        <path d="M15 19l-7-7 7-7" />
+                      </svg>
+                    </button>
+                    <button
+                      type="button"
+                      disabled={idx === config.gamesGroup1.length - 1}
+                      onClick={() => {
+                        const updated = [...config.gamesGroup1];
+                        const temp = updated[idx + 1];
+                        updated[idx + 1] = updated[idx];
+                        updated[idx] = temp;
+                        setConfig({ ...config, gamesGroup1: updated });
+                      }}
+                      className="p-1 text-slate-400 hover:text-white disabled:opacity-20"
+                      title="تحريك للخلف"
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3.5 h-3.5">
+                        <path d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const updated = config.gamesGroup1.filter((_, i) => i !== idx);
+                        setConfig({ ...config, gamesGroup1: updated });
+                      }}
+                      className="p-1 text-rose-400 hover:text-rose-300"
+                      title="حذف"
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3.5 h-3.5">
+                        <path d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <div className="w-14 h-14 rounded-xl overflow-hidden border border-slate-800 bg-slate-900 shrink-0">
+                    <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
+                  </div>
+                  <div className="flex-1">
+                    <label className="block text-[10px] font-bold text-slate-400 mb-0.5">اسم اللعبة / العنصر</label>
+                    <input
+                      type="text"
+                      value={item.title}
+                      onChange={(e) => {
+                        const updated = [...config.gamesGroup1];
+                        updated[idx].title = e.target.value;
+                        setConfig({ ...config, gamesGroup1: updated });
+                      }}
+                      className="w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-white"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 mb-0.5">رابط الصورة</label>
+                  <div className="flex gap-1.5">
+                    <input
+                      type="text"
+                      value={item.image}
+                      onChange={(e) => {
+                        const updated = [...config.gamesGroup1];
+                        updated[idx].image = e.target.value;
+                        setConfig({ ...config, gamesGroup1: updated });
+                      }}
+                      className="w-full bg-slate-900 border border-slate-800 rounded-lg px-2 py-1 text-[11px] text-white"
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        triggerUpload(`g1_${idx}`, (url) => {
+                          const updated = [...config.gamesGroup1];
+                          updated[idx].image = url;
+                          setConfig({ ...config, gamesGroup1: updated });
+                        })
+                      }
+                      className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] font-bold rounded-lg border border-slate-700 shrink-0"
+                    >
+                      رفع
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 mb-0.5">رابط التوجيه (Href)</label>
+                  <input
+                    type="text"
+                    value={item.href}
+                    onChange={(e) => {
+                      const updated = [...config.gamesGroup1];
+                      updated[idx].href = e.target.value;
+                      setConfig({ ...config, gamesGroup1: updated });
+                    }}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 mb-0.5">كلمات البحث للفلترة (Query)</label>
+                  <input
+                    type="text"
+                    value={item.query}
+                    onChange={(e) => {
+                      const updated = [...config.gamesGroup1];
+                      updated[idx].query = e.target.value;
+                      setConfig({ ...config, gamesGroup1: updated });
+                    }}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-white"
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* TAB 5: Banner 2 & Games Group 2 */}
+      {activeTab === "banner2_games2" && (
+        <div className="space-y-6">
+          {/* Banner 2 */}
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+            <div>
+              <h2 className="text-base font-black text-white">البانر الإعلاني الثاني (Banner 2)</h2>
+              <p className="text-xs text-slate-400 mt-0.5">
+                البانر الفاصل بين المجموعة الأولى والمجموعة الثانية من الألعاب.
+              </p>
+            </div>
+
+            <div className="flex flex-col md:flex-row gap-5 items-start">
+              <div className="relative w-full md:w-80 h-36 rounded-xl overflow-hidden border border-slate-800 bg-slate-950 shrink-0">
+                <img src={config.banner2.image} alt={config.banner2.alt} className="w-full h-full object-cover" />
+              </div>
+
+              <div className="flex-1 space-y-3 w-full">
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-400 mb-1">مسار صورة البانر</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={config.banner2.image}
+                      onChange={(e) =>
+                        setConfig({
+                          ...config,
+                          banner2: { ...config.banner2, image: e.target.value },
+                        })
+                      }
+                      className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white"
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        triggerUpload("banner2", (url) => {
+                          setConfig({ ...config, banner2: { ...config.banner2, image: url } });
+                        })
+                      }
+                      disabled={uploadingField === "banner2"}
+                      className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg text-xs font-bold shrink-0 transition-all"
+                    >
+                      {uploadingField === "banner2" ? "جاري الرفع..." : "رفع صورة"}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-400 mb-1">النص البديل (Alt)</label>
+                    <input
+                      type="text"
+                      value={config.banner2.alt}
+                      onChange={(e) =>
+                        setConfig({
+                          ...config,
+                          banner2: { ...config.banner2, alt: e.target.value },
+                        })
+                      }
+                      className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-400 mb-1">رابط النقر الاختياري</label>
+                    <input
+                      type="text"
+                      value={config.banner2.link}
+                      onChange={(e) =>
+                        setConfig({
+                          ...config,
+                          banner2: { ...config.banner2, link: e.target.value },
+                        })
+                      }
+                      placeholder="/pricing"
+                      className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Games Group 2 */}
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-base font-black text-white">شبكة الألعاب - المجموعة الثانية</h2>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  تضم ألعاب وتطبيقات: كلاش اوف كلانس، كلاش رويال، فيفا موبايل، بيس، براول ستارز، تيك توك، وتجديد استارلينك.
+                </p>
+              </div>
               <button
                 type="button"
                 onClick={() => {
-                  setShowPickerModal(false);
-                  setPickerTargetIndex(null);
+                  setConfig({
+                    ...config,
+                    gamesGroup2: [
+                      ...config.gamesGroup2,
+                      {
+                        title: "لعبة جديدة",
+                        image: "/images/zoalna/game_clashofclans.webp",
+                        href: "/pricing",
+                        query: "لعبة new game",
+                      },
+                    ],
+                  });
                 }}
-                className="btn-secondary text-xs px-4 py-2 rounded-xl"
+                className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-blue-400 border border-slate-700 text-xs font-bold flex items-center gap-1.5 transition-all"
               >
-                إلغاء
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-3.5 h-3.5">
+                  <path d="M12 5v14M5 12h14" strokeLinecap="round" />
+                </svg>
+                إضافة عنصر جديد
               </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {config.gamesGroup2.map((item, idx) => (
+                <div
+                  key={idx}
+                  className="bg-slate-950/70 border border-slate-800/80 rounded-xl p-4 space-y-3 relative group"
+                >
+                  <div className="flex items-center justify-between border-b border-slate-800/60 pb-2">
+                    <span className="text-[11px] font-bold text-slate-400">عنصر #{idx + 1}</span>
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        disabled={idx === 0}
+                        onClick={() => {
+                          const updated = [...config.gamesGroup2];
+                          const temp = updated[idx - 1];
+                          updated[idx - 1] = updated[idx];
+                          updated[idx] = temp;
+                          setConfig({ ...config, gamesGroup2: updated });
+                        }}
+                        className="p-1 text-slate-400 hover:text-white disabled:opacity-20"
+                        title="تحريك للأمام"
+                      >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3.5 h-3.5">
+                          <path d="M15 19l-7-7 7-7" />
+                        </svg>
+                      </button>
+                      <button
+                        type="button"
+                        disabled={idx === config.gamesGroup2.length - 1}
+                        onClick={() => {
+                          const updated = [...config.gamesGroup2];
+                          const temp = updated[idx + 1];
+                          updated[idx + 1] = updated[idx];
+                          updated[idx] = temp;
+                          setConfig({ ...config, gamesGroup2: updated });
+                        }}
+                        className="p-1 text-slate-400 hover:text-white disabled:opacity-20"
+                        title="تحريك للخلف"
+                      >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3.5 h-3.5">
+                          <path d="M9 5l7 7-7 7" />
+                        </svg>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updated = config.gamesGroup2.filter((_, i) => i !== idx);
+                          setConfig({ ...config, gamesGroup2: updated });
+                        }}
+                        className="p-1 text-rose-400 hover:text-rose-300"
+                        title="حذف"
+                      >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3.5 h-3.5">
+                          <path d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <div className="w-14 h-14 rounded-xl overflow-hidden border border-slate-800 bg-slate-900 shrink-0">
+                      <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
+                    </div>
+                    <div className="flex-1">
+                      <label className="block text-[10px] font-bold text-slate-400 mb-0.5">اسم اللعبة / العنصر</label>
+                      <input
+                        type="text"
+                        value={item.title}
+                        onChange={(e) => {
+                          const updated = [...config.gamesGroup2];
+                          updated[idx].title = e.target.value;
+                          setConfig({ ...config, gamesGroup2: updated });
+                        }}
+                        className="w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-white"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-400 mb-0.5">رابط الصورة</label>
+                    <div className="flex gap-1.5">
+                      <input
+                        type="text"
+                        value={item.image}
+                        onChange={(e) => {
+                          const updated = [...config.gamesGroup2];
+                          updated[idx].image = e.target.value;
+                          setConfig({ ...config, gamesGroup2: updated });
+                        }}
+                        className="w-full bg-slate-900 border border-slate-800 rounded-lg px-2 py-1 text-[11px] text-white"
+                      />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          triggerUpload(`g2_${idx}`, (url) => {
+                            const updated = [...config.gamesGroup2];
+                            updated[idx].image = url;
+                            setConfig({ ...config, gamesGroup2: updated });
+                          })
+                        }
+                        className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] font-bold rounded-lg border border-slate-700 shrink-0"
+                      >
+                        رفع
+                      </button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-400 mb-0.5">رابط التوجيه (Href)</label>
+                    <input
+                      type="text"
+                      value={item.href}
+                      onChange={(e) => {
+                        const updated = [...config.gamesGroup2];
+                        updated[idx].href = e.target.value;
+                        setConfig({ ...config, gamesGroup2: updated });
+                      }}
+                      className="w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-white"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-400 mb-0.5">كلمات البحث للفلترة (Query)</label>
+                    <input
+                      type="text"
+                      value={item.query}
+                      onChange={(e) => {
+                        const updated = [...config.gamesGroup2];
+                        updated[idx].query = e.target.value;
+                        setConfig({ ...config, gamesGroup2: updated });
+                      }}
+                      className="w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-white"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 6: Banner 3 & Digital Cards */}
+      {activeTab === "banner3_cards" && (
+        <div className="space-y-6">
+          {/* Banner 3 */}
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+            <div>
+              <h2 className="text-base font-black text-white">البانر الإعلاني الثالث (Banner 3)</h2>
+              <p className="text-xs text-slate-400 mt-0.5">
+                البانر الفاصل بين الألعاب والبطاقات الرقمية الترفيهية.
+              </p>
+            </div>
+
+            <div className="flex flex-col md:flex-row gap-5 items-start">
+              <div className="relative w-full md:w-80 h-36 rounded-xl overflow-hidden border border-slate-800 bg-slate-950 shrink-0">
+                <img src={config.banner3.image} alt={config.banner3.alt} className="w-full h-full object-cover" />
+              </div>
+
+              <div className="flex-1 space-y-3 w-full">
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-400 mb-1">مسار صورة البانر</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={config.banner3.image}
+                      onChange={(e) =>
+                        setConfig({
+                          ...config,
+                          banner3: { ...config.banner3, image: e.target.value },
+                        })
+                      }
+                      className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white"
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        triggerUpload("banner3", (url) => {
+                          setConfig({ ...config, banner3: { ...config.banner3, image: url } });
+                        })
+                      }
+                      disabled={uploadingField === "banner3"}
+                      className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg text-xs font-bold shrink-0 transition-all"
+                    >
+                      {uploadingField === "banner3" ? "جاري الرفع..." : "رفع صورة"}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-400 mb-1">النص البديل (Alt)</label>
+                    <input
+                      type="text"
+                      value={config.banner3.alt}
+                      onChange={(e) =>
+                        setConfig({
+                          ...config,
+                          banner3: { ...config.banner3, alt: e.target.value },
+                        })
+                      }
+                      className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-400 mb-1">رابط النقر الاختياري</label>
+                    <input
+                      type="text"
+                      value={config.banner3.link}
+                      onChange={(e) =>
+                        setConfig({
+                          ...config,
+                          banner3: { ...config.banner3, link: e.target.value },
+                        })
+                      }
+                      placeholder="/pricing"
+                      className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Digital Cards */}
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-base font-black text-white">شبكة البطاقات الرقمية (Digital Cards)</h2>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  بطاقات الهدايا والشحن الإلكتروني: ايتونز، ريزر جولد، ستيم، بلايستيشن، واكس بوكس.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setConfig({
+                    ...config,
+                    digitalCards: [
+                      ...config.digitalCards,
+                      {
+                        title: "بطاقة جديدة",
+                        image: "/images/zoalna/card_itunes.webp",
+                        href: "/pricing",
+                        query: "بطاقة new card",
+                      },
+                    ],
+                  });
+                }}
+                className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-blue-400 border border-slate-700 text-xs font-bold flex items-center gap-1.5 transition-all"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-3.5 h-3.5">
+                  <path d="M12 5v14M5 12h14" strokeLinecap="round" />
+                </svg>
+                إضافة بطاقة جديدة
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {config.digitalCards.map((item, idx) => (
+                <div
+                  key={idx}
+                  className="bg-slate-950/70 border border-slate-800/80 rounded-xl p-4 space-y-3 relative group"
+                >
+                  <div className="flex items-center justify-between border-b border-slate-800/60 pb-2">
+                    <span className="text-[11px] font-bold text-slate-400">بطاقة #{idx + 1}</span>
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        disabled={idx === 0}
+                        onClick={() => {
+                          const updated = [...config.digitalCards];
+                          const temp = updated[idx - 1];
+                          updated[idx - 1] = updated[idx];
+                          updated[idx] = temp;
+                          setConfig({ ...config, digitalCards: updated });
+                        }}
+                        className="p-1 text-slate-400 hover:text-white disabled:opacity-20"
+                        title="تحريك للأمام"
+                      >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3.5 h-3.5">
+                          <path d="M15 19l-7-7 7-7" />
+                        </svg>
+                      </button>
+                      <button
+                        type="button"
+                        disabled={idx === config.digitalCards.length - 1}
+                        onClick={() => {
+                          const updated = [...config.digitalCards];
+                          const temp = updated[idx + 1];
+                          updated[idx + 1] = updated[idx];
+                          updated[idx] = temp;
+                          setConfig({ ...config, digitalCards: updated });
+                        }}
+                        className="p-1 text-slate-400 hover:text-white disabled:opacity-20"
+                        title="تحريك للخلف"
+                      >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3.5 h-3.5">
+                          <path d="M9 5l7 7-7 7" />
+                        </svg>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updated = config.digitalCards.filter((_, i) => i !== idx);
+                          setConfig({ ...config, digitalCards: updated });
+                        }}
+                        className="p-1 text-rose-400 hover:text-rose-300"
+                        title="حذف"
+                      >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3.5 h-3.5">
+                          <path d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <div className="w-14 h-14 rounded-xl overflow-hidden border border-slate-800 bg-slate-900 shrink-0">
+                      <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
+                    </div>
+                    <div className="flex-1">
+                      <label className="block text-[10px] font-bold text-slate-400 mb-0.5">اسم البطاقة</label>
+                      <input
+                        type="text"
+                        value={item.title}
+                        onChange={(e) => {
+                          const updated = [...config.digitalCards];
+                          updated[idx].title = e.target.value;
+                          setConfig({ ...config, digitalCards: updated });
+                        }}
+                        className="w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-white"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-400 mb-0.5">رابط الصورة</label>
+                    <div className="flex gap-1.5">
+                      <input
+                        type="text"
+                        value={item.image}
+                        onChange={(e) => {
+                          const updated = [...config.digitalCards];
+                          updated[idx].image = e.target.value;
+                          setConfig({ ...config, digitalCards: updated });
+                        }}
+                        className="w-full bg-slate-900 border border-slate-800 rounded-lg px-2 py-1 text-[11px] text-white"
+                      />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          triggerUpload(`card_${idx}`, (url) => {
+                            const updated = [...config.digitalCards];
+                            updated[idx].image = url;
+                            setConfig({ ...config, digitalCards: updated });
+                          })
+                        }
+                        className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] font-bold rounded-lg border border-slate-700 shrink-0"
+                      >
+                        رفع
+                      </button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-400 mb-0.5">رابط التوجيه (Href)</label>
+                    <input
+                      type="text"
+                      value={item.href}
+                      onChange={(e) => {
+                        const updated = [...config.digitalCards];
+                        updated[idx].href = e.target.value;
+                        setConfig({ ...config, digitalCards: updated });
+                      }}
+                      className="w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-white"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-400 mb-0.5">كلمات البحث للفلترة (Query)</label>
+                    <input
+                      type="text"
+                      value={item.query}
+                      onChange={(e) => {
+                        const updated = [...config.digitalCards];
+                        updated[idx].query = e.target.value;
+                        setConfig({ ...config, digitalCards: updated });
+                      }}
+                      className="w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-white"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 7: Subscriptions Promo & Floating WhatsApp */}
+      {activeTab === "subscriptions_whatsapp" && (
+        <div className="space-y-6">
+          {/* Subscriptions Mini Card */}
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+            <div>
+              <h2 className="text-base font-black text-white">بطاقة ترويج الاشتراكات الرقمية (Subscriptions Card)</h2>
+              <p className="text-xs text-slate-400 mt-0.5">
+                البطاقة الأفقية المميزة الظاهرة أسفل البطاقات الرقمية.
+              </p>
+            </div>
+
+            <div className="flex flex-col md:flex-row gap-5 items-start">
+              <div className="relative w-full md:w-56 h-36 rounded-xl overflow-hidden border border-slate-800 bg-slate-950 shrink-0">
+                <img
+                  src={config.subscriptionsCard.image}
+                  alt={config.subscriptionsCard.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+
+              <div className="flex-1 space-y-3 w-full">
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-400 mb-1">مسار صورة البطاقة</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={config.subscriptionsCard.image}
+                      onChange={(e) =>
+                        setConfig({
+                          ...config,
+                          subscriptionsCard: { ...config.subscriptionsCard, image: e.target.value },
+                        })
+                      }
+                      className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white"
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        triggerUpload("subscriptions", (url) => {
+                          setConfig({
+                            ...config,
+                            subscriptionsCard: { ...config.subscriptionsCard, image: url },
+                          });
+                        })
+                      }
+                      disabled={uploadingField === "subscriptions"}
+                      className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg text-xs font-bold shrink-0 transition-all"
+                    >
+                      {uploadingField === "subscriptions" ? "جاري الرفع..." : "رفع صورة"}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-400 mb-1">عنوان البطاقة</label>
+                    <input
+                      type="text"
+                      value={config.subscriptionsCard.title}
+                      onChange={(e) =>
+                        setConfig({
+                          ...config,
+                          subscriptionsCard: { ...config.subscriptionsCard, title: e.target.value },
+                        })
+                      }
+                      className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-400 mb-1">نص الزر</label>
+                    <input
+                      type="text"
+                      value={config.subscriptionsCard.buttonText}
+                      onChange={(e) =>
+                        setConfig({
+                          ...config,
+                          subscriptionsCard: { ...config.subscriptionsCard, buttonText: e.target.value },
+                        })
+                      }
+                      className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-400 mb-1">النص الوصفي</label>
+                    <input
+                      type="text"
+                      value={config.subscriptionsCard.description}
+                      onChange={(e) =>
+                        setConfig({
+                          ...config,
+                          subscriptionsCard: { ...config.subscriptionsCard, description: e.target.value },
+                        })
+                      }
+                      className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-400 mb-1">رابط الزر (Button URL)</label>
+                    <input
+                      type="text"
+                      value={config.subscriptionsCard.buttonUrl}
+                      onChange={(e) =>
+                        setConfig({
+                          ...config,
+                          subscriptionsCard: { ...config.subscriptionsCard, buttonUrl: e.target.value },
+                        })
+                      }
+                      className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Floating WhatsApp Widget */}
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-5">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-base font-black text-white">زر واتساب العائم (Floating WhatsApp)</h2>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  الزر العائم في أسفل الشاشة للتواصل المباشر مع الدعم الفني.
+                </p>
+              </div>
+
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={config.floatingWhatsapp.enabled}
+                  onChange={(e) =>
+                    setConfig({
+                      ...config,
+                      floatingWhatsapp: { ...config.floatingWhatsapp, enabled: e.target.checked },
+                    })
+                  }
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                <span className="mr-3 text-xs font-bold text-slate-300">
+                  {config.floatingWhatsapp.enabled ? "مفعل" : "معطل"}
+                </span>
+              </label>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-[11px] font-bold text-slate-400 mb-1">رقم هاتف واتساب بالصيغة الدولية</label>
+                <input
+                  type="text"
+                  value={config.floatingWhatsapp.phone}
+                  onChange={(e) =>
+                    setConfig({
+                      ...config,
+                      floatingWhatsapp: { ...config.floatingWhatsapp, phone: e.target.value },
+                    })
+                  }
+                  placeholder={SITE_CONTACTS.phone}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-bold text-slate-400 mb-1">النص الظاهر بجانب الأيقونة</label>
+                <input
+                  type="text"
+                  value={config.floatingWhatsapp.label}
+                  onChange={(e) =>
+                    setConfig({
+                      ...config,
+                      floatingWhatsapp: { ...config.floatingWhatsapp, label: e.target.value },
+                    })
+                  }
+                  placeholder="واتساب"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white"
+                />
+              </div>
             </div>
           </div>
         </div>

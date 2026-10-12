@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev -H 0.0.0.0",
     "build": "next build",
-    "start": "next start",
+    "start": "node --max-old-space-size=96 --max-semi-space-size=2 node_modules/next/dist/bin/next start",
     "lint": "next lint"
   },
   "dependencies": {

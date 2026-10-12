@@ -1,15 +1,29 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+import { SITE_CONTACTS } from "@/lib/site-contacts";
+import Script from "next/script";
 import { notFound } from "next/navigation";
 import { Cairo, Inter, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import "../../globals.css";
+import "@/styles/user-theme.css";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  viewportFit: "cover",
+  themeColor: "#2563eb",
+};
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { Locale, i18n } from "@/i18n/config";
 import ClientWidgets from "@/components/ClientWidgets";
-import ArabCountriesMarquee from "@/components/ArabCountriesMarquee";
-import ArabSolidarityModal from "@/components/ArabSolidarityModal";
 import { ThemeProvider } from "@/context/ThemeContext";
+import MainLayoutWrapper from "@/components/MainLayoutWrapper";
+import GlobalBottomBar from "@/components/GlobalBottomBar";
+import FloatingContactDock from "@/components/FloatingContactDock";
+import localHomepageConfig from "@/data/homepage_config.json";
 
 const cairo = Cairo({
   subsets: ["arabic", "latin"],
@@ -21,6 +35,8 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "sw
 const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-jakarta", display: "swap" });
 const jetbrains = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains", display: "swap" });
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://borai.store";
+
 export async function generateMetadata(props: { params: Promise<{ lang: string }> }): Promise<Metadata> {
   const params = await props.params;
   if (!i18n.locales.includes(params.lang as Locale)) {
@@ -28,48 +44,71 @@ export async function generateMetadata(props: { params: Promise<{ lang: string }
   }
   const isAr = params.lang === "ar";
   const siteTitle = isAr
-    ? "عرب تك برو سيرفر | منصة فك شفرات وتفعيل الهواتف"
-    : "Arab Tech Pro Server | GSM & Remote Unlock Services";
+    ? "BORAI STORE | متجر بورعي لشحن الألعاب، البطاقات والخدمات الرقمية"
+    : "BORAI STORE | Instant Game Top-Ups, Digital Cards & Activations";
   const siteDesc = isAr
-    ? "منصة عرب تك برو سيرفر لفك شفرات الهواتف، تخطي حسابات آيكلود وFRP، وتفعيل البوكسات والدونجل وسيرفرات IMEI بأسعار الجملة المعتمدة."
-    : "Arab Tech Pro Server: Professional phone unlocking, iCloud and FRP bypass, box and dongle activations, and high-speed IMEI server services.";
+    ? "متجر BORAI STORE (بورعي ستور) المنصة الرسمية المعتمدة لشحن الألعاب (ببجي موبايل، فري فاير، روبلوكس)، البطاقات الرقمية وبطاقات الهدايا (iTunes, Google Play, Steam, PlayStation, Xbox)، وتفعيل برامج السوفت وير والأدوات الرقمية بأفضل الأسعار وأسرع تسليم فوري 24/7."
+    : "BORAI STORE: Official automated platform for instant game topups (PUBG UC, Free Fire, Roblox), digital gift cards (Steam, PlayStation, Xbox, iTunes), and GSM software tool activations with 24/7 delivery.";
 
   return {
     title: {
-      template: "%s | عرب تك برو سيرفر - Arab Tech Pro Server",
+      template: "%s | BORAI STORE - بورعي ستور",
       default: siteTitle,
     },
     description: siteDesc,
     keywords: [
-      "عرب تك برو سيرفر",
-      "عرب تك سيرفر",
-      "سيرفر عرب تك",
-      "سيرفر عرب تك",
-      "عرب تك برو سيرفر",
-      "عرب تك برو سيرفر",
-      "عرب تك",
-      "عرب تك",
-      "Arab Tech Pro Server",
-      "Arab Tech Pro Server Pro",
-      "Arab Tech Pro Server",
-      "arabtechproserver.tech",
-      "سيرفر فك الهواتف",
-      "فك شبكات",
-      "تخطي iCloud",
-      "تخطي FRP",
-      "تقارير IMEI",
-      "تفعيل بوكسات ودونجل",
-      "شراء كردت سيرفر",
+      "BORAI STORE",
+      "بورعي ستور",
+      "متجر بورعي",
+      "سيرفر بورعي",
+      "موقع بورعي",
+      "borai store",
+      "borai.store",
+      "شحن ألعاب",
+      "شحن العاب",
+      "شحن شدات ببجي",
+      "ببجي موبايل",
+      "شحن جواهر فري فاير",
+      "فري فاير",
+      "شحن روبلوكس",
+      "روبلكس",
+      "شحن كول اوف ديوتي",
+      "شحن يلا لودو",
+      "شحن تيك توك",
+      "بطاقات رقمية",
+      "بطاقات ستيم",
+      "بطاقات بلايستيشن",
+      "بطاقات اكس بوكس",
+      "بطاقات جوجل بلاي",
+      "بطاقات ايتونز",
+      "تفعيل برامج",
+      "تفعيل انلوك تول",
       "UnlockTool",
+      "تفعيل شيميرا",
       "Chimera Tool",
-      "iCloud Bypass",
-      "FRP Bypass"
+      "بورنيو سكماتك",
+      "Borneo Schematics",
+      "تفعيل DFT Pro",
+      "فك شفرات الهواتف",
+      "تخطي حساب جوجل FRP",
+      "سيرفر ريسيلر",
+      "اشتراكات رقمية",
+      "خدمات رقمية",
+      "Game Topups",
+      "PUBG UC",
+      "Free Fire Diamonds",
+      "Roblox Robux",
+      "Digital Cards",
+      "Steam Gift Cards",
+      "PlayStation Network",
+      "Software Activations",
+      "GSM Server Reseller"
     ],
-    metadataBase: new URL("https://arabtechproserver.tech"),
-    applicationName: "Arab Tech Pro Server",
-    authors: [{ name: "Arab Tech Pro Server", url: "https://arabtechproserver.tech" }],
-    creator: "Arab Tech Pro Server",
-    publisher: "Arab Tech Pro Server",
+    metadataBase: new URL(siteUrl),
+    applicationName: "BORAI STORE",
+    authors: [{ name: "BORAI STORE", url: siteUrl }],
+    creator: "BORAI STORE",
+    publisher: "BORAI STORE",
     robots: {
       index: true,
       follow: true,
@@ -86,16 +125,16 @@ export async function generateMetadata(props: { params: Promise<{ lang: string }
     openGraph: {
       title: siteTitle,
       description: siteDesc,
-      url: `https://arabtechproserver.tech/${params.lang}`,
-      siteName: isAr ? "عرب تك برو سيرفر (عرب تك برو سيرفر) - Arab Tech Pro Server" : "Arab Tech Pro Server",
+      url: `${siteUrl}/${params.lang}`,
+      siteName: isAr ? "BORAI STORE (بورعي ستور)" : "BORAI STORE",
       images: [
         {
           url: isAr
-            ? "https://arabtechproserver.tech/images/og_share_ar.png"
-            : "https://arabtechproserver.tech/images/og_share_en.png",
+            ? `${siteUrl}/images/og_share_ar.png`
+            : `${siteUrl}/images/og_share_en.png`,
           width: 1200,
           height: 630,
-          alt: isAr ? "عرب تك برو سيرفر - عرب تك برو سيرفر" : "Arab Tech Pro Server Logo",
+          alt: isAr ? "BORAI STORE - متجر بورعي لشحن الألعاب والخدمات الرقمية" : "BORAI STORE Official Platform",
         },
       ],
       locale: isAr ? "ar_AR" : "en_US",
@@ -105,32 +144,31 @@ export async function generateMetadata(props: { params: Promise<{ lang: string }
       card: "summary_large_image",
       title: siteTitle,
       description: siteDesc,
-      site: "@ARABTECHSUPPURT2",
-      creator: "@ARABTECHSUPPURT2",
       images: [
         isAr
-          ? "https://arabtechproserver.tech/images/og_share_ar.png"
-          : "https://arabtechproserver.tech/images/og_share_en.png",
+          ? `${siteUrl}/images/og_share_ar.png`
+          : `${siteUrl}/images/og_share_en.png`,
       ],
     },
     alternates: {
-      canonical: `https://arabtechproserver.tech/${params.lang}`,
+      canonical: `${siteUrl}/${params.lang}`,
       languages: {
-        "ar": "https://arabtechproserver.tech/ar",
-        "en": "https://arabtechproserver.tech/en",
-        "x-default": "https://arabtechproserver.tech",
+        "ar": `${siteUrl}/ar`,
+        "en": `${siteUrl}/en`,
+        "x-default": siteUrl,
       },
     },
     icons: {
       icon: [
-        { url: "/favicon.ico", sizes: "any" },
-        { url: "/images/icon-48.png", sizes: "48x48", type: "image/png" },
+        { url: "/borai-favicon.png?v=3", sizes: "32x32", type: "image/png" },
+        { url: "/borai-favicon-48.png?v=3", sizes: "48x48", type: "image/png" },
+        { url: "/borai-favicon-192.png?v=3", sizes: "192x192", type: "image/png" },
       ],
-      shortcut: "/favicon.ico",
-      apple: "/images/apple-touch-icon.png",
+      shortcut: "/borai-favicon.png?v=3",
+      apple: "/borai-favicon-192.png?v=3",
     },
     verification: {
-      google: "N34n3oI-P5elZmLFHgFqp_BK93EijixhnIHEj_2oGnI",
+      google: "PFe3nlp9X8Bkt_3XJb1Ftzs0IksgLkZnreUyCErj6-Y",
     },
   };
 }
@@ -158,28 +196,21 @@ export default async function RootLayout(
   const jsonLdWebsite = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "name": isAr ? "عرب تك برو سيرفر | Arab Tech Pro Server" : "Arab Tech Pro Server",
+    "name": isAr ? "BORAI STORE | بورعي ستور" : "BORAI STORE",
     "alternateName": [
-      "عرب تك برو سيرفر",
-      "Arab Tech Pro Server",
-      "عرب تك برو سيرفر",
-      "عرب تك سيرفر",
-      "سيرفر عرب تك",
-      "سيرفر عرب تك",
-      "عرب تك برو سيرفر",
-      "عرب تك",
-      "عرب تك",
-      "Arab Tech Pro Server Pro",
-      "Arab Tech Pro Server"
+      "BORAI STORE",
+      "بورعي ستور",
+      "متجر بورعي",
+      "Borai Store"
     ],
-    "url": "https://arabtechproserver.tech",
+    "url": siteUrl,
     "inLanguage": ["ar", "en"],
     "description": isAr
-      ? "الموقع الرسمي لمنصة عرب تك برو سيرفر | Arab Tech Pro Server لخدمات فك الهواتف، تخطي iCloud وFRP، وخدمات IMEI والسيرفر عن بعد."
-      : "Official Arab Tech Pro Server for remote phone unlocking, iCloud & FRP bypass, and IMEI server services.",
+      ? "الموقع الرسمي لمتجر BORAI STORE (بورعي ستور) لخدمات شحن الألعاب، البطاقات الرقمية، والخدمات التكنولوجية الفورية."
+      : "Official BORAI STORE platform for game credits, digital vouchers, and remote tech services.",
     "potentialAction": {
       "@type": "SearchAction",
-      "target": "https://arabtechproserver.tech/ar/pricing?q={search_term_string}",
+      "target": `${siteUrl}/ar/pricing?q={search_term_string}`,
       "query-input": "required name=search_term_string"
     }
   };
@@ -187,26 +218,23 @@ export default async function RootLayout(
   const jsonLdOrganization = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "name": "عرب تك برو سيرفر | Arab Tech Pro Server",
-    "legalName": "Arab Tech Pro Server",
+    "name": "BORAI STORE | بورعي ستور",
+    "legalName": "BORAI STORE",
     "alternateName": [
-      "Arab Tech Pro Server",
-      "عرب تك برو سيرفر",
-      "عرب تك برو سيرفر",
-      "عرب تك سيرفر",
-      "عرب تك برو سيرفر",
-      "سيرفر عرب تك",
-      "Arab Tech Pro Server"
+      "BORAI STORE",
+      "بورعي ستور",
+      "متجر بورعي",
+      "Borai Store"
     ],
-    "url": "https://arabtechproserver.tech",
-    "logo": "https://arabtechproserver.tech/images/logo_en.png",
+    "url": siteUrl,
+    "logo": `${siteUrl}/images/logo_en.png`,
     "sameAs": [
-      "https://t.me/ARABTECHSUPPURT2",
-      "https://t.me/arabtechserveronline"
+      SITE_CONTACTS.telegramUrl,
+      SITE_CONTACTS.whatsappGroupUrl
     ],
     "contactPoint": {
       "@type": "ContactPoint",
-      "telephone": "+16728972935",
+      "telephone": SITE_CONTACTS.phone,
       "contactType": "customer service",
       "availableLanguage": ["Arabic", "English"]
     }
@@ -215,10 +243,10 @@ export default async function RootLayout(
   const jsonLdSoftware = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    "name": "Arab Tech Pro Server - عرب تك برو سيرفر",
+    "name": "BORAI STORE - بورعي ستور",
     "operatingSystem": "All (Web, Windows, Mac, Android, iOS)",
     "applicationCategory": "BusinessApplication, UtilitiesApplication",
-    "url": "https://arabtechproserver.tech",
+    "url": siteUrl,
     "offers": {
       "@type": "AggregateOffer",
       "priceCurrency": "USD",
@@ -226,8 +254,8 @@ export default async function RootLayout(
       "offerCount": "1000+"
     },
     "description": isAr
-      ? "المنصة الرائدة في الشرق الأوسط والعالم لفك شفرات الهواتف، تفعيل أدوات GSM، تخطي iCloud وFRP، وخدمات IMEI والسيرفرات الفورية مع ربط API متقدم."
-      : "The leading global platform for remote mobile phone unlocking, GSM tool activations, iCloud & FRP bypass, and automated IMEI API server services."
+      ? "المنصة الرائدة لشحن الألعاب، البطاقات الرقمية، وتفعيل البرامج والخدمات الفورية مع تسليم فوري وتلقائي على مدار الساعة."
+      : "The leading global platform for game credits, digital gift cards, and automated software service delivery."
   };
 
   const jsonLdFaq = {
@@ -236,46 +264,71 @@ export default async function RootLayout(
     "mainEntity": [
       {
         "@type": "Question",
-        "name": isAr ? "ما هو موقع عرب تك برو سيرفر؟" : "What is Arab Tech Pro Server?",
+        "name": isAr ? "ما هو متجر BORAI STORE؟" : "What is BORAI STORE?",
         "acceptedAnswer": {
           "@type": "Answer",
           "text": isAr
-            ? "عرب تك برو سيرفر (Arab Tech Pro Server) هو السيرفر الرسمي الأول لخدمات فك شفرات الهواتف المحمولة عن بعد، وتفعيل برامج السوفت وير والبوكسات (مثل UnlockTool, Chimera, Borneo)، وتخطي حسابات Google FRP وiCloud بأسرع وقت وأفضل أسعار الجملة."
-            : "Arab Tech Pro Server is the official platform providing remote GSM services, official phone unlocking, tool activations (UnlockTool, Chimera, Borneo), iCloud & FRP bypass, and instant server API credits."
+            ? "متجر BORAI STORE (بورعي ستور) هو المنصة الرسمية لخدمات شحن الألعاب، البطاقات الرقمية، والاشتراكات، والخدمات التقنية المتطورة بأسرع وقت وأفضل الأسعار."
+            : "BORAI STORE is the official platform providing digital game topups, voucher cards, activations, and instant server services."
         }
       },
       {
         "@type": "Question",
-        "name": isAr ? "هل يوفر عرب تك برو سيرفر ربط API للموزعين؟" : "Does Arab Tech Pro Server provide API integration for resellers?",
+        "name": isAr ? "هل يوفر BORAI STORE ربط API للوكلاء والموزعين؟" : "Does BORAI STORE provide API integration for resellers?",
         "acceptedAnswer": {
           "@type": "Answer",
           "text": isAr
-            ? "نعم، المنصة تدعم الربط المباشر المتوافق مع Dhru Fusion وWebx عبر واجهة برمجة التطبيقات API على الرابط: https://arabtechproserver.tech/api/v1/provider."
-            : "Yes, we provide full REST API compatibility with Dhru Fusion and Webx platforms at https://arabtechproserver.tech/api/v1/provider."
+            ? "نعم، المنصة تدعم الربط المباشر المتوافق مع Dhru Fusion وWebx عبر واجهة برمجة التطبيقات API."
+            : "Yes, we provide full REST API compatibility with Dhru Fusion and Webx platforms."
         }
       },
       {
         "@type": "Question",
-        "name": isAr ? "ما هي طرق الدفع المتاحة في عرب تك برو سيرفر؟" : "What payment methods are supported?",
+        "name": isAr ? "ما هي طرق الدفع المتاحة في BORAI STORE؟" : "What payment methods are supported in BORAI STORE?",
         "acceptedAnswer": {
           "@type": "Answer",
           "text": isAr
-            ? "نوفر شحناً فورياً للمحفظة عبر إنستاباي (Instapay)، فودافون كاش، محفظة العملات الرقمية USDT (TRC20/BEP20)، باي بال، وفيزا/ماستركارد."
-            : "We support instant wallet topups via Instapay, Vodafone Cash, USDT Crypto, PayPal, and credit cards."
+            ? "نوفر شحناً فورياً للمحفظة عبر إنستاباي (Instapay)، فودافون كاش، محفظة العملات الرقمية USDT (TRC20/BEP20)، باي بال، وفيزا/ماستركارد، وبنكك وفوري."
+            : "We support instant wallet topups via Instapay, Vodafone Cash, USDT Crypto, PayPal, Bankak, and cards."
         }
       }
     ]
   };
 
+  const jsonLdStore = {
+    "@context": "https://schema.org",
+    "@type": "OnlineStore",
+    "name": isAr ? "متجر بورعي | BORAI STORE" : "BORAI STORE Official Store",
+    "alternateName": [
+      "BORAI STORE",
+      "بورعي ستور",
+      "متجر بورعي",
+      "سيرفر بورعي",
+      "Borai Store"
+    ],
+    "url": siteUrl,
+    "image": `${siteUrl}/borai-favicon-192.png`,
+    "description": isAr
+      ? "متجر بورعي ستور الرسمي لشحن الألعاب الإلكترونية، البطاقات الرقمية وبطاقات الهدايا، وتفعيل برامج السوفت وير والخدمات الرقمية مع تسليم فوري وتلقائي 24/7."
+      : "Official BORAI STORE platform for digital gaming credits, gift vouchers, and GSM software tool activations with 24/7 instant automated delivery.",
+    "currenciesAccepted": "USD, EGP, SAR, AED, SDG",
+    "paymentAccepted": "Cash, Credit Card, Cryptocurrency, Instapay, Vodafone Cash, PayPal",
+    "priceRange": "$0.10 - $1000",
+    "hasMerchantReturnPolicy": {
+      "@type": "MerchantReturnPolicy",
+      "applicableCountry": "GLOBAL",
+      "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+      "merchantReturnDays": 1,
+      "returnMethod": "https://schema.org/ReturnByMail",
+      "returnFees": "https://schema.org/FreeReturn"
+    }
+  };
+
   return (
-    <html lang={lang} dir={dir} suppressHydrationWarning>
+    <html lang={lang} dir={dir} className="user-site" suppressHydrationWarning>
       <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('app_theme');if(t==='dark'){document.documentElement.classList.add('dark')}else{document.documentElement.classList.remove('dark')}}catch(e){}})();`
-          }}
-        />
-        <meta name="google-site-verification" content="N34n3oI-P5elZmLFHgFqp_BK93EijixhnIHEj_2oGnI" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover" />
+        <meta name="google-site-verification" content="PFe3nlp9X8Bkt_3XJb1Ftzs0IksgLkZnreUyCErj6-Y" />
         <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         {/* Preload Local Material Symbols Font for Instant Zero-Render-Blocking Display */}
@@ -286,14 +339,20 @@ export default async function RootLayout(
           type="font/woff2"
           crossOrigin="anonymous"
         />
+        {/* Explicit High-Priority Favicon Links */}
+        <link rel="icon" type="image/png" sizes="32x32" href="/borai-favicon.png?v=3" />
+        <link rel="icon" type="image/png" sizes="48x48" href="/borai-favicon-48.png?v=3" />
+        <link rel="icon" type="image/png" sizes="192x192" href="/borai-favicon-192.png?v=3" />
+        <link rel="shortcut icon" href="/borai-favicon.png?v=3" />
+        <link rel="apple-touch-icon" href="/borai-favicon-192.png?v=3" />
         {/* Explicit Meta tags for WhatsApp, Telegram, Facebook & Twitter link previews */}
-        <meta property="og:image" content={isAr ? "https://arabtechproserver.tech/images/og_share_ar.png" : "https://arabtechproserver.tech/images/og_share_en.png"} />
-        <meta property="og:image:secure_url" content={isAr ? "https://arabtechproserver.tech/images/og_share_ar.png" : "https://arabtechproserver.tech/images/og_share_en.png"} />
+        <meta property="og:image" content={isAr ? `${siteUrl}/images/og_share_ar.png` : `${siteUrl}/images/og_share_en.png`} />
+        <meta property="og:image:secure_url" content={isAr ? `${siteUrl}/images/og_share_ar.png` : `${siteUrl}/images/og_share_en.png`} />
         <meta property="og:image:type" content="image/png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
-        <meta property="og:image:alt" content="Arab Tech Pro Server Logo" />
-        <meta name="twitter:image" content={isAr ? "https://arabtechproserver.tech/images/og_share_ar.png" : "https://arabtechproserver.tech/images/og_share_en.png"} />
+        <meta property="og:image:alt" content="BORAI STORE Logo" />
+        <meta name="twitter:image" content={isAr ? `${siteUrl}/images/og_share_ar.png` : `${siteUrl}/images/og_share_en.png`} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdWebsite) }}
@@ -301,6 +360,10 @@ export default async function RootLayout(
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdOrganization) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdStore) }}
         />
         <script
           type="application/ld+json"
@@ -312,20 +375,37 @@ export default async function RootLayout(
         />
       </head>
       <body
-        className={`${cairo.variable} ${inter.variable} ${jakarta.variable} ${jetbrains.variable} font-sans bg-[#f8fafc] text-slate-900 dark:bg-[#0b0f17] dark:text-slate-100 subpixel-antialiased min-h-screen flex flex-col relative`}
+        className={`${cairo.variable} ${inter.variable} ${jakarta.variable} ${jetbrains.variable} user-theme font-sans antialiased min-h-screen flex flex-col relative`}
       >
+        <Script
+          id="theme-init"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `try{var t=localStorage.getItem('app_theme');document.documentElement.classList.toggle('dark',t!=='light');}catch(e){document.documentElement.classList.add('dark');}`,
+          }}
+        />
         <ThemeProvider>
+          <div className="user-ambient" aria-hidden="true">
+            <span className="user-ambient__glow user-ambient__glow--primary" />
+            <span className="user-ambient__glow user-ambient__glow--secondary" />
+          </div>
           {/* Client Enhancement Widgets (Lazy loaded, non-blocking) */}
           <ClientWidgets lang={lang} />
 
-          {/* Full Arab Solidarity Announcement Modal */}
-          <ArabSolidarityModal lang={lang} />
+          {/* Floating Contact & AI Assistant Dock */}
+          <FloatingContactDock lang={lang} />
 
-          <Navbar lang={lang} dict={dict.nav} />
+          <Navbar
+            lang={lang}
+            dict={dict.nav}
+            initialAnnouncementBar={localHomepageConfig?.announcementBar}
+          />
           
-          <main className="flex-grow w-full pt-16 sm:pt-20 pb-12 overflow-x-clip bg-transparent">
+          <MainLayoutWrapper lang={lang}>
             {children}
-          </main>
+          </MainLayoutWrapper>
+
+          <GlobalBottomBar lang={lang} />
 
           <Footer lang={lang} dict={dict.footer} />
         </ThemeProvider>

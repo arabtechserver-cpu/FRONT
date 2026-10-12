@@ -1,4 +1,4 @@
-﻿import { getDictionary } from "@/i18n/get-dictionary";
+import { getDictionary } from "@/i18n/get-dictionary";
 import { Locale } from "@/i18n/config";
 import PurchaseClient from "./PurchaseClient";
 import { Metadata, ResolvingMetadata } from "next";
@@ -11,7 +11,7 @@ type Props = {
 // Function to fetch single service for dynamic SEO Metadata
 async function getServiceDetails(serviceId: string) {
   try {
-    const apiUrl = process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || "https://arabtechproserver.tech";
+    const apiUrl = process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
     const res = await fetch(`${apiUrl}/api/dhru/services/${serviceId}`, {
       cache: "no-store",
     });
@@ -42,10 +42,11 @@ export async function generateMetadata(props: Props, parent: ResolvingMetadata):
       const priceDisplayForTitle = isFree ? (isAr ? "مجاناً" : "Free") : priceNum > 0 ? `$${priceNum.toFixed(2)}` : (isAr ? "سعر خاص" : "Special Price");
       const title = `${serviceName} - ${priceDisplayForTitle}`;
       const description = isAr
-        ? `اطلب خدمة ${serviceName} بسعر ${priceStr} فقط. وقت التسليم: ${deliveryTime}. قسم: ${groupName}. فك رسمي وسريع عبر منصة عرب تك برو سيرفر.`
-        : `Order ${serviceName} for only ${priceStr}. Delivery time: ${deliveryTime}. Category: ${groupName}. Fast & official remote phone unlocking from Arab Tech Pro Server.`;
+        ? `اطلب خدمة ${serviceName} بسعر ${priceStr} فقط. وقت التسليم: ${deliveryTime}. قسم: ${groupName}. تسليم فوري ومضمون عبر متجر BORAI STORE.`
+        : `Order ${serviceName} for only ${priceStr}. Delivery time: ${deliveryTime}. Category: ${groupName}. Fast & official delivery from BORAI STORE.`;
 
-      const pageUrl = `https://arabtechproserver.tech/${params.lang}/purchase?serviceId=${serviceId}`;
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://borai.store";
+      const pageUrl = `${siteUrl}/${params.lang}/purchase?serviceId=${serviceId}`;
 
       return {
         title,
@@ -54,10 +55,10 @@ export async function generateMetadata(props: Props, parent: ResolvingMetadata):
           title,
           description,
           url: pageUrl,
-          siteName: "Arab Tech Pro Server",
+          siteName: "BORAI STORE",
           images: [
             {
-              url: "https://arabtechproserver.tech/images/og-image.png",
+              url: `${siteUrl}/images/og-image.png`,
               width: 1200,
               height: 630,
               alt: serviceName,
@@ -70,32 +71,34 @@ export async function generateMetadata(props: Props, parent: ResolvingMetadata):
           card: "summary_large_image",
           title,
           description,
-          images: ["https://arabtechproserver.tech/images/og-image.png"],
+          images: [`${siteUrl}/images/og-image.png`],
         },
       };
     }
   }
 
   // Default Purchase Page Metadata
-  const defaultTitle = isAr ? "طلب خدمة وتفعيل فوري" : "Order New Service";
+  const defaultTitle = isAr ? "طلب خدمة وتفعيل فوري | BORAI STORE" : "Order New Service | BORAI STORE";
   const defaultDesc = isAr
-    ? "اختر واطلب خدمات فك الشبكات، تخطي الآيكلود وFRP، وشراء رصيد البوكسات والدونجلات عبر سيرفر عرب تك برو (عرب تك برو سيرفر) بأفضل الأسعار وأسرع وقت."
-    : "Choose and order network unlock services, iCloud & FRP bypass, and server credits at the best rates.";
+    ? "اختر واطلب خدمات الشحن، الألعاب، البطاقات الرقمية، والخدمات التقنية عبر متجر BORAI STORE بأفضل الأسعار وأسرع وقت."
+    : "Choose and order digital gaming credits, gift cards, and server services at the best rates on BORAI STORE.";
+
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://borai.store";
 
   return {
-    metadataBase: new URL("https://arabtechproserver.tech"),
+    metadataBase: new URL(siteUrl),
     title: defaultTitle,
     description: defaultDesc,
     openGraph: {
       title: defaultTitle,
       description: defaultDesc,
-      url: `https://arabtechproserver.tech/${params.lang}/purchase`,
+      url: `${siteUrl}/${params.lang}/purchase`,
       images: [
         {
-          url: "https://arabtechproserver.tech/images/og-image.png",
+          url: `${siteUrl}/images/og-image.png`,
           width: 1200,
           height: 630,
-          alt: "Arab Tech Pro Server",
+          alt: "BORAI STORE",
         },
       ],
       type: "website",
@@ -104,7 +107,7 @@ export async function generateMetadata(props: Props, parent: ResolvingMetadata):
       card: "summary_large_image",
       title: defaultTitle,
       description: defaultDesc,
-      images: ["https://arabtechproserver.tech/images/og-image.png"],
+      images: [`${siteUrl}/images/og-image.png`],
     },
   };
 }
