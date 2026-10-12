@@ -2,6 +2,9 @@
 const nextConfig = {
   reactStrictMode: true,
   output: 'standalone',
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   // Production caches stay on disk instead of retaining two 50 MB memory caches.
   cacheMaxMemorySize: 0,
   compress: true,

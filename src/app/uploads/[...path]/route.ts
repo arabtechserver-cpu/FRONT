@@ -1,7 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getBackendCandidates } from '../../../lib/api-proxy-candidates';
+import fs from 'fs';
+import path from 'path';
 
 let cachedBackendUrl: string | null = null;
+
+const MIME_TYPES: Record<string, string> = {
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.png': 'image/png',
+  '.webp': 'image/webp',
+  '.gif': 'image/gif',
+  '.svg': 'image/svg+xml',
+};
 
 async function proxyUpload(request: NextRequest, targetUrl: string): Promise<Response> {
   const forwardHeaders = new Headers();
@@ -27,6 +38,25 @@ export async function GET(
       { error: 'Access denied: Payment receipts require authenticated access via transactions API.' },
       { status: 403 }
     );
+  }
+
+  // 1. Direct local filesystem check in public/uploads
+  const localFilePath = path.join(process.cwd(), 'public', 'uploads', filename);
+  if (fs.existsSync(localFilePath)) {
+    try {
+      const ext = path.extname(filename).toLowerCase();
+      const contentType = MIME_TYPES[ext] || 'application/octet-stream';
+      const buffer = fs.readFileSync(localFilePath);
+      return new NextResponse(buffer, {
+        status: 200,
+        headers: {
+          'Content-Type': contentType,
+          'Cache-Control': 'public, max-age=31536000, immutable',
+        },
+      });
+    } catch (_) {
+      // Fall through to network candidates on read error
+    }
   }
 
   const candidates = getBackendCandidates(cachedBackendUrl, process.env.INTERNAL_API_URL);

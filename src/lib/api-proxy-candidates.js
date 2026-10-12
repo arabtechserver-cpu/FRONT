@@ -1,7 +1,10 @@
 const knownBackendUrls = [
+  "https://api.borai.store",
   "http://pro-b-i0r2xu:5000",
   "http://backend:5000",
   "http://pro-back:5000",
+  "http://back:5000",
+  "http://Back:5000",
   "http://api:5000"
 ];
 
