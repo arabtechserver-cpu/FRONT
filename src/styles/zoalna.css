@@ -864,8 +864,10 @@
 .front-page-hero-image img {
   width: 100%;
   height: auto;
-  max-height: none;
-  object-fit: contain;
+  aspect-ratio: 960 / 210;
+  max-height: 220px;
+  object-fit: cover;
+  object-position: center;
   display: block;
   border-radius: 18px;
   box-shadow: 0 12px 36px rgba(0,0,0,0.08);
@@ -1895,6 +1897,10 @@
   }
   .front-page-hero-image img {
     border-radius: 8px;
+    aspect-ratio: 960 / 210;
+    max-height: 110px;
+    object-fit: cover;
+    object-position: center;
   }
   .front-section {
     padding: 0 3px;
