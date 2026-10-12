@@ -101,6 +101,7 @@ export default function OrdersClient() {
   } | null>(null);
 
   const [dispatchingOrderId, setDispatchingOrderId] = useState<string | null>(null);
+  const inFlightDispatchRef = useRef<Set<string>>(new Set());
   const [checkingOrderId, setCheckingOrderId] = useState<string | null>(null);
   const [isEditingFields, setIsEditingFields] = useState(false);
   const [editedTargetInput, setEditedTargetInput] = useState("");
@@ -116,6 +117,16 @@ export default function OrdersClient() {
     setToastMessage({ type, text });
     setTimeout(() => setToastMessage(null), 4000);
   };
+
+  const getAdminHeaders = useCallback(() => {
+    const adminToken = typeof window !== "undefined"
+      ? (localStorage.getItem("admin_token") || localStorage.getItem("adminToken"))
+      : null;
+    return {
+      "Content-Type": "application/json",
+      ...(adminToken ? { Authorization: `Bearer ${adminToken}` } : {})
+    };
+  }, []);
 
   const fetchOrders = async () => {
     setLoading(true);
@@ -234,19 +245,24 @@ export default function OrdersClient() {
 
   // Dispatch to Provider API
   const handleDispatchProvider = async (order: OrderItem) => {
+    if (!order?.id || inFlightDispatchRef.current.has(order.id) || dispatchingOrderId) {
+      return;
+    }
+    inFlightDispatchRef.current.add(order.id);
     setDispatchingOrderId(order.id);
     try {
       const res = await fetch("/api/orders/dispatch-provider", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: getAdminHeaders(),
+        credentials: "include",
         body: JSON.stringify({ orderId: order.id })
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (res.ok && data.success) {
         showToast(data.message || "تم إرسال الطلب للمزود بنجاح!");
         await fetchOrders();
         if (selectedOrder && selectedOrder.id === order.id) {
-          setSelectedOrder(data.order);
+          setSelectedOrder(data.order || { ...selectedOrder, status: "processing", apiOrderId: data.apiOrderId });
         }
       } else {
         showToast(data.error || "فشل إرسال الطلب للمزود", "error");
@@ -254,6 +270,7 @@ export default function OrdersClient() {
     } catch {
       showToast("حدث خطأ أثناء الاتصال بسيرفر المزود", "error");
     } finally {
+      inFlightDispatchRef.current.delete(order.id);
       setDispatchingOrderId(null);
     }
   };
@@ -265,13 +282,14 @@ export default function OrdersClient() {
     try {
       const res = await fetch("/api/orders/complete-manual", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: getAdminHeaders(),
+        credentials: "include",
         body: JSON.stringify({
           orderId: manualCompleteOrder.id,
           reply: manualReplyCode
         })
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (res.ok && data.success) {
         showToast(data.message || "تم إكمال الطلب وحفظ الكود بنجاح!");
         setManualCompleteOrder(null);
@@ -300,13 +318,14 @@ export default function OrdersClient() {
     try {
       const res = await fetch(endpoint, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: getAdminHeaders(),
+        credentials: "include",
         body: JSON.stringify({
           orderId: order.id,
           reason: refundReason
         })
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (res.ok && data.success) {
         showToast(data.message || "تم استرجاع الرصيد للعميل بنجاح!");
         setRefundModalOrder(null);
@@ -332,10 +351,11 @@ export default function OrdersClient() {
     try {
       const res = await fetch("/api/orders/check-status", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: getAdminHeaders(),
+        credentials: "include",
         body: JSON.stringify({ orderId: order.id })
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (res.ok && data.success) {
         showToast(data.message || "تم التحقق من حالة الطلب من المزود!");
         await fetchOrders();
@@ -360,10 +380,11 @@ export default function OrdersClient() {
     try {
       const res = await fetch("/api/orders/check-status", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: getAdminHeaders(),
+        credentials: "include",
         body: JSON.stringify({ orderId: refundModalOrder.order.id })
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (res.ok && data.success) {
         const rawStatus = String(data.statusData?.STATUS ?? data.statusData?.status ?? "").trim();
         const isRejected = rawStatus === "3" || String(data.message).includes("مرفوض") || String(data.message).includes("ملغي");
@@ -1540,10 +1561,18 @@ export default function OrdersClient() {
                   {selectedOrder.status === "pending" && (
                     <button
                       type="button"
+                      disabled={dispatchingOrderId === selectedOrder.id}
                       onClick={() => handleDispatchProvider(selectedOrder)}
-                      className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-sm active:scale-95 transition-all"
+                      className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-sm active:scale-95 transition-all disabled:opacity-50 flex items-center gap-1.5"
                     >
-                      إرسال للمزود الآن
+                      {dispatchingOrderId === selectedOrder.id ? (
+                        <>
+                          <span className="material-symbols-outlined text-xs animate-spin">refresh</span>
+                          <span>جاري الإرسال للمزود...</span>
+                        </>
+                      ) : (
+                        <span>إرسال للمزود الآن</span>
+                      )}
                     </button>
                   )}
                   {selectedOrder.status !== "completed" && selectedOrder.status !== "rejected" && selectedOrder.status !== "cancelled" && (

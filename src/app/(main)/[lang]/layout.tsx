@@ -332,14 +332,6 @@ export default async function RootLayout(
         <meta name="google-site-verification" content="PFe3nlp9X8Bkt_3XJb1Ftzs0IksgLkZnreUyCErj6-Y" />
         <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-        {/* Preload Local Material Symbols Font for Instant Zero-Render-Blocking Display */}
-        <link
-          rel="preload"
-          href="/fonts/material-symbols-outlined.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
         {/* Explicit High-Priority Favicon Links */}
         <link rel="icon" type="image/png" sizes="32x32" href="/borai-favicon.png?v=3" />
         <link rel="icon" type="image/png" sizes="48x48" href="/borai-favicon-48.png?v=3" />
