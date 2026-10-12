@@ -6,8 +6,7 @@ import { getBackendCandidates } from "@/lib/api-proxy-candidates";
 import ZoalnaHomepage from "@/components/zoalna/ZoalnaHomepage";
 import localHomepageConfig from "@/data/homepage_config.json";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+export const revalidate = 30;
 
 async function getHomepageConfig() {
   const backendCandidates = getBackendCandidates(null, process.env.INTERNAL_API_URL);
@@ -24,8 +23,8 @@ async function getHomepageConfig() {
     const res = await Promise.any(candidates.map(async (baseUrl) => {
       const cleanBase = baseUrl.replace(/\/$/, "");
       const r = await fetch(`${cleanBase}/api/homepage`, {
-        cache: "no-store",
-        signal: AbortSignal.timeout(3500)
+        next: { revalidate: 30 },
+        signal: AbortSignal.timeout(1200)
       });
       if (!r.ok) throw new Error(`Homepage API returned ${r.status}`);
       return r.json();

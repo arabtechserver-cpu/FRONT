@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 import AOS from "aos";
 
 export default function AosInit() {
+  const pathname = usePathname();
+
   useEffect(() => {
-
-
-    // Disable on mobile so touch momentum scroll has zero layout shifts or animation overhead
     const initTimer = setTimeout(() => {
       AOS.init({
         disable: () => (typeof window !== "undefined" ? window.innerWidth < 768 : false),
@@ -36,6 +36,13 @@ export default function AosInit() {
       clearTimeout(initTimer);
     };
   }, []);
+
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => {
+      AOS.refresh();
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [pathname]);
 
   return null;
 }

@@ -11,13 +11,27 @@ type Props = {
 // Function to fetch single service for dynamic SEO Metadata
 async function getServiceDetails(serviceId: string) {
   try {
-    const apiUrl = process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-    const res = await fetch(`${apiUrl}/api/dhru/services/${serviceId}`, {
-      cache: "no-store",
-    });
-    if (!res.ok) return null;
-    return await res.json();
-  } catch (error) {
+    const candidates = [
+      process.env.INTERNAL_API_URL,
+      process.env.NEXT_PUBLIC_API_URL,
+      "https://api.borai.store",
+      "http://127.0.0.1:5000",
+      "http://localhost:5000"
+    ].filter(Boolean) as string[];
+
+    const data = await Promise.any(
+      candidates.map(async (base) => {
+        const clean = base.replace(/\/$/, "");
+        const res = await fetch(`${clean}/api/dhru/services/${serviceId}`, {
+          next: { revalidate: 120 },
+          signal: AbortSignal.timeout(1500)
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return await res.json();
+      })
+    );
+    return data;
+  } catch {
     return null;
   }
 }

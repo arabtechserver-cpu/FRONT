@@ -4,31 +4,37 @@ import { Locale } from "@/i18n/config";
 import PricingClient from "./PricingClient";
 import { Metadata } from "next";
 
+import { getBackendCandidates } from "@/lib/api-proxy-candidates";
+
 async function fetchPricingServices(): Promise<any[]> {
-  const backendCandidates = [
+  const backendCandidates = getBackendCandidates(null, process.env.INTERNAL_API_URL);
+  const candidates = [...new Set([
+    ...backendCandidates,
+    "https://api.borai.store",
     process.env.INTERNAL_API_URL,
-    "http://pro-b-i0r2xu:5000",
-    "http://backend:5000",
-    "http://pro-back:5000",
+    process.env.NEXT_PUBLIC_API_URL,
     "http://127.0.0.1:5000",
     "http://localhost:5000"
-  ].filter(Boolean);
+  ].filter(Boolean) as string[])];
 
-  for (const base of backendCandidates) {
-    try {
-      const res = await fetch(`${base}/api/dhru/services?view=pricing`, {
-        next: { revalidate: 60 },
-        signal: AbortSignal.timeout(1500)
-      });
-      if (res.ok) {
-        const data = await res.json();
-        if (Array.isArray(data)) return data;
-      }
-    } catch {
-      // try next candidate
-    }
+  try {
+    const data = await Promise.any(
+      candidates.map(async (base) => {
+        const cleanBase = base.replace(/\/$/, "");
+        const res = await fetch(`${cleanBase}/api/dhru/services?view=pricing`, {
+          next: { revalidate: 60 },
+          signal: AbortSignal.timeout(1800)
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const json = await res.json();
+        if (Array.isArray(json) && json.length > 0) return json;
+        throw new Error("Empty catalog");
+      })
+    );
+    return data;
+  } catch {
+    return [];
   }
-  return [];
 }
 
 export async function generateMetadata(

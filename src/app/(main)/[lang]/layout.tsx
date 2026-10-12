@@ -23,6 +23,7 @@ import { ThemeProvider } from "@/context/ThemeContext";
 import MainLayoutWrapper from "@/components/MainLayoutWrapper";
 import GlobalBottomBar from "@/components/GlobalBottomBar";
 import FloatingContactDock from "@/components/FloatingContactDock";
+import NavigationProgressBar from "@/components/NavigationProgressBar";
 import localHomepageConfig from "@/data/homepage_config.json";
 
 const cairo = Cairo({
@@ -385,6 +386,7 @@ export default async function RootLayout(
           }}
         />
         <ThemeProvider>
+          <NavigationProgressBar lang={lang} />
           <div className="user-ambient" aria-hidden="true">
             <span className="user-ambient__glow user-ambient__glow--primary" />
             <span className="user-ambient__glow user-ambient__glow--secondary" />
