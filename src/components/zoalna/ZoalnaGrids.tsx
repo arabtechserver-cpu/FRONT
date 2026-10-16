@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { resolveServiceId } from "@/utils/serviceResolver";
 
 interface ZoalnaGridsProps {
   lang: string;
@@ -85,6 +86,11 @@ export default function ZoalnaGrids({
 
   const formatLink = (url: string) => {
     if (!url) return "#";
+    if (url.includes("/pricing?search=") || url.startsWith("pricing?search=")) {
+      const q = decodeURIComponent(url.split("search=")[1] || "");
+      const serviceId = resolveServiceId(q);
+      return `/${lang}/purchase?serviceId=${serviceId}`;
+    }
     if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("#")) return url;
     if (url.startsWith(`/${lang}/`) || url === `/${lang}`) return url;
     const cleanUrl = url.startsWith("/") ? url : `/${url}`;
@@ -92,33 +98,34 @@ export default function ZoalnaGrids({
   };
 
   const defaultGroup1: ItemCard[] = [
-    { title: "فري فاير", image: "/images/zoalna/game_freefire.webp", href: `/${lang}/pricing?search=Free%20Fire`, query: "فري فاير free fire" },
-    { title: "ببجي موبايل", image: "/images/zoalna/game_pubg.webp", href: `/${lang}/pricing?search=PUBG`, query: "ببجي pubg mobile" },
-    { title: "موبايل ليجند", image: "/images/zoalna/game_mobilelegends.webp", href: `/${lang}/pricing?search=Mobile%20Legends`, query: "موبايل ليجند mobile legends" },
-    { title: "جنشن امباكت", image: "/images/zoalna/game_genshin.webp", href: `/${lang}/pricing?search=Genshin`, query: "جنشن genshin impact" },
-    { title: "يلا ليدو", image: "/images/zoalna/game_yallaludo.webp", href: `/${lang}/pricing?search=Yalla%20Ludo`, query: "يلا ليدو yalla ludo" },
-    { title: "جواكر", image: "/images/zoalna/game_jawaker.webp", href: `/${lang}/pricing?search=Jawaker`, query: "جواكر jawaker" },
-    { title: "لوردس موبايل", image: "/images/zoalna/game_lordsmobile.webp", href: `/${lang}/pricing?search=Lords%20Mobile`, query: "لوردس lords mobile" },
-    { title: "بلود استريك", image: "/images/zoalna/game_bloodstrike.webp", href: `/${lang}/pricing?search=Blood%20Strike`, query: "بلود استريك blood strike" },
-    { title: "فيزا", image: "/images/zoalna/game_redotpay.webp", href: `/${lang}/pricing?search=Visa`, query: "فيزا redotpay visa" },
+    { title: "فري فاير", image: "/images/zoalna/game_freefire.webp", href: `/${lang}/product/free-fire-id`, query: "فري فاير free fire" },
+    { title: "ببجي موبايل", image: "/images/zoalna/game_pubg.webp", href: `/${lang}/purchase?serviceId=67e4e321-3960-486d-992d-53e3cf749cab`, query: "ببجي pubg mobile" },
+    { title: "8 Ball Pool", image: "/images/zoalna/game_8ballpool.webp", href: `/${lang}/purchase?serviceId=48d93ea6-edd7-4f07-8b05-a7a91ba4cf13`, query: "8 ball pool بلياردو" },
+    { title: "موبايل ليجند", image: "/images/zoalna/game_mobilelegends.webp", href: `/${lang}/purchase?serviceId=67e4e321-3960-486d-992d-53e3cf749cab`, query: "موبايل ليجند mobile legends" },
+    { title: "جنشن امباكت", image: "/images/zoalna/game_genshin.webp", href: `/${lang}/purchase?serviceId=67e4e321-3960-486d-992d-53e3cf749cab`, query: "جنشن genshin impact" },
+    { title: "يلا ليدو", image: "/images/zoalna/game_yallaludo.webp", href: `/${lang}/purchase?serviceId=67e4e321-3960-486d-992d-53e3cf749cab`, query: "يلا ليدو yalla ludo" },
+    { title: "جواكر", image: "/images/zoalna/game_jawaker.webp", href: `/${lang}/purchase?serviceId=67e4e321-3960-486d-992d-53e3cf749cab`, query: "جواكر jawaker" },
+    { title: "لوردس موبايل", image: "/images/zoalna/game_lordsmobile.webp", href: `/${lang}/purchase?serviceId=3daf900c-91ef-46b2-b169-412ea3dac55f`, query: "لوردس lords mobile" },
+    { title: "بلود استريك", image: "/images/zoalna/game_bloodstrike.webp", href: `/${lang}/purchase?serviceId=67e4e321-3960-486d-992d-53e3cf749cab`, query: "بلود استريك blood strike" },
+    { title: "فيزا", image: "/images/zoalna/game_redotpay.webp", href: `/${lang}/purchase?serviceId=fff2b321-a6a3-4b32-b80c-920ea56f6a3e`, query: "فيزا redotpay visa" },
   ];
 
   const defaultGroup2: ItemCard[] = [
-    { title: "كلاش اوف كلانس", image: "/images/zoalna/game_clashofclans.webp", href: `/${lang}/pricing?search=Clash%20of%20Clans`, query: "كلاش اوف كلانس clash of clans" },
-    { title: "كلاش رويال", image: "/images/zoalna/game_clashroyale.webp", href: `/${lang}/pricing?search=Clash%20Royale`, query: "كلاش رويال clash royale" },
-    { title: "فيفا موبايل", image: "/images/zoalna/game_fifa.webp", href: `/${lang}/pricing?search=FC%20Mobile`, query: "فيفا fifa ea fc mobile" },
-    { title: "بيس موبايل", image: "/images/zoalna/game_pes.webp", href: `/${lang}/pricing?search=eFootball`, query: "بيس pes efootball mobile" },
-    { title: "براول ستارز", image: "/images/zoalna/game_brawlstars.webp", href: `/${lang}/pricing?search=Brawl%20Stars`, query: "براول ستارز brawl stars" },
-    { title: "تيك توك", image: "/images/zoalna/game_tiktok.webp", href: `/${lang}/pricing?search=TikTok`, query: "تيك توك tiktok coins" },
-    { title: "تجديد استارلينك", image: "/images/zoalna/game_starlink.webp", href: `/${lang}/pricing?search=Starlink`, query: "استارلينك starlink internet" },
+    { title: "كلاش اوف كلانس", image: "/images/zoalna/game_clashofclans.webp", href: `/${lang}/purchase?serviceId=67e4e321-3960-486d-992d-53e3cf749cab`, query: "كلاش اوف كلانس clash of clans" },
+    { title: "كلاش رويال", image: "/images/zoalna/game_clashroyale.webp", href: `/${lang}/purchase?serviceId=67e4e321-3960-486d-992d-53e3cf749cab`, query: "كلاش رويال clash royale" },
+    { title: "فيفا موبايل", image: "/images/zoalna/game_fifa.webp", href: `/${lang}/purchase?serviceId=d5182f4b-fb1a-449e-973e-f53d27f04cfb`, query: "فيفا fifa ea fc mobile" },
+    { title: "بيس موبايل", image: "/images/zoalna/game_pes.webp", href: `/${lang}/purchase?serviceId=d5182f4b-fb1a-449e-973e-f53d27f04cfb`, query: "بيس pes efootball mobile" },
+    { title: "براول ستارز", image: "/images/zoalna/game_brawlstars.webp", href: `/${lang}/purchase?serviceId=67e4e321-3960-486d-992d-53e3cf749cab`, query: "براول ستارز brawl stars" },
+    { title: "تيك توك", image: "/images/zoalna/game_tiktok.webp", href: `/${lang}/purchase?serviceId=bedcce9a-dd89-40c1-869a-a5c5ee97dcc3`, query: "تيك توك tiktok coins" },
+    { title: "تجديد استارلينك", image: "/images/zoalna/game_starlink.webp", href: `/${lang}/purchase?serviceId=fe14ba68-8989-4634-9c17-9ece0d50a6f9`, query: "استارلينك starlink internet" },
   ];
 
   const defaultDigital: ItemCard[] = [
-    { title: "كروت ايتونز", image: "/images/zoalna/card_itunes.webp", href: `/${lang}/pricing?search=iTunes`, query: "ايتونز itunes apple" },
-    { title: "ريزر جولد", image: "/images/zoalna/card_razergold.webp", href: `/${lang}/pricing?search=Razer%20Gold`, query: "ريزر جولد razer gold" },
-    { title: "كروت استيم", image: "/images/zoalna/card_steam.webp", href: `/${lang}/pricing?search=Steam`, query: "استيم steam wallet" },
-    { title: "كروت بلايستيشن", image: "/images/zoalna/card_playstation.webp", href: `/${lang}/pricing?search=PlayStation`, query: "بلايستيشن playstation psn" },
-    { title: "كروت اكس بوكس", image: "/images/zoalna/card_xbox.webp", href: `/${lang}/pricing?search=Xbox`, query: "اكس بوكس xbox live" },
+    { title: "كروت ايتونز", image: "/images/zoalna/card_itunes.webp", href: `/${lang}/purchase?serviceId=266e8362-d3f8-4ffd-8813-b43238a2868b`, query: "ايتونز itunes apple" },
+    { title: "ريزر جولد", image: "/images/zoalna/card_razergold.webp", href: `/${lang}/purchase?serviceId=e74e8643-2d9e-40a8-9d3f-b4b175e9c715`, query: "ريزر جولد razer gold" },
+    { title: "كروت استيم", image: "/images/zoalna/card_steam.webp", href: `/${lang}/purchase?serviceId=5b164875-f91f-4abd-871e-00dff1ecd966`, query: "استيم steam wallet" },
+    { title: "كروت بلايستيشن", image: "/images/zoalna/card_playstation.webp", href: `/${lang}/purchase?serviceId=f12cc2f9-b8be-4489-b827-5bf2f4637f10`, query: "بلايستيشن playstation psn" },
+    { title: "كروت اكس بوكس", image: "/images/zoalna/card_xbox.webp", href: `/${lang}/purchase?serviceId=f12cc2f9-b8be-4489-b827-5bf2f4637f10`, query: "اكس بوكس xbox live" },
   ];
 
   const gamesGroup1 = (initialGroup1 && initialGroup1.length > 0) ? initialGroup1 : defaultGroup1;

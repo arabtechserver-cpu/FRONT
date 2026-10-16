@@ -126,11 +126,22 @@ export async function generateMetadata(props: Props, parent: ResolvingMetadata):
   };
 }
 
-export default async function Purchase(props: { params: Promise<{ lang: Locale }> }) {
+export default async function Purchase(props: {
+  params: Promise<{ lang: Locale }>;
+  searchParams?: Promise<{ serviceId?: string }>;
+}) {
   const params = await props.params;
+  const searchParams = props.searchParams ? await props.searchParams : {};
+  const serviceId = searchParams.serviceId;
+  const initialService = serviceId ? await getServiceDetails(serviceId) : null;
   const dict = await getDictionary(params.lang);
 
   return (
-    <PurchaseClient lang={params.lang} dict={dict} />
+    <PurchaseClient
+      lang={params.lang}
+      dict={dict}
+      initialService={initialService}
+      initialServiceId={serviceId}
+    />
   );
 }

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Locale } from "@/i18n/config";
 import { useTheme } from "@/context/ThemeContext";
+import { useCart } from "@/context/CartContext";
 
 interface NavbarProps {
   lang: Locale;
@@ -63,6 +64,7 @@ export default function Navbar({ lang, dict, initialAnnouncementBar }: NavbarPro
   const [userSession, setUserSession] = useState<UserSession | null>(null);
   const [selectedCurrencyCode, setSelectedCurrencyCode] = useState<string>("USD");
   const { theme, toggleTheme } = useTheme();
+  const { cartCount, setIsCartOpen } = useCart();
   const [mounted, setMounted] = useState(false);
 
   const pathname = usePathname();
@@ -419,6 +421,55 @@ export default function Navbar({ lang, dict, initialAnnouncementBar }: NavbarPro
                 <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
               </svg>
             </Link>
+
+            {/* Shopping Cart Button */}
+            <button
+              type="button"
+              onClick={() => setIsCartOpen(true)}
+              className="hx-icon-btn"
+              aria-label={isAr ? "سلة المشتريات" : "Shopping Cart"}
+              title={isAr ? `سلة المشتريات (${cartCount})` : `Shopping Cart (${cartCount})`}
+              style={{
+                width: "36px",
+                height: "36px",
+                position: "relative",
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "inherit",
+              }}
+            >
+              <svg viewBox="0 0 24 24" fill="none" width="18" height="18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <path d="M16 10a4 4 0 0 1-8 0" />
+              </svg>
+              {cartCount > 0 && (
+                <span
+                  style={{
+                    position: "absolute",
+                    top: "-3px",
+                    right: isAr ? "auto" : "-3px",
+                    left: isAr ? "-3px" : "auto",
+                    background: "var(--user-link, #2563eb)",
+                    color: "#ffffff",
+                    borderRadius: "999px",
+                    fontSize: "10px",
+                    fontWeight: 800,
+                    minWidth: "17px",
+                    height: "17px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    padding: "0 3px",
+                    lineHeight: 1,
+                    boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+                  }}
+                >
+                  {cartCount > 99 ? "99+" : cartCount}
+                </span>
+              )}
+            </button>
 
             {/* User Account Dropdown */}
             <div className="account-dropdown-wrap" ref={userDropdownRef}>

@@ -1,7 +1,7 @@
-# BORAI STORE - بورعي ستور
+# BORAI STORE - برعي ستور
 
 > The premier official server for remote mobile phone unlocking, GSM tools activations, IMEI checks, FRP bypass, and instant server credits.
-> الموقع الرسمي المعتمد لمنصة BORAI STORE (بورعي ستور) لشحن الألعاب، البطاقات الرقمية، وتفعيل برامج السوفت وير والخدمات الرقمية الفورية.
+> الموقع الرسمي المعتمد لمنصة BORAI STORE (برعي ستور) لشحن الألعاب، البطاقات الرقمية، وتفعيل برامج السوفت وير والخدمات الرقمية الفورية.
 
 - **Website**: https://borai.store
 - **Arabic Portal**: https://borai.store/ar

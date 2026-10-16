@@ -20,6 +20,8 @@ import { getDictionary } from "@/i18n/get-dictionary";
 import { Locale, i18n } from "@/i18n/config";
 import ClientWidgets from "@/components/ClientWidgets";
 import { ThemeProvider } from "@/context/ThemeContext";
+import { CartProvider } from "@/context/CartContext";
+import CartDrawer from "@/components/cart/CartDrawer";
 import MainLayoutWrapper from "@/components/MainLayoutWrapper";
 import GlobalBottomBar from "@/components/GlobalBottomBar";
 import FloatingContactDock from "@/components/FloatingContactDock";
@@ -45,24 +47,24 @@ export async function generateMetadata(props: { params: Promise<{ lang: string }
   }
   const isAr = params.lang === "ar";
   const siteTitle = isAr
-    ? "BORAI STORE | متجر بورعي لشحن الألعاب، البطاقات والخدمات الرقمية"
+    ? "BORAI STORE | متجر برعي لشحن الألعاب، البطاقات والخدمات الرقمية"
     : "BORAI STORE | Instant Game Top-Ups, Digital Cards & Activations";
   const siteDesc = isAr
-    ? "متجر BORAI STORE (بورعي ستور) المنصة الرسمية المعتمدة لشحن الألعاب (ببجي موبايل، فري فاير، روبلوكس)، البطاقات الرقمية وبطاقات الهدايا (iTunes, Google Play, Steam, PlayStation, Xbox)، وتفعيل برامج السوفت وير والأدوات الرقمية بأفضل الأسعار وأسرع تسليم فوري 24/7."
+    ? "متجر BORAI STORE (برعي ستور) المنصة الرسمية المعتمدة لشحن الألعاب (ببجي موبايل، فري فاير، روبلوكس)، البطاقات الرقمية وبطاقات الهدايا (iTunes, Google Play, Steam, PlayStation, Xbox)، وتفعيل برامج السوفت وير والأدوات الرقمية بأفضل الأسعار وأسرع تسليم فوري 24/7."
     : "BORAI STORE: Official automated platform for instant game topups (PUBG UC, Free Fire, Roblox), digital gift cards (Steam, PlayStation, Xbox, iTunes), and GSM software tool activations with 24/7 delivery.";
 
   return {
     title: {
-      template: "%s | BORAI STORE - بورعي ستور",
+      template: "%s | BORAI STORE - برعي ستور",
       default: siteTitle,
     },
     description: siteDesc,
     keywords: [
       "BORAI STORE",
-      "بورعي ستور",
-      "متجر بورعي",
-      "سيرفر بورعي",
-      "موقع بورعي",
+      "برعي ستور",
+      "متجر برعي",
+      "سيرفر برعي",
+      "موقع برعي",
       "borai store",
       "borai.store",
       "شحن ألعاب",
@@ -127,7 +129,7 @@ export async function generateMetadata(props: { params: Promise<{ lang: string }
       title: siteTitle,
       description: siteDesc,
       url: `${siteUrl}/${params.lang}`,
-      siteName: isAr ? "BORAI STORE (بورعي ستور)" : "BORAI STORE",
+      siteName: isAr ? "BORAI STORE (برعي ستور)" : "BORAI STORE",
       images: [
         {
           url: isAr
@@ -135,7 +137,7 @@ export async function generateMetadata(props: { params: Promise<{ lang: string }
             : `${siteUrl}/images/og_share_en.png`,
           width: 1200,
           height: 630,
-          alt: isAr ? "BORAI STORE - متجر بورعي لشحن الألعاب والخدمات الرقمية" : "BORAI STORE Official Platform",
+          alt: isAr ? "BORAI STORE - متجر برعي لشحن الألعاب والخدمات الرقمية" : "BORAI STORE Official Platform",
         },
       ],
       locale: isAr ? "ar_AR" : "en_US",
@@ -197,17 +199,17 @@ export default async function RootLayout(
   const jsonLdWebsite = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "name": isAr ? "BORAI STORE | بورعي ستور" : "BORAI STORE",
+    "name": isAr ? "BORAI STORE | برعي ستور" : "BORAI STORE",
     "alternateName": [
       "BORAI STORE",
-      "بورعي ستور",
-      "متجر بورعي",
+      "برعي ستور",
+      "متجر برعي",
       "Borai Store"
     ],
     "url": siteUrl,
     "inLanguage": ["ar", "en"],
     "description": isAr
-      ? "الموقع الرسمي لمتجر BORAI STORE (بورعي ستور) لخدمات شحن الألعاب، البطاقات الرقمية، والخدمات التكنولوجية الفورية."
+      ? "الموقع الرسمي لمتجر BORAI STORE (برعي ستور) لخدمات شحن الألعاب، البطاقات الرقمية، والخدمات التكنولوجية الفورية."
       : "Official BORAI STORE platform for game credits, digital vouchers, and remote tech services.",
     "potentialAction": {
       "@type": "SearchAction",
@@ -219,12 +221,12 @@ export default async function RootLayout(
   const jsonLdOrganization = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "name": "BORAI STORE | بورعي ستور",
+    "name": "BORAI STORE | برعي ستور",
     "legalName": "BORAI STORE",
     "alternateName": [
       "BORAI STORE",
-      "بورعي ستور",
-      "متجر بورعي",
+      "برعي ستور",
+      "متجر برعي",
       "Borai Store"
     ],
     "url": siteUrl,
@@ -244,7 +246,7 @@ export default async function RootLayout(
   const jsonLdSoftware = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    "name": "BORAI STORE - بورعي ستور",
+    "name": "BORAI STORE - برعي ستور",
     "operatingSystem": "All (Web, Windows, Mac, Android, iOS)",
     "applicationCategory": "BusinessApplication, UtilitiesApplication",
     "url": siteUrl,
@@ -269,7 +271,7 @@ export default async function RootLayout(
         "acceptedAnswer": {
           "@type": "Answer",
           "text": isAr
-            ? "متجر BORAI STORE (بورعي ستور) هو المنصة الرسمية لخدمات شحن الألعاب، البطاقات الرقمية، والاشتراكات، والخدمات التقنية المتطورة بأسرع وقت وأفضل الأسعار."
+            ? "متجر BORAI STORE (برعي ستور) هو المنصة الرسمية لخدمات شحن الألعاب، البطاقات الرقمية، والاشتراكات، والخدمات التقنية المتطورة بأسرع وقت وأفضل الأسعار."
             : "BORAI STORE is the official platform providing digital game topups, voucher cards, activations, and instant server services."
         }
       },
@@ -299,18 +301,18 @@ export default async function RootLayout(
   const jsonLdStore = {
     "@context": "https://schema.org",
     "@type": "OnlineStore",
-    "name": isAr ? "متجر بورعي | BORAI STORE" : "BORAI STORE Official Store",
+    "name": isAr ? "متجر برعي | BORAI STORE" : "BORAI STORE Official Store",
     "alternateName": [
       "BORAI STORE",
-      "بورعي ستور",
-      "متجر بورعي",
-      "سيرفر بورعي",
+      "برعي ستور",
+      "متجر برعي",
+      "سيرفر برعي",
       "Borai Store"
     ],
     "url": siteUrl,
     "image": `${siteUrl}/borai-favicon-192.png`,
     "description": isAr
-      ? "متجر بورعي ستور الرسمي لشحن الألعاب الإلكترونية، البطاقات الرقمية وبطاقات الهدايا، وتفعيل برامج السوفت وير والخدمات الرقمية مع تسليم فوري وتلقائي 24/7."
+      ? "متجر برعي ستور الرسمي لشحن الألعاب الإلكترونية، البطاقات الرقمية وبطاقات الهدايا، وتفعيل برامج السوفت وير والخدمات الرقمية مع تسليم فوري وتلقائي 24/7."
       : "Official BORAI STORE platform for digital gaming credits, gift vouchers, and GSM software tool activations with 24/7 instant automated delivery.",
     "currenciesAccepted": "USD, EGP, SAR, AED, SDG",
     "paymentAccepted": "Cash, Credit Card, Cryptocurrency, Instapay, Vodafone Cash, PayPal",
@@ -378,30 +380,34 @@ export default async function RootLayout(
           }}
         />
         <ThemeProvider>
-          <NavigationProgressBar lang={lang} />
-          <div className="user-ambient" aria-hidden="true">
-            <span className="user-ambient__glow user-ambient__glow--primary" />
-            <span className="user-ambient__glow user-ambient__glow--secondary" />
-          </div>
-          {/* Client Enhancement Widgets (Lazy loaded, non-blocking) */}
-          <ClientWidgets lang={lang} />
+          <CartProvider>
+            <NavigationProgressBar lang={lang} />
+            <div className="user-ambient" aria-hidden="true">
+              <span className="user-ambient__glow user-ambient__glow--primary" />
+              <span className="user-ambient__glow user-ambient__glow--secondary" />
+            </div>
+            {/* Client Enhancement Widgets (Lazy loaded, non-blocking) */}
+            <ClientWidgets lang={lang} />
 
-          {/* Floating Contact & AI Assistant Dock */}
-          <FloatingContactDock lang={lang} />
+            {/* Floating Contact & AI Assistant Dock */}
+            <FloatingContactDock lang={lang} />
 
-          <Navbar
-            lang={lang}
-            dict={dict.nav}
-            initialAnnouncementBar={localHomepageConfig?.announcementBar}
-          />
-          
-          <MainLayoutWrapper lang={lang}>
-            {children}
-          </MainLayoutWrapper>
+            <Navbar
+              lang={lang}
+              dict={dict.nav}
+              initialAnnouncementBar={localHomepageConfig?.announcementBar}
+            />
+            
+            <MainLayoutWrapper lang={lang}>
+              {children}
+            </MainLayoutWrapper>
 
-          <GlobalBottomBar lang={lang} />
+            <CartDrawer lang={lang} />
 
-          <Footer lang={lang} dict={dict.footer} />
+            <GlobalBottomBar lang={lang} />
+
+            <Footer lang={lang} dict={dict.footer} />
+          </CartProvider>
         </ThemeProvider>
       </body>
     </html>

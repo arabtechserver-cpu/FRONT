@@ -6,6 +6,8 @@ import { getProviderServiceType } from "@/lib/provider-service-types";
 import Link from "next/link";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { stripEmojis } from "@/utils/cleanHtml";
+import { useCart } from "@/context/CartContext";
+import { ShoppingBag, LoaderCircle, X, ArrowUpRight, AlertCircle, Plus } from "lucide-react";
 
 function getServicePriceInfo(service: any) {
   const credit = typeof service.credit === 'number' ? service.credit : parseFloat(service.credit) || 0;
@@ -18,6 +20,17 @@ function getServicePriceInfo(service: any) {
   const isZeroCost = priceNum === 0 && !isFree;
 
   return { priceNum, isFree, isZeroCost };
+}
+
+function parseServiceCustomFields(requiresCustom: any) {
+  if (!requiresCustom) return [];
+  try {
+    const parsed = typeof requiresCustom === 'string' ? JSON.parse(requiresCustom) : requiresCustom;
+    if (Array.isArray(parsed)) {
+      return parsed.filter((f: any) => f && f.synthetic_quantity !== true && f.field_id !== 'custom_QNT' && f.name !== 'QNT');
+    }
+  } catch {}
+  return [];
 }
 
 function RenderPriceBadge({ service, lang, discountPercent = 0 }: { service: any; lang: string; discountPercent?: number }) {
@@ -70,8 +83,199 @@ function ServicesListRenderer({ servicesList, lang, dict, discountPercent = 0 }:
   const displayedServices = servicesList.length > 50 ? servicesList.slice(0, limit) : servicesList;
   const hasMore = servicesList.length > displayedServices.length;
 
+  const { addToCart, setIsCartOpen } = useCart();
+  const [quickAddService, setQuickAddService] = useState<any | null>(null);
+  const [quickFieldValues, setQuickFieldValues] = useState<Record<string, string>>({});
+  const [quickTargetInput, setQuickTargetInput] = useState<string>("");
+  const [quickError, setQuickError] = useState<string>("");
+  const [isAddingId, setIsAddingId] = useState<string | null>(null);
+
+  const handleAddServiceToCart = async (service: any) => {
+    const fields = parseServiceCustomFields(service.requiresCustom);
+    const isImei = service.apiServiceType === 'imei' || (service.categoryName || '').toLowerCase().includes('imei');
+
+    if (fields.length > 0 || isImei) {
+      setQuickAddService(service);
+      setQuickFieldValues({});
+      setQuickTargetInput("");
+      setQuickError("");
+      return;
+    }
+
+    const { priceNum } = getServicePriceInfo(service);
+    const discounted = discountPercent > 0 ? Number((priceNum * (1 - discountPercent / 100)).toFixed(2)) : priceNum;
+
+    setIsAddingId(service.id);
+    try {
+      await addToCart({
+        serviceId: service.id,
+        serviceName: stripEmojis(service.name),
+        groupName: stripEmojis(service.groupName || ""),
+        targetInput: "N/A",
+        quantity: 1,
+        price: discounted,
+      });
+      setIsCartOpen(true);
+    } finally {
+      setIsAddingId(null);
+    }
+  };
+
+  const handleConfirmQuickAdd = async () => {
+    if (!quickAddService) return;
+    const fields = parseServiceCustomFields(quickAddService.requiresCustom);
+    const isImei = quickAddService.apiServiceType === 'imei' || (quickAddService.categoryName || '').toLowerCase().includes('imei');
+
+    let resolvedTarget = "N/A";
+
+    if (fields.length > 0) {
+      for (const f of fields) {
+        const k = f.field_id || f.id || f.name || "";
+        const label = f.label || f.name || k;
+        const v = (quickFieldValues[k] || "").trim();
+        if (f.required !== false && !v) {
+          setQuickError(lang === 'ar' ? `يرجى إدخال ${label} للمتابعة` : `Please enter ${label}`);
+          return;
+        }
+      }
+      const firstKey = fields[0].field_id || fields[0].id || fields[0].name || "";
+      resolvedTarget = quickFieldValues[firstKey] || Object.values(quickFieldValues)[0] || "N/A";
+    } else if (isImei) {
+      if (!quickTargetInput.trim()) {
+        setQuickError(lang === 'ar' ? 'يرجى إدخال رقم IMEI للجهاز (15 رقم)' : 'Please enter 15-digit IMEI');
+        return;
+      }
+      resolvedTarget = quickTargetInput.trim();
+    }
+
+    const { priceNum } = getServicePriceInfo(quickAddService);
+    const discounted = discountPercent > 0 ? Number((priceNum * (1 - discountPercent / 100)).toFixed(2)) : priceNum;
+
+    setIsAddingId(quickAddService.id);
+    try {
+      await addToCart({
+        serviceId: quickAddService.id,
+        serviceName: stripEmojis(quickAddService.name),
+        groupName: stripEmojis(quickAddService.groupName || ""),
+        targetInput: resolvedTarget,
+        customFields: Object.keys(quickFieldValues).length > 0 ? quickFieldValues : undefined,
+        quantity: 1,
+        price: discounted,
+      });
+      setQuickAddService(null);
+      setIsCartOpen(true);
+    } finally {
+      setIsAddingId(null);
+    }
+  };
+
   return (
     <div className="w-full">
+      {/* QUICK ADD MODAL */}
+      {quickAddService && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-slate-900 w-full max-w-md rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-5" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center">
+                  <ShoppingBag size={17} />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                    {lang === 'ar' ? 'إضافة الخدمة إلى السلة' : 'Add Service to Cart'}
+                  </h3>
+                  <span className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1">
+                    {stripEmojis(quickAddService.name)}
+                  </span>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setQuickAddService(null)}
+                className="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {quickError && (
+              <div className="p-3 rounded-xl bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-900/60 text-xs font-semibold flex items-center gap-2">
+                <AlertCircle size={15} className="shrink-0" />
+                <span>{quickError}</span>
+              </div>
+            )}
+
+            {/* Inputs */}
+            <div className="space-y-3">
+              {parseServiceCustomFields(quickAddService.requiresCustom).length > 0 ? (
+                parseServiceCustomFields(quickAddService.requiresCustom).map((f: any, idx: number) => {
+                  const k = f.field_id || f.id || f.name || `field_${idx}`;
+                  const label = f.label || f.name || k;
+                  return (
+                    <div key={k} className="space-y-1 text-start">
+                      <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center justify-between">
+                        <span>{label}</span>
+                        {f.required !== false && <span className="text-red-500">*</span>}
+                      </label>
+                      <input
+                        type={k.toLowerCase().includes('password') ? 'password' : 'text'}
+                        value={quickFieldValues[k] || ''}
+                        onChange={(e) => {
+                          setQuickFieldValues(prev => ({ ...prev, [k]: e.target.value }));
+                          if (quickError) setQuickError('');
+                        }}
+                        placeholder={f.placeholder || (lang === 'ar' ? `أدخل ${label}...` : `Enter ${label}...`)}
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                        autoFocus={idx === 0}
+                      />
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="space-y-1 text-start">
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                    {lang === 'ar' ? 'رقم IMEI أو معرف الحساب' : 'IMEI or Account ID'}
+                  </label>
+                  <input
+                    type="text"
+                    value={quickTargetInput}
+                    onChange={(e) => {
+                      setQuickTargetInput(e.target.value);
+                      if (quickError) setQuickError('');
+                    }}
+                    placeholder={lang === 'ar' ? 'أدخل الرقم هنا...' : 'Enter target ID...'}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/50 font-mono"
+                    autoFocus
+                  />
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center gap-2 pt-2">
+              <button
+                type="button"
+                onClick={handleConfirmQuickAdd}
+                disabled={isAddingId === quickAddService.id}
+                className="flex-1 py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50"
+              >
+                {isAddingId === quickAddService.id ? (
+                  <LoaderCircle size={15} className="animate-spin" />
+                ) : (
+                  <ShoppingBag size={15} />
+                )}
+                <span>{lang === 'ar' ? 'إضافة إلى السلة الآن' : 'Add to Cart Now'}</span>
+              </button>
+              <Link
+                href={`/${lang}/purchase?serviceId=${quickAddService.id}`}
+                className="py-2.5 px-3.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs border border-slate-200 dark:border-slate-700"
+              >
+                {lang === 'ar' ? 'تخصيص' : 'Customize'}
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Mobile View: Clean stacked cards with ZERO horizontal scrolling */}
       <div className="divide-y divide-slate-100 dark:divide-white/5 sm:hidden">
         {displayedServices.map((service: any) => (
@@ -87,13 +291,29 @@ function ServicesListRenderer({ servicesList, lang, dict, discountPercent = 0 }:
                 </span>
                 <RenderPriceBadge service={service} lang={lang} discountPercent={discountPercent} />
               </div>
-              <Link 
-                href={`/${lang}/purchase?serviceId=${service.id}`}
-                className="btn-primary py-2 px-4 text-xs rounded-xl inline-flex items-center gap-1 shadow-sm hover:scale-[1.02] transition-transform"
-              >
-                <span>{dict.pricing?.order || "اطلب"}</span>
-                <span className="material-symbols-outlined text-sm">shopping_cart</span>
-              </Link>
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => handleAddServiceToCart(service)}
+                  disabled={isAddingId === service.id}
+                  className="py-2 px-3 text-xs rounded-xl border border-blue-600/40 hover:border-blue-600 text-blue-600 dark:text-blue-400 bg-blue-50/50 dark:bg-blue-950/30 hover:bg-blue-50 dark:hover:bg-blue-900/40 font-bold inline-flex items-center gap-1 transition-all active:scale-95 disabled:opacity-50"
+                  title={lang === 'ar' ? 'إضافة إلى السلة' : 'Add to Cart'}
+                >
+                  {isAddingId === service.id ? (
+                    <LoaderCircle size={14} className="animate-spin" />
+                  ) : (
+                    <ShoppingBag size={14} />
+                  )}
+                  <span>{lang === 'ar' ? 'السلة' : 'Cart'}</span>
+                </button>
+                <Link 
+                  href={`/${lang}/purchase?serviceId=${service.id}`}
+                  className="btn-primary py-2 px-3.5 text-xs rounded-xl inline-flex items-center gap-1 shadow-sm hover:scale-[1.02] transition-transform font-bold"
+                >
+                  <span>{dict.pricing?.order || "اطلب"}</span>
+                  <ArrowUpRight size={13} />
+                </Link>
+              </div>
             </div>
           </div>
         ))}
@@ -123,13 +343,29 @@ function ServicesListRenderer({ servicesList, lang, dict, discountPercent = 0 }:
                   <RenderPriceBadge service={service} lang={lang} discountPercent={discountPercent} />
                 </td>
                 <td className="py-3.5 px-6 text-center">
-                  <Link 
-                    href={`/${lang}/purchase?serviceId=${service.id}`} 
-                    className="btn-primary py-2 px-5 text-sm rounded-xl inline-flex items-center gap-1 shadow-sm hover:scale-[1.02] transition-transform"
-                  >
-                    <span>{dict.pricing?.order || "اطلب"}</span>
-                    <span className="material-symbols-outlined text-base">shopping_cart</span>
-                  </Link>
+                  <div className="flex items-center gap-2 justify-center">
+                    <button
+                      type="button"
+                      onClick={() => handleAddServiceToCart(service)}
+                      disabled={isAddingId === service.id}
+                      className="py-2 px-3 text-xs rounded-xl border border-blue-600/40 hover:border-blue-600 text-blue-600 dark:text-blue-400 bg-blue-50/50 dark:bg-blue-950/30 hover:bg-blue-50 dark:hover:bg-blue-900/40 font-bold inline-flex items-center gap-1.5 transition-all shadow-xs active:scale-95 disabled:opacity-50"
+                      title={lang === 'ar' ? 'إضافة إلى السلة' : 'Add to Cart'}
+                    >
+                      {isAddingId === service.id ? (
+                        <LoaderCircle size={14} className="animate-spin" />
+                      ) : (
+                        <ShoppingBag size={14} />
+                      )}
+                      <span>{lang === 'ar' ? 'أضف للسلة' : 'Add to Cart'}</span>
+                    </button>
+                    <Link 
+                      href={`/${lang}/purchase?serviceId=${service.id}`} 
+                      className="btn-primary py-2 px-4 text-xs sm:text-sm rounded-xl inline-flex items-center gap-1 shadow-sm hover:scale-[1.02] transition-transform font-bold"
+                    >
+                      <span>{dict.pricing?.order || "اطلب"}</span>
+                      <ArrowUpRight size={13} />
+                    </Link>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -761,9 +997,9 @@ export default function PricingClient({
                       >
                         {/* Category Section Header */}
                         <div 
-                          onClick={() => openSingleSection(groupName)}
+                          onClick={() => toggleGroupCollapse(groupName, isCollapsed)}
                           className="dark:bg-surface-container hover:bg-slate-50/80 dark:hover:bg-surface-container-high/80 dark:hover:bg-surface-container-high/70 px-5 sm:px-6 py-4 border-b dark:border-white/10 flex items-center justify-between cursor-pointer select-none transition-colors group/head"
-                          title={lang === 'ar' ? 'انقر لفتح هذا القسم في صفحة مستقلة' : 'Click to open in standalone page'}
+                          title={lang === 'ar' ? 'انقر لفتح وإغلاق خدمات هذا القسم' : 'Click to toggle section services'}
                         >
                           <div className="flex items-center gap-3">
                             <span className="material-symbols-outlined text-blue-600 dark:text-blue-400 text-2xl group-hover/head:scale-105 transition-transform">folder</span>
@@ -778,24 +1014,36 @@ export default function PricingClient({
                           </div>
 
                           <div className="flex items-center gap-2">
-                            {/* Open in Standalone Page Link */}
-                            <button
-                              onClick={(e) => { e.stopPropagation(); openSingleSection(groupName); }}
-                              title={lang === 'ar' ? 'فتح في صفحة مستقلة' : 'Open in standalone page'}
-                              className="bg-blue-50 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800/40 p-2 rounded-xl transition-all flex items-center gap-1.5 text-xs font-bold"
-                            >
-                              <span className="material-symbols-outlined text-base">open_in_new</span>
-                              <span className="hidden sm:inline">{lang === 'ar' ? 'صفحة مستقلة' : 'Open Page'}</span>
-                            </button>
+                            {/* Open in Standalone Purchase Page Link */}
+                            {groupServicesList[0]?.id && (
+                              <Link
+                                href={`/${lang}/purchase?serviceId=${groupServicesList[0].id}`}
+                                onClick={(e) => e.stopPropagation()}
+                                title={lang === 'ar' ? 'فتح صفحة الشراء المباشرة' : 'Open direct purchase page'}
+                                className="bg-blue-50 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800/40 p-2 rounded-xl transition-all flex items-center gap-1.5 text-xs font-bold"
+                              >
+                                <span className="material-symbols-outlined text-base">shopping_cart_checkout</span>
+                                <span className="hidden sm:inline">{lang === 'ar' ? 'صفحة الشراء' : 'Purchase'}</span>
+                              </Link>
+                            )}
 
-                            {/* Copy Section Link Button */}
+                            {/* Copy Purchase Link Button */}
                             <button
-                              onClick={(e) => copyGroupLink(e, groupName)}
-                              title={lang === 'ar' ? 'نسخ رابط هذا القسم' : 'Copy section link'}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const targetId = groupServicesList[0]?.id;
+                                const fullUrl = targetId 
+                                  ? `${window.location.origin}/${lang}/purchase?serviceId=${targetId}`
+                                  : `${window.location.origin}/${lang}/purchase`;
+                                navigator.clipboard.writeText(fullUrl);
+                                setCopiedGroup(groupName);
+                                setTimeout(() => setCopiedGroup(null), 3000);
+                              }}
+                              title={lang === 'ar' ? 'نسخ رابط الشراء المباشر' : 'Copy purchase link'}
                               className="dark:bg-background border dark:border-white/10 hover:border-blue-500 dark:hover:border-blue-500 text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 p-2 rounded-xl transition-all flex items-center gap-1 text-xs font-medium shadow-xs"
                             >
                               <span className="material-symbols-outlined text-base">link</span>
-                              <span className="hidden sm:inline">{lang === 'ar' ? 'نسخ الرابط' : 'Copy Link'}</span>
+                              <span className="hidden sm:inline">{copiedGroup === groupName ? (lang === 'ar' ? 'تم النسخ!' : 'Copied!') : (lang === 'ar' ? 'نسخ الرابط' : 'Copy Link')}</span>
                             </button>
 
                             {/* Expand / Collapse Icon */}

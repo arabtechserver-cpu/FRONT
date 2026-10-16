@@ -4,6 +4,7 @@ import { i18n } from './i18n/config';
 import { match as matchLocale } from '@formatjs/intl-localematcher';
 import Negotiator from 'negotiator';
 import { jwtVerify } from 'jose';
+import { resolveServiceId, resolveServiceIdAsync } from './utils/serviceResolver';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your_super_strong_secret_key_here';
 
@@ -42,6 +43,25 @@ export async function proxy(request: NextRequest) {
   }
 
   const pathname = request.nextUrl.pathname;
+
+  if (
+    (pathname === '/pricing' || pathname.endsWith('/pricing')) &&
+    (request.nextUrl.searchParams.has('search') ||
+      request.nextUrl.searchParams.has('section') ||
+      request.nextUrl.searchParams.has('group'))
+  ) {
+    const rawQuery =
+      request.nextUrl.searchParams.get('search') ||
+      request.nextUrl.searchParams.get('section') ||
+      request.nextUrl.searchParams.get('group') ||
+      '';
+    const segments = pathname.split('/').filter(Boolean);
+    const lang = segments[0] === 'ar' || segments[0] === 'en' ? segments[0] : 'ar';
+    const targetServiceId = await resolveServiceIdAsync(rawQuery);
+    return NextResponse.redirect(
+      new URL(`/${lang}/purchase?serviceId=${targetServiceId}`, request.url)
+    );
+  }
 
   if (pathname === '/api-docs' || pathname.startsWith('/api-docs')) {
     return new NextResponse(null, { status: 404 });

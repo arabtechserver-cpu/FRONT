@@ -45,10 +45,10 @@ export async function generateMetadata(props: { params: Promise<{ lang: Locale }
   }
   const isAr = params.lang === "ar";
   const title = isAr
-    ? "متجر بورعي | شحن ألعاب، بطاقات رقمية وتفعيل برامج فوري - BORAI STORE"
+    ? "متجر برعي | شحن ألعاب، بطاقات رقمية وتفعيل برامج فوري - BORAI STORE"
     : "BORAI STORE | Instant Game Top-Ups, Digital Gift Cards & Software Tools";
   const description = isAr
-    ? "متجر BORAI STORE (بورعي ستور) المتجر الأسرع لشحن الألعاب والبطاقات الرقمية: شحن فوري لـ شدات ببجي، جواهر فري فاير، روبلوكس، كول أوف ديوتي، بيس، بطاقات ستيم وبلايستيشن وجوجل بلاي، وتفعيل برامج السوفت وير والأدوات الرقمية بأفضل الأسعار وتسليم آلي 24/7."
+    ? "متجر BORAI STORE (برعي ستور) المتجر الأسرع لشحن الألعاب والبطاقات الرقمية: شحن فوري لـ شدات ببجي، جواهر فري فاير، روبلوكس، كول أوف ديوتي، بيس، بطاقات ستيم وبلايستيشن وجوجل بلاي، وتفعيل برامج السوفت وير والأدوات الرقمية بأفضل الأسعار وتسليم آلي 24/7."
     : "BORAI STORE: Fast and official online store for game top-ups (PUBG UC, Free Fire Diamonds, Roblox), digital gift cards (Steam, PlayStation, Xbox, iTunes), and GSM software tool activations with instant 24/7 delivery.";
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://borai.store";
@@ -60,9 +60,9 @@ export async function generateMetadata(props: { params: Promise<{ lang: Locale }
     description,
     keywords: [
       "BORAI STORE",
-      "بورعي ستور",
-      "متجر بورعي",
-      "سيرفر بورعي",
+      "برعي ستور",
+      "متجر برعي",
+      "سيرفر برعي",
       "borai store",
       "شحن ألعاب",
       "شحن العاب",
@@ -100,13 +100,13 @@ export async function generateMetadata(props: { params: Promise<{ lang: Locale }
       title,
       description,
       url: `${siteUrl}/${params.lang}`,
-      siteName: isAr ? "BORAI STORE (بورعي ستور)" : "BORAI STORE",
+      siteName: isAr ? "BORAI STORE (برعي ستور)" : "BORAI STORE",
       images: [
         {
           url: shareImg,
           width: 600,
           height: 600,
-          alt: isAr ? "BORAI STORE - بورعي ستور" : "BORAI STORE",
+          alt: isAr ? "BORAI STORE - برعي ستور" : "BORAI STORE",
         },
       ],
       type: "website",
@@ -138,7 +138,7 @@ export default async function Home(props: { params: Promise<{ lang: Locale }> })
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "WebSite",
-            "name": isAr ? "BORAI STORE | متجر بورعي" : "BORAI STORE",
+            "name": isAr ? "BORAI STORE | متجر برعي" : "BORAI STORE",
             "url": siteUrl,
             "potentialAction": {
               "@type": "SearchAction",

@@ -15,7 +15,7 @@ export async function generateMetadata(
     ? "متجر شحن الألعاب الرسمي | شدات ببجي، جواهر فري فاير، روبلوكس - BORAI STORE"
     : "Official Game Top-Ups | PUBG Mobile UC, Free Fire Diamonds, Roblox - BORAI STORE";
   const description = isAr
-    ? "القسم الرسمي المخصص لشحن الألعاب الإلكترونية في متجر بورعي (BORAI STORE). شحن فوري بالآيدي ID لـ شدات ببجي موبايل، جواهر فري فاير، روبلوكس، كول أوف ديوتي، بيس، وتيك توك بأرخص الأسعار وتسليم آلي فوري 24/7."
+    ? "القسم الرسمي المخصص لشحن الألعاب الإلكترونية في متجر برعي (BORAI STORE). شحن فوري بالآيدي ID لـ شدات ببجي موبايل، جواهر فري فاير، روبلوكس، كول أوف ديوتي، بيس، وتيك توك بأرخص الأسعار وتسليم آلي فوري 24/7."
     : "Official Gaming Top-Up portal at BORAI STORE. Instant player ID top-up for PUBG Mobile UC, Free Fire Diamonds, Roblox Robux, Call of Duty, and eFootball with 24/7 automated delivery.";
 
   return {
@@ -42,8 +42,8 @@ export async function generateMetadata(
       "بطاقات ستيم",
       "بطاقات بلايستيشن",
       "BORAI STORE",
-      "بورعي ستور",
-      "متجر بورعي"
+      "برعي ستور",
+      "متجر برعي"
     ],
     alternates: {
       canonical: `${siteUrl}/${params.lang}/gaming`,
@@ -52,7 +52,7 @@ export async function generateMetadata(
       title,
       description,
       url: `${siteUrl}/${params.lang}/gaming`,
-      siteName: isAr ? "BORAI STORE (بورعي ستور)" : "BORAI STORE",
+      siteName: isAr ? "BORAI STORE (برعي ستور)" : "BORAI STORE",
       type: "website"
     }
   };

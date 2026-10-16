@@ -61,7 +61,7 @@ const DEFAULT_CAMPAIGNS: CampaignItem[] = [
     connectionAr: "ربط فوري API",
     theme: "blue",
     image: "/images/promo_samsung_clean.png",
-    url: "/pricing?search=Samsung",
+    url: "/purchase?serviceId=6f9e3d09-9629-4b03-ac16-b064ab02cd9f",
     buttonTextEn: "Order & Activate Now",
     buttonTextAr: "اطلب الآن وابدأ التفعيل"
   },
@@ -105,7 +105,7 @@ const DEFAULT_CAMPAIGNS: CampaignItem[] = [
     connectionAr: "سيرفر رسمي",
     theme: "blue",
     image: "/images/promo_chimera.png",
-    url: "/pricing?section=Chimera%20Tool",
+    url: "/purchase?serviceId=52edf5bd-1bc7-4bdb-a3c9-e48082f29cff",
     buttonTextEn: "Get Chimera License",
     buttonTextAr: "احصل على ترخيص شيميرا"
   },
@@ -127,7 +127,7 @@ const DEFAULT_CAMPAIGNS: CampaignItem[] = [
     connectionAr: "قاعدة بيانات رسمية",
     theme: "emerald",
     image: "/images/promo_borneo.png",
-    url: "/pricing?search=Borneo",
+    url: "/purchase?serviceId=1fcef2a5-734c-433d-8af8-2a0ddaa4d196",
     buttonTextEn: "Activate Borneo",
     buttonTextAr: "تفعيل باقة بورنيو"
   }

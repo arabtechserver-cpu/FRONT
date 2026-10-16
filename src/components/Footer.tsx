@@ -22,7 +22,7 @@ export default function Footer({ lang = "ar" }: FooterProps) {
         </nav>
         <p>
           {isAr
-            ? `© ${currentYear} BORAI STORE (بورعي ستور) — جميع الحقوق محفوظة`
+            ? `© ${currentYear} BORAI STORE (برعي ستور) — جميع الحقوق محفوظة`
             : `© ${currentYear} BORAI STORE — All rights reserved.`}
         </p>
       </div>

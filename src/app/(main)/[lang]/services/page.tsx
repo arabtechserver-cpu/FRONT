@@ -47,7 +47,7 @@ export async function generateMetadata(
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://borai.store";
   const title = isAr
-    ? "خدمات الألعاب والشحن الرقمي وتفعيل البرامج | BORAI STORE - بورعي ستور"
+    ? "خدمات الألعاب والشحن الرقمي وتفعيل البرامج | BORAI STORE - برعي ستور"
     : "Gaming Top-Ups, Digital Gift Cards & Tool Activations | BORAI STORE";
   const description = isAr
     ? "تصفح أسرع خدمات الشحن الرقمي المباشر في متجر BORAI STORE: شحن شدات ببجي، جواهر فري فاير، روبلوكس، بطاقات جوجل بلاي، أيتونز، ستيم، بلايستيشن، واشتراكات البرامج وأدوات السوفت وير بأفضل أسعار الجملة وتسليم آلي فوري."
@@ -68,8 +68,8 @@ export async function generateMetadata(
       "شيميرا تول",
       "بورنيو سكماتك",
       "BORAI STORE",
-      "بورعي ستور",
-      "متجر بورعي",
+      "برعي ستور",
+      "متجر برعي",
       "Game Topups",
       "Gift Cards",
       "Software Activations"
@@ -81,7 +81,7 @@ export async function generateMetadata(
       title,
       description,
       url: `${siteUrl}/${params.lang}/services`,
-      siteName: isAr ? "BORAI STORE (بورعي ستور)" : "BORAI STORE",
+      siteName: isAr ? "BORAI STORE (برعي ستور)" : "BORAI STORE",
       type: "website"
     }
   };

@@ -293,8 +293,10 @@ export default function RegisterClient({ lang, dict }: { lang: Locale; dict: any
           window.dispatchEvent(new Event("user_session_change"));
         }
         setSuccessMessage(lang === "ar" ? "تم تسجيل الدخول بحساب Google بنجاح! جاري التوجيه..." : "Google login successful! Redirecting...");
+        const redirectParam = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("redirect") : null;
+        const dest = redirectParam ? `/${lang}/${redirectParam.replace(/^\//, '')}` : `/${lang}`;
         setTimeout(() => {
-          window.location.href = `/${lang}`;
+          window.location.href = dest;
         }, 1000);
       } else {
         setErrorMessage(data.error || (lang === "ar" ? "فشل تسجيل الدخول بحساب Google" : "Google Sign-In failed"));
@@ -453,8 +455,10 @@ export default function RegisterClient({ lang, dict }: { lang: Locale; dict: any
           window.dispatchEvent(new Event("user_session_change"));
         }
         setSuccessMessage(lang === "ar" ? "تم إنشاء الحساب وتسجيل الدخول بنجاح! جاري التوجيه..." : "Account created & logged in successfully!");
+        const redirectParam = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("redirect") : null;
+        const dest = redirectParam ? `/${lang}/${redirectParam.replace(/^\//, '')}` : `/${lang}`;
         setTimeout(() => {
-          window.location.href = `/${lang}`;
+          window.location.href = dest;
         }, 1000);
       } else {
         const errorMsg = data.error || data.message || (lang === "ar" ? "حدث خطأ أثناء عملية التسجيل!" : "Registration failed!");

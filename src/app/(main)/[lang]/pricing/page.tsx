@@ -1,9 +1,10 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { Locale } from "@/i18n/config";
 import PricingClient from "./PricingClient";
 import { Metadata } from "next";
-
+import { resolveServiceId } from "@/utils/serviceResolver";
 import { getBackendCandidates } from "@/lib/api-proxy-candidates";
 
 async function fetchPricingServices(): Promise<any[]> {
@@ -60,7 +61,7 @@ export async function generateMetadata(
 
   let title = isAr ? "قائمة الأسعار والخدمات" : "Services & Price List";
   let description = isAr
-    ? "تصفح قائمة أسعار وخدمات BORAI STORE (بورعي ستور) لشحن الألعاب والبطاقات الرقمية والتفعيل الفوري بأفضل الأسعار وأسرع تسليم."
+    ? "تصفح قائمة أسعار وخدمات BORAI STORE (برعي ستور) لشحن الألعاب والبطاقات الرقمية والتفعيل الفوري بأفضل الأسعار وأسرع تسليم."
     : "Browse BORAI STORE complete catalog and live price list for game credits, digital vouchers, and software activations.";
 
   if (section) {
@@ -107,7 +108,7 @@ export async function generateMetadata(
       title,
       description,
       url: currentUrl,
-      siteName: isAr ? "BORAI STORE (بورعي ستور)" : "BORAI STORE",
+      siteName: isAr ? "BORAI STORE (برعي ستور)" : "BORAI STORE",
       images: [
         {
           url: `${siteUrl}/main-logo.png`,
@@ -134,8 +135,22 @@ export async function generateMetadata(
   };
 }
 
-export default async function Pricing(props: { params: Promise<{ lang: Locale }> }) {
+export default async function Pricing(props: {
+  params: Promise<{ lang: Locale }>;
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
   const params = await props.params;
+  const searchParams = props.searchParams ? await props.searchParams : {};
+  const rawSearch = typeof searchParams.search === "string" ? searchParams.search : undefined;
+  const rawSection = typeof searchParams.section === "string" ? searchParams.section : (typeof searchParams.group === "string" ? searchParams.group : undefined);
+  const targetQuery = rawSearch || rawSection;
+
+  if (targetQuery && targetQuery.trim().length > 0) {
+    const categories = await fetchPricingServices();
+    const serviceId = resolveServiceId(targetQuery, categories);
+    redirect(`/${params.lang}/purchase?serviceId=${serviceId}`);
+  }
+
   const [dict, initialServices] = await Promise.all([
     getDictionary(params.lang),
     fetchPricingServices()
@@ -152,7 +167,6 @@ export default async function Pricing(props: { params: Promise<{ lang: Locale }>
         </div>
       </div>
 
-      {/* Pricing Client List (Includes Search and Filters) */}
       <PricingClient lang={params.lang} dict={dict} initialServices={initialServices} />
     </div>
   );
