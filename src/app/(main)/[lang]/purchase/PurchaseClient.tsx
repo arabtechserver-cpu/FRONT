@@ -640,16 +640,29 @@ function PurchaseClientContent({
           {/* Visual Showcase Side (Desktop: 5 cols, Mobile: Top) */}
           <div className="lg:col-span-5 p-6 sm:p-8 bg-slate-50 dark:bg-slate-800/40 border-b lg:border-b-0 lg:border-e border-slate-200 dark:border-slate-800 flex flex-col justify-between space-y-6">
             <div className="space-y-4">
-              <div className="relative aspect-square max-w-[340px] mx-auto rounded-3xl overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-700 bg-slate-900 flex items-center justify-center">
-                <img
-                  src={`/images/zoalna/${serviceImageName}`}
-                  alt={selectedService?.name || "Service"}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    // Fallback to branded cover if not found
-                    (e.currentTarget as HTMLImageElement).src = "/images/zoalna/service_default_brand.webp";
-                  }}
-                />
+              <div className="relative aspect-square max-w-[340px] mx-auto rounded-3xl overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-slate-900 via-[#0a1224] to-slate-950 flex items-center justify-center p-4 group">
+                {serviceImageName === "service_default_brand.webp" ? (
+                  <div className="relative w-full h-full flex flex-col items-center justify-center pb-8">
+                    {/* Ambient Glow */}
+                    <div className="absolute w-44 h-44 rounded-full bg-blue-500/15 blur-2xl pointer-events-none" />
+                    <img
+                      src="/images/borai-logo.png?v=2"
+                      alt="BORAI SERVER"
+                      className="w-[88%] max-h-[140px] object-contain drop-shadow-[0_15px_30px_rgba(0,0,0,0.85)] filter transition-transform duration-300 group-hover:scale-105"
+                    />
+                  </div>
+                ) : (
+                  <img
+                    src={`/images/zoalna/${serviceImageName}`}
+                    alt={selectedService?.name || "Service"}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      // Fallback to branded cover if not found
+                      (e.currentTarget as HTMLImageElement).src = "/images/zoalna/service_default_brand.webp";
+                    }}
+                  />
+                )}
+
                 <div className="absolute top-3 start-3 px-3 py-1 rounded-full bg-blue-600/90 text-white font-bold text-xs backdrop-blur-md flex items-center gap-1.5 shadow-md z-10">
                   <Zap size={14} className="animate-pulse text-amber-300" />
                   <span>{isAr ? "تسليم فوري وآلي 24/7" : "Instant 24/7 Delivery"}</span>
