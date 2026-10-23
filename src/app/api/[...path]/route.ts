@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getBackendCandidates } from "../../../lib/api-proxy-candidates";
+import { isRetiredApiPath } from '../../../lib/retired-features';
 
 /**
  * Stream API requests to the shared backend selected for this environment.
@@ -70,6 +71,9 @@ async function handler(
   const resolvedParams = await params;
   let path = resolvedParams.path.join('/');
   const search = request.nextUrl.search;
+  if (isRetiredApiPath(path)) {
+    return NextResponse.json({ error: 'تم إلغاء الأخبار والمقالات والفيديوهات والاشتراكات البريدية' }, { status: 410 });
+  }
 
   // Forward telemetry events to backend analytics/events so they are saved to database
   if (path.startsWith('telemetry/events')) {

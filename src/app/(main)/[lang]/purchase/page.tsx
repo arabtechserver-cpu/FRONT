@@ -2,6 +2,7 @@ import { getDictionary } from "@/i18n/get-dictionary";
 import { Locale } from "@/i18n/config";
 import PurchaseClient from "./PurchaseClient";
 import { Metadata, ResolvingMetadata } from "next";
+import { getServicePrice, formatUsdPrice } from '@/lib/service-price';
 
 type Props = {
   params: Promise<{ lang: Locale }>;
@@ -46,14 +47,12 @@ export async function generateMetadata(props: Props, parent: ResolvingMetadata):
     const service = await getServiceDetails(serviceId);
     if (service) {
       const serviceName = service.name || (isAr ? "طلب خدمة سيرفر" : "Order Server Service");
-      const calcPrice = service.finalPrice ?? service.price ?? ((Number(service.credit) || 0) + (Number(service.margin) || 0));
-      const priceNum = typeof calcPrice === 'number' ? calcPrice : parseFloat(calcPrice) || 0;
-      const isFree = priceNum === 0 && (serviceName.toLowerCase().includes("free") || serviceName.includes("مجاني"));
-      const priceStr = isFree ? (isAr ? "مجاني" : "Free") : priceNum > 0 ? `${priceNum.toFixed(2)}` : (isAr ? "تواصل معنا" : "Contact Us");
+      const priceNum = getServicePrice(service);
+      const priceStr = priceNum > 0 ? formatUsdPrice(priceNum) : (isAr ? 'السعر غير متاح' : 'Price unavailable');
       const deliveryTime = service.time || service.deliveryTime || (isAr ? "1-24 ساعة" : "1-24 Hours");
       const groupName = service.groupName || service.category?.name || "";
 
-      const priceDisplayForTitle = isFree ? (isAr ? "مجاناً" : "Free") : priceNum > 0 ? `$${priceNum.toFixed(2)}` : (isAr ? "سعر خاص" : "Special Price");
+      const priceDisplayForTitle = priceNum > 0 ? `$${formatUsdPrice(priceNum)}` : (isAr ? 'السعر غير متاح' : 'Price unavailable');
       const title = `${serviceName} - ${priceDisplayForTitle}`;
       const description = isAr
         ? `اطلب خدمة ${serviceName} بسعر ${priceStr} فقط. وقت التسليم: ${deliveryTime}. قسم: ${groupName}. تسليم فوري ومضمون عبر متجر BORAI STORE.`

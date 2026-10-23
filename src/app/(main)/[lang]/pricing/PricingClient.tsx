@@ -8,22 +8,16 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { stripEmojis } from "@/utils/cleanHtml";
 import { useCart } from "@/context/CartContext";
 import { ShoppingBag, LoaderCircle, ArrowUpRight } from "lucide-react";
+import { getServicePrice, formatUsdPrice } from '@/lib/service-price';
 
 function getServicePriceInfo(service: any) {
-  const credit = typeof service.credit === 'number' ? service.credit : parseFloat(service.credit) || 0;
-  const margin = typeof service.margin === 'number' ? service.margin : parseFloat(service.margin) || 0;
-  const finalPrice = service.finalPrice ?? service.price ?? (credit + margin);
-  const priceNum = typeof finalPrice === 'number' ? finalPrice : parseFloat(finalPrice) || 0;
+  const priceNum = getServicePrice(service);
   
-  const nameLower = (service.name || '').toLowerCase();
-  const isFree = priceNum === 0 && (nameLower.includes('free') || service.name?.includes('مجاني') || service.name?.includes('مجانا'));
-  const isZeroCost = priceNum === 0 && !isFree;
-
-  return { priceNum, isFree, isZeroCost };
+  return { priceNum, isZeroCost: priceNum === 0 };
 }
 
 function RenderPriceBadge({ service, lang, discountPercent = 0 }: { service: any; lang: string; discountPercent?: number }) {
-  const { priceNum, isFree, isZeroCost } = getServicePriceInfo(service);
+  const { priceNum } = getServicePriceInfo(service);
 
   if (priceNum > 0) {
     if (discountPercent > 0) {
@@ -32,10 +26,10 @@ function RenderPriceBadge({ service, lang, discountPercent = 0 }: { service: any
         <div className="flex flex-col items-start sm:items-end">
           <div className="flex items-center gap-1.5">
             <span className="text-xs text-slate-400 dark:text-slate-500 line-through font-mono">
-              ${priceNum.toFixed(2)}
+              ${formatUsdPrice(priceNum)}
             </span>
             <span className="font-mono text-blue-600 dark:text-blue-400 font-bold text-base">
-              ${discountedPrice.toFixed(2)}
+              ${formatUsdPrice(discountedPrice)}
             </span>
           </div>
           <span className="text-[10px] text-blue-600 dark:text-blue-400 font-bold font-mono">
@@ -47,22 +41,14 @@ function RenderPriceBadge({ service, lang, discountPercent = 0 }: { service: any
 
     return (
       <span className="font-mono text-blue-600 dark:text-blue-400 font-bold text-base mt-0.5">
-        ${priceNum.toFixed(2)}
-      </span>
-    );
-  }
-
-  if (isFree) {
-    return (
-      <span className="px-2.5 py-0.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 text-emerald-700 dark:text-emerald-400 font-bold text-xs inline-flex items-center gap-1">
-        <span>{lang === 'ar' ? 'مجاناً' : 'Free'}</span>
+        ${formatUsdPrice(priceNum)}
       </span>
     );
   }
 
   return (
     <span className="px-2.5 py-0.5 rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 text-amber-700 dark:text-amber-400 font-bold text-xs inline-flex items-center gap-1">
-      <span>{lang === 'ar' ? 'سعر خاص' : 'On Request'}</span>
+      <span>{lang === 'ar' ? 'السعر غير متاح' : 'Price unavailable'}</span>
     </span>
   );
 }
@@ -117,7 +103,7 @@ function ServicesListRenderer({ servicesList, lang, dict, discountPercent = 0 }:
                 <button
                   type="button"
                   onClick={() => handleAddServiceToCart(service)}
-                  disabled={isAddingId === service.id}
+                  disabled={isAddingId === service.id || getServicePrice(service) <= 0}
                   className="py-2 px-3 text-xs rounded-xl border border-blue-600/40 hover:border-blue-600 text-blue-600 dark:text-blue-400 bg-blue-50/50 dark:bg-blue-950/30 hover:bg-blue-50 dark:hover:bg-blue-900/40 font-bold inline-flex items-center gap-1 transition-all active:scale-95 disabled:opacity-50"
                   title={lang === 'ar' ? 'إضافة إلى السلة' : 'Add to Cart'}
                 >
@@ -169,7 +155,7 @@ function ServicesListRenderer({ servicesList, lang, dict, discountPercent = 0 }:
                     <button
                       type="button"
                       onClick={() => handleAddServiceToCart(service)}
-                      disabled={isAddingId === service.id}
+                      disabled={isAddingId === service.id || getServicePrice(service) <= 0}
                       className="py-2 px-3 text-xs rounded-xl border border-blue-600/40 hover:border-blue-600 text-blue-600 dark:text-blue-400 bg-blue-50/50 dark:bg-blue-950/30 hover:bg-blue-50 dark:hover:bg-blue-900/40 font-bold inline-flex items-center gap-1.5 transition-all shadow-xs active:scale-95 disabled:opacity-50"
                       title={lang === 'ar' ? 'إضافة إلى السلة' : 'Add to Cart'}
                     >

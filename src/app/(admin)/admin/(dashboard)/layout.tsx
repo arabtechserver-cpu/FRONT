@@ -19,8 +19,6 @@ const NAV_ITEMS = [
   { href: "/admin/currencies", label: "أسعار العملات", icon: "currency_exchange" },
   { href: "/admin/customer-logs", label: "سجل العملاء", icon: "manage_search" },
   { href: "/admin/homepage", label: "التحكم بالصفحة الرئيسية", icon: "space_dashboard" },
-  { href: "/admin/videos", label: "الأكاديمية والفيديوهات", icon: "video_library" },
-  { href: "/admin/newsletter", label: "النشرة البريدية والمشتركون", icon: "forward_to_inbox" },
   { href: "/admin/analytics", label: "الإحصائيات", icon: "bar_chart" },
   { href: "/admin/backups", label: "النسخ الاحتياطي", icon: "backup" },
   { href: "/admin/settings", label: "إعدادات الحساب", icon: "settings" },

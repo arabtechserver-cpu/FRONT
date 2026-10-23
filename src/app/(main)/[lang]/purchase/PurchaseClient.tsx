@@ -1,4 +1,5 @@
 "use client";
+import { getServicePrice } from '@/lib/service-price';
 
 import React, { useState, useEffect, useMemo, Suspense } from "react";
 import Link from "next/link";
@@ -309,8 +310,8 @@ function PurchaseClientContent({
 
     // Sort by price ascending
     return siblings.sort((a, b) => {
-      const pa = Number(a.finalPrice ?? a.price ?? a.credit ?? 0);
-      const pb = Number(b.finalPrice ?? b.price ?? b.credit ?? 0);
+      const pa = getServicePrice(a);
+      const pb = getServicePrice(b);
       return pa - pb;
     });
   }, [selectedService, allServicesList]);
@@ -325,14 +326,15 @@ function PurchaseClientContent({
 
   const unitPriceUsd = useMemo(() => {
     if (!selectedService) return 0;
-    return Number(selectedService.finalPrice ?? selectedService.price ?? selectedService.credit ?? 0);
+    return getServicePrice(selectedService);
   }, [selectedService]);
 
   const formatPrice = (usd: number = 0) => {
+    if (!Number.isFinite(usd) || usd <= 0) return isAr ? 'السعر غير متاح' : 'Price unavailable';
     const converted = usd * currency.rate;
     const formatted = converted.toLocaleString(undefined, {
       minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
+      maximumFractionDigits: converted > 0 && converted < 0.01 ? 6 : 2,
     });
     return isAr ? `${formatted} ${currency.symbolAr}` : `${currency.symbolEn} ${formatted}`;
   };
@@ -357,6 +359,10 @@ function PurchaseClientContent({
   };
 
   const validateInputs = (): boolean => {
+    if (unitPriceUsd <= 0) {
+      setInputError(isAr ? 'سعر الخدمة غير متاح حالياً؛ يرجى التواصل مع الإدارة.' : 'This service price is unavailable. Please contact support.');
+      return false;
+    }
     if (customFields.length > 0) {
       for (const f of customFields) {
         const key = f.field_id || f.id || f.name || "";
@@ -895,7 +901,7 @@ function PurchaseClientContent({
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 max-h-[360px] overflow-y-auto p-1 border border-slate-100 dark:border-slate-800 rounded-2xl">
                   {activeGroupServices.map((pkg) => {
                     const isSelected = pkg.id === selectedService?.id;
-                    const pkgPrice = Number(pkg.finalPrice ?? pkg.price ?? pkg.credit ?? 0);
+                    const pkgPrice = getServicePrice(pkg);
                     return (
                       <button
                         key={pkg.id}

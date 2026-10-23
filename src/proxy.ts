@@ -5,8 +5,9 @@ import { match as matchLocale } from '@formatjs/intl-localematcher';
 import Negotiator from 'negotiator';
 import { jwtVerify } from 'jose';
 import { resolveServiceId, resolveServiceIdAsync } from './utils/serviceResolver';
+import { isRetiredPagePath } from './lib/retired-features';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your_super_strong_secret_key_here';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 function getLocale(request: NextRequest): string | undefined {
   const negotiatorHeaders: Record<string, string> = {};
@@ -43,6 +44,10 @@ export async function proxy(request: NextRequest) {
   }
 
   const pathname = request.nextUrl.pathname;
+
+  if (isRetiredPagePath(pathname)) {
+    return new NextResponse(null, { status: 410 });
+  }
 
   if (
     (pathname === '/pricing' || pathname.endsWith('/pricing')) &&
@@ -94,12 +99,12 @@ export async function proxy(request: NextRequest) {
     if (pathname === '/admin/login') return NextResponse.next();
 
     const token = request.cookies.get('admin_token')?.value;
-    if (!token || !JWT_SECRET || JWT_SECRET.length < 32) {
+    if (!token || !JWT_SECRET || JWT_SECRET.length < 32 || /your_super|replace_with|change.?me|^secret$/i.test(JWT_SECRET)) {
       return NextResponse.redirect(new URL('/admin/login', request.url));
     }
 
     try {
-      const { payload } = await jwtVerify(token, new TextEncoder().encode(JWT_SECRET));
+      const { payload } = await jwtVerify(token, new TextEncoder().encode(JWT_SECRET), { algorithms: ['HS256'] });
       if (payload.role !== 'admin' && payload.role !== 'super_admin') {
         return NextResponse.redirect(new URL('/admin/login', request.url));
       }

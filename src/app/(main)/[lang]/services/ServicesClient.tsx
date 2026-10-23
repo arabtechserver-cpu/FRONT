@@ -1,4 +1,5 @@
 "use client";
+import { getServicePrice } from '@/lib/service-price';
 
 import React, { useState, useEffect, useMemo, useDeferredValue } from "react";
 import Link from "next/link";
@@ -153,11 +154,12 @@ export default function ServicesClient({
   const currency = CURRENCIES[currencyCode] || CURRENCIES.USD;
 
   const formatPrice = (usd: number = 0) => {
+    if (!Number.isFinite(usd) || usd <= 0) return isAr ? 'السعر غير متاح' : 'Price unavailable';
     const discounted = discountPercent > 0 ? usd * (1 - discountPercent / 100) : usd;
     const converted = discounted * currency.rate;
     const formatted = converted.toLocaleString(undefined, {
       minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
+      maximumFractionDigits: converted > 0 && converted < 0.01 ? 6 : 2,
     });
     return isAr
       ? `${formatted} ${currency.symbolAr}`
@@ -226,7 +228,7 @@ export default function ServicesClient({
       }
 
       map[groupName].services.push(service);
-      const price = Number(service.finalPrice ?? service.price ?? service.credit ?? 0);
+      const price = getServicePrice(service);
       if (price > 0 && price < map[groupName].minPrice) {
         map[groupName].minPrice = price;
       }
@@ -236,8 +238,8 @@ export default function ServicesClient({
     result.forEach((g) => {
       if (g.minPrice === Number.MAX_VALUE) g.minPrice = 0;
       g.services.sort((a, b) => {
-        const pa = Number(a.finalPrice ?? a.price ?? 0);
-        const pb = Number(b.finalPrice ?? b.price ?? 0);
+        const pa = getServicePrice(a);
+        const pb = getServicePrice(b);
         return pa - pb;
       });
     });
@@ -359,7 +361,7 @@ export default function ServicesClient({
               return <article key={group.groupName} className={styles.product + " bg-surface-container shadow-sm"}>
                 <div className={styles.productArt}><div className={styles.productArtCopy}><span className={styles.productType + " text-blue-600 dark:text-blue-400"}><Icon size={15} />{badge.label}</span><strong>{brand?.label || (isAr ? "خدمات رقمية" : "Digital services")}</strong><span className={styles.artLabel}>{brand ? (isAr ? brand.kindAr : brand.kindEn) : group.categoryName}</span></div>{brand?.image ? <img src={"/images/zoalna/" + brand.image} alt="" width={120} height={120} loading="lazy" /> : <Icon className={styles.genericArt + " text-blue-600 dark:text-blue-400"} size={90} strokeWidth={1} />}</div>
                 <div className={styles.productBody}><h3 title={cleanHtmlToText(group.groupName)}><Link href={"/" + lang + "/product/" + getGameSlug(group.groupName)} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">{cleanHtmlToText(group.groupName)}</Link></h3><p className={styles.packageCount}><Layers3 size={14} />{group.services.length} {isAr ? "باقة متاحة" : "available packages"}</p><div className={styles.productFooter}><div><span>{isAr ? "يبدأ من" : "Starting at"}</span><strong className="text-blue-600 dark:text-blue-400">{formatPrice(group.minPrice)}</strong></div><div className="flex items-center gap-2"><Link href={"/" + lang + "/product/" + getGameSlug(group.groupName)} className="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center gap-1 shadow-sm"><span>{isAr ? "شحن اللعبة" : "Top Up"}</span><ArrowUpRight size={13} /></Link><button type="button" aria-expanded={expanded} aria-controls={detailsId} onClick={() => toggleGroup(group.groupName)} className={styles.packageButton + " bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400"}>{expanded ? (isAr ? "إخفاء" : "Hide") : isAr ? "عرض" : "View"}<ChevronDown size={16} className={expanded ? styles.chevronOpen : ""} /></button></div></div></div>
-                {expanded && <div id={detailsId} className={styles.packageList}>{group.services.map(service => { const price = Number(service.finalPrice ?? service.price ?? service.credit ?? 0); const gameSlug = getGameSlug(group.groupName, service.name); return <div key={service.id} className={styles.packageRow}><div><h4>{cleanHtmlToText(service.name)}</h4><span className={styles.delivery}><Clock3 size={12} />{service.time || (isAr ? "حسب تفاصيل الخدمة" : "See service details")}{service.supportsQty && <small>{isAr ? "يدعم الكميات" : "Quantity enabled"}</small>}</span></div><div className={styles.packagePrice}><strong className="text-blue-600 dark:text-blue-400">{formatPrice(price)}</strong><Link aria-label={(isAr ? "طلب " : "Order ") + cleanHtmlToText(service.name)} href={"/" + lang + "/product/" + gameSlug + "?package=" + encodeURIComponent(service.id)} className="bg-blue-600 hover:bg-blue-700 text-white font-bold">{isAr ? "شحن الآن" : "Top Up"}<ArrowUpRight size={13} /></Link></div></div>; })}</div>}
+                {expanded && <div id={detailsId} className={styles.packageList}>{group.services.map(service => { const price = getServicePrice(service); const gameSlug = getGameSlug(group.groupName, service.name); return <div key={service.id} className={styles.packageRow}><div><h4>{cleanHtmlToText(service.name)}</h4><span className={styles.delivery}><Clock3 size={12} />{service.time || (isAr ? "حسب تفاصيل الخدمة" : "See service details")}{service.supportsQty && <small>{isAr ? "يدعم الكميات" : "Quantity enabled"}</small>}</span></div><div className={styles.packagePrice}><strong className="text-blue-600 dark:text-blue-400">{formatPrice(price)}</strong><Link aria-label={(isAr ? "طلب " : "Order ") + cleanHtmlToText(service.name)} href={"/" + lang + "/product/" + gameSlug + "?package=" + encodeURIComponent(service.id)} className="bg-blue-600 hover:bg-blue-700 text-white font-bold">{isAr ? "شحن الآن" : "Top Up"}<ArrowUpRight size={13} /></Link></div></div>; })}</div>}
               </article>;
             })}</div>}
           </div>
