@@ -6,7 +6,6 @@ import React, { useState, useEffect } from "react";
 import "@/styles/zoalna.css";
 import ZoalnaHero from "./ZoalnaHero";
 import ZoalnaGrids from "./ZoalnaGrids";
-import ZoalnaBottomBar from "./ZoalnaBottomBar";
 import ZoalnaModals from "./ZoalnaModals";
 
 interface ZoalnaHomepageProps {
@@ -21,7 +20,6 @@ export default function ZoalnaHomepage({
   config,
 }: ZoalnaHomepageProps) {
   const [activeConfig, setActiveConfig] = useState(config);
-  const [appModalOpen, setAppModalOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authTab, setAuthTab] = useState<"login" | "register">("login");
 
@@ -91,20 +89,9 @@ export default function ZoalnaHomepage({
         subscriptionsCard={activeConfig?.subscriptionsCard}
       />
 
-      {/* 3. Mobile Bottom Sticky Navigation & Floating Messenger */}
-      <ZoalnaBottomBar
-        lang={lang}
-        whatsappNum={activeWhatsapp}
-        floatingWhatsapp={activeConfig?.floatingWhatsapp}
-        onOpenAuth={handleOpenAuth}
-      />
-
       {/* 4. Promotional & Authentication Modals */}
       <ZoalnaModals
         lang={lang}
-        appModal={activeConfig?.appModal}
-        appModalOpen={appModalOpen}
-        onCloseAppModal={() => setAppModalOpen(false)}
         authModalOpen={authModalOpen}
         onCloseAuthModal={() => setAuthModalOpen(false)}
         authTab={authTab}

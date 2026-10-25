@@ -4,8 +4,11 @@ import { useState, useDeferredValue, useEffect, useMemo, useRef, useCallback } f
 import { getServiceRequiredFields } from "../providers/ProvidersClient";
 import { takeInitialGroups } from "../../../../../lib/service-list-window";
 import AddBundleModal from "./AddBundleModal";
+import CatalogImageControl from "@/components/admin/CatalogImageControl";
+import { StorePagesAdminProvider, StorePagePlacementControl } from '@/components/admin/StorePageAssignments';
 
-export default function ServicesPage() {
+export default function ServicesPage() { return <StorePagesAdminProvider><ServicesManager /></StorePagesAdminProvider>; }
+function ServicesManager() {
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -63,6 +66,14 @@ interface EditCustomField {
   // Delete Single Service State
   const [deletingService, setDeletingService] = useState<any | null>(null);
   const [isDeletingService, setIsDeletingService] = useState(false);
+
+  const updateCatalogImage = (categoryId: string, groupName: string, serviceId: string | null, url: string | null) => {
+    setCategories(previous => previous.map(category => category.id !== categoryId ? category : {
+      ...category, services: category.services.map((service: any) => serviceId
+        ? service.id === serviceId ? { ...service, imageUrl: url } : service
+        : service.groupName === groupName ? { ...service, groupImageUrl: url } : service)
+    }));
+  };
 
   const fetchServices = async () => {
     setLoading(true);
@@ -479,6 +490,7 @@ interface EditCustomField {
 
   return (
     <div className="space-y-8" dir="rtl">
+      <div className="rounded-2xl border border-violet-400/20 bg-violet-500/5 px-5 py-4 text-sm leading-7"><strong className="text-violet-300">ظهور الباقات والخدمات في صفحات المتجر</strong><p className="text-on-surface-variant mt-1">زر «صفحات الظهور» بجانب كل باقة أو خدمة يحدد صفحاتها. الخدمة تتبع الباقة تلقائيًا، وممكن تخصص لها صفحات أو تختار الكل. أنشئ الصفحات من <a href="/admin/pages" className="text-primary underline">صفحات المتجر والقوائم</a>.</p></div>
       {/* Toast Notification */}
       {toastMessage && (
         <div
@@ -1067,6 +1079,7 @@ interface EditCustomField {
         }}
       />
 
+      <div className="rounded-2xl bg-primary/5 border border-primary/20 px-5 py-4 text-sm leading-7"><strong className="text-on-surface">صور الخدمات والباقات</strong><p className="text-on-surface-variant text-xs leading-6">زر «رفع صورة الباقة» يغيّر الصورة الرئيسية للباقة. وزر «رفع صورة الخدمة» يخصص صورة لخدمة بعينها. الصور تُضغط تلقائياً بصيغة WebP وتُحفظ في قاعدة البيانات، وتظهر للعميل في الكتالوج وصفحة المنتج.</p></div>
       {/* Header & Controls */}
       <div className="flex flex-col gap-5 border-b border-outline-variant/20 pb-6">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
@@ -1318,6 +1331,9 @@ interface EditCustomField {
                               </div>
                             </div>
 
+                            <CatalogImageControl label="الباقة" imageUrl={packageServices.find((service: any) => service.groupImageUrl)?.groupImageUrl}
+                              target={{ categoryId: category.id, groupName }} onSaved={url => updateCatalogImage(category.id, groupName, null, url)} />
+                            <StorePagePlacementControl target={{ categoryId: category.id, groupName }} label={groupName} />
                             {/* Package Action Button (Hide / Show Entire Group) */}
                             <div className="flex items-center gap-2">
                               <button
@@ -1450,6 +1466,8 @@ interface EditCustomField {
                                       )}
                                     </button>
 
+                                    <CatalogImageControl label="الخدمة" imageUrl={service.imageUrl} target={{ serviceId: service.id }} onSaved={url => updateCatalogImage(category.id, groupName, service.id, url)} />
+                                    <StorePagePlacementControl target={{ serviceId: service.id }} label={service.name} />
                                     {/* Edit Single Service Button */}
                                     <button
                                       onClick={() => handleOpenEdit(service)}

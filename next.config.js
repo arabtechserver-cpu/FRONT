@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  allowedDevOrigins: ['localhost', '127.0.0.1'],
   output: 'standalone',
   compress: true,
   poweredByHeader: false,
@@ -38,6 +39,13 @@ const nextConfig = {
   },
   async headers() {
     return [
+      { source: '/sw.js', headers: [
+        { key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' },
+        { key: 'Service-Worker-Allowed', value: '/' },
+      ] },
+      { source: '/manifest.webmanifest', headers: [
+        { key: 'Cache-Control', value: 'public, max-age=3600' },
+      ] },
       {
         source: '/:path*',
         headers: [

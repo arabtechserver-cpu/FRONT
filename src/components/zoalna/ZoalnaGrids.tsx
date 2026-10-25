@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { resolveServiceId } from "@/utils/serviceResolver";
 
 interface ZoalnaGridsProps {
   lang: string;
@@ -86,11 +85,7 @@ export default function ZoalnaGrids({
 
   const formatLink = (url: string) => {
     if (!url) return "#";
-    if (url.includes("/pricing?search=") || url.startsWith("pricing?search=")) {
-      const q = decodeURIComponent(url.split("search=")[1] || "");
-      const serviceId = resolveServiceId(q);
-      return `/${lang}/purchase?serviceId=${serviceId}`;
-    }
+    if (/^\/(?:ar\/|en\/)?pricing(?:[/?#]|$)/i.test(url)) return `/${lang}/services`;
     if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("#")) return url;
     if (url.startsWith(`/${lang}/`) || url === `/${lang}`) return url;
     const cleanUrl = url.startsWith("/") ? url : `/${url}`;
@@ -131,6 +126,19 @@ export default function ZoalnaGrids({
   const gamesGroup1 = (initialGroup1 && initialGroup1.length > 0) ? initialGroup1 : defaultGroup1;
   const gamesGroup2 = (initialGroup2 && initialGroup2.length > 0) ? initialGroup2 : defaultGroup2;
   const digitalCards = (initialDigital && initialDigital.length > 0) ? initialDigital : defaultDigital;
+
+  const gameLink = (game: ItemCard) => {
+    if (/^https?:/i.test(game.href)) return game.href;
+    const images: Record<string, string> = {
+      game_freefire: "free-fire-id", game_pubg: "pubg-id", game_mobilelegends: "mobile-legends",
+      game_genshin: "genshin-impact", game_yallaludo: "yalla-ludo", game_jawaker: "jawaker",
+      game_lordsmobile: "lords-mobile", game_bloodstrike: "blood-strike", game_redotpay: "redotpay",
+      game_clashofclans: "clash-of-clans", game_clashroyale: "clash-royale", game_fifa: "fc-mobile",
+      game_pes: "efootball", game_brawlstars: "brawl-stars", game_tiktok: "tiktok", game_starlink: "starlink", game_8ballpool: "8-ball-pool",
+    };
+    const imageKey = game.image.split("/").pop()?.split(".")[0] || "";
+    return images[imageKey] ? `/${lang}/product/${images[imageKey]}` : formatLink(game.href);
+  };
 
   const filterMatches = (items: ItemCard[]) => {
     if (!searchTerm.trim()) return items;
@@ -200,7 +208,7 @@ export default function ZoalnaGrids({
         {filteredGroup1.length > 0 && (
           <div className="apps-grid">
             {filteredGroup1.map((game, i) => (
-              <Link key={i} className="app-card-link" href={formatLink(game.href)}>
+              <Link key={i} className="app-card-link" href={gameLink(game)}>
                 <div className="app-card">
                   <div className="app-card__icon-inner">
                     <img loading="lazy" src={game.image} alt={getItemTitle(game)} />
@@ -239,7 +247,7 @@ export default function ZoalnaGrids({
         {filteredGroup2.length > 0 && (
           <div className="apps-grid">
             {filteredGroup2.map((game, i) => (
-              <Link key={i} className="app-card-link" href={formatLink(game.href)}>
+              <Link key={i} className="app-card-link" href={gameLink(game)}>
                 <div className="app-card">
                   <div className="app-card__icon-inner">
                     <img loading="lazy" src={game.image} alt={getItemTitle(game)} />

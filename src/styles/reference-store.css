@@ -1,0 +1,124 @@
+/* Storefront layout follows the supplied mobile references. */
+.user-theme { background-color: #f6f7fb; }
+.user-theme .zoalna-root { background: #fff; }
+.dark .user-theme, .dark .user-theme .zoalna-root { background: var(--color-bg); }
+.user-theme .home-wrapper {
+  direction: ltr;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 12px;
+  margin: 18px auto 32px;
+}
+.user-theme .home-side-menu {
+  width: 90px;
+  flex: 0 0 90px;
+  flex-direction: column;
+  gap: 10px;
+  direction: rtl;
+}
+.user-theme .side-card {
+  flex: 1;
+  min-height: 64px;
+  border-radius: 14px;
+  padding: 10px 5px;
+  gap: 6px;
+  background: #101727;
+  color: #fff;
+}
+.user-theme #home-slider { width: auto; direction: rtl; }
+.user-theme .slider-wrapper { border-radius: 20px; }
+.user-theme .slides { height: auto; aspect-ratio: 1.85; max-height: 420px; }
+.user-theme .slide .overlay { background: none; }
+.user-theme .slider-controls { padding: 8px 0 0; }
+.user-theme .slider-dots button {
+  display: block; width: 10px; height: 10px; padding: 0; border: 0;
+  border-radius: 20px; background: #cbd5e1; cursor: pointer;
+  transition: width .2s, background .2s;
+}
+.user-theme .slider-dots button.active { width: 28px; background: #101727; }
+.user-theme .mobile-menu {
+  width: min(420px, 83.333vw); max-width: 83.333vw;
+  box-shadow: none; border-color: #e5e7eb;
+}
+.user-theme .mn-top { min-height: 66px; padding: 14px 20px; background: #f8fafc; }
+.user-theme .mn-top img { width: 120px; height: 38px; object-fit: contain; }
+.user-theme .close-mobile-menu { width: 36px; height: 36px; border-radius: 9px; }
+.user-theme .mn-body { padding: 14px 20px 28px; }
+.user-theme .mn-label { padding: 0 0 14px; font-size: 11px; color: #94a3b8; }
+.user-theme .mn-item {
+  width: 100%; min-height: 56px; padding: 8px 0;
+  gap: 12px; font-size: 15px; font-weight: 700;
+  border: 0; background: transparent; text-align: start; color: #334155;
+}
+.dark .user-theme .mn-item { color: var(--color-text); }
+.user-theme .mn-ico { width: 38px; height: 38px; border-radius: 10px; background: #f1f5f9; color: #64748b; }
+.dark .user-theme .mn-top, .dark .user-theme .mn-ico { background: var(--color-surface-2); }
+.user-theme .mn-settings { margin-top: 34px; color: #64748b; font-size: 11px; }
+.user-theme .mn-settings summary { cursor: pointer; }
+.user-theme .mn-currency { display: grid; gap: 8px; margin-top: 10px; }
+.user-theme .mn-currency select { width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 8px; }
+.user-theme .mobile-menu-overlay { z-index: 9999; background: rgb(15 23 42 / .44); backdrop-filter: blur(3px); }
+.user-theme .front-page-hero-image { margin-top: 26px; margin-bottom: 36px; }
+.user-theme .app-card__icon-inner { box-shadow: none; background: transparent; }
+.user-theme .app-card__icon-inner img { object-fit: contain; }
+.store-whatsapp-label { display: none; }
+
+@media (min-width: 900px) {
+  .user-theme .hx-inner { gap: 10px; }
+  .user-theme .hx-logo { padding-inline-end: 8px; }
+  .user-theme .hx-logo img { max-width: 170px; }
+  .user-theme .hx-nav-link { padding: 7px 8px; font-size: 12px; }
+  .user-theme .hx-left { gap: 5px; }
+  .user-theme .hx-center { padding-inline-end: 0; }
+}
+@media (max-width: 899px) {
+  .user-theme .store-contact-dock {
+    top: auto; left: auto; right: 16px; bottom: calc(86px + env(safe-area-inset-bottom));
+    transform: none; padding: 0; border: 1px solid #e5e7eb; border-radius: 999px;
+    background: #fff; box-shadow: 0 4px 20px rgb(15 23 42 / .14); z-index: 10001;
+  }
+  .user-theme .store-contact-dock > :not(:first-child) { display: none; }
+  .user-theme .store-contact-dock > a:first-child {
+    width: auto; height: 52px; gap: 10px; padding: 8px 14px;
+    background: transparent; color: #334155; border-radius: 999px;
+    box-shadow: none; transform: none;
+  }
+  .user-theme .store-contact-dock > a:first-child svg { width: 32px; height: 32px; color: #5dbb63; }
+  .user-theme .store-whatsapp-label { display: block; font-size: 16px; font-weight: 800; }
+  .user-theme .hx-bar { height: 64px; }
+  .user-theme .hx-inner { position: relative; display: grid; grid-template-columns: 44px 1fr 94px; gap: 10px; padding: 0 16px; }
+  .user-theme .hx-logo { grid-column: 2; border: 0; padding: 0; justify-self: start; }
+  .user-theme .hx-logo img { height: 42px; max-width: 150px; max-height: 44px; }
+  .user-theme .hx-left { grid-column: 3; gap: 8px; margin: 0; display: flex; flex-direction: row-reverse; }
+  .user-theme .hx-left .hx-right { position: absolute; inset-inline-start: 16px; top: 10px; display: flex !important; }
+  .user-theme .hx-icon-btn, .user-theme .menu-toggle { width: 42px !important; height: 42px !important; border-radius: 10px; }
+  .user-theme .hx-left .hx-currency-control,
+  .user-theme .hx-left .hx-theme-control,
+  .user-theme .hx-left .hx-language-control { display: none !important; }
+  .user-theme .hx-left .account-dropdown-wrap { display: block !important; }
+  .user-theme .account-dropdown-trigger { width: 42px; height: 42px; min-width: 0; padding: 0; justify-content: center; border-radius: 10px; }
+  .user-theme .account-dropdown-trigger > span:not(.acdd-icon-wrap),
+  .user-theme .account-dropdown-trigger > .acdd-chevron { display: none; }
+  .user-theme .home-wrapper { gap: 10px; padding: 0 10px; margin: 10px auto 28px; }
+  .user-theme .home-side-menu { width: 64px; flex: 0 0 64px; gap: 8px; }
+  .user-theme .side-card { min-height: 52px; border-radius: 13px; padding: 8px 3px; }
+  .user-theme .side-card .icon { width: 20px; height: 20px; }
+  .user-theme .side-card .txt { font-size: 10px; }
+  .user-theme .slider-wrapper { border-radius: 20px; }
+  .user-theme .zoalna-search-bar-wrap { display: none; }
+  .user-theme .front-page-hero-image { margin-top: 28px; margin-bottom: 38px; padding-inline: 16px; }
+  .user-theme .apps-grid { gap: 20px 16px; }
+  .user-theme .app-card__title { margin-top: 8px; font-size: 14px; }
+  .user-theme .mob-bottom-nav-inner { max-width: 560px; }
+}
+@media (max-width: 350px) {
+  .user-theme .hx-inner { grid-template-columns: 36px 1fr 80px; gap: 5px; padding: 0 8px; }
+  .user-theme .hx-logo img { max-width: 120px; }
+  .user-theme .hx-icon-btn, .user-theme .menu-toggle, .user-theme .account-dropdown-trigger { width: 36px !important; height: 38px !important; }
+  .user-theme .hx-left .hx-right { inset-inline-start: 8px; top: 13px; }
+  .user-theme .home-side-menu { width: 56px; flex-basis: 56px; }
+  .user-theme .side-card { min-height: 46px; }
+  .user-theme .side-card .txt { font-size: 9px; }
+  .user-theme .mn-top, .user-theme .mn-body { padding-inline: 14px; }
+  .user-theme .mn-item { font-size: 13px; }
+}

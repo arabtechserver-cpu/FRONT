@@ -28,9 +28,9 @@ export default function ZoalnaHero({ lang, slides: initialSlides, sideMenu: init
   const [isPaused, setIsPaused] = useState(false);
 
   const defaultSlides: SlideItem[] = [
-    { id: 1, image: "/images/zoalna/slide_1.png", link: `/${lang}/pricing`, alt: isAr ? "عرض 1" : "Slide 1" },
-    { id: 2, image: "/images/zoalna/slide_2.png", link: `/${lang}/pricing?cat=imei`, alt: isAr ? "عرض 2" : "Slide 2" },
-    { id: 3, image: "/images/zoalna/slide_3.png", link: `/${lang}/pricing?cat=server`, alt: isAr ? "عرض 3" : "Slide 3" },
+    { id: 1, image: "/images/zoalna/slide_1.png", link: `/${lang}/services`, alt: isAr ? "عرض 1" : "Slide 1" },
+    { id: 2, image: "/images/zoalna/slide_2.png", link: `/${lang}/product/free-fire-id`, alt: isAr ? "عرض 2" : "Slide 2" },
+    { id: 3, image: "/images/zoalna/slide_3.png", link: `/${lang}/services`, alt: isAr ? "عرض 3" : "Slide 3" },
   ];
 
   const defaultSideMenu: SideMenuItem[] = [
@@ -41,6 +41,7 @@ export default function ZoalnaHero({ lang, slides: initialSlides, sideMenu: init
 
   const formatLink = (url: string) => {
     if (!url) return "#";
+    if (/^\/(?:ar\/|en\/)?pricing(?:[/?#]|$)/i.test(url)) return `/${lang}/services`;
     if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("#")) return url;
     if (url.startsWith(`/${lang}/`) || url === `/${lang}`) return url;
     const cleanUrl = url.startsWith("/") ? url : `/${url}`;
@@ -116,6 +117,8 @@ export default function ZoalnaHero({ lang, slides: initialSlides, sideMenu: init
               <div
                 key={s.id || idx}
                 className={`slide ${idx === currentSlide ? "active" : ""}`}
+                aria-hidden={idx !== currentSlide}
+                inert={idx !== currentSlide}
               >
                 <Link href={formatLink(s.link)}>
                   <img src={s.image} alt={s.alt || `Slide ${idx + 1}`} />
@@ -130,7 +133,10 @@ export default function ZoalnaHero({ lang, slides: initialSlides, sideMenu: init
           <div className="slider-controls">
             <div className="slider-dots">
               {slides.map((_, idx) => (
-                <span
+                <button
+                  type="button"
+                  aria-label={isAr ? `عرض الشريحة ${idx + 1}` : `Show slide ${idx + 1}`}
+                  aria-pressed={idx === currentSlide}
                   key={idx}
                   className={idx === currentSlide ? "active" : ""}
                   onClick={() => setCurrentSlide(idx)}

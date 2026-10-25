@@ -1,0 +1,42 @@
+.custom-store-page { max-width: 1120px; margin: 12px auto 32px; color: #0f172a; }
+@media(min-width:900px) { .user-theme .hx-center { min-width: 0; overflow: hidden; } .user-theme .hx-desktop-nav { max-width: 100%; overflow-x: auto; scrollbar-width: thin; flex-wrap: nowrap; } .user-theme .hx-nav-link { flex-shrink: 0; } }
+.csp-breadcrumb { display: flex; gap: 12px; font-size: 12px; color: #64748b; margin-bottom: 20px; }
+.csp-breadcrumb a:hover { color: #2563eb; }
+.csp-heading { padding: 36px; border: 1px solid #e2e8f0; border-radius: 24px; background: #fff; }
+.csp-eyebrow { display: inline-flex; align-items: center; gap: 8px; color: #2563eb; font-size: 11px; font-weight: 800; letter-spacing: 1px; }
+.csp-heading h1 { font-size: clamp(26px, 4vw, 40px); line-height: 1.7; font-weight: 900; margin: 12px 0; }
+.csp-heading > p { color: #64748b; line-height: 2; max-width: 760px; font-size: 14px; white-space: pre-line; }
+.csp-count { display: inline-flex; gap: 8px; align-items: center; font-size: 12px; color: #64748b; margin-top: 20px; }
+.csp-search { display: flex; align-items: center; gap: 10px; margin: 24px 0; border: 1px solid #dbe3ef; border-radius: 14px; background: #fff; padding: 14px 18px; color: #64748b; }
+.csp-search input { width: 100%; min-width: 0; border: 0; outline: 0; background: transparent; color: inherit; font-size: 13px; }
+.csp-search:focus-within { border-color: #2563eb; outline: 2px solid #dbeafe; }
+.csp-groups { display: grid; gap: 18px; }
+.csp-group { border: 1px solid #e2e8f0; background: #fff; border-radius: 20px; overflow: hidden; }
+.csp-group > summary { display: flex; align-items: center; gap: 14px; padding: 20px; cursor: pointer; list-style: none; }
+.csp-group > summary::-webkit-details-marker { display: none; }
+.csp-group > summary > img, .csp-group-icon { width: 56px; height: 56px; flex-shrink: 0; object-fit: cover; border-radius: 14px; background: #eff6ff; color: #2563eb; }
+.csp-group-icon { display: grid; place-items: center; }
+.csp-group h2 { font-size: 16px; font-weight: 800; line-height: 1.8; overflow-wrap: anywhere; }
+.csp-group small { font-size: 12px; color: #64748b; }
+.csp-chevron { margin-inline-start: auto; flex-shrink: 0; }
+.csp-group[open] .csp-chevron { transform: rotate(180deg); }
+.csp-services { border-top: 1px solid #e2e8f0; padding: 0 20px; }
+.csp-service { display: flex; align-items: center; gap: 14px; padding: 18px 0; border-bottom: 1px solid #f1f5f9; }
+.csp-service:last-child { border-bottom: 0; }
+.csp-service > img { width: 48px; height: 48px; object-fit: cover; border-radius: 10px; flex-shrink: 0; }
+.csp-service-copy { flex: 1; min-width: 0; }
+.csp-service-copy h3 { font-size: 13px; font-weight: 700; line-height: 1.9; overflow-wrap: anywhere; }
+.csp-service-copy > span { display: inline-flex; align-items: center; gap: 6px; color: #64748b; font-size: 11px; margin-top: 5px; }
+.csp-price { display: flex; flex-direction: column; align-items: flex-end; gap: 9px; flex-shrink: 0; }
+.csp-price strong { color: #2563eb; font-size: 14px; }
+.csp-price a { display: inline-flex; align-items: center; gap: 6px; background: #2563eb; color: #fff; border-radius: 9px; padding: 8px 12px; font-size: 11px; font-weight: 800; }
+.csp-empty { text-align: center; padding: 60px 20px; color: #64748b; border: 1px dashed #cbd5e1; border-radius: 20px; }
+.csp-empty > svg { margin: 0 auto 18px; color: #94a3b8; }
+.csp-empty h2 { color: #334155; font-size: 20px; font-weight: 800; margin-bottom: 10px; }
+.csp-empty p { font-size: 13px; }
+.dark .custom-store-page { color: #f8fafc; }
+.dark .csp-heading, .dark .csp-search, .dark .csp-group { background: #1d2538; border-color: #35445a; }
+.dark .csp-services, .dark .csp-service, .dark .csp-empty { border-color: #35445a; }
+.dark .csp-heading > p, .dark .csp-count, .dark .csp-group small, .dark .csp-service-copy > span, .dark .csp-empty, .dark .csp-search { color: #b9c2d0; }
+.dark .csp-empty h2 { color: #f8fafc; }
+@media(max-width:600px) { .csp-heading { padding: 24px 20px; } .csp-group > summary { padding: 16px; gap: 10px; } .csp-group h2 { font-size: 14px; } .csp-services { padding: 0 16px; } .csp-service { flex-wrap: wrap; gap: 10px; } .csp-service-copy { min-width: 65%; } .csp-price { width: 100%; flex-direction: row; justify-content: space-between; align-items: center; padding-top: 4px; } }

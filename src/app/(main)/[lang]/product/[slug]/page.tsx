@@ -1,37 +1,10 @@
 import { Locale } from "@/i18n/config";
 import { Metadata } from "next";
 import ProductClient from "./ProductClient";
-import { getBackendCandidates } from "@/lib/api-proxy-candidates";
+import { loadStorefrontData } from "@/lib/storefront-data";
 
 async function fetchDigitalServices(): Promise<any[]> {
-  const backendCandidates = getBackendCandidates(null, process.env.INTERNAL_API_URL);
-  const candidates = [...new Set([
-    ...backendCandidates,
-    "https://api.borai.store",
-    process.env.INTERNAL_API_URL,
-    process.env.NEXT_PUBLIC_API_URL,
-    "http://127.0.0.1:5000",
-    "http://localhost:5000"
-  ].filter(Boolean) as string[])];
-
-  try {
-    const data = await Promise.any(
-      candidates.map(async (base) => {
-        const cleanBase = base.replace(/\/$/, "");
-        const res = await fetch(`${cleanBase}/api/dhru/services?view=pricing`, {
-          next: { revalidate: 60 },
-          signal: AbortSignal.timeout(1800)
-        });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const json = await res.json();
-        if (Array.isArray(json) && json.length > 0) return json;
-        throw new Error("Empty digital catalog");
-      })
-    );
-    return data;
-  } catch {
-    return [];
-  }
+  return await loadStorefrontData("/api/dhru/services?view=pricing", Array.isArray) || [];
 }
 
 interface Props {
@@ -77,6 +50,7 @@ export default async function ProductPage(props: Props) {
 
   return (
     <ProductClient
+      key={`${params.lang}:${params.slug}`}
       lang={params.lang}
       slug={params.slug}
       initialServices={services}

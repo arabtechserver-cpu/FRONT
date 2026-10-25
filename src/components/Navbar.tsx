@@ -2,10 +2,15 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { Home, ShoppingBag, WalletCards, UserRound, UserRoundPlus, Layers3 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { Locale } from "@/i18n/config";
+import { useAppInstall } from "@/components/InstallAppProvider";
 import { useTheme } from "@/context/ThemeContext";
 import { useCart } from "@/context/CartContext";
+import { navigationPages } from '@/lib/store-pages';
+import { useStoreNavigation } from '@/components/StoreNavigationProvider';
+import '@/styles/store-pages.css';
 
 interface NavbarProps {
   lang: Locale;
@@ -56,23 +61,23 @@ const CURRENCIES: CurrencyInfo[] = [
 
 export default function Navbar({ lang, dict, initialAnnouncementBar }: NavbarProps) {
   const isAr = lang === "ar";
+  const { installed, announcementEnabled, announcementTitle, announcementButtonText, openApp } = useAppInstall();
+  const [announcementVisible, setAnnouncementVisible] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [currencyDropdownOpen, setCurrencyDropdownOpen] = useState(false);
-  const [resellerDropdownOpen, setResellerDropdownOpen] = useState(false);
 
   const [userSession, setUserSession] = useState<UserSession | null>(null);
   const [selectedCurrencyCode, setSelectedCurrencyCode] = useState<string>("USD");
   const { theme, toggleTheme } = useTheme();
   const { cartCount, setIsCartOpen } = useCart();
   const [mounted, setMounted] = useState(false);
-
+  const storePages = useStoreNavigation();
   const pathname = usePathname();
   const router = useRouter();
 
   const userDropdownRef = useRef<HTMLDivElement>(null);
   const currencyDropdownRef = useRef<HTMLDivElement>(null);
-  const resellerDropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -130,9 +135,6 @@ export default function Navbar({ lang, dict, initialAnnouncementBar }: NavbarPro
       if (currencyDropdownRef.current && !currencyDropdownRef.current.contains(target)) {
         setCurrencyDropdownOpen(false);
       }
-      if (resellerDropdownRef.current && !resellerDropdownRef.current.contains(target)) {
-        setResellerDropdownOpen(false);
-      }
 
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -148,9 +150,17 @@ export default function Navbar({ lang, dict, initialAnnouncementBar }: NavbarPro
     setMobileMenuOpen(false);
     setUserDropdownOpen(false);
     setCurrencyDropdownOpen(false);
-    setResellerDropdownOpen(false);
 
   }, [pathname]);
+
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const closeOnEscape = (event: KeyboardEvent) => { if (event.key === "Escape") setMobileMenuOpen(false); };
+    document.addEventListener("keydown", closeOnEscape);
+    return () => { document.body.style.overflow = previousOverflow; document.removeEventListener("keydown", closeOnEscape); };
+  }, [mobileMenuOpen]);
 
   const handleCurrencyChange = (code: string) => {
     setSelectedCurrencyCode(code);
@@ -188,6 +198,12 @@ export default function Navbar({ lang, dict, initialAnnouncementBar }: NavbarPro
     return pathname.startsWith(fullPath);
   };
 
+  const storeLinks = [
+    { href: `/${lang}`, ar: "الرئيسية", en: "Home", icon: Home },
+    { href: `/${lang}/services`, ar: "المتجر", en: "Store", icon: ShoppingBag },
+  ];
+  const managedLinks = (location: 'navbar' | 'menu') => navigationPages(storePages, location).map(page => ({ href: `/${lang}/pages/${page.slug}`, ar: page.title, en: page.titleEn || page.title, icon: Layers3 }));
+
   const currentCurrency =
     CURRENCIES.find((c) => c.code === selectedCurrencyCode) || CURRENCIES[0];
 
@@ -204,6 +220,11 @@ export default function Navbar({ lang, dict, initialAnnouncementBar }: NavbarPro
 
   return (
     <>
+      {announcementVisible && announcementEnabled && !installed && <div className="ann-bar" role="region" aria-label={isAr ? "تحميل تطبيق برعي" : "Install BORAI app"}>
+        <img className="pwa-bar-logo" src="/borai-favicon-192.png" alt="BORAI STORE" width={26} height={26} />
+        <span>{announcementTitle} <button type="button" className="pwa-bar-button" onClick={openApp}>{announcementButtonText}</button></span>
+        <button type="button" className="ann-close" aria-label={isAr ? "إغلاق الإعلان" : "Close announcement"} onClick={() => setAnnouncementVisible(false)}>×</button>
+      </div>}
       {/* Sticky Header Bar */}
       <header className="hx-bar">
         <div className="hx-inner">
@@ -217,118 +238,14 @@ export default function Navbar({ lang, dict, initialAnnouncementBar }: NavbarPro
           {/* Center Section: Desktop Navigation Links */}
           <div className="hx-center">
             <nav className="hx-desktop-nav" aria-label={isAr ? "التنقل الرئيسي" : "Main Navigation"}>
-              <Link
-                href={`/${lang}`}
-                className={`hx-nav-link ${isActive("/") ? "active" : ""}`}
-              >
-                <svg viewBox="0 0 24 24" fill="none" width="15" height="15">
-                  <path d="M3 9.5L12 3l9 6.5V21H16v-5h-4v5H3V9.5z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
-                </svg>
-                <span>{isAr ? "الرئيسية" : "Home"}</span>
-              </Link>
-
-
-
-              {/* Reseller Pricing Dropdown */}
-              <div className="relative" ref={resellerDropdownRef} style={{ position: "relative" }}>
-                <button
-                  type="button"
-                  aria-label={isAr ? "قائمة الأسعار" : "Price List"}
-                  className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 text-slate-700 dark:text-slate-300 hover:text-primary dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 ${isActive("/pricing") ? "text-primary" : ""}`}
-                  onClick={() => setResellerDropdownOpen(!resellerDropdownOpen)}
-                >
-                  <span>{isAr ? "قائمة الأسعار" : "Price List"}</span>
-                  <span
-                    className="material-symbols-outlined text-base transition-transform duration-300"
-                    style={{ transform: resellerDropdownOpen ? "rotate(180deg)" : "rotate(0deg)" }}
-                  >
-                    expand_more
-                  </span>
-                </button>
-
-                {resellerDropdownOpen && (
-                  <div
-                    className="account-dropdown-menu open"
-                    style={{ minWidth: "190px", top: "calc(100% + 6px)", left: isAr ? "auto" : "0", right: isAr ? "0" : "auto" }}
-                  >
-                    <Link
-                      href={`/${lang}/pricing?cat=imei`}
-                      className="acdd-item"
-                      onClick={() => setResellerDropdownOpen(false)}
-                    >
-                      <div className="acdd-ico">
-                        <svg viewBox="0 0 24 24" fill="none" width="14" height="14">
-                          <rect x="5" y="2" width="14" height="20" rx="3" stroke="currentColor" strokeWidth="1.6" />
-                          <circle cx="12" cy="18" r="1" fill="currentColor" />
-                        </svg>
-                      </div>
-                      <span>{isAr ? "خدمات IMEI" : "IMEI Services"}</span>
-                    </Link>
-
-                    <Link
-                      href={`/${lang}/pricing?cat=server`}
-                      className="acdd-item"
-                      onClick={() => setResellerDropdownOpen(false)}
-                    >
-                      <div className="acdd-ico">
-                        <svg viewBox="0 0 24 24" fill="none" width="14" height="14">
-                          <rect x="2" y="3" width="20" height="7" rx="2" stroke="currentColor" strokeWidth="1.6" />
-                          <rect x="2" y="14" width="20" height="7" rx="2" stroke="currentColor" strokeWidth="1.6" />
-                        </svg>
-                      </div>
-                      <span>{isAr ? "خدمات السيرفر" : "Server Services"}</span>
-                    </Link>
-
-                    <Link
-                      href={`/${lang}/pricing?cat=remote`}
-                      className="acdd-item"
-                      onClick={() => setResellerDropdownOpen(false)}
-                    >
-                      <div className="acdd-ico">
-                        <svg viewBox="0 0 24 24" fill="none" width="14" height="14">
-                          <rect x="2" y="4" width="20" height="14" rx="2" stroke="currentColor" strokeWidth="1.6" />
-                          <line x1="8" y1="20" x2="16" y2="20" stroke="currentColor" strokeWidth="1.6" />
-                        </svg>
-                      </div>
-                      <span>{isAr ? "الخدمات عن بعد" : "Remote Services"}</span>
-                    </Link>
-                  </div>
-                )}
-              </div>
-
-              {/* Gaming & Social Media Services */}
-              <Link
-                href={`/${lang}/services`}
-                className={`hx-nav-link ${isActive("/services") || isActive("/gaming") ? "active" : ""}`}
-              >
-                <span className="material-symbols-outlined text-[17px]">sports_esports</span>
-                <span>{isAr ? "خدمات الألعاب والسوشيال ميديا" : "Gaming & Digital"}</span>
-              </Link>
-
-              {/* Orders */}
-              <Link
-                href={`/${lang}/orders`}
-                suppressHydrationWarning
-                className={`hx-nav-link ${isActive("/orders") ? "active" : ""}`}
-              >
-                <span>{isAr ? "الطلبات" : "Orders"}</span>
-              </Link>
-
-              {/* Wallet */}
-              <Link
-                href={`/${lang}/wallet`}
-                suppressHydrationWarning
-                className={`hx-nav-link ${isActive("/wallet") ? "active" : ""}`}
-              >
-                <span>{isAr ? "المحفظة والشحن" : "Wallet & Top-up"}</span>
-              </Link>
+              {[...storeLinks, ...managedLinks('navbar')].map(item => <Link key={item.href} href={item.href} className={`hx-nav-link ${pathname === item.href ? "active" : ""}`}><span>{isAr ? item.ar : item.en}</span></Link>)}
             </nav>
           </div>
 
           {/* Left Section: Currency, Language, User Dropdown / Login, Cart */}
           <div className="hx-left">
             {/* Currency Selector Pill (Hidden on narrow mobile <400px to avoid header overflow, available in mobile drawer) */}
-            <div className="relative hidden min-[420px]:block" ref={currencyDropdownRef} style={{ position: "relative" }}>
+            <div className="relative hidden min-[420px]:block hx-currency-control" ref={currencyDropdownRef} style={{ position: "relative" }}>
               <button
                 type="button"
                 className="hx-icon-btn"
@@ -373,7 +290,7 @@ export default function Navbar({ lang, dict, initialAnnouncementBar }: NavbarPro
             <button
               type="button"
               onClick={toggleTheme}
-              className="hx-icon-btn"
+              className="hx-icon-btn hx-theme-control"
               aria-label={isAr ? (theme === "dark" ? "تفعيل الوضع الفاتح" : "تفعيل الوضع الداكن") : (theme === "dark" ? "Switch to light mode" : "Switch to dark mode")}
               title={isAr ? (theme === "dark" ? "الوضع الفاتح" : "الوضع الداكن") : (theme === "dark" ? "Light Mode" : "Dark Mode")}
               style={{ width: "36px", height: "36px", color: "inherit" }}
@@ -402,7 +319,7 @@ export default function Navbar({ lang, dict, initialAnnouncementBar }: NavbarPro
             <Link
               href={switchLanguage()}
               suppressHydrationWarning
-              className="hx-icon-btn"
+              className="hx-icon-btn hx-language-control"
               aria-label={isAr ? "English" : "العربية"}
               style={{
                 width: "auto",
@@ -606,6 +523,8 @@ export default function Navbar({ lang, dict, initialAnnouncementBar }: NavbarPro
                 type="button"
                 className="hx-icon-btn menu-toggle"
                 aria-label={isAr ? "القائمة" : "Menu"}
+                aria-expanded={mobileMenuOpen}
+                aria-controls="store-mobile-menu"
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -622,7 +541,7 @@ export default function Navbar({ lang, dict, initialAnnouncementBar }: NavbarPro
       </header>
 
       {/* 3. Mobile Slideout Menu (Zoalna style) */}
-      <aside className={`mobile-menu ${mobileMenuOpen ? "active" : ""}`} role="navigation" aria-label={isAr ? "القائمة الجانبية" : "Side Menu"}>
+      <aside id="store-mobile-menu" inert={!mobileMenuOpen} className={`mobile-menu ${mobileMenuOpen ? "active" : ""}`} role="navigation" aria-label={isAr ? "القائمة الجانبية" : "Side Menu"}>
         <div className="mn-top">
           <img src="/images/borai-logo.png?v=2" alt="BORAI SERVER" />
           <button className="close-mobile-menu" aria-label={isAr ? "إغلاق" : "Close"} onClick={() => setMobileMenuOpen(false)}>
@@ -635,165 +554,28 @@ export default function Navbar({ lang, dict, initialAnnouncementBar }: NavbarPro
         <div className="mn-body">
           <div className="mn-label">{isAr ? "التصفح" : "Navigation"}</div>
 
-          <Link href={`/${lang}`} className={`mn-item ${isActive("/") ? "active" : ""}`} onClick={() => setMobileMenuOpen(false)}>
-            <div className="mn-ico">
-              <svg viewBox="0 0 24 24" fill="none" width="18" height="18">
-                <path d="M3 9.5L12 3l9 6.5V21H16v-5h-4v5H3V9.5z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
-              </svg>
-            </div>
-            <span>{isAr ? "الرئيسية" : "Home"}</span>
-          </Link>
-
-
-
-          <Link href={`/${lang}/pricing`} className={`mn-item ${isActive("/pricing") ? "active" : ""}`} onClick={() => setMobileMenuOpen(false)}>
-            <div className="mn-ico">
-              <svg viewBox="0 0 24 24" fill="none" width="18" height="18">
-                <rect x="2" y="7" width="20" height="14" rx="2" stroke="currentColor" strokeWidth="1.6" />
-                <path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-              </svg>
-            </div>
-            <span>{isAr ? "قائمة الأسعار" : "Price List"}</span>
-          </Link>
-
-          <Link href={`/${lang}/services`} className={`mn-item ${isActive("/services") || isActive("/gaming") ? "active" : ""}`} onClick={() => setMobileMenuOpen(false)}>
-            <div className="mn-ico">
-              <span className="material-symbols-outlined text-[19px]">sports_esports</span>
-            </div>
-            <span>{isAr ? "خدمات الألعاب والسوشيال ميديا" : "Gaming & Digital Services"}</span>
-          </Link>
-
-          <Link href={`/${lang}/orders`} suppressHydrationWarning className={`mn-item ${isActive("/orders") ? "active" : ""}`} onClick={() => setMobileMenuOpen(false)}>
-            <div className="mn-ico">
-              <svg viewBox="0 0 24 24" fill="none" width="18" height="18">
-                <path d="M6 2h12a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z" stroke="currentColor" strokeWidth="1.6" />
-              </svg>
-            </div>
-            <span>{isAr ? "الطلبات" : "Orders"}</span>
-          </Link>
-
-          <Link href={`/${lang}/wallet`} suppressHydrationWarning className={`mn-item ${isActive("/wallet") ? "active" : ""}`} onClick={() => setMobileMenuOpen(false)}>
-            <div className="mn-ico">
-              <svg viewBox="0 0 24 24" fill="none" width="18" height="18">
-                <rect x="1" y="6" width="22" height="15" rx="2" stroke="currentColor" strokeWidth="1.6" />
-                <path d="M1 11h22" stroke="currentColor" strokeWidth="1.4" />
-                <circle cx="17" cy="16" r="2" stroke="currentColor" strokeWidth="1.4" />
-              </svg>
-            </div>
-            <span>{isAr ? "المحفظة والشحن" : "Wallet & Top-up"}</span>
-          </Link>
-
-          <div className="mn-hr" />
-
-          <div className="mn-label">{isAr ? "اللغة" : "Language"}</div>
-
-          {/* Mobile Language Switcher */}
-          <Link
-            href={switchLanguage()}
-            suppressHydrationWarning
-            className="mn-item"
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            <div className="mn-ico">
-              <svg viewBox="0 0 24 24" fill="none" width="18" height="18" stroke="currentColor" strokeWidth="1.8">
-                <circle cx="12" cy="12" r="10" />
-                <line x1="2" y1="12" x2="22" y2="12" />
-                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-              </svg>
-            </div>
-            <span>{isAr ? "تغيير إلى English" : "Switch to العربية"}</span>
-          </Link>
-
-          {/* Mobile Drawer Theme Toggle */}
-          <button
-            type="button"
-            className="mn-item"
-            onClick={toggleTheme}
-            style={{ width: "100%", background: "transparent", border: "none", textAlign: isAr ? "right" : "left" }}
-          >
-            <div className="mn-ico">
-              {mounted && theme === "dark" ? (
-                <svg viewBox="0 0 24 24" fill="none" width="18" height="18" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="4" />
-                  <line x1="12" y1="2" x2="12" y2="4" />
-                  <line x1="12" y1="20" x2="12" y2="22" />
-                  <line x1="4.93" y1="4.93" x2="6.34" y2="6.34" />
-                  <line x1="17.66" y1="17.66" x2="19.07" y2="19.07" />
-                  <line x1="2" y1="12" x2="4" y2="12" />
-                  <line x1="20" y1="12" x2="22" y2="12" />
-                  <line x1="4.93" y1="19.07" x2="6.34" y2="17.66" />
-                  <line x1="17.66" y1="6.34" x2="19.07" y2="4.93" />
-                </svg>
-              ) : (
-                <svg viewBox="0 0 24 24" fill="none" width="18" height="18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-                </svg>
-              )}
-            </div>
-            <span>
-              {isAr
-                ? (theme === "dark" ? "الوضع الفاتح (النهاري)" : "الوضع الداكن (الليلي)")
-                : (theme === "dark" ? "Light Mode" : "Dark Mode")}
-            </span>
-          </button>
-
-
-
-          {userSession ? (
-            <>
-              <Link href={`/${lang}/profile`} className="mn-item" onClick={() => setMobileMenuOpen(false)}>
-                <div className="mn-ico">
-                  <svg viewBox="0 0 24 24" fill="none" width="18" height="18">
-                    <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="1.6" />
-                    <path d="M5 21c0-4 3.1-7 7-7s7 3 7 7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                  </svg>
-                </div>
-                <span>{isAr ? `حسابي (${userSession.fullName?.split(" ")[0] || "المستخدم"})` : `Account (${userSession.fullName?.split(" ")[0] || "User"})`}</span>
-              </Link>
-              <button
-                type="button"
-                className="mn-item danger"
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  handleLogout();
-                }}
-                style={{ width: "100%", background: "transparent", border: "none", textAlign: isAr ? "right" : "left" }}
-              >
-                <div className="mn-ico">
-                  <svg viewBox="0 0 24 24" fill="none" width="18" height="18"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                </div>
-                <span>{isAr ? "تسجيل الخروج" : "Logout"}</span>
-              </button>
-            </>
-          ) : (
-            <>
-              <Link href={`/${lang}/login`} className="mn-item" onClick={() => setMobileMenuOpen(false)}>
-                <div className="mn-ico">
-                  <svg viewBox="0 0 24 24" fill="none" width="18" height="18">
-                    <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="1.6" />
-                    <path d="M5 21c0-4 3.1-7 7-7s7 3 7 7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                  </svg>
-                </div>
-                <span>{isAr ? "تسجيل الدخول" : "Sign In"}</span>
-              </Link>
-              <Link href={`/${lang}/register`} className="mn-item" onClick={() => setMobileMenuOpen(false)}>
-                <div className="mn-ico">
-                  <svg viewBox="0 0 24 24" fill="none" width="18" height="18">
-                    <circle cx="12" cy="8" r="3.5" stroke="currentColor" strokeWidth="1.6" />
-                    <path d="M4 20c0-3.5 3.2-6 8-6s8 2.5 8 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                    <path d="M19 6v4M17 8h4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                  </svg>
-                </div>
-                <span>{isAr ? "إنشاء حساب جديد" : "Create Account"}</span>
-              </Link>
-            </>
-          )}
+          {[...storeLinks, ...managedLinks('menu')].map(item => { const Icon = item.icon; return <Link key={item.href} href={item.href} className="mn-item" onClick={() => setMobileMenuOpen(false)}><div className="mn-ico"><Icon size={21} strokeWidth={1.6} /></div><span>{isAr ? item.ar : item.en}</span></Link>; })}
+          {userSession ? <>
+            <Link href={`/${lang}/profile`} className="mn-item" onClick={() => setMobileMenuOpen(false)}><div className="mn-ico"><UserRound size={21} /></div><span>{isAr ? "حسابي" : "My account"}</span></Link>
+            <Link href={`/${lang}/orders`} className="mn-item" onClick={() => setMobileMenuOpen(false)}><div className="mn-ico"><ShoppingBag size={21} /></div><span>{isAr ? "طلباتي" : "My orders"}</span></Link>
+            <Link href={`/${lang}/wallet`} className="mn-item" onClick={() => setMobileMenuOpen(false)}><div className="mn-ico"><WalletCards size={21} /></div><span>{isAr ? "محفظتي" : "My wallet"}</span></Link>
+            <button type="button" className="mn-item" onClick={() => { setMobileMenuOpen(false); handleLogout(); }}>{isAr ? "تسجيل الخروج" : "Sign out"}</button>
+          </> : <>
+            <Link href={`/${lang}/login`} className="mn-item" onClick={() => setMobileMenuOpen(false)}><div className="mn-ico"><UserRound size={21} strokeWidth={1.6} /></div><span>{isAr ? "تسجيل الدخول" : "Sign in"}</span></Link>
+            <Link href={`/${lang}/register`} className="mn-item" onClick={() => setMobileMenuOpen(false)}><div className="mn-ico"><UserRoundPlus size={21} strokeWidth={1.6} /></div><span>{isAr ? "إنشاء حساب" : "Create account"}</span></Link>
+          </>}
+          <details className="mn-settings"><summary>{isAr ? "اللغة والمظهر والعملة" : "Language, appearance & currency"}</summary>
+            <Link className="mn-item" href={switchLanguage()} onClick={() => setMobileMenuOpen(false)}>{isAr ? "English" : "العربية"}</Link>
+            <button type="button" className="mn-item" onClick={toggleTheme}>{isAr ? (theme === "dark" ? "الوضع الفاتح" : "الوضع الداكن") : (theme === "dark" ? "Light mode" : "Dark mode")}</button>
+            <label className="mn-currency">{isAr ? "العملة" : "Currency"}<select value={selectedCurrencyCode} onChange={e => handleCurrencyChange(e.target.value)}>{CURRENCIES.map(c => <option key={c.code} value={c.code}>{c.code} — {isAr ? c.nameAr : c.nameEn}</option>)}</select></label>
+            <button type="button" className="mn-item" onClick={() => { setMobileMenuOpen(false); window.dispatchEvent(new CustomEvent("toggle-ai-chat")); }}>{isAr ? "المساعد الذكي" : "AI assistant"}</button>
+          </details>
         </div>
       </aside>
 
       {/* Mobile Menu Backdrop Overlay */}
       <div
-        className={`cart-overlay ${mobileMenuOpen ? "active" : ""}`}
+        className={`cart-overlay mobile-menu-overlay ${mobileMenuOpen ? "active" : ""}`}
         onClick={() => setMobileMenuOpen(false)}
       />
     </>

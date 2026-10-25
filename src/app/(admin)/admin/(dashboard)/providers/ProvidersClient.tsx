@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback, useDeferredValue, useMemo } from "react";
 import Link from "next/link";
+import { providerPackageKey, selectImportServices, toggleVisiblePackageSelection } from "@/lib/provider-import-selection";
 import {
   filterProviderServicesByType,
   getProviderServiceType,
@@ -208,6 +209,7 @@ export default function ProvidersClient() {
 
   // Sync Options Modal
   const [syncModalProvider, setSyncModalProvider] = useState<Provider | null>(null);
+  const [syncSelection, setSyncSelection] = useState<string[]>([]);
   const [syncMode, setSyncMode] = useState<"all"|"selected">("all");
   const [syncConfig, setSyncConfig] = useState({
     markup_percent: 0,
@@ -226,7 +228,7 @@ export default function ProvidersClient() {
   const deferredServiceSearch = useDeferredValue(serviceSearch);
   const [packageFilter, setPackageFilter] = useState<"all" | "active" | "hidden">("all");
   const [serviceTypeFilter, setServiceTypeFilter] = useState<ProviderServiceTypeFilter>("all");
-  const [selectedGroupNames, setSelectedGroupNames] = useState<string[]>([]);
+  const [selectedGroupKeys, setSelectedGroupKeys] = useState<string[]>([]);
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
   const [isPerformingBulkAction, setIsPerformingBulkAction] = useState(false);
   const [visibleGroupsLimit, setVisibleGroupsLimit] = useState(25);
@@ -413,7 +415,10 @@ export default function ProvidersClient() {
     }
   };
 
-  const openSyncModal = (provider: Provider, mode: "all"|"selected" = "all") => {
+  const openSyncModal = (provider: Provider, mode: "all"|"selected" = "selected", keys = selectedGroupKeys) => {
+    if (mode === "selected" && serviceLoadSource !== "remote") { showToast("لاستيراد خدمات جديدة افتح تبويب خدمات المزود أولاً", "error"); return; }
+    if (mode === "selected" && keys.length === 0) { showToast("حدد قسماً أو باقة أولاً", "error"); return; }
+    setSyncSelection([...keys]);
     setSyncModalProvider(provider);
     setSyncMode(mode);
     setSyncConfig({
@@ -436,7 +441,7 @@ export default function ProvidersClient() {
         endpoint = `/api/providers/${p.id}/import-services`;
         bodyData = {
           ...syncConfig,
-          services: providerServices.filter(s => selectedGroupNames.includes(s.groupName || s.group_name || "باقة عامة"))
+          services: selectImportServices(providerServices, syncSelection)
         };
       }
 
@@ -452,17 +457,17 @@ export default function ProvidersClient() {
         if (browseProvider && browseProvider.id === p.id) {
           if (syncMode === "selected" && serviceLoadSource === "remote") {
             // Keep remote catalog so user can select and import MORE packages without losing anything!
-            const importedGroupNames = new Set(selectedGroupNames);
+            const importedGroupNames = new Set(syncSelection);
             setProviderServices((prev) =>
               prev.map((s) => {
                 const g = s.groupName || s.group_name || "باقة عامة";
-                if (importedGroupNames.has(g)) {
+                if (importedGroupNames.has(providerPackageKey(s))) {
                   return { ...s, isImported: true, isActive: true };
                 }
                 return s;
               })
             );
-            setSelectedGroupNames([]);
+            setSelectedGroupKeys([]);
           } else {
             await handleBrowseServices(p, serviceLoadSource || "auto");
           }
@@ -496,7 +501,7 @@ export default function ProvidersClient() {
     setLoadingServiceSource(forceSource === "remote" ? "remote" : "stored");
     setServiceSearch("");
     setPackageFilter("all");
-    setSelectedGroupNames([]);
+    setSelectedGroupKeys([]);
     setExpandedGroups({});
     setServiceTypeFilter("all");
     setVisibleGroupsLimit(25);
@@ -561,18 +566,21 @@ export default function ProvidersClient() {
     const map: Record<string, any[]> = {};
     for (const s of typeFilteredProviderServices) {
       const rawG = s.groupName || s.group_name || "باقة عامة";
-      const g = refinePackageGroupName(rawG, s.name || s.originalName || "");
+      const g = providerPackageKey(s);
       if (!map[g]) map[g] = [];
       map[g].push(s);
     }
 
-    const groupsArray = Object.entries(map).map(([groupName, services]) => {
+    const groupsArray = Object.entries(map).map(([key, services]) => {
+      const first = services[0];
+      const groupName = refinePackageGroupName(first.groupName || first.group_name || "باقة عامة", first.name || first.originalName || "");
       const activeCount = services.filter((s) => s.isActive).length;
       const isStoredData = serviceLoadSource === "stored";
       const isAllActive = isStoredData && activeCount === services.length;
       const isAllHidden = isStoredData && activeCount === 0;
 
       return {
+        key,
         groupName,
         services,
         serviceTypes: Array.from(new Set(services.map((service) => getProviderServiceType(service)))),
@@ -632,17 +640,24 @@ export default function ProvidersClient() {
   };
 
   const toggleGroupSelection = (groupName: string) => {
-    setSelectedGroupNames((prev) =>
+    setSelectedGroupKeys((prev) =>
       prev.includes(groupName) ? prev.filter((g) => g !== groupName) : [...prev, groupName]
     );
   };
 
   const handleSelectAllGroups = () => {
-    if (selectedGroupNames.length === filteredGroups.length) {
-      setSelectedGroupNames([]);
-    } else {
-      setSelectedGroupNames(filteredGroups.map((g) => g.groupName));
-    }
+    setSelectedGroupKeys(previous => toggleVisiblePackageSelection(previous, filteredGroups.map(group => group.key)));
+  };
+
+  const importTypes = [
+    { id: "imei", label: "IMEI" }, { id: "server", label: "السيرفر" }, { id: "remote", label: "عن بُعد" },
+    { id: "topups", label: "شحن الألعاب" }, { id: "gamecodes", label: "كروت الألعاب" },
+    { id: "appstores", label: "المتاجر والبطاقات" }, { id: "subscriptions", label: "الاشتراكات" }, { id: "esim", label: "eSIM" }
+  ];
+  const selectedServicesForImport = useMemo(() => selectImportServices(providerServices, selectedGroupKeys), [providerServices, selectedGroupKeys]);
+  const toggleImportType = (type: string) => {
+    const keys = [...new Set(providerServices.filter(service => getProviderServiceType(service) === type).map(providerPackageKey))] as string[];
+    setSelectedGroupKeys(previous => toggleVisiblePackageSelection(previous, keys));
   };
 
   // Toggle single package visibility
@@ -674,7 +689,7 @@ export default function ProvidersClient() {
 
   // Bulk toggle for selected packages
   const handleBulkToggleSelectedPackages = async (nextActive: boolean) => {
-    if (!browseProvider || selectedGroupNames.length === 0) return;
+    if (!browseProvider || selectedGroupKeys.length === 0) return;
     if (serviceLoadSource !== "stored") {
       showToast("قم بالمزامنة أولاً قبل تعديل الباقات.", "error");
       return;
@@ -684,15 +699,15 @@ export default function ProvidersClient() {
       const res = await fetch(`/api/providers/${browseProvider.id}/toggle-packages`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ groupNames: selectedGroupNames, isActive: nextActive })
+        body: JSON.stringify({ groupNames: groupedPackages.filter(group => selectedGroupKeys.includes(group.key)).map(group => group.groupName), isActive: nextActive })
       });
       const data = await res.json();
       if (res.ok && data.success) {
         showToast(data.message || "تم تحديث حالة الباقات المحددة بنجاح!");
         setProviderServices((prev) =>
-          prev.map((s) => (selectedGroupNames.includes(s.groupName) ? { ...s, isActive: nextActive } : s))
+          prev.map((s) => (selectedGroupKeys.includes(providerPackageKey(s)) ? { ...s, isActive: nextActive } : s))
         );
-        setSelectedGroupNames([]);
+        setSelectedGroupKeys([]);
       } else {
         showToast(data.error || "فشل تحديث الباقات المحددة", "error");
       }
@@ -1123,14 +1138,14 @@ export default function ProvidersClient() {
                     </button>
 
                     <button
-                      onClick={() => openSyncModal(provider)}
+                      onClick={() => handleBrowseServices(provider, "remote")}
                       disabled={isSyncing}
                       className="px-4 py-2 rounded-xl bg-gradient-to-r from-primary to-secondary text-on-primary text-xs font-bold transition-all flex items-center gap-1.5 shadow-md hover:shadow-lg disabled:opacity-50"
                     >
                       <span className={`material-symbols-outlined text-sm ${isSyncing ? "animate-spin" : ""}`}>
                         {isSyncing ? "refresh" : "sync"}
                       </span>
-                      <span>{isSyncing ? "جاري المزامنة..." : "مزامنة تلقائية"}</span>
+                      <span>{isSyncing ? "جاري المزامنة..." : "اختيار أقسام للإضافة"}</span>
                     </button>
                   </div>
                 </div>
@@ -1321,12 +1336,12 @@ export default function ProvidersClient() {
 
       {/* SYNC CONFIG MODAL */}
       {syncModalProvider && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-in fade-in">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[60] flex items-center justify-center p-4 animate-in fade-in">
           <div className="bg-surface-container border border-outline-variant/30 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl space-y-5">
             <div className="flex items-center justify-between pb-3 border-b border-outline-variant/20">
               <h3 className="text-lg font-bold text-on-surface flex items-center gap-2">
                 <span className="material-symbols-outlined text-primary">sync</span>
-                <span>مزامنة خدمات: {syncModalProvider.name}</span>
+                <span>{syncMode === "selected" ? "مراجعة الاستيراد:" : "مزامنة كل الخدمات:"} {syncModalProvider.name}</span>
               </h3>
               <button
                 type="button"
@@ -1339,15 +1354,8 @@ export default function ProvidersClient() {
 
             <div className="space-y-4 text-xs">
               <div className="p-3 bg-primary/10 border border-primary/20 rounded-xl text-on-surface-variant leading-relaxed">
-                سيتم جلب قوائم IMEI وServer وRemote تلقائياً، ثم اعتماد النوع المرسل داخل بيانات كل خدمة وحفظه للفلترة والتنفيذ الصحيح.
-                <br /><br />
-                <span className="font-bold text-amber-500">تنبيه هام:</span> يرجى التأكد من إضافة عناوين IP السيرفر الخاص بك في إعدادات API لدى المزود (WhiteList IP) قبل المزامنة لتجنب رفض الاتصال:
-                <div className="mt-1 flex flex-col gap-1">
-                  <code className="bg-surface-container-highest px-1.5 py-0.5 rounded text-primary text-[11px] text-left dir-ltr w-fit">186.240.155.152</code>
-                  <code className="bg-surface-container-highest px-1.5 py-0.5 rounded text-primary text-[11px] text-left dir-ltr w-fit">2c0f:fc89:5e:8063:b178:82be:2580:b934</code>
-                </div>
+                {syncMode === "selected" ? <><strong className="block text-on-surface mb-2">هيتم إضافة أو تحديث {selectImportServices(providerServices, syncSelection).length} خدمة من {syncSelection.length} باقة فقط.</strong><p>الباقات غير المحددة والخدمات الموجودة هتفضل زي ما هي.</p><ul className="mt-2 max-h-32 overflow-y-auto list-disc ps-4">{syncSelection.map(key => <li key={key}>{JSON.parse(key)[1]} ({selectImportServices(providerServices, [key]).length} خدمة)</li>)}</ul></> : "سيتم تحديث جميع خدمات هذا المزود. لا تستخدم هذا الخيار إلا إذا كنت تريد كل الأقسام."}
               </div>
-
               <div>
                 <label className="block font-bold text-on-surface-variant mb-1.5">
                   نسبة هامش الربح المضافة على التكلفة (%):
@@ -1384,7 +1392,7 @@ export default function ProvidersClient() {
                 className="flex-1 bg-gradient-to-r from-primary to-secondary text-on-primary py-3 rounded-xl font-bold text-xs transition-all shadow-md flex items-center justify-center gap-2"
               >
                 <span className="material-symbols-outlined text-sm">play_arrow</span>
-                <span>بدء المزامنة الآن</span>
+                <span>{syncMode === "selected" ? "تأكيد استيراد المحدد فقط" : "تحديث جميع خدمات المزود"}</span>
               </button>
               <button
                 type="button"
@@ -1445,9 +1453,9 @@ export default function ProvidersClient() {
       {/* UPGRADED BROWSE SERVICES & PACKAGES MODAL WITH REQUIRED FIELDS */}
       {browseProvider && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-5 animate-in fade-in overflow-hidden">
-          <div className="bg-surface-container border border-outline-variant/30 rounded-2xl sm:rounded-3xl p-3 sm:p-6 max-w-4xl w-full shadow-2xl flex flex-col h-[95dvh] sm:h-auto sm:max-h-[92vh] overflow-hidden">
+          <div className="bg-surface-container border border-outline-variant/30 rounded-2xl sm:rounded-3xl p-3 sm:p-6 max-w-4xl w-full shadow-2xl flex flex-col gap-3 h-[95dvh] sm:max-h-[92vh] overflow-y-auto">
             {/* Modal Top Header & Controls (Fixed / Non-shrinking) */}
-            <div className="shrink-0 space-y-2 sm:space-y-3 pb-1">
+            <div className="shrink-0 space-y-3 pb-1">
               {/* Modal Top Bar */}
               <div className="flex items-center justify-between pb-2 sm:pb-3 border-b border-outline-variant/20">
                 <div className="flex items-center gap-2.5 sm:gap-3">
@@ -1475,226 +1483,32 @@ export default function ProvidersClient() {
                 </button>
               </div>
 
-              {/* View Switcher Tabs: Live Provider Catalog vs Stored In Store */}
-              <div className="flex flex-wrap items-center justify-between gap-2 p-1.5 sm:p-2 bg-surface-container-lowest border border-outline-variant/30 rounded-2xl">
-                <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-                  <button
-                    type="button"
-                    onClick={() => handleBrowseServices(browseProvider, "remote")}
-                    className={`px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-xs font-bold transition-all flex items-center gap-1.5 ${
-                      serviceLoadSource === "remote"
-                        ? "bg-sky-500 text-white shadow-md"
-                        : "bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface"
-                    }`}
-                    title="عرض كل باقات وخدمات المزود من الـ API مباشرة لاختيار واستيراد باقات جديدة"
-                  >
-                    <span className="material-symbols-outlined text-sm">cloud_sync</span>
-                    <span>تصفح واستيراد باقات جديدة (API Live)</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => handleBrowseServices(browseProvider, "stored")}
-                    className={`px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-xs font-bold transition-all flex items-center gap-1.5 ${
-                      serviceLoadSource === "stored"
-                        ? "bg-primary text-on-primary shadow-md"
-                        : "bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface"
-                    }`}
-                    title="عرض الخدمات المستوردة حالياً في الموقع للتحكم في ظهورها وهوامش الربح"
-                  >
-                    <span className="material-symbols-outlined text-sm">inventory_2</span>
-                    <span>الخدمات المضافة في الموقع ({browseProvider.servicesCount || 0})</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setRawExportModalProvider(browseProvider)}
-                    disabled={loadingServices}
-                    className="px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-xs font-bold transition-all flex items-center gap-1.5 bg-violet-500/15 hover:bg-violet-500/25 text-violet-400 border border-violet-500/30 shadow-sm"
-                    title="تحميل محتوى المزود الأصلي بالكامل بدون أي إضافات منا (Raw JSON)"
-                  >
-                    <span className="material-symbols-outlined text-sm">download_for_offline</span>
-                    <span>الداتا الأصلية الخام (Raw)</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={handleExportCurrentBrowseServicesJson}
-                    disabled={loadingServices || providerServices.length === 0}
-                    className="px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-xs font-bold transition-all flex items-center gap-1.5 bg-surface-container-high hover:bg-surface-container-highest text-on-surface border border-outline-variant/30"
-                    title="تحميل الخدمات الحالية والباقات والحقول كملف JSON"
-                  >
-                    <span className="material-symbols-outlined text-sm">download</span>
-                    <span>تصدير JSON ({providerServices.length})</span>
-                  </button>
-                </div>
-
-                {serviceLoadSource === "remote" && (
-                  <span className="text-[10px] sm:text-[11px] text-sky-400 font-bold bg-sky-500/10 border border-sky-500/20 px-2.5 py-0.5 sm:py-1 rounded-xl flex items-center gap-1">
-                    <span className="material-symbols-outlined text-xs">tune</span>
-                    <span>يمكنك تحديد واستيراد أي باقة ولن تختفي باقي الباقات</span>
-                  </span>
-                )}
+              <div className="flex flex-wrap gap-2 text-xs">
+                <button type="button" onClick={() => handleBrowseServices(browseProvider, "remote")} className={`px-4 py-2 rounded-xl border ${serviceLoadSource === "remote" ? "bg-primary text-on-primary border-primary" : "border-outline-variant/30"}`}>خدمات المزود — اختار منها للإضافة</button>
+                <button type="button" onClick={() => handleBrowseServices(browseProvider, "stored")} className={`px-4 py-2 rounded-xl border ${serviceLoadSource === "stored" ? "bg-primary text-on-primary border-primary" : "border-outline-variant/30"}`}>الموجودة في متجري</button>
+                <details className="rounded-xl border border-outline-variant/30 p-2"><summary className="cursor-pointer text-on-surface-variant">خيارات متقدمة</summary><div className="flex flex-wrap gap-3 py-3">
+                  <button type="button" onClick={() => setRawExportModalProvider(browseProvider)}>تحميل بيانات المزود الأصلية</button>
+                  <button type="button" onClick={handleExportCurrentBrowseServicesJson}>تصدير القائمة</button>
+                  <button type="button" onClick={() => openSyncModal(browseProvider, "all")}>تحديث جميع الأقسام</button>
+                  {serviceLoadSource === "stored" && selectedGroupKeys.length > 0 && <><button type="button" onClick={() => handleBulkToggleSelectedPackages(true)}>إظهار المحدد في المتجر</button><button type="button" onClick={() => handleBulkToggleSelectedPackages(false)}>إخفاء المحدد من المتجر</button></>}
+                </div></details>
               </div>
 
-              {/* Quick Bulk Actions Toolbar */}
-              <div className="flex flex-wrap items-center justify-between gap-2 p-2 sm:p-2.5 rounded-2xl bg-surface-container-lowest border border-outline-variant/20 text-xs">
-                <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-                  {serviceLoadSource === "stored" && (
-                    <>
-                      <button
-                        type="button"
-                        onClick={() => handleToggleAllServices(true)}
-                        disabled={isPerformingBulkAction || loadingServices}
-                        className="px-3 py-1.5 rounded-xl bg-violet-500 hover:bg-violet-600 text-white font-bold transition-all flex items-center gap-1 shadow-sm disabled:opacity-50 text-[11px]"
-                        title="تفعيل وإظهار كافة خدمات وباقات هذا المزود للعملاء في المتجر"
-                      >
-                        <span className="material-symbols-outlined text-sm">visibility</span>
-                        <span>إظهار الكل للعملاء</span>
-                      </button>
+              <section className="rounded-2xl border border-primary/25 bg-primary/5 p-4 space-y-3" aria-label="اختيار الأقسام للاستيراد">
+                <div className="flex flex-wrap justify-between gap-2"><div><h4 className="font-bold text-on-surface">١. اختار الأقسام اللي عايز تضيفها</h4><p className="text-xs text-on-surface-variant mt-1">علّم على قسم كامل، أو اختار باقات بعينها من القائمة تحت. الاختيار بيجمع الأقسام مع بعض.</p></div><button type="button" onClick={() => setSelectedGroupKeys([])} className="text-xs text-on-surface-variant underline">إلغاء كل التحديد</button></div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">{importTypes.map(type => {
+                  const keys = [...new Set(providerServices.filter(service => getProviderServiceType(service) === type.id).map(providerPackageKey))] as string[];
+                  const count = keys.filter(key => selectedGroupKeys.includes(key)).length;
+                  return <label key={type.id} className={`flex gap-2 items-center rounded-xl border p-3 text-xs cursor-pointer ${count ? "border-primary bg-primary/10" : "border-outline-variant/30"}`}><input type="checkbox" disabled={keys.length === 0 || loadingServices} checked={keys.length > 0 && count === keys.length} ref={node => { if (node) node.indeterminate = count > 0 && count < keys.length; }} onChange={() => toggleImportType(type.id)} /><span>{type.label}<small className="block text-on-surface-variant mt-1">{serviceTypeCounts[type.id as ProviderServiceType] || 0} خدمة{count ? ` • ${count} باقة محددة` : ""}</small></span></label>;
+                })}</div>
+                <div className="flex flex-wrap items-center justify-between gap-3 border-t border-outline-variant/20 pt-3"><p className="text-sm font-bold" aria-live="polite">{selectedGroupKeys.length} باقة محددة • {selectedServicesForImport.length} خدمة</p><button type="button" disabled={serviceLoadSource !== "remote" || !selectedServicesForImport.length || loadingServices || syncingProviderId === browseProvider.id} onClick={() => openSyncModal(browseProvider, "selected")} className="px-5 py-3 rounded-xl bg-primary text-on-primary font-bold text-sm disabled:opacity-40">{serviceLoadSource === "stored" ? "للإضافة، افتح تبويب خدمات المزود" : "٢. مراجعة واستيراد المحدد فقط"}</button></div>
+                <p className="text-[11px] text-on-surface-variant">استيراد المحدد لا يضيف الأقسام غير المحددة ولا يحذف الخدمات الموجودة في المتجر.</p>
+              </section>
 
-                      <button
-                        type="button"
-                        onClick={() => handleToggleAllServices(false)}
-                        disabled={isPerformingBulkAction || loadingServices}
-                        className="px-3 py-1.5 rounded-xl bg-surface-container-high hover:bg-surface-container-highest text-on-surface-variant hover:text-on-surface font-bold transition-all flex items-center gap-1 border border-outline-variant/20 disabled:opacity-50 text-[11px]"
-                      >
-                        <span className="material-symbols-outlined text-sm">visibility_off</span>
-                        <span>إخفاء الكل</span>
-                      </button>
-                    </>
-                  )}
-                  {serviceLoadSource !== "stored" && (
-                    <div className="flex items-center gap-1.5 text-primary bg-primary/10 px-2.5 py-1 rounded-xl font-bold text-[11px]">
-                      <span className="material-symbols-outlined text-sm">info</span>
-                      <span>حدد الباقات التي تريد استيرادها أو انقر على استيراد بجانب كل باقة.</span>
-                    </div>
-                  )}
-
-                  {selectedGroupNames.length > 0 && (
-                    <>
-                      {serviceLoadSource === "stored" ? (
-                        <>
-                          <button
-                            type="button"
-                            onClick={() => handleBulkToggleSelectedPackages(true)}
-                            disabled={isPerformingBulkAction}
-                            className="px-3 py-1.5 rounded-xl bg-primary hover:bg-primary/90 text-on-primary font-bold transition-all flex items-center gap-1 shadow-sm text-[11px]"
-                          >
-                            <span className="material-symbols-outlined text-sm">check_box</span>
-                            <span>إظهار الباقات ({selectedGroupNames.length})</span>
-                          </button>
-
-                          <button
-                            type="button"
-                            onClick={() => handleBulkToggleSelectedPackages(false)}
-                            disabled={isPerformingBulkAction}
-                            className="px-3 py-1.5 rounded-xl bg-red-500/15 hover:bg-red-500/25 text-red-400 border border-red-500/30 font-bold transition-all flex items-center gap-1 text-[11px]"
-                          >
-                            <span className="material-symbols-outlined text-sm">visibility_off</span>
-                            <span>إخفاء الباقات ({selectedGroupNames.length})</span>
-                          </button>
-                        </>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => openSyncModal(browseProvider, "selected")}
-                          className="px-3 py-1.5 rounded-xl bg-sky-500 hover:bg-sky-600 text-white font-bold transition-all flex items-center gap-1 shadow-sm text-[11px]"
-                        >
-                          <span className="material-symbols-outlined text-sm">cloud_download</span>
-                          <span>استيراد الباقات المحددة ({selectedGroupNames.length})</span>
-                        </button>
-                      )}
-                    </>
-                  )}
-                </div>
-
-                <div className="flex items-center gap-1.5">
-                  <button
-                    type="button"
-                    onClick={() => openSyncModal(browseProvider)}
-                    disabled={syncingProviderId === browseProvider.id}
-                    className="px-2.5 py-1.5 rounded-xl bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-bold transition-all flex items-center gap-1 border border-outline-variant/30 disabled:opacity-50 text-[11px]"
-                  >
-                    <span className={`material-symbols-outlined text-xs text-primary ${syncingProviderId === browseProvider.id ? "animate-spin" : ""}`}>
-                      sync
-                    </span>
-                    <span>مزامنة من المزود</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Provider Service Type Filters: Divided into 2 clean rows */}
-              <div className="space-y-1.5 p-1.5 sm:p-2 rounded-2xl bg-surface-container-lowest border border-outline-variant/20">
-                {/* الصف الأول: الأقسام الأساسية والسيرفر */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
-                  {([
-                    { type: "all", label: "الكل", count: serviceTypeCounts.all, icon: "apps" },
-                    { type: "imei", label: "IMEI", count: serviceTypeCounts.imei, icon: "fingerprint" },
-                    { type: "server", label: "Server", count: serviceTypeCounts.server, icon: "dns" },
-                    { type: "remote", label: "Remote", count: serviceTypeCounts.remote, icon: "settings_remote" }
-                  ] as const).map((option) => (
-                    <button
-                      key={option.type}
-                      type="button"
-                      onClick={() => {
-                        setServiceTypeFilter(option.type);
-                        setSelectedGroupNames([]);
-                        setExpandedGroups({});
-                        setVisibleGroupsLimit(25);
-                      }}
-                      className={`px-2 py-1.5 sm:py-2 rounded-xl border text-[11px] sm:text-xs font-bold transition-all flex items-center justify-center gap-1 sm:gap-1.5 ${
-                        serviceTypeFilter === option.type
-                          ? "bg-primary text-on-primary border-primary shadow"
-                          : "bg-surface-container-high border-outline-variant/20 text-on-surface-variant hover:text-on-surface hover:border-primary/30"
-                      }`}
-                    >
-                      <span className="material-symbols-outlined text-xs sm:text-sm">{option.icon}</span>
-                      <span className="truncate">{option.label}</span>
-                      <span className={`font-mono px-1 py-0.2 rounded text-[10px] sm:text-xs ${
-                        serviceTypeFilter === option.type ? "bg-black/20" : "bg-surface-container-highest"
-                      }`}>
-                        {option.count}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-
-                {/* الصف الثاني: الألعاب والبطاقات الرقمية والاشتراكات */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-1.5">
-                  {([
-                    { type: "topups", label: "شحن ألعاب", count: serviceTypeCounts.topups, icon: "sports_esports" },
-                    { type: "gamecodes", label: "أكواد وبطاقات", count: serviceTypeCounts.gamecodes, icon: "vpn_key" },
-                    { type: "appstores", label: "متاجر وتطبيقات", count: serviceTypeCounts.appstores, icon: "store" },
-                    { type: "subscriptions", label: "اشتراكات", count: serviceTypeCounts.subscriptions, icon: "subscriptions" },
-                    { type: "esim", label: "eSIM", count: serviceTypeCounts.esim, icon: "sim_card" }
-                  ] as const).map((option) => (
-                    <button
-                      key={option.type}
-                      type="button"
-                      onClick={() => {
-                        setServiceTypeFilter(option.type);
-                        setSelectedGroupNames([]);
-                        setExpandedGroups({});
-                        setVisibleGroupsLimit(25);
-                      }}
-                      className={`px-2 py-1.5 sm:py-2 rounded-xl border text-[11px] sm:text-xs font-bold transition-all flex items-center justify-center gap-1 sm:gap-1.5 ${
-                        serviceTypeFilter === option.type
-                          ? "bg-primary text-on-primary border-primary shadow"
-                          : "bg-surface-container-high border-outline-variant/20 text-on-surface-variant hover:text-on-surface hover:border-primary/30"
-                      }`}
-                    >
-                      <span className="material-symbols-outlined text-xs sm:text-sm">{option.icon}</span>
-                      <span className="truncate">{option.label}</span>
-                      <span className={`font-mono px-1 py-0.2 rounded text-[10px] sm:text-xs ${
-                        serviceTypeFilter === option.type ? "bg-black/20" : "bg-surface-container-highest"
-                      }`}>
-                        {option.count}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              </div>
+              <label className="flex items-center gap-3 text-xs text-on-surface-variant">اعرض قسمًا للبحث داخله
+                <select aria-label="عرض قسم من خدمات المزود" value={serviceTypeFilter} onChange={event => { setServiceTypeFilter(event.target.value as ProviderServiceTypeFilter); setVisibleGroupsLimit(25); }} className="rounded-lg bg-surface-container-high border border-outline-variant/30 px-3 py-2"><option value="all">كل الأقسام</option>{importTypes.map(type => <option key={type.id} value={type.id}>{type.label}</option>)}</select>
+                <span>تغيير العرض لا يلغي اختياراتك.</span>
+              </label>
 
               {/* Search & Filter Tabs */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
@@ -1757,14 +1571,14 @@ export default function ProvidersClient() {
                   <label className="flex items-center gap-2 cursor-pointer font-bold select-none text-[11px] sm:text-xs">
                     <input
                       type="checkbox"
-                      checked={selectedGroupNames.length > 0 && selectedGroupNames.length === filteredGroups.length}
+                      checked={filteredGroups.length > 0 && filteredGroups.every(group => selectedGroupKeys.includes(group.key))}
                       onChange={handleSelectAllGroups}
                       className="w-4 h-4 accent-primary cursor-pointer"
                     />
                     <span>تحديد كل الباقات ({filteredGroups.length} باقة)</span>
                   </label>
-                  {selectedGroupNames.length > 0 && (
-                    <span className="text-primary font-bold text-[11px] sm:text-xs">{selectedGroupNames.length} باقة محددة</span>
+                  {selectedGroupKeys.length > 0 && (
+                    <span className="text-primary font-bold text-[11px] sm:text-xs">{selectedGroupKeys.length} باقة محددة</span>
                   )}
                 </div>
               )}
@@ -1772,7 +1586,7 @@ export default function ProvidersClient() {
 
             {/* Grouped Packages & Services List (Smooth Mobile Touch Scrolling with min-h-0) */}
             <div
-              className="min-h-0 flex-1 overflow-y-auto overscroll-contain touch-pan-y space-y-2.5 sm:space-y-3 rounded-2xl border border-outline-variant/20 bg-surface-container-lowest p-2 sm:p-3"
+              className="min-h-[220px] shrink-0 overflow-visible space-y-2.5 sm:space-y-3 rounded-2xl border border-outline-variant/20 bg-surface-container-lowest p-2 sm:p-3"
               style={{ WebkitOverflowScrolling: "touch" }}
               onScroll={(e) => {
                 const t = e.currentTarget;
@@ -1805,7 +1619,7 @@ export default function ProvidersClient() {
               ) : (
                 <>
                   {visibleGroups.map((group, gIdx) => {
-                    const isSelected = selectedGroupNames.includes(group.groupName);
+                    const isSelected = selectedGroupKeys.includes(group.key);
                     const isExpanded = expandedGroups[group.groupName] ?? false;
 
                     return (
@@ -1824,7 +1638,7 @@ export default function ProvidersClient() {
                             <input
                               type="checkbox"
                               checked={isSelected}
-                              onChange={() => toggleGroupSelection(group.groupName)}
+                              onChange={() => toggleGroupSelection(group.key)}
                               className="w-4 h-4 accent-primary cursor-pointer shrink-0"
                             />
                             <div
@@ -1874,8 +1688,8 @@ export default function ProvidersClient() {
                               <button
                                 type="button"
                                 onClick={() => {
-                                  setSelectedGroupNames([group.groupName]);
-                                  openSyncModal(browseProvider, "selected");
+                                  setSelectedGroupKeys([group.key]);
+                                  openSyncModal(browseProvider, "selected", [group.key]);
                                 }}
                                 className="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl font-bold text-xs transition-all flex items-center gap-1 border bg-sky-500/10 text-sky-500 hover:bg-sky-500/20 border-sky-500/20"
                                 title="استيراد وتفعيل هذه الباقة"

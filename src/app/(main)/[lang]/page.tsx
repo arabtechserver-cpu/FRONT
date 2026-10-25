@@ -2,40 +2,14 @@ import { Metadata } from "next";
 import { SITE_CONTACTS } from "@/lib/site-contacts";
 import { notFound } from "next/navigation";
 import { Locale, i18n } from "@/i18n/config";
-import { getBackendCandidates } from "@/lib/api-proxy-candidates";
+import { loadStorefrontData } from "@/lib/storefront-data";
 import ZoalnaHomepage from "@/components/zoalna/ZoalnaHomepage";
 import localHomepageConfig from "@/data/homepage_config.json";
 
 export const revalidate = 30;
 
 async function getHomepageConfig() {
-  const backendCandidates = getBackendCandidates(null, process.env.INTERNAL_API_URL);
-  const candidates = [...new Set([
-    ...backendCandidates,
-    "https://api.borai.store",
-    process.env.INTERNAL_API_URL,
-    "http://127.0.0.1:5000",
-    "http://localhost:5000",
-    process.env.NEXT_PUBLIC_API_URL,
-  ].filter(Boolean) as string[])];
-
-  try {
-    const res = await Promise.any(candidates.map(async (baseUrl) => {
-      const cleanBase = baseUrl.replace(/\/$/, "");
-      const r = await fetch(`${cleanBase}/api/homepage`, {
-        next: { revalidate: 30 },
-        signal: AbortSignal.timeout(1200)
-      });
-      if (!r.ok) throw new Error(`Homepage API returned ${r.status}`);
-      return r.json();
-    }));
-    if (res && (res.heroSlider || res.heroSection || res.gamesGroup1)) {
-      return res;
-    }
-    return localHomepageConfig;
-  } catch {
-    return localHomepageConfig;
-  }
+  return await loadStorefrontData("/api/homepage", (data: any) => Boolean(data && (data.heroSlider || data.heroSection || data.gamesGroup1))) || localHomepageConfig;
 }
 
 export async function generateMetadata(props: { params: Promise<{ lang: Locale }> }): Promise<Metadata> {
@@ -142,7 +116,7 @@ export default async function Home(props: { params: Promise<{ lang: Locale }> })
             "url": siteUrl,
             "potentialAction": {
               "@type": "SearchAction",
-              "target": `${siteUrl}/${params.lang}/pricing?search={search_term_string}`,
+              "target": `${siteUrl}/${params.lang}/services?search={search_term_string}`,
               "query-input": "required name=search_term_string"
             }
           })

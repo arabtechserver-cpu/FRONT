@@ -527,7 +527,7 @@ export default function ProfileClient({ lang, dict }: { lang: string; dict: any 
             </Link>
 
             <Link
-              href={`/${lang}/pricing`}
+              href={`/${lang}/services`}
               className="bg-surface-container flex-1 min-w-[120px] sm:min-w-0 sm:flex-initial flex items-center justify-center gap-1.5 min-[380px]:gap-2 px-3 min-[380px]:px-5 py-2.5 rounded-xl border hover:bg-slate-50 font-bold text-xs transition-all shadow-sm text-center"
             >
               <span className="material-symbols-outlined text-base text-blue-600">shopping_bag</span>
@@ -813,7 +813,7 @@ export default function ProfileClient({ lang, dict }: { lang: string; dict: any 
                         <span className="material-symbols-outlined text-4xl text-slate-300">inbox</span>
                         <p className="font-bold text-sm ">{isAr ? "لا توجد طلبات مطابقة" : "No orders found"}</p>
                         <Link
-                          href={`/${lang}/pricing`}
+                          href={`/${lang}/services`}
                           className="mt-2 px-4 py-2 rounded-xl bg-blue-600 text-white font-bold text-xs hover:bg-blue-700 transition-all shadow-sm"
                         >
                           {isAr ? "طلب خدمة الآن" : "Order a service now"}

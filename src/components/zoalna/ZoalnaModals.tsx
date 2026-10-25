@@ -6,15 +6,6 @@ import { useRouter } from "next/navigation";
 
 interface ZoalnaModalsProps {
   lang: string;
-  appModal?: {
-    enabled?: boolean;
-    title?: string;
-    description?: string;
-    buttonText?: string;
-    downloadUrl?: string;
-  };
-  appModalOpen: boolean;
-  onCloseAppModal: () => void;
   authModalOpen: boolean;
   onCloseAuthModal: () => void;
   authTab: "login" | "register";
@@ -23,9 +14,6 @@ interface ZoalnaModalsProps {
 
 export default function ZoalnaModals({
   lang,
-  appModal,
-  appModalOpen,
-  onCloseAppModal,
   authModalOpen,
   onCloseAuthModal,
   authTab,
@@ -58,46 +46,6 @@ export default function ZoalnaModals({
 
   return (
     <>
-      {/* App Promotion Modal */}
-      {appModal?.enabled !== false && (
-        <div className={`zoalna-modal-overlay ${appModalOpen ? "active" : ""}`}>
-          <div className="zoalna-modal-card">
-            <button className="zoalna-close-x" onClick={onCloseAppModal} aria-label={isAr ? "إغلاق" : "Close"}>
-              ×
-            </button>
-
-            <div className="zoalna-modal-icon-wrap">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="32" height="32">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                <polyline points="7 10 12 15 17 10" />
-                <line x1="12" y1="15" x2="12" y2="3" />
-              </svg>
-            </div>
-
-            <h3>{isAr ? (appModal?.title || "جرّب تطبيق BORAI STORE الجديد!") : "Try the New BORAI STORE App!"}</h3>
-            <p>
-              {isAr
-                ? (appModal?.description || "تم إطلاق التحديث الجديد لتجربة شحن أسرع، متابعة لحظية لطلباتك، وإشعارات مباشرة بمحفظتك.")
-                : "Experience faster top-ups, instant order tracking, and real-time wallet notifications with our official mobile app."}
-            </p>
-
-            <a
-              href={appModal?.downloadUrl || "#"}
-              className="zoalna-modal-btn-download"
-              onClick={onCloseAppModal}
-              target={appModal?.downloadUrl && appModal.downloadUrl.startsWith("http") ? "_blank" : undefined}
-              rel={appModal?.downloadUrl && appModal.downloadUrl.startsWith("http") ? "noopener noreferrer" : undefined}
-            >
-              {isAr ? (appModal?.buttonText || "تنزيل التطبيق الآن") : "Download App Now"}
-            </a>
-
-            <button className="zoalna-modal-btn-skip" onClick={onCloseAppModal}>
-              {isAr ? "المتابعة عبر المتصفح" : "Continue in Browser"}
-            </button>
-          </div>
-        </div>
-      )}
-
       {/* Auth Modal */}
       <div className={`zoalna-auth-overlay ${authModalOpen ? "active" : ""}`}>
         <div className="zoalna-auth-card">

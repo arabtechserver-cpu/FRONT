@@ -1,0 +1,32 @@
+.store-footer { background: #0f172a; color: #cbd5e1; border-top: 1px solid #243148; margin-top: 40px; }
+.store-footer-inner { width: min(1200px, 100%); margin-inline: auto; padding: 54px 32px 0; }
+.store-footer-top { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1.1fr; gap: 42px; padding-bottom: 36px; }
+.store-footer h2 { color: #f8fafc; font-size: 15px; font-weight: 800; line-height: 1.8; margin: 0 0 18px; }
+.store-footer p { margin: 0; font-size: 13px; line-height: 2; color: #a6b5ca; }
+.store-footer a { text-decoration: none; }
+.store-footer a:focus-visible, .store-footer button:focus-visible { outline: 2px solid #93c5fd; outline-offset: 5px; border-radius: 6px; }
+.store-footer-logo { display: inline-block; margin-bottom: 16px; }
+.store-footer-logo img { width: 220px; max-width: 100%; height: 76px; object-fit: contain; }
+.store-footer-brand > p { max-width: 320px; }
+.store-footer-support { display: inline-flex; align-items: center; gap: 9px; margin-top: 20px; color: #93c5fd; font-size: 12px; font-weight: 700; }
+.store-footer-support:hover { color: #dbeafe; }
+.store-footer-links { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; padding-top: 14px; }
+.store-footer-links h2 { margin-bottom: 5px; }
+.store-footer-links > a { color: #b8c5d8; font-size: 13px; line-height: 1.9; transition: color .15s; }
+.store-footer-links > a:hover, .store-footer-bottom a:hover { color: #fff; }
+.store-footer-contact { padding-top: 14px; }
+.store-footer-socials { display: flex; gap: 10px; margin-top: 19px; }
+.store-footer-socials a { display: grid; place-items: center; width: 40px; height: 40px; border: 1px solid #334155; border-radius: 12px; color: #dbeafe; background: #19243a; transition: background .15s, border-color .15s; }
+.store-footer-socials a:hover { background: #243854; border-color: #64748b; }
+.store-footer-phone { display: inline-block; color: #cbd5e1; font-size: 13px; letter-spacing: 1px; margin-top: 15px; }
+.store-footer-app { display: flex; align-items: center; gap: 16px; padding: 22px 24px; border: 1px solid #2b3e5c; border-radius: 18px; background: #17253b; margin-bottom: 32px; }
+.store-footer-app-icon { display: grid; place-items: center; background: #253c5d; color: #93c5fd; width: 52px; height: 52px; border-radius: 14px; flex-shrink: 0; }
+.store-footer-app h2 { font-size: 16px; margin-bottom: 2px; }
+.store-footer-app p { font-size: 12px; }
+.store-footer-app button { display: inline-flex; align-items: center; justify-content: center; gap: 9px; margin-inline-start: auto; flex-shrink: 0; padding: 12px 22px; border: 1px solid #4b83f4; border-radius: 11px; background: #2563eb; color: #fff; font-size: 13px; font-weight: 800; cursor: pointer; transition: background .15s; }
+.store-footer-app button:hover { background: #1d4ed8; }
+.store-footer-bottom { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 23px 0; border-top: 1px solid #29364c; }
+.store-footer-bottom p, .store-footer-bottom a { font-size: 11px; color: #a6b5ca; }
+.store-footer-bottom nav { display: flex; gap: 24px; }
+@media (max-width: 1050px) { .store-footer-top { gap: 24px; grid-template-columns: 1.3fr 1fr 1fr; } .store-footer-contact { grid-column: 1 / -1; display: flex; align-items: center; flex-wrap: wrap; gap: 12px 24px; border-top: 1px solid #29364c; padding-top: 24px; } .store-footer-contact h2, .store-footer-socials, .store-footer-phone { margin: 0; } .store-footer-contact > p { max-width: 290px; } }
+@media (max-width: 600px) { .store-footer { margin-top: 28px; } .store-footer-inner { padding: 32px 22px 130px; } .store-footer-top { grid-template-columns: 1fr 1fr; gap: 26px 20px; padding-bottom: 28px; } .store-footer-brand { grid-column: 1 / -1; } .store-footer-logo { margin-bottom: 12px; } .store-footer-logo img { width: 200px; height: 68px; } .store-footer-brand > p { max-width: 100%; } .store-footer-links { padding: 0; gap: 12px; } .store-footer h2 { font-size: 14px; } .store-footer-links > a { font-size: 12px; } .store-footer-contact { display: block; } .store-footer-contact h2 { margin-bottom: 8px; } .store-footer-socials { margin-top: 15px; } .store-footer-phone { margin-top: 12px; } .store-footer-app { flex-wrap: wrap; padding: 18px; gap: 12px; margin-bottom: 24px; } .store-footer-app > div { flex: 1; min-width: 150px; } .store-footer-app-icon { width: 42px; height: 48px; } .store-footer-app h2 { font-size: 14px; } .store-footer-app button { width: 100%; margin: 4px 0 0; } .store-footer-bottom { flex-direction: column; align-items: flex-start; padding: 20px 0 0; gap: 12px; } .store-footer-bottom nav { gap: 20px; } }

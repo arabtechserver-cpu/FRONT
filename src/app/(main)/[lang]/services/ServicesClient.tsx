@@ -1,20 +1,25 @@
 "use client";
+import { useStoreNavigation } from "@/components/StoreNavigationProvider";
+import { navigationPages } from "@/lib/store-pages";
 import { getServicePrice } from '@/lib/service-price';
 
 import React, { useState, useEffect, useMemo, useDeferredValue } from "react";
 import Link from "next/link";
-import { Gamepad2, Gift, Store, Clapperboard, Smartphone, Grid2X2, Search, X, ArrowUpRight, ChevronDown, Clock3, Layers3, ShieldCheck, Wallet, SlidersHorizontal, LoaderCircle, Headphones } from "lucide-react";
+import { Gamepad2, Gift, Store, Clapperboard, Smartphone, Grid2X2, Search, X, ArrowUpRight, ChevronDown, Clock3, Layers3, ShieldCheck, Wallet, SlidersHorizontal, LoaderCircle } from "lucide-react";
 import { cleanHtmlToText } from "@/utils/cleanHtml";
 import styles from "./services.module.css";
 import { getProviderServiceType } from "@/lib/provider-service-types";
 
 interface ServiceItem {
   id: string;
+  imageUrl?: string | null;
+  groupImageUrl?: string | null;
   dhruId?: string;
   name: string;
   originalName?: string;
   groupName: string;
   categoryName?: string;
+  categoryId?: string;
   apiServiceType?: string | null;
   price?: number;
   finalPrice?: number;
@@ -28,6 +33,8 @@ interface ServiceItem {
 }
 
 interface PackageGroup {
+  key: string;
+  imageUrl?: string | null;
   groupName: string;
   categoryType: string;
   categoryName: string;
@@ -76,7 +83,7 @@ const BRAND_LIBRARY = [
   { label: "beIN SPORTS", query: "bein", image: "", kindAr: "اشتراكات رياضية", kindEn: "Sports subscriptions" },
   { label: "Roblox", query: "roblox", image: "", kindAr: "باقات وبطاقات", kindEn: "Packages & cards" },
 ];
-const CATEGORY_ICONS: Record<string, typeof Gamepad2> = { all: Grid2X2, topups: Gamepad2, gamecodes: Gift, appstores: Store, subscriptions: Clapperboard, esim: Smartphone };
+const CATEGORY_ICONS: Record<string, typeof Gamepad2> = { all: Grid2X2, topups: Gamepad2, gamecodes: Gift, appstores: Store, subscriptions: Clapperboard, esim: Smartphone, imei: Smartphone, server: Store, remote: Grid2X2 };
 
 export default function ServicesClient({
   lang,
@@ -84,20 +91,23 @@ export default function ServicesClient({
   initialServices,
   initialCategory = "all",
   initialSearchQuery = "",
+  pageContext,
 }: {
   lang: string;
   dict: any;
   initialServices?: any[];
   initialCategory?: string;
   initialSearchQuery?: string;
+  pageContext?: { id?: string; slug?: string; title: string; description: string };
 }) {
   const isAr = lang === "ar";
+  const storePages = navigationPages(useStoreNavigation(), "catalog");
 
   const [rawCategories, setRawCategories] = useState<any[]>(
     Array.isArray(initialServices) ? initialServices : []
   );
   const [loading, setLoading] = useState(
-    !Array.isArray(initialServices) || initialServices.length === 0
+    !pageContext && (!Array.isArray(initialServices) || initialServices.length === 0)
   );
 
   const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory);
@@ -108,6 +118,15 @@ export default function ServicesClient({
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
   const [userSession, setUserSession] = useState<any>(null);
   const [currencyCode, setCurrencyCode] = useState<string>("USD");
+  const [pageRates, setPageRates] = useState<Record<string, number>>({ USD: 1 });
+  useEffect(() => {
+    if (!pageContext) return;
+    const controller = new AbortController();
+    fetch('/api/currencies', { signal: controller.signal }).then(response => response.ok ? response.json() : null).then(data => {
+      if (data?.config) setPageRates({ USD: 1, SDG: Number(data.config.usdToSdg), EGP: Number(data.config.usdToEgp), SAR: Number(data.config.usdToSar), AED: Number(data.config.usdToAed) });
+    }).catch(() => {});
+    return () => controller.abort();
+  }, [pageContext]);
 
   useEffect(() => {
     try {
@@ -126,7 +145,7 @@ export default function ServicesClient({
   }, []);
 
   useEffect(() => {
-    if (rawCategories.length > 0) return;
+    if (pageContext || rawCategories.length > 0) return;
     async function load() {
       try {
         const res = await fetch("/api/dhru/services?view=pricing");
@@ -140,18 +159,19 @@ export default function ServicesClient({
       }
     }
     load();
-  }, [rawCategories.length]);
+  }, [rawCategories.length, pageContext]);
 
   const discountPercent = useMemo(() => {
     if (!userSession) return 0;
-    return Math.max(
+    return Math.min(100, Math.max(
       userSession.effectiveDiscount || 0,
       userSession.membershipTier?.discountPercentage || 0,
       userSession.customDiscount || 0
-    );
+    ));
   }, [userSession]);
 
-  const currency = CURRENCIES[currencyCode] || CURRENCIES.USD;
+  const baseCurrency = CURRENCIES[currencyCode] || CURRENCIES.USD;
+  const currency = pageContext ? (Number.isFinite(pageRates[baseCurrency.code]) && pageRates[baseCurrency.code] > 0 ? { ...baseCurrency, rate: pageRates[baseCurrency.code] } : CURRENCIES.USD) : baseCurrency;
 
   const formatPrice = (usd: number = 0) => {
     if (!Number.isFinite(usd) || usd <= 0) return isAr ? 'السعر غير متاح' : 'Price unavailable';
@@ -175,17 +195,18 @@ export default function ServicesClient({
           category_name: cat.name,
           categoryName: cat.name,
         });
-        if (["topups", "gamecodes", "appstores", "subscriptions", "esim"].includes(type)) {
+        if (srv.isActive !== false) {
           list.push({
             ...srv,
             categoryName: cat.name,
+            categoryId: cat.id,
             apiServiceType: type,
           });
         }
       });
     });
     return list;
-  }, [rawCategories]);
+  }, [rawCategories, pageContext]);
 
   const categoryCounts = useMemo(() => {
     const counts: Record<string, number> = {
@@ -195,6 +216,9 @@ export default function ServicesClient({
       appstores: 0,
       subscriptions: 0,
       esim: 0,
+      imei: 0,
+      server: 0,
+      remote: 0,
     };
     allDigitalServices.forEach((s) => {
       const t = s.apiServiceType || "topups";
@@ -212,13 +236,15 @@ export default function ServicesClient({
       if (selectedCategory !== "all" && type !== selectedCategory) return;
 
       const groupName = service.groupName || (isAr ? "خدمات وباقات رقمية" : "Digital Packages");
+      const groupKey = JSON.stringify([service.categoryId, groupName]);
       const name = (service.name || "").toLowerCase();
       const rawGroup = groupName.toLowerCase();
 
       if (q && !name.includes(q) && !rawGroup.includes(q)) return;
 
-      if (!map[groupName]) {
-        map[groupName] = {
+      if (!map[groupKey]) {
+        map[groupKey] = {
+          key: groupKey,
           groupName,
           categoryType: type,
           categoryName: service.categoryName || "",
@@ -227,10 +253,10 @@ export default function ServicesClient({
         };
       }
 
-      map[groupName].services.push(service);
+      map[groupKey].services.push(service);
       const price = getServicePrice(service);
-      if (price > 0 && price < map[groupName].minPrice) {
-        map[groupName].minPrice = price;
+      if (price > 0 && price < map[groupKey].minPrice) {
+        map[groupKey].minPrice = price;
       }
     });
 
@@ -245,7 +271,7 @@ export default function ServicesClient({
     });
 
     return result.sort((a, b) => a.groupName.localeCompare(b.groupName, "en", { sensitivity: "base" }));
-  }, [allDigitalServices, selectedCategory, deferredSearch, isAr]);
+  }, [allDigitalServices, selectedCategory, deferredSearch, isAr, pageContext]);
 
   const toggleGroup = (groupName: string) => {
     setExpandedGroups((prev) => ({
@@ -286,6 +312,9 @@ export default function ServicesClient({
           color: "bg-sky-500/10 text-sky-600 border-sky-500/20",
           icon: "sim_card",
         };
+      case 'imei': return { label: isAr ? 'خدمات الأجهزة' : 'Device services', color: 'text-blue-600', icon: 'smartphone' };
+      case 'server': return { label: isAr ? 'خدمات السيرفر' : 'Server services', color: 'text-blue-600', icon: 'dns' };
+      case 'remote': return { label: isAr ? 'خدمات عن بُعد' : 'Remote services', color: 'text-blue-600', icon: 'desktop_windows' };
       default:
         return {
           label: isAr ? "خدمة رقمية" : "Digital Service",
@@ -299,6 +328,21 @@ export default function ServicesClient({
     ...brand,
     count: allDigitalServices.filter(service => [service.name, service.groupName].join(" ").toLowerCase().includes(brand.query)).length
   })).filter(brand => brand.count > 0), [allDigitalServices]);
+  const pageDestinations = useMemo(() => {
+    const groups = new Map<string, { key: string; query: string; label: string; image: string; kindAr: string; kindEn: string; count: number }>();
+    for (const service of allDigitalServices) {
+      const name = service.groupName || service.categoryName || (isAr ? 'خدمات رقمية' : 'Digital services');
+      const key = JSON.stringify([service.categoryId, name]);
+      const brand = BRAND_LIBRARY.find(item => `${name} ${service.name}`.toLowerCase().includes(item.query));
+      const image = service.groupImageUrl || service.imageUrl || (brand?.image ? '/images/zoalna/' + brand.image : '');
+      if (!groups.has(key)) groups.set(key, { key, query: name.toLowerCase(), label: cleanHtmlToText(name), image, kindAr: getCategoryBadgeInfo(service.apiServiceType || '').label, kindEn: getCategoryBadgeInfo(service.apiServiceType || '').label, count: 0 });
+      const group = groups.get(key)!; group.count++; if (!group.image && image) group.image = image;
+    }
+    return [...groups.values()];
+  }, [allDigitalServices, isAr]);
+  const destinations = pageContext ? pageDestinations : availableBrands.map(brand => ({ ...brand, key: brand.query, image: brand.image ? '/images/zoalna/' + brand.image : '' }));
+  const heroDestinations = pageContext ? destinations.slice(0, 2) : destinations.filter(brand => ['pubg', 'free fire'].includes(brand.query));
+  const catalogCategories = pageContext ? [...CATEGORIES_DEF, { id: 'imei', labelAr: 'خدمات الأجهزة', labelEn: 'Device services' }, { id: 'server', labelAr: 'خدمات السيرفر', labelEn: 'Server services' }, { id: 'remote', labelAr: 'خدمات عن بُعد', labelEn: 'Remote services' }].filter(category => category.id === 'all' || categoryCounts[category.id] > 0) : CATEGORIES_DEF;
   const sortedGroups = useMemo(() => [...packageGroups].sort((a, b) => sortOrder === "price-low" ? a.minPrice - b.minPrice : sortOrder === "price-high" ? b.minPrice - a.minPrice : a.groupName.localeCompare(b.groupName, "en", { sensitivity: "base" })), [packageGroups, sortOrder]);
   const resultCount = packageGroups.reduce((count, group) => count + group.services.length, 0);
   const resetFilters = () => { setSearchQuery(""); setSelectedCategory("all"); };
@@ -315,7 +359,7 @@ export default function ServicesClient({
     if (text.includes("jawaker")) return "jawaker";
     if (text.includes("yalla ludo")) return "yalla-ludo";
     if (text.includes("roblox")) return "roblox";
-    return groupName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "free-fire-id";
+    return groupName.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, "-").replace(/^-|-$/g, "") || "service";
   };
 
   return (
@@ -323,21 +367,22 @@ export default function ServicesClient({
       <section className={styles.hero + " bg-surface-container shadow-sm"} aria-labelledby="gaming-title">
         <div className={styles.heroCopy}>
           <span className={styles.eyebrow + " text-blue-600 dark:text-blue-400"}><Gamepad2 size={17} />BORAI PLAY / DIGITAL STORE</span>
-          <h1 id="gaming-title">{isAr ? "لعبتك المفضلة." : "Your favorite game."}<br /><span className="text-blue-600 dark:text-blue-400">{isAr ? "باقتك على مزاجك." : "Your next upgrade."}</span></h1>
-          <p>{isAr ? "شدات، جواهر، بطاقات واشتراكات. اختار وجهتك، قارن الباقات، وكمّل طلبك في خطوات بسيطة." : "Top-ups, diamonds, gift cards and subscriptions. Find your destination, compare packages and place your order."}</p>
-          <div className={styles.heroActions}><a href="#gaming-catalog" onClick={() => { setSelectedCategory("topups"); setSearchQuery(""); }} className={styles.primaryAction + " bg-blue-600 hover:bg-blue-700 text-white"}>{isAr ? "اكتشف باقات الألعاب" : "Explore game top-ups"}<ArrowUpRight size={18} /></a><Link href={"/" + lang + "/wallet"} className={styles.secondaryAction}><Wallet size={17} />{isAr ? "شحن المحفظة" : "Add wallet funds"}</Link></div>
+          <h1 id="gaming-title">{pageContext?.title || (isAr ? "لعبتك المفضلة." : "Your favorite game.")}<br /><span className="text-blue-600 dark:text-blue-400">{pageContext ? (isAr ? 'اختار باقتك بسهولة.' : 'Find your perfect package.') : (isAr ? "باقتك على مزاجك." : "Your next upgrade.")}</span></h1>
+          <p>{pageContext ? pageContext.description || (isAr ? 'استعرض الباقات المتاحة، قارن الأسعار، واختار الخدمة المناسبة ليك. تابع طلبك بسهولة من حسابك.' : 'Explore available packages, compare prices and find your service. Track every order from your account.') : (isAr ? "شدات، جواهر، بطاقات واشتراكات. اختار وجهتك، قارن الباقات، وكمّل طلبك في خطوات بسيطة." : "Top-ups, diamonds, gift cards and subscriptions. Find your destination, compare packages and place your order.")}</p>
+          <div className={styles.heroActions}><a href="#gaming-catalog" onClick={() => { setSelectedCategory(pageContext ? 'all' : "topups"); setSearchQuery(""); }} className={styles.primaryAction + " bg-blue-600 hover:bg-blue-700 text-white"}>{pageContext ? (isAr ? 'اكتشف الباقات' : 'Explore packages') : (isAr ? "اكتشف باقات الألعاب" : "Explore game top-ups")}<ArrowUpRight size={18} /></a><Link href={"/" + lang + "/wallet"} className={styles.secondaryAction}><Wallet size={17} />{isAr ? "شحن المحفظة" : "Add wallet funds"}</Link></div>
           <div className={styles.heroMeta}><span><Layers3 size={16} />{loading ? "—" : allDigitalServices.length} {isAr ? "باقة رقمية" : "digital packages"}</span><span><ShieldCheck size={16} />{isAr ? "تابع طلبك من حسابك" : "Track orders from your account"}</span></div>
         </div>
         <div className={styles.heroArt}>
           <Gamepad2 className={styles.heroBackdrop} size={250} strokeWidth={.6} aria-hidden="true" />
-          {availableBrands.filter(brand => ["pubg", "free fire"].includes(brand.query)).map((brand, index) => <button key={brand.query} type="button" className={styles.heroGame + " " + (index === 0 ? styles.heroGameFirst : styles.heroGameSecond)} onClick={() => selectBrand(brand.query)} aria-label={(isAr ? "تصفح باقات " : "Browse packages for ") + brand.label}><img src={"/images/zoalna/" + brand.image} alt="" width={220} height={220} fetchPriority={index === 0 ? "high" : "auto"} /><div><strong>{brand.label}</strong><span>{isAr ? brand.kindAr : brand.kindEn}<ArrowUpRight size={15} /></span></div></button>)}
+          {heroDestinations.map((brand, index) => <button key={brand.key} type="button" className={styles.heroGame + " " + (index === 0 ? styles.heroGameFirst : styles.heroGameSecond)} onClick={() => selectBrand(brand.query)} aria-label={(isAr ? "تصفح باقات " : "Browse packages for ") + brand.label}>{brand.image ? <img src={brand.image} alt="" width={220} height={220} fetchPriority={index === 0 ? "high" : "auto"} /> : <span className={styles.heroPlaceholder}><Layers3 size={78} strokeWidth={1.1} /></span>}<div><strong>{brand.label}</strong><span>{isAr ? brand.kindAr : brand.kindEn}<ArrowUpRight size={15} /></span></div></button>)}
+          {heroDestinations.length === 0 && pageContext && <div className={styles.heroBrandEmpty}><img src="/images/borai-logo.png" alt="" width={260} height={90} /><span>BORAI STORE</span></div>}
           <span className={styles.artCaption}>LEVEL UP YOUR EVERYDAY</span>
         </div>
       </section>
 
-      {availableBrands.length > 0 && <section className={styles.destinations} aria-labelledby="destinations-title">
+      {destinations.length > 0 && <section className={styles.destinations} aria-labelledby="destinations-title">
         <div className={styles.sectionHeading}><div><span className={styles.eyebrow}>{isAr ? "اختار عالمك" : "PICK YOUR WORLD"}</span><h2 id="destinations-title">{isAr ? "وجهتك، بضغطة واحدة" : "Your destination, one click away"}</h2></div><span className={styles.muted}>{isAr ? "ألعاب وبطاقات وخدمات رقمية" : "Games, cards and digital services"}</span></div>
-        <div className={styles.brandRail}>{availableBrands.map(brand => <button key={brand.query} type="button" onClick={() => selectBrand(brand.query)} aria-pressed={searchQuery.toLowerCase() === brand.query} className={styles.brand + " bg-surface-container"}>{brand.image ? <img src={"/images/zoalna/" + brand.image} alt="" width={72} height={72} loading="lazy" /> : <span className={styles.brandFallback + " text-blue-600 dark:text-blue-400"}>{brand.query === "netflix" || brand.query === "bein" ? <Clapperboard size={28} /> : brand.query === "google play" ? <Store size={28} /> : <Gamepad2 size={28} />}</span>}<strong>{brand.label}</strong><small>{brand.count} {isAr ? "باقة" : "packages"}</small></button>)}</div>
+        <div className={styles.brandRail}>{destinations.map(brand => <button key={brand.key} type="button" onClick={() => selectBrand(brand.query)} aria-pressed={searchQuery.toLowerCase() === brand.query} className={styles.brand + " bg-surface-container"}>{brand.image ? <img src={brand.image} alt="" width={72} height={72} loading="lazy" /> : <span className={styles.brandFallback + " text-blue-600 dark:text-blue-400"}>{brand.query === "netflix" || brand.query === "bein" ? <Clapperboard size={28} /> : brand.query === "google play" ? <Store size={28} /> : <Gamepad2 size={28} />}</span>}<strong>{brand.label}</strong><small>{brand.count} {isAr ? "باقة" : "packages"}</small></button>)}</div>
       </section>}
 
       <section id="gaming-catalog" className={styles.catalog} aria-labelledby="catalog-title">
@@ -345,29 +390,45 @@ export default function ServicesClient({
         <div className={styles.catalogShell}>
           <aside className={styles.sidebar + " bg-surface-container"}>
             <h3><SlidersHorizontal size={17} />{isAr ? "تصفح الأقسام" : "Browse categories"}</h3>
-            <nav className={styles.categories} aria-label={isAr ? "أقسام الخدمات الرقمية" : "Digital service categories"}>{CATEGORIES_DEF.map(cat => { const Icon = CATEGORY_ICONS[cat.id] || Grid2X2; const active = selectedCategory === cat.id; return <button key={cat.id} type="button" aria-pressed={active} onClick={() => selectCategory(cat.id)} className={styles.category + " " + (active ? styles.categoryActive + " bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400" : "text-slate-600 dark:text-slate-300")}><Icon size={18} /><span>{isAr ? cat.labelAr : cat.labelEn}</span><small>{categoryCounts[cat.id] || 0}</small></button>; })}</nav>
+            <nav className={styles.categories + " " + styles.pageLinks} aria-label={isAr ? "صفحات المتجر" : "Store pages"}>
+              {pageContext ? <Link href={`/${lang}/services#gaming-catalog`} className={styles.category + " text-slate-600 dark:text-slate-300"}><Grid2X2 size={18} /><span>{isAr ? "كل خدمات المتجر" : "All store services"}</span></Link> : <button type="button" aria-pressed={selectedCategory === 'all'} onClick={resetFilters} className={styles.category + " " + (selectedCategory === 'all' ? styles.categoryActive + " bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400" : "text-slate-600 dark:text-slate-300")}><Grid2X2 size={18} /><span>{isAr ? "الكل" : "All"}</span><small>{loading ? '—' : categoryCounts.all}</small></button>}
+              {storePages.map(page => { const active = page.id === pageContext?.id; return <Link key={page.id} href={`/${lang}/pages/${page.slug}#gaming-catalog`} aria-current={active ? 'page' : undefined} className={styles.category + " " + (active ? styles.categoryActive + " bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400" : "text-slate-600 dark:text-slate-300")}><Layers3 size={18} /><span>{!isAr && page.titleEn ? page.titleEn : page.title}</span><small>{page.serviceCount ?? (active ? categoryCounts.all : '—')}</small></Link>; })}
+            </nav>
+            {pageContext && <><h3 className={styles.filterHeading}>{isAr ? "أنواع الخدمات في هذه الصفحة" : "Service types on this page"}</h3><nav className={styles.categories} aria-label={isAr ? "تصفية خدمات الصفحة" : "Filter page services"}>{catalogCategories.map(cat => { const Icon = CATEGORY_ICONS[cat.id] || Grid2X2; const active = selectedCategory === cat.id; return <button key={cat.id} type="button" aria-pressed={active} onClick={() => selectCategory(cat.id)} className={styles.category + " " + (active ? styles.categoryActive + " bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400" : "text-slate-600 dark:text-slate-300")}><Icon size={18} /><span>{isAr ? cat.labelAr : cat.labelEn}</span><small>{categoryCounts[cat.id] || 0}</small></button>; })}</nav></>}
             <div className={styles.sideNote}><ShieldCheck size={22} className="text-blue-600 dark:text-blue-400" /><strong>{isAr ? "اختار الباقة بدقة" : "Find your perfect match"}</strong><p>{isAr ? "راجع قيمة الباقة والمنطقة ووقت التنفيذ في تفاصيل الخدمة قبل الطلب." : "Check the package value, region and delivery time before ordering."}</p><Link href={"/" + lang + "/orders"}>{isAr ? "متابعة طلباتي" : "Track my orders"}<ArrowUpRight size={14} /></Link></div>
           </aside>
           <div className={styles.results}>
             <div className={styles.toolbar + " bg-surface-container"}>
-              <label className={styles.search}><Search size={19} /><input type="search" aria-label={isAr ? "البحث في الألعاب والبطاقات" : "Search games and cards"} value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder={isAr ? "اسم اللعبة، البطاقة أو الباقة…" : "Game, card or package name…"} />{searchQuery && <button type="button" onClick={() => setSearchQuery("")} aria-label={isAr ? "مسح البحث" : "Clear search"}><X size={17} /></button>}</label>
+              <label className={styles.search}><Search size={19} /><input type="search" aria-label={pageContext ? (isAr ? "البحث في خدمات الصفحة" : "Search page services") : (isAr ? "البحث في الألعاب والبطاقات" : "Search games and cards")} value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder={pageContext ? (isAr ? "ابحث عن الخدمة أو الباقة…" : "Service or package name…") : (isAr ? "اسم اللعبة، البطاقة أو الباقة…" : "Game, card or package name…")} />{searchQuery && <button type="button" onClick={() => setSearchQuery("")} aria-label={isAr ? "مسح البحث" : "Clear search"}><X size={17} /></button>}</label>
               <label className={styles.sort}><span>{isAr ? "ترتيب" : "Sort"}</span><select aria-label={isAr ? "ترتيب الباقات" : "Sort packages"} value={sortOrder} onChange={e => setSortOrder(e.target.value)}><option value="name">{isAr ? "الاسم" : "Name"}</option><option value="price-low">{isAr ? "الأقل سعرًا" : "Lowest price"}</option><option value="price-high">{isAr ? "الأعلى سعرًا" : "Highest price"}</option></select></label>
             </div>
             <div className={styles.resultMeta} aria-live="polite"><span>{loading ? (isAr ? "جاري تجهيز الكتالوج…" : "Preparing the catalog…") : isAr ? resultCount + " باقة ضمن " + packageGroups.length + " مجموعة" : resultCount + " packages in " + packageGroups.length + " groups"}</span>{(searchQuery || selectedCategory !== "all") && <button type="button" onClick={resetFilters} className="text-blue-600 dark:text-blue-400"><X size={13} />{isAr ? "مسح التصفية" : "Clear filters"}</button>}</div>
             {loading ? <div className={styles.empty}><LoaderCircle size={32} className="animate-spin text-blue-600 dark:text-blue-400" /><strong>{isAr ? "جاري تحميل الألعاب والبطاقات…" : "Loading games and gift cards…"}</strong></div> : sortedGroups.length === 0 ? <div className={styles.empty + " bg-surface-container"}><Search size={34} /><h3>{isAr ? "ملقيناش باقات مطابقة" : "No matching packages"}</h3><p>{isAr ? "جرّب اسم لعبة مختلف، أو اعرض كل الأقسام." : "Try another game name or browse every category."}</p><button type="button" onClick={resetFilters} className={styles.primaryAction + " bg-blue-600 text-white"}>{isAr ? "عرض كل الباقات" : "View every package"}</button></div> : <div className={styles.productGrid}>{sortedGroups.map((group, index) => {
+              const directOrdering = Boolean(pageContext) || ["imei", "server", "remote"].includes(group.categoryType);
+              const customGroupImage = group.services.find(service => service.groupImageUrl)?.groupImageUrl || group.services.find(service => service.imageUrl)?.imageUrl;
               const brand = BRAND_LIBRARY.find(item => [group.groupName, ...group.services.map(service => service.name)].join(" ").toLowerCase().includes(item.query));
               const badge = getCategoryBadgeInfo(group.categoryType); const Icon = CATEGORY_ICONS[group.categoryType] || Gamepad2;
-              const expanded = Boolean(expandedGroups[group.groupName]); const detailsId = "package-group-" + index;
-              return <article key={group.groupName} className={styles.product + " bg-surface-container shadow-sm"}>
-                <div className={styles.productArt}><div className={styles.productArtCopy}><span className={styles.productType + " text-blue-600 dark:text-blue-400"}><Icon size={15} />{badge.label}</span><strong>{brand?.label || (isAr ? "خدمات رقمية" : "Digital services")}</strong><span className={styles.artLabel}>{brand ? (isAr ? brand.kindAr : brand.kindEn) : group.categoryName}</span></div>{brand?.image ? <img src={"/images/zoalna/" + brand.image} alt="" width={120} height={120} loading="lazy" /> : <Icon className={styles.genericArt + " text-blue-600 dark:text-blue-400"} size={90} strokeWidth={1} />}</div>
-                <div className={styles.productBody}><h3 title={cleanHtmlToText(group.groupName)}><Link href={"/" + lang + "/product/" + getGameSlug(group.groupName)} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">{cleanHtmlToText(group.groupName)}</Link></h3><p className={styles.packageCount}><Layers3 size={14} />{group.services.length} {isAr ? "باقة متاحة" : "available packages"}</p><div className={styles.productFooter}><div><span>{isAr ? "يبدأ من" : "Starting at"}</span><strong className="text-blue-600 dark:text-blue-400">{formatPrice(group.minPrice)}</strong></div><div className="flex items-center gap-2"><Link href={"/" + lang + "/product/" + getGameSlug(group.groupName)} className="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center gap-1 shadow-sm"><span>{isAr ? "شحن اللعبة" : "Top Up"}</span><ArrowUpRight size={13} /></Link><button type="button" aria-expanded={expanded} aria-controls={detailsId} onClick={() => toggleGroup(group.groupName)} className={styles.packageButton + " bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400"}>{expanded ? (isAr ? "إخفاء" : "Hide") : isAr ? "عرض" : "View"}<ChevronDown size={16} className={expanded ? styles.chevronOpen : ""} /></button></div></div></div>
-                {expanded && <div id={detailsId} className={styles.packageList}>{group.services.map(service => { const price = getServicePrice(service); const gameSlug = getGameSlug(group.groupName, service.name); return <div key={service.id} className={styles.packageRow}><div><h4>{cleanHtmlToText(service.name)}</h4><span className={styles.delivery}><Clock3 size={12} />{service.time || (isAr ? "حسب تفاصيل الخدمة" : "See service details")}{service.supportsQty && <small>{isAr ? "يدعم الكميات" : "Quantity enabled"}</small>}</span></div><div className={styles.packagePrice}><strong className="text-blue-600 dark:text-blue-400">{formatPrice(price)}</strong><Link aria-label={(isAr ? "طلب " : "Order ") + cleanHtmlToText(service.name)} href={"/" + lang + "/product/" + gameSlug + "?package=" + encodeURIComponent(service.id)} className="bg-blue-600 hover:bg-blue-700 text-white font-bold">{isAr ? "شحن الآن" : "Top Up"}<ArrowUpRight size={13} /></Link></div></div>; })}</div>}
+              const expanded = Boolean(expandedGroups[group.key]); const detailsId = "package-group-" + index;
+              return <article key={group.key} className={styles.product + " bg-surface-container shadow-sm"}>
+                <div className={styles.productArt}><div className={styles.productArtCopy}><span className={styles.productType + " text-blue-600 dark:text-blue-400"}><Icon size={15} />{badge.label}</span><strong>{brand?.label || (directOrdering ? cleanHtmlToText(group.groupName) : isAr ? "خدمات رقمية" : "Digital services")}</strong><span className={styles.artLabel}>{brand ? (isAr ? brand.kindAr : brand.kindEn) : group.categoryName}</span></div>{customGroupImage || brand?.image ? <img src={customGroupImage || ("/images/zoalna/" + brand?.image)} alt="" width={120} height={120} loading="lazy" /> : <Icon className={styles.genericArt + " text-blue-600 dark:text-blue-400"} size={90} strokeWidth={1} />}</div>
+                <div className={styles.productBody}>
+                  <h3 title={cleanHtmlToText(group.groupName)}>{directOrdering ? <button type="button" onClick={() => toggleGroup(group.key)} className={styles.groupTitleButton}>{cleanHtmlToText(group.groupName)}</button> : <Link href={"/" + lang + "/product/" + getGameSlug(group.groupName)} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">{cleanHtmlToText(group.groupName)}</Link>}</h3>
+                  <p className={styles.packageCount}><Layers3 size={14} />{group.services.length} {isAr ? "باقة متاحة" : "available packages"}</p>
+                  <div className={styles.productFooter}><div><span>{isAr ? "يبدأ من" : "Starting at"}</span><strong className="text-blue-600 dark:text-blue-400">{formatPrice(group.minPrice)}</strong></div><div className="flex items-center gap-2">
+                    {!directOrdering && <Link href={"/" + lang + "/product/" + getGameSlug(group.groupName)} className="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center gap-1 shadow-sm"><span>{isAr ? "شحن اللعبة" : "Top Up"}</span><ArrowUpRight size={13} /></Link>}
+                    <button type="button" aria-expanded={expanded} aria-controls={detailsId} onClick={() => toggleGroup(group.key)} className={styles.packageButton + (directOrdering ? " bg-blue-600 hover:bg-blue-700 text-white" : " bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400")}>{expanded ? (isAr ? "إخفاء" : "Hide") : directOrdering ? (isAr ? "عرض الباقات" : "View packages") : (isAr ? "عرض" : "View")}<ChevronDown size={16} className={expanded ? styles.chevronOpen : ""} /></button>
+                  </div></div>
+                </div>
+                {expanded && <div id={detailsId} className={styles.packageList}>{group.services.map(service => {
+                  const price = getServicePrice(service);
+                  const href = directOrdering ? `/${lang}/purchase?serviceId=${encodeURIComponent(service.id)}` : "/" + lang + "/product/" + getGameSlug(group.groupName, service.name) + "?package=" + encodeURIComponent(service.id);
+                  return <div key={service.id} className={styles.packageRow}>{service.imageUrl && <img src={service.imageUrl} alt="" width={48} height={48} loading="lazy" decoding="async" className="w-12 h-12 object-cover rounded-lg shrink-0" />}<div><h4>{cleanHtmlToText(service.name)}</h4><span className={styles.delivery}><Clock3 size={12} />{service.time || (isAr ? "حسب تفاصيل الخدمة" : "See service details")}{service.supportsQty && <small>{isAr ? "يدعم الكميات" : "Quantity enabled"}</small>}</span></div><div className={styles.packagePrice}><strong className="text-blue-600 dark:text-blue-400">{formatPrice(price)}</strong><Link aria-label={(isAr ? "طلب " : "Order ") + cleanHtmlToText(service.name)} href={href} className="bg-blue-600 hover:bg-blue-700 text-white font-bold">{directOrdering ? (isAr ? 'طلب الخدمة' : 'Order service') : (isAr ? "شحن الآن" : "Top Up")}<ArrowUpRight size={13} /></Link></div></div>;
+                })}</div>}
               </article>;
             })}</div>}
           </div>
         </div>
       </section>
-      <div className={styles.bottomStrip}><div><Headphones size={21} /><span>{isAr ? "الألعاب والبطاقات هنا. خدمات السيرفر في قسمها الخاص." : "Games and gift cards here. GSM services have their own catalog."}</span></div><Link href={"/" + lang + "/pricing"}>{isAr ? "تصفح خدمات السيرفر" : "Browse GSM services"}<ArrowUpRight size={16} /></Link></div>
     </div>
   );
 }

@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { Cairo, Inter, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import "../../globals.css";
 import "@/styles/user-theme.css";
+import "@/styles/reference-store.css";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -12,10 +13,13 @@ export const viewport: Viewport = {
   maximumScale: 5,
   userScalable: true,
   viewportFit: "cover",
-  themeColor: "#2563eb",
+  themeColor: "#0f172a",
 };
 import Navbar from "@/components/Navbar";
+import InstallAppProvider from "@/components/InstallAppProvider";
 import Footer from "@/components/Footer";
+import { loadStorePages } from '@/lib/store-pages-server';
+import StoreNavigationProvider from '@/components/StoreNavigationProvider';
 import { getDictionary } from "@/i18n/get-dictionary";
 import { Locale, i18n } from "@/i18n/config";
 import ClientWidgets from "@/components/ClientWidgets";
@@ -161,6 +165,8 @@ export async function generateMetadata(props: { params: Promise<{ lang: string }
         "x-default": siteUrl,
       },
     },
+    manifest: "/manifest.webmanifest",
+    appleWebApp: { capable: true, title: "برعي ستور", statusBarStyle: "default" },
     icons: {
       icon: [
         { url: "/borai-favicon.png?v=3", sizes: "32x32", type: "image/png" },
@@ -213,7 +219,7 @@ export default async function RootLayout(
       : "Official BORAI STORE platform for game credits, digital vouchers, and remote tech services.",
     "potentialAction": {
       "@type": "SearchAction",
-      "target": `${siteUrl}/ar/pricing?q={search_term_string}`,
+      "target": `${siteUrl}/ar/services?search={search_term_string}`,
       "query-input": "required name=search_term_string"
     }
   };
@@ -372,20 +378,19 @@ export default async function RootLayout(
       <body
         className={`${cairo.variable} ${inter.variable} ${jakarta.variable} ${jetbrains.variable} user-theme font-sans antialiased min-h-screen flex flex-col relative`}
       >
+        <Script src="/pwa-install.js" strategy="beforeInteractive" />
         <Script
           id="theme-init"
           strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
-            __html: `try{var t=localStorage.getItem('app_theme');document.documentElement.classList.toggle('dark',t!=='light');}catch(e){document.documentElement.classList.add('dark');}`,
+            __html: `try{var t=localStorage.getItem('app_theme');document.documentElement.classList.toggle('dark',t==='dark');}catch(e){}`,
           }}
         />
         <ThemeProvider>
+          <InstallAppProvider lang={lang} initialSettings={localHomepageConfig}>
+          <StoreNavigationProvider initialPages={(await loadStorePages())?.pages || []}>
           <CartProvider>
             <NavigationProgressBar lang={lang} />
-            <div className="user-ambient" aria-hidden="true">
-              <span className="user-ambient__glow user-ambient__glow--primary" />
-              <span className="user-ambient__glow user-ambient__glow--secondary" />
-            </div>
             {/* Client Enhancement Widgets (Lazy loaded, non-blocking) */}
             <ClientWidgets lang={lang} />
 
@@ -408,6 +413,8 @@ export default async function RootLayout(
 
             <Footer lang={lang} dict={dict.footer} />
           </CartProvider>
+          </StoreNavigationProvider>
+          </InstallAppProvider>
         </ThemeProvider>
       </body>
     </html>

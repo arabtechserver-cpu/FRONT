@@ -4,6 +4,8 @@ import { SITE_CONTACTS } from "@/lib/site-contacts";
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { uploadStoreImage } from "@/lib/upload-store-image";
+import "./homepage-manager.css";
 
 interface SlideItem {
   id: number | string;
@@ -76,9 +78,9 @@ const DEFAULT_CONFIG: HomepageConfig = {
     linkUrl: "#"
   },
   heroSlider: [
-    { id: 1, image: "/images/zoalna/slide_1.png", link: "/pricing", alt: "شريحة 1" },
-    { id: 2, image: "/images/zoalna/slide_2.png", link: "/pricing?cat=imei", alt: "شريحة 2" },
-    { id: 3, image: "/images/zoalna/slide_3.png", link: "/pricing?cat=server", alt: "شريحة 3" }
+    { id: 1, image: "/images/zoalna/slide_1.png", link: "/services", alt: "شريحة 1" },
+    { id: 2, image: "/images/zoalna/slide_2.png", link: "/services?cat=imei", alt: "شريحة 2" },
+    { id: 3, image: "/images/zoalna/slide_3.png", link: "/services?cat=server", alt: "شريحة 3" }
   ],
   sideMenu: [
     { icon: "account", text: "الحساب", link: "/profile" },
@@ -92,15 +94,15 @@ const DEFAULT_CONFIG: HomepageConfig = {
     link: ""
   },
   gamesGroup1: [
-    { title: "فري فاير", image: "/images/zoalna/game_freefire.webp", href: "/pricing?search=Free%20Fire", query: "فري فاير free fire" },
-    { title: "ببجي موبايل", image: "/images/zoalna/game_pubg.webp", href: "/pricing?search=PUBG", query: "ببجي pubg mobile" },
-    { title: "موبايل ليجند", image: "/images/zoalna/game_mobilelegends.webp", href: "/pricing?search=Mobile%20Legends", query: "موبايل ليجند mobile legends" },
-    { title: "جنشن امباكت", image: "/images/zoalna/game_genshin.webp", href: "/pricing?search=Genshin", query: "جنشن genshin impact" },
-    { title: "يلا ليدو", image: "/images/zoalna/game_yallaludo.webp", href: "/pricing?search=Yalla%20Ludo", query: "يلا ليدو yalla ludo" },
-    { title: "جواكر", image: "/images/zoalna/game_jawaker.webp", href: "/pricing?search=Jawaker", query: "جواكر jawaker" },
-    { title: "لوردس موبايل", image: "/images/zoalna/game_lordsmobile.webp", href: "/pricing?search=Lords%20Mobile", query: "لوردس lords mobile" },
-    { title: "بلود استريك", image: "/images/zoalna/game_bloodstrike.webp", href: "/pricing?search=Blood%20Strike", query: "بلود استريك blood strike" },
-    { title: "فيزا", image: "/images/zoalna/game_redotpay.webp", href: "/pricing?search=Visa", query: "فيزا redotpay visa" }
+    { title: "فري فاير", image: "/images/zoalna/game_freefire.webp", href: "/services?search=Free%20Fire", query: "فري فاير free fire" },
+    { title: "ببجي موبايل", image: "/images/zoalna/game_pubg.webp", href: "/services?search=PUBG", query: "ببجي pubg mobile" },
+    { title: "موبايل ليجند", image: "/images/zoalna/game_mobilelegends.webp", href: "/services?search=Mobile%20Legends", query: "موبايل ليجند mobile legends" },
+    { title: "جنشن امباكت", image: "/images/zoalna/game_genshin.webp", href: "/services?search=Genshin", query: "جنشن genshin impact" },
+    { title: "يلا ليدو", image: "/images/zoalna/game_yallaludo.webp", href: "/services?search=Yalla%20Ludo", query: "يلا ليدو yalla ludo" },
+    { title: "جواكر", image: "/images/zoalna/game_jawaker.webp", href: "/services?search=Jawaker", query: "جواكر jawaker" },
+    { title: "لوردس موبايل", image: "/images/zoalna/game_lordsmobile.webp", href: "/services?search=Lords%20Mobile", query: "لوردس lords mobile" },
+    { title: "بلود استريك", image: "/images/zoalna/game_bloodstrike.webp", href: "/services?search=Blood%20Strike", query: "بلود استريك blood strike" },
+    { title: "فيزا", image: "/images/zoalna/game_redotpay.webp", href: "/services?search=Visa", query: "فيزا redotpay visa" }
   ],
   banner2: {
     image: "/images/zoalna/banner_hero_2.webp",
@@ -108,13 +110,13 @@ const DEFAULT_CONFIG: HomepageConfig = {
     link: ""
   },
   gamesGroup2: [
-    { title: "كلاش اوف كلانس", image: "/images/zoalna/game_clashofclans.webp", href: "/pricing?search=Clash%20of%20Clans", query: "كلاش اوف كلانس clash of clans" },
-    { title: "كلاش رويال", image: "/images/zoalna/game_clashroyale.webp", href: "/pricing?search=Clash%20Royale", query: "كلاش رويال clash royale" },
-    { title: "فيفا موبايل", image: "/images/zoalna/game_fifa.webp", href: "/pricing?search=FC%20Mobile", query: "فيفا fifa ea fc mobile" },
-    { title: "بيس موبايل", image: "/images/zoalna/game_pes.webp", href: "/pricing?search=eFootball", query: "بيس pes efootball mobile" },
-    { title: "براول ستارز", image: "/images/zoalna/game_brawlstars.webp", href: "/pricing?search=Brawl%20Stars", query: "براول ستارز brawl stars" },
-    { title: "تيك توك", image: "/images/zoalna/game_tiktok.webp", href: "/pricing?search=TikTok", query: "تيك توك tiktok coins" },
-    { title: "تجديد استارلينك", image: "/images/zoalna/game_starlink.webp", href: "/pricing?search=Starlink", query: "استارلينك starlink internet" }
+    { title: "كلاش اوف كلانس", image: "/images/zoalna/game_clashofclans.webp", href: "/services?search=Clash%20of%20Clans", query: "كلاش اوف كلانس clash of clans" },
+    { title: "كلاش رويال", image: "/images/zoalna/game_clashroyale.webp", href: "/services?search=Clash%20Royale", query: "كلاش رويال clash royale" },
+    { title: "فيفا موبايل", image: "/images/zoalna/game_fifa.webp", href: "/services?search=FC%20Mobile", query: "فيفا fifa ea fc mobile" },
+    { title: "بيس موبايل", image: "/images/zoalna/game_pes.webp", href: "/services?search=eFootball", query: "بيس pes efootball mobile" },
+    { title: "براول ستارز", image: "/images/zoalna/game_brawlstars.webp", href: "/services?search=Brawl%20Stars", query: "براول ستارز brawl stars" },
+    { title: "تيك توك", image: "/images/zoalna/game_tiktok.webp", href: "/services?search=TikTok", query: "تيك توك tiktok coins" },
+    { title: "تجديد استارلينك", image: "/images/zoalna/game_starlink.webp", href: "/services?search=Starlink", query: "استارلينك starlink internet" }
   ],
   banner3: {
     image: "/images/zoalna/banner_hero_3.webp",
@@ -122,18 +124,18 @@ const DEFAULT_CONFIG: HomepageConfig = {
     link: ""
   },
   digitalCards: [
-    { title: "كروت ايتونز", image: "/images/zoalna/card_itunes.webp", href: "/pricing?search=iTunes", query: "ايتونز itunes apple" },
-    { title: "ريزر جولد", image: "/images/zoalna/card_razergold.webp", href: "/pricing?search=Razer%20Gold", query: "ريزر جولد razer gold" },
-    { title: "كروت استيم", image: "/images/zoalna/card_steam.webp", href: "/pricing?search=Steam", query: "استيم steam wallet" },
-    { title: "كروت بلايستيشن", image: "/images/zoalna/card_playstation.webp", href: "/pricing?search=PlayStation", query: "بلايستيشن playstation psn" },
-    { title: "كروت اكس بوكس", image: "/images/zoalna/card_xbox.webp", href: "/pricing?search=Xbox", query: "اكس بوكس xbox live" }
+    { title: "كروت ايتونز", image: "/images/zoalna/card_itunes.webp", href: "/services?search=iTunes", query: "ايتونز itunes apple" },
+    { title: "ريزر جولد", image: "/images/zoalna/card_razergold.webp", href: "/services?search=Razer%20Gold", query: "ريزر جولد razer gold" },
+    { title: "كروت استيم", image: "/images/zoalna/card_steam.webp", href: "/services?search=Steam", query: "استيم steam wallet" },
+    { title: "كروت بلايستيشن", image: "/images/zoalna/card_playstation.webp", href: "/services?search=PlayStation", query: "بلايستيشن playstation psn" },
+    { title: "كروت اكس بوكس", image: "/images/zoalna/card_xbox.webp", href: "/services?search=Xbox", query: "اكس بوكس xbox live" }
   ],
   subscriptionsCard: {
     image: "/images/zoalna/card_subscriptions.webp",
     title: "الاشتراكات الرقمية",
     description: "خدمات بث، موسيقى، ترفيه وألعاب… معالجة سريعة ودعم فني.",
     buttonText: "تصفح الآن",
-    buttonUrl: "/pricing?cat=store"
+    buttonUrl: "/services?cat=store"
   },
   floatingWhatsapp: {
     enabled: true,
@@ -158,10 +160,25 @@ type ActiveTab =
   | "banner3_cards"
   | "subscriptions_whatsapp";
 
+function normalizeHomepageLinks(value: any): any {
+  if (Array.isArray(value)) return value.map(normalizeHomepageLinks);
+  if (!value || typeof value !== "object") return value;
+  return Object.fromEntries(Object.entries(value).map(([key, entry]) => {
+    if (["link", "href", "buttonUrl"].includes(key) && typeof entry === "string" && /^\/(?:ar\/|en\/)?pricing(?:[/?#]|$)/.test(entry)) {
+      const query = new URL(entry, "http://local").searchParams.get("search");
+      return [key, query && /pubg/i.test(query) ? "/product/pubg-id" : query && /free.?fire/i.test(query) ? "/product/free-fire-id" : query ? `/services?search=${encodeURIComponent(query)}` : "/services"];
+    }
+    return [key, normalizeHomepageLinks(entry)];
+  }));
+}
+
 export default function AdminHomepageManager() {
   const [config, setConfig] = useState<HomepageConfig>(DEFAULT_CONFIG);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [itemSearch, setItemSearch] = useState("");
+  const [savedConfig, setSavedConfig] = useState("");
   const [activeTab, setActiveTab] = useState<ActiveTab>("hero");
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [toastType, setToastType] = useState<"success" | "error">("success");
@@ -195,8 +212,9 @@ export default function AdminHomepageManager() {
       try {
         setLoading(true);
         const res = await fetch("/api/homepage");
+        if (!res.ok) throw new Error("Unable to load homepage configuration");
         if (res.ok) {
-          const data = await res.json();
+          const data = normalizeHomepageLinks(await res.json());
           setConfig({
             announcementBar: { ...DEFAULT_CONFIG.announcementBar, ...data.announcementBar },
             heroSlider: Array.isArray(data.heroSlider) && data.heroSlider.length > 0 ? data.heroSlider : DEFAULT_CONFIG.heroSlider,
@@ -214,7 +232,8 @@ export default function AdminHomepageManager() {
           });
         }
       } catch (err) {
-        showToast("تعذر تحميل البيانات من الخادم، يتم عرض البيانات الحالية", "error");
+        setLoadError(true);
+        showToast("تعذر تحميل الإعدادات. أعد تحميل الصفحة قبل التعديل.", "error");
       } finally {
         setLoading(false);
       }
@@ -243,7 +262,8 @@ export default function AdminHomepageManager() {
       const data = await res.json().catch(() => null);
 
       if (res.ok && data?.success !== false) {
-        showToast("تم حفظ جميع إعدادات الصفحة الرئيسية بنجاح");
+        setSavedConfig(JSON.stringify(config));
+        showToast("تم حفظ التغييرات ونشرها على الصفحة الرئيسية");
         if (typeof window !== "undefined") {
           window.dispatchEvent(new Event("homepage_config_updated"));
         }
@@ -274,63 +294,37 @@ export default function AdminHomepageManager() {
     }
   };
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) {
-      setUploadingField(null);
-      return;
-    }
-
-    if (!file.type.startsWith("image/")) {
-      showToast("الرجاء اختيار ملف صورة صالح", "error");
-      setUploadingField(null);
-      return;
-    }
-
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    const callback = pendingUploadCallback.current;
+    if (!file) { setUploadingField(null); return; }
     try {
-      const reader = new FileReader();
-      reader.onloadend = async () => {
-        const base64Data = reader.result as string;
-        try {
-          const token = getAuthToken();
-          const headers: Record<string, string> = {
-            "Content-Type": "application/json",
-          };
-          if (token) {
-            headers["Authorization"] = `Bearer ${token}`;
-          }
-
-          const res = await fetch("/api/upload", {
-            method: "POST",
-            headers,
-            body: JSON.stringify({
-              image: base64Data,
-              filename: file.name,
-            }),
-          });
-
-          const data = await res.json();
-          if (res.ok && data.success) {
-            const cleanUrl = data.url.replace(/^https?:\/\/[^/]+/, "");
-            if (pendingUploadCallback.current) {
-              pendingUploadCallback.current(cleanUrl);
-            }
-            showToast("تم رفع الصورة بنجاح");
-          } else {
-            showToast(data.error || "فشل رفع الصورة", "error");
-          }
-        } catch {
-          showToast("خطأ أثناء رفع الصورة إلى الخادم", "error");
-        } finally {
-          setUploadingField(null);
-        }
-      };
-      reader.readAsDataURL(file);
-    } catch {
-      showToast("فشل معالجة ملف الصورة", "error");
-      setUploadingField(null);
-    }
+      const result = await uploadStoreImage(file, false);
+      callback?.(result.url);
+      showToast(`تم رفع الصورة وضغطها • ${Math.ceil(result.size / 1024)} كيلوبايت. اضغط حفظ التغييرات لاعتمادها.`);
+    } catch (error) { showToast(error instanceof Error ? error.message : "تعذر رفع الصورة", "error"); }
+    finally { setUploadingField(null); if (fileInputRef.current) fileInputRef.current.value = ""; }
   };
+
+  const sections: { id: ActiveTab; title: string; description: string; image?: string; count?: number }[] = [
+    { id: "hero", title: "البانر الرئيسي والاختصارات", description: "أول جزء بيظهر للعميل أعلى الصفحة", image: config.heroSlider[0]?.image, count: config.heroSlider.length },
+    { id: "games1", title: "الألعاب في الصف الأول", description: "صور الألعاب وأسماؤها وروابط الشحن", image: config.gamesGroup1[0]?.image, count: config.gamesGroup1.length },
+    { id: "search_banner1", title: "بانر العروض الأول والبحث", description: "الصورة العريضة قبل صف الألعاب", image: config.banner1.image },
+    { id: "banner2_games2", title: "العروض وباقي الألعاب", description: "البانر الثاني والصف الثاني من الألعاب", image: config.banner2.image, count: config.gamesGroup2.length },
+    { id: "banner3_cards", title: "البطاقات الرقمية", description: "بانر البطاقات وصور كروت المتاجر", image: config.banner3.image, count: config.digitalCards.length },
+    { id: "subscriptions_whatsapp", title: "الاشتراكات والتواصل", description: "بطاقة الاشتراكات وإعدادات التواصل", image: config.subscriptionsCard.image },
+    { id: "announcement", title: "تحميل تطبيق برعي", description: "شريط التثبيت وتنبيه التحميل للزائر" },
+  ];
+  const currentSection = sections.find(section => section.id === activeTab)!;
+  const hasChanges = Boolean(savedConfig) && savedConfig !== JSON.stringify(config);
+
+  useEffect(() => { if (!loading && !savedConfig) setSavedConfig(JSON.stringify(config)); }, [loading, savedConfig, config]);
+  useEffect(() => {
+    if (!hasChanges) return;
+    const warn = (event: BeforeUnloadEvent) => { event.preventDefault(); event.returnValue = ""; };
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [hasChanges]);
 
   if (loading) {
     return (
@@ -344,15 +338,16 @@ export default function AdminHomepageManager() {
   }
 
   return (
-    <div className="space-y-6 pb-20">
+    <div className="homepage-manager space-y-6 pb-20">
       <input
         type="file"
         ref={fileInputRef}
         onChange={handleFileChange}
-        accept="image/*"
+        accept="image/jpeg,image/png,image/webp"
         className="hidden"
       />
 
+      {loadError && <p role="alert" className="p-4 rounded-xl border border-red-500/30 text-red-300">تعذر تحميل الإعدادات الحالية. أعد تحميل الصفحة قبل التعديل والحفظ.</p>}
       {/* Toast Alert */}
       {toastMessage && (
         <div
@@ -368,16 +363,16 @@ export default function AdminHomepageManager() {
       )}
 
       {/* Top Header Card */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className="homepage-save-bar bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-black text-white">إدارة الصفحة الرئيسية</h1>
+            <h1 className="text-2xl font-black text-white">رتّب الصفحة الرئيسية</h1>
             <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
-              واجهة المتجر المباشرة
+              {hasChanges ? "فيه تغييرات لسه متحفظتش" : "التغييرات محفوظة"}
             </span>
           </div>
           <p className="text-xs text-slate-400 mt-1">
-            تحكم كامل في جميع أقسام الصفحة الرئيسية: السلايدر، شبكات الألعاب، البطاقات الرقمية، الإعلانات، وبانرات العروض.
+            اختار الجزء من القائمة، عدّل الصورة أو النص، وبعدها اضغط حفظ التغييرات.
           </p>
         </div>
 
@@ -398,13 +393,13 @@ export default function AdminHomepageManager() {
             onClick={handleResetDefaults}
             className="px-4 py-2.5 rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-slate-800 text-slate-300 text-xs font-bold transition-all"
           >
-            استعادة الافتراضيات
+            إرجاع التصميم الافتراضي
           </button>
 
           <button
             type="button"
             onClick={handleSave}
-            disabled={saving}
+            disabled={saving || loadError || !hasChanges || Boolean(uploadingField)}
             className="flex-1 md:flex-initial px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-black shadow-lg shadow-blue-600/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
           >
             {saving ? (
@@ -424,32 +419,18 @@ export default function AdminHomepageManager() {
         </div>
       </div>
 
-      {/* Tabs Navigation Strip */}
-      <div className="flex overflow-x-auto gap-2 border-b border-slate-800 pb-2 scrollbar-thin">
-        {[
-          { id: "hero", label: "السلايدر والقائمة الجانبية" },
-          { id: "announcement", label: "شريط الإعلانات والنافذة المنبثقة" },
-          { id: "search_banner1", label: "البحث والبانر الأول" },
-          { id: "games1", label: "شبكة الألعاب 1" },
-          { id: "banner2_games2", label: "البانر الثاني وشبكة الألعاب 2" },
-          { id: "banner3_cards", label: "البانر الثالث والبطاقات الرقمية" },
-          { id: "subscriptions_whatsapp", label: "الاشتراكات وزر واتساب" },
-        ].map((tab) => (
-          <button
-            key={tab.id}
-            type="button"
-            onClick={() => setActiveTab(tab.id as ActiveTab)}
-            className={`px-4 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all border ${
-              activeTab === tab.id
-                ? "bg-blue-600 text-white border-blue-500 shadow-md shadow-blue-600/20"
-                : "bg-slate-900/60 text-slate-400 border-slate-800 hover:text-slate-200 hover:bg-slate-800"
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
-
+      <div className="homepage-editor-layout">
+        <nav className="homepage-section-nav" aria-label="أجزاء الصفحة الرئيسية">
+          <p className="text-sm font-bold text-white mb-2">اختار الجزء اللي هتعدّله</p>
+          {sections.map((section, index) => <button type="button" key={section.id} onClick={() => { setActiveTab(section.id); setItemSearch(""); }} aria-current={activeTab === section.id ? "step" : undefined} className={`homepage-section-button ${activeTab === section.id ? "is-active" : ""}`}>
+            <span className="homepage-section-number">{index + 1}</span><span className="flex-1"><strong>{section.title}</strong><small>{section.description}</small>{section.count !== undefined && <small>{section.count} عنصر</small>}</span>
+            {section.image && <img src={section.image} alt="" width={44} height={44} loading="lazy" />}
+          </button>)}
+          <p className="text-xs text-slate-400 leading-6 mt-4">التعديلات لا تظهر للعميل إلا بعد الضغط على «حفظ التغييرات».</p>
+        </nav>
+        <div className="homepage-editor-content">
+          <div className="homepage-section-guide"><div><span className="text-xs text-blue-400 font-bold">أنت تعدّل الآن</span><h2>{currentSection.title}</h2><p>{currentSection.description}</p></div><ol>{activeTab === "announcement" ? <><li>اختار إظهار شريط التحميل والتنبيه.</li><li>عدّل نص الشريط وزر التثبيت.</li></> : <><li>ارفع الصورة من جهازك.</li><li>عدّل الاسم أو رابط الصفحة التي تفتح عند الضغط.</li></>}<li>احفظ، ثم افتح معاينة المتجر.</li></ol></div>
+          {["games1", "banner2_games2", "banner3_cards"].includes(activeTab) && <label className="block rounded-xl border border-slate-700 bg-slate-900 p-4 text-xs text-slate-300">ابحث عن اللعبة أو البطاقة التي تريد تعديلها<input type="search" aria-label="ابحث في عناصر الصفحة الرئيسية" value={itemSearch} onChange={event => setItemSearch(event.target.value)} placeholder="مثلاً: فري فاير أو ببجي" className="block w-full mt-2 p-3 rounded-lg border border-slate-700 bg-slate-950 text-white" /></label>}
       {/* TAB 1: Hero Slider & Side Menu */}
       {activeTab === "hero" && (
         <div className="space-y-6">
@@ -457,9 +438,9 @@ export default function AdminHomepageManager() {
           <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-base font-black text-white">شرائح السلايدر الرئيسي (Hero Slider)</h2>
+                <h2 className="text-base font-black text-white">صور البانر الرئيسي المتحرك</h2>
                 <p className="text-xs text-slate-400 mt-0.5">
-                  الشرائح التفاعلية التي تعرض العروض الرئيسية في أعلى الصفحة.
+                  الصور الكبيرة في أعلى المتجر. استخدم الأسهم لتغيير ترتيبها.
                 </p>
               </div>
               <button
@@ -470,7 +451,7 @@ export default function AdminHomepageManager() {
                     ...config,
                     heroSlider: [
                       ...config.heroSlider,
-                      { id: newId, image: "/images/zoalna/slide_1.png", link: "/pricing", alt: `شريحة ${config.heroSlider.length + 1}` },
+                      { id: newId, image: "/images/zoalna/slide_1.png", link: "/services", alt: `شريحة ${config.heroSlider.length + 1}` },
                     ],
                   });
                 }}
@@ -487,7 +468,7 @@ export default function AdminHomepageManager() {
               {config.heroSlider.map((slide, idx) => (
                 <div
                   key={slide.id || idx}
-                  className="bg-slate-950/60 border border-slate-800/80 rounded-xl p-4 flex flex-col md:flex-row items-start md:items-center gap-4"
+                  className="homepage-item-editor bg-slate-950/60 border border-slate-800/80 rounded-xl p-4 flex flex-col md:flex-row items-start md:items-center gap-4"
                 >
                   <div className="relative w-full md:w-44 h-24 rounded-lg overflow-hidden border border-slate-800 bg-slate-900 shrink-0">
                     <img src={slide.image} alt={slide.alt} className="w-full h-full object-cover" />
@@ -496,50 +477,17 @@ export default function AdminHomepageManager() {
                     </span>
                   </div>
 
-                  <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3 w-full">
-                    <div>
-                      <label className="block text-[11px] font-bold text-slate-400 mb-1">مسار أو رابط الصورة</label>
-                      <div className="flex gap-2">
-                        <input
-                          type="text"
-                          value={slide.image}
-                          onChange={(e) => {
-                            const updated = [...config.heroSlider];
-                            updated[idx].image = e.target.value;
-                            setConfig({ ...config, heroSlider: updated });
-                          }}
-                          className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
-                        />
-                        <button
-                          type="button"
-                          onClick={() =>
-                            triggerUpload(`slide_${idx}`, (url) => {
-                              const updated = [...config.heroSlider];
-                              updated[idx].image = url;
-                              setConfig({ ...config, heroSlider: updated });
-                            })
-                          }
-                          disabled={uploadingField === `slide_${idx}`}
-                          className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg text-xs font-bold shrink-0 transition-all"
-                        >
-                          {uploadingField === `slide_${idx}` ? "جاري الرفع..." : "رفع صورة"}
-                        </button>
-                      </div>
+                  <div className="flex-1 grid grid-cols-1 gap-4 w-full">
+                    <div><label className="block text-xs font-bold text-slate-300 mb-2">صورة البانر</label>
+                      <button type="button" disabled={Boolean(uploadingField)} className="px-4 py-2.5 rounded-lg bg-blue-600 text-white font-bold text-xs disabled:opacity-40" onClick={() => triggerUpload(`slide_${idx}`, url => { const updated = [...config.heroSlider]; updated[idx] = { ...updated[idx], image: url }; setConfig({ ...config, heroSlider: updated }); })}>{uploadingField === `slide_${idx}` ? "جاري ضغط الصورة ورفعها…" : "اختيار صورة من جهازي"}</button>
+                      <details className="mt-2 text-xs text-slate-400"><summary className="cursor-pointer">أو استخدام رابط صورة جاهزة</summary><input type="text" aria-label={`رابط صورة البانر ${idx + 1}`} value={slide.image} onChange={event => { const updated = [...config.heroSlider]; updated[idx] = { ...updated[idx], image: event.target.value }; setConfig({ ...config, heroSlider: updated }); }} className="w-full mt-2 p-2 bg-slate-900 border border-slate-700 rounded-lg" /></details>
                     </div>
-
-                    <div>
-                      <label className="block text-[11px] font-bold text-slate-400 mb-1">رابط الوجهة عند النقر</label>
-                      <input
-                        type="text"
-                        value={slide.link}
-                        onChange={(e) => {
-                          const updated = [...config.heroSlider];
-                          updated[idx].link = e.target.value;
-                          setConfig({ ...config, heroSlider: updated });
-                        }}
-                        placeholder="/pricing"
-                        className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
-                      />
+                    <div><label className="block text-xs font-bold text-slate-300 mb-2">عند الضغط على البانر، يفتح:</label>
+                      <select aria-label={`وجهة البانر ${idx + 1}`} value={slide.link} onChange={event => { const updated = [...config.heroSlider]; updated[idx] = { ...updated[idx], link: event.target.value }; setConfig({ ...config, heroSlider: updated }); }} className="w-full p-2.5 rounded-lg border border-slate-700 bg-slate-900 text-xs text-white">
+                        {!["/services", "/product/free-fire-id", "/product/pubg-id", "/services?cat=gamecodes", "/services?cat=subscriptions", "/wallet"].includes(slide.link) && <option value={slide.link}>الوجهة الحالية: {slide.link || "بدون رابط"}</option>}
+                        <option value="/services">المتجر — كل الخدمات</option><option value="/product/free-fire-id">صفحة شحن فري فاير</option><option value="/product/pubg-id">صفحة شحن ببجي</option><option value="/services?cat=gamecodes">كروت الألعاب</option><option value="/services?cat=subscriptions">الاشتراكات الرقمية</option><option value="/wallet">المحفظة والشحن</option>
+                      </select>
+                      <details className="mt-2 text-xs text-slate-400"><summary className="cursor-pointer">إدخال رابط آخر</summary><input type="text" aria-label={`رابط مخصص للبانر ${idx + 1}`} value={slide.link} onChange={event => { const updated = [...config.heroSlider]; updated[idx] = { ...updated[idx], link: event.target.value }; setConfig({ ...config, heroSlider: updated }); }} className="w-full mt-2 p-2 bg-slate-900 border border-slate-700 rounded-lg" /></details>
                     </div>
                   </div>
 
@@ -667,176 +615,19 @@ export default function AdminHomepageManager() {
       {/* TAB 2: Announcement Bar & App Download Modal */}
       {activeTab === "announcement" && (
         <div className="space-y-6">
-          {/* Announcement Bar */}
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-5">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-base font-black text-white">شريط الإعلانات العلوي (Announcement Bar)</h2>
-                <p className="text-xs text-slate-400 mt-0.5">
-                  الشريط الترويجي الظاهر في أعلى الصفحة الرئيسية فوق قائمة التنقل.
-                </p>
-              </div>
-
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={config.announcementBar.enabled}
-                  onChange={(e) =>
-                    setConfig({
-                      ...config,
-                      announcementBar: { ...config.announcementBar, enabled: e.target.checked },
-                    })
-                  }
-                  className="sr-only peer"
-                />
-                <div className="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                <span className="mr-3 text-xs font-bold text-slate-300">
-                  {config.announcementBar.enabled ? "مفعل" : "معطل"}
-                </span>
-              </label>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-[11px] font-bold text-slate-400 mb-1">النص البارز (العنوان)</label>
-                <input
-                  type="text"
-                  value={config.announcementBar.title}
-                  onChange={(e) =>
-                    setConfig({
-                      ...config,
-                      announcementBar: { ...config.announcementBar, title: e.target.value },
-                    })
-                  }
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-bold text-slate-400 mb-1">نص الرابط</label>
-                <input
-                  type="text"
-                  value={config.announcementBar.linkText}
-                  onChange={(e) =>
-                    setConfig({
-                      ...config,
-                      announcementBar: { ...config.announcementBar, linkText: e.target.value },
-                    })
-                  }
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-bold text-slate-400 mb-1">رابط الوجهة</label>
-                <input
-                  type="text"
-                  value={config.announcementBar.linkUrl}
-                  onChange={(e) =>
-                    setConfig({
-                      ...config,
-                      announcementBar: { ...config.announcementBar, linkUrl: e.target.value },
-                    })
-                  }
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* App Modal */}
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-5">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-base font-black text-white">النافذة المنبثقة لتحميل التطبيق (App Download Modal)</h2>
-                <p className="text-xs text-slate-400 mt-0.5">
-                  النافذة الترحيبية الترويجية التي تدعو المستخدمين لتنزيل تطبيق الهاتف.
-                </p>
-              </div>
-
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={config.appModal.enabled}
-                  onChange={(e) =>
-                    setConfig({
-                      ...config,
-                      appModal: { ...config.appModal, enabled: e.target.checked },
-                    })
-                  }
-                  className="sr-only peer"
-                />
-                <div className="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                <span className="mr-3 text-xs font-bold text-slate-300">
-                  {config.appModal.enabled ? "مفعل" : "معطل"}
-                </span>
-              </label>
-            </div>
-
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-[11px] font-bold text-slate-400 mb-1">عنوان النافذة</label>
-                  <input
-                    type="text"
-                    value={config.appModal.title}
-                    onChange={(e) =>
-                      setConfig({
-                        ...config,
-                        appModal: { ...config.appModal, title: e.target.value },
-                      })
-                    }
-                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-[11px] font-bold text-slate-400 mb-1">نص زر التحميل</label>
-                  <input
-                    type="text"
-                    value={config.appModal.buttonText}
-                    onChange={(e) =>
-                      setConfig({
-                        ...config,
-                        appModal: { ...config.appModal, buttonText: e.target.value },
-                      })
-                    }
-                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-bold text-slate-400 mb-1">نص الوصف والرسالة</label>
-                <textarea
-                  rows={2}
-                  value={config.appModal.description}
-                  onChange={(e) =>
-                    setConfig({
-                      ...config,
-                      appModal: { ...config.appModal, description: e.target.value },
-                    })
-                  }
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white resize-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-bold text-slate-400 mb-1">رابط تحميل التطبيق المباشر (APK أو المتجر)</label>
-                <input
-                  type="text"
-                  value={config.appModal.downloadUrl}
-                  onChange={(e) =>
-                    setConfig({
-                      ...config,
-                      appModal: { ...config.appModal, downloadUrl: e.target.value },
-                    })
-                  }
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white"
-                />
-              </div>
-            </div>
-          </div>
+          <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6 space-y-5">
+            <h2 className="text-lg font-bold text-white">شريط تحميل تطبيق برعي</h2>
+            <p className="text-xs leading-7 text-slate-400">الشريط أعلى المتجر مسؤول عن تثبيت التطبيق على جهاز العميل. زر التثبيت يفتح طلب المتصفح الحقيقي عند جاهزيته. في المتصفح غير الداعم تظهر رسالة توضح عدم إتاحة التثبيت المباشر.</p>
+            <label className="flex items-center gap-3 text-sm text-white"><input type="checkbox" checked={config.announcementBar.enabled} onChange={event => setConfig({ ...config, announcementBar: { ...config.announcementBar, enabled: event.target.checked } })} />إظهار شريط تحميل التطبيق</label>
+            <label className="block text-xs text-slate-300">النص الظاهر في الشريط<input type="text" value={config.announcementBar.title} onChange={event => setConfig({ ...config, announcementBar: { ...config.announcementBar, title: event.target.value } })} className="block w-full mt-2 bg-slate-950 border border-slate-700 rounded-lg p-3 text-white" /></label>
+            <label className="block text-xs text-slate-300">نص زر التحميل<input type="text" value={config.announcementBar.linkText} onChange={event => setConfig({ ...config, announcementBar: { ...config.announcementBar, linkText: event.target.value } })} className="block w-full mt-2 bg-slate-950 border border-slate-700 rounded-lg p-3 text-white" /></label>
+            <p className="rounded-xl bg-blue-600/10 p-4 text-xs leading-7 text-blue-200">التثبيت مرتبط بالموقع تلقائياً، ويستخدم شعار برعي كأيقونة للتطبيق. لا تحتاج لإضافة رابط تحميل خارجي.</p>
+          </section>
+          <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6 space-y-4">
+            <h2 className="text-lg font-bold text-white">تنبيه تحميل التطبيق للزوار</h2>
+            <label className="flex items-center gap-3 text-sm text-white"><input type="checkbox" checked={config.appModal.enabled} onChange={event => setConfig({ ...config, appModal: { ...config.appModal, enabled: event.target.checked } })} />إظهار تنبيه «حمّل تطبيق برعي» تلقائياً</label>
+            <p className="text-xs text-slate-400 leading-7">تظهر نافذة باسم وشعار برعي وزر «تثبيت التطبيق الآن» بعد ٨ ثوانٍ من جاهزية التثبيت الحقيقي. إذا أغلقها العميل لا تتكرر لمدة أسبوع، وتختفي عند فتح التطبيق المثبّت.</p>
+          </section>
         </div>
       )}
 
@@ -928,7 +719,7 @@ export default function AdminHomepageManager() {
                           banner1: { ...config.banner1, link: e.target.value },
                         })
                       }
-                      placeholder="/pricing"
+                      placeholder="/services"
                       className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white"
                     />
                   </div>
@@ -959,7 +750,7 @@ export default function AdminHomepageManager() {
                     {
                       title: "لعبة جديدة",
                       image: "/images/zoalna/game_freefire.webp",
-                      href: "/pricing",
+                      href: "/services",
                       query: "لعبة new game",
                     },
                   ],
@@ -975,7 +766,7 @@ export default function AdminHomepageManager() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {config.gamesGroup1.map((item, idx) => (
+            {config.gamesGroup1.map((item, idx) => ({ item, idx })).filter(({ item }) => !itemSearch || item.title.toLowerCase().includes(itemSearch.toLowerCase())).map(({ item, idx }) => (
               <div
                 key={idx}
                 className="bg-slate-950/70 border border-slate-800/80 rounded-xl p-4 space-y-3 relative group"
@@ -1188,7 +979,7 @@ export default function AdminHomepageManager() {
                           banner2: { ...config.banner2, link: e.target.value },
                         })
                       }
-                      placeholder="/pricing"
+                      placeholder="/services"
                       className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white"
                     />
                   </div>
@@ -1216,7 +1007,7 @@ export default function AdminHomepageManager() {
                       {
                         title: "لعبة جديدة",
                         image: "/images/zoalna/game_clashofclans.webp",
-                        href: "/pricing",
+                        href: "/services",
                         query: "لعبة new game",
                       },
                     ],
@@ -1232,7 +1023,7 @@ export default function AdminHomepageManager() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {config.gamesGroup2.map((item, idx) => (
+              {config.gamesGroup2.map((item, idx) => ({ item, idx })).filter(({ item }) => !itemSearch || item.title.toLowerCase().includes(itemSearch.toLowerCase())).map(({ item, idx }) => (
                 <div
                   key={idx}
                   className="bg-slate-950/70 border border-slate-800/80 rounded-xl p-4 space-y-3 relative group"
@@ -1446,7 +1237,7 @@ export default function AdminHomepageManager() {
                           banner3: { ...config.banner3, link: e.target.value },
                         })
                       }
-                      placeholder="/pricing"
+                      placeholder="/services"
                       className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white"
                     />
                   </div>
@@ -1474,7 +1265,7 @@ export default function AdminHomepageManager() {
                       {
                         title: "بطاقة جديدة",
                         image: "/images/zoalna/card_itunes.webp",
-                        href: "/pricing",
+                        href: "/services",
                         query: "بطاقة new card",
                       },
                     ],
@@ -1490,7 +1281,7 @@ export default function AdminHomepageManager() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {config.digitalCards.map((item, idx) => (
+              {config.digitalCards.map((item, idx) => ({ item, idx })).filter(({ item }) => !itemSearch || item.title.toLowerCase().includes(itemSearch.toLowerCase())).map(({ item, idx }) => (
                 <div
                   key={idx}
                   className="bg-slate-950/70 border border-slate-800/80 rounded-xl p-4 space-y-3 relative group"
@@ -1816,6 +1607,8 @@ export default function AdminHomepageManager() {
           </div>
         </div>
       )}
+        </div>
+      </div>
     </div>
   );
 }

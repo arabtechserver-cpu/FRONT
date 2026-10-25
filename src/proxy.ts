@@ -4,7 +4,6 @@ import { i18n } from './i18n/config';
 import { match as matchLocale } from '@formatjs/intl-localematcher';
 import Negotiator from 'negotiator';
 import { jwtVerify } from 'jose';
-import { resolveServiceId, resolveServiceIdAsync } from './utils/serviceResolver';
 import { isRetiredPagePath } from './lib/retired-features';
 
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -49,30 +48,15 @@ export async function proxy(request: NextRequest) {
     return new NextResponse(null, { status: 410 });
   }
 
-  if (
-    (pathname === '/pricing' || pathname.endsWith('/pricing')) &&
-    (request.nextUrl.searchParams.has('search') ||
-      request.nextUrl.searchParams.has('section') ||
-      request.nextUrl.searchParams.has('group'))
-  ) {
-    const rawQuery =
-      request.nextUrl.searchParams.get('search') ||
-      request.nextUrl.searchParams.get('section') ||
-      request.nextUrl.searchParams.get('group') ||
-      '';
-    const segments = pathname.split('/').filter(Boolean);
-    const lang = segments[0] === 'ar' || segments[0] === 'en' ? segments[0] : 'ar';
-    const targetServiceId = await resolveServiceIdAsync(rawQuery);
-    return NextResponse.redirect(
-      new URL(`/${lang}/purchase?serviceId=${targetServiceId}`, request.url)
-    );
-  }
-
   if (pathname === '/api-docs' || pathname.startsWith('/api-docs')) {
     return new NextResponse(null, { status: 404 });
   }
 
   if (
+    pathname === '/manifest.webmanifest' ||
+    pathname === '/sw.js' ||
+    pathname === '/pwa-install.js' ||
+    pathname === '/offline.html' ||
     pathname === '/sitemap.xml' ||
     pathname === '/robots.txt' ||
     pathname === '/favicon.ico' ||
@@ -128,5 +112,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!api/|_next/static|_next/image|fonts|images|videos|uploads|sitemap.xml|robots.txt|favicon.ico|icon.png|apple-icon.png|main-logo.png|borai-logo.png|og-image.png|llms.txt).*)'],
+  matcher: ['/((?!api/|_next/static|_next/image|fonts|images|videos|uploads|manifest.webmanifest|sw.js|offline.html|sitemap.xml|robots.txt|favicon.ico|icon.png|apple-icon.png|main-logo.png|borai-logo.png|og-image.png|llms.txt).*)'],
 };

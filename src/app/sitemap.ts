@@ -1,11 +1,11 @@
 import { MetadataRoute } from "next";
+import { loadStorePages } from '@/lib/store-pages-server';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://borai.store";
   const locales = ["ar", "en"];
   const staticRoutes = [
     "",
-    "/pricing",
     "/services",
     "/gaming",
     "/orders",
@@ -32,12 +32,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       sitemapEntries.push({
         url: `${baseUrl}/${locale}${route}`,
         lastModified: new Date(),
-        changeFrequency: route === "" || route === "/pricing" || route === "/purchase" ? "daily" : "weekly",
-        priority: route === "" ? 1.0 : route === "/pricing" || route === "/purchase" ? 0.9 : 0.7,
+        changeFrequency: route === "" || route === "/purchase" ? "daily" : "weekly",
+        priority: route === "" ? 1.0 : route === "/purchase" ? 0.9 : 0.7,
       });
     }
   }
 
+  const customPages = await loadStorePages();
+  for (const page of customPages?.pages || []) {
+    for (const locale of locales) sitemapEntries.push({ url: `${baseUrl}/${locale}/pages/${page.slug}`, changeFrequency: 'weekly', priority: .7 });
+  }
   // 3. Dynamic Services from API for Google Indexing
   try {
     const apiUrl = process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";

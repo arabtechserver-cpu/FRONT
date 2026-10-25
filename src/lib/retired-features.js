@@ -1,5 +1,6 @@
 function isRetiredPagePath(pathname) {
-  return /^\/(?:ar\/|en\/|admin\/)?(?:blog|blogs|news|newsletter|articles|academy|tutorials)(?:\/|$)/i.test(pathname)
+  return /^\/(?:ar\/|en\/)?pricing(?:\/|$)/i.test(pathname)
+    || /^\/(?:ar\/|en\/|admin\/)?(?:blog|blogs|news|newsletter|articles|academy|tutorials)(?:\/|$)/i.test(pathname)
     || /^\/(?:ar\/|en\/|admin\/)videos(?:\/|$)/i.test(pathname)
     || /^\/videos\/?$/i.test(pathname);
 }

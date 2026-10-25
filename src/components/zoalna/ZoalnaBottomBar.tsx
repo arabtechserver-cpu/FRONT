@@ -5,7 +5,6 @@ import { SITE_CONTACTS } from "@/lib/site-contacts";
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useCart } from "@/context/CartContext";
 
 interface ZoalnaBottomBarProps {
   lang: string;
@@ -30,9 +29,6 @@ export default function ZoalnaBottomBar({
   const isOrders = pathname.includes("/orders");
   const isWallet = pathname.includes("/wallet");
   const isProfile = pathname.includes("/profile");
-  const isCart = pathname.includes("/cart");
-
-  const { cartCount, setIsCartOpen } = useCart();
 
   const activePhone = floatingWhatsapp?.phone || whatsappNum;
   const cleanWhatsapp = activePhone.replace(/[^0-9+]/g, "");
@@ -53,48 +49,6 @@ export default function ZoalnaBottomBar({
             </div>
             <span>{isAr ? "الرئيسية" : "Home"}</span>
           </Link>
-
-          {/* Cart Item in Bottom Bar */}
-          <button
-            type="button"
-            onClick={() => setIsCartOpen(true)}
-            className={`mob-bn-item ${isCart ? "active" : ""} relative`}
-            style={{ position: "relative" }}
-            aria-label={isAr ? "السلة" : "Cart"}
-          >
-            <div className="mob-bn-ico relative" style={{ position: "relative" }}>
-              <svg viewBox="0 0 24 24" fill="none" width="22" height="22" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-                <line x1="3" y1="6" x2="21" y2="6" />
-                <path d="M16 10a4 4 0 0 1-8 0" />
-              </svg>
-              {cartCount > 0 && (
-                <span
-                  style={{
-                    position: "absolute",
-                    top: "-4px",
-                    right: isAr ? "auto" : "-6px",
-                    left: isAr ? "-6px" : "auto",
-                    background: "var(--user-link, #2563eb)",
-                    color: "#fff",
-                    borderRadius: "999px",
-                    fontSize: "10px",
-                    fontWeight: 800,
-                    minWidth: "16px",
-                    height: "16px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    padding: "0 3px",
-                    lineHeight: 1
-                  }}
-                >
-                  {cartCount > 99 ? "99+" : cartCount}
-                </span>
-              )}
-            </div>
-            <span>{isAr ? "السلة" : "Cart"}</span>
-          </button>
 
           <Link
             href={`/${lang}/orders`}

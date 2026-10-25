@@ -217,7 +217,7 @@ export default function OrdersClient({ lang, dict }: { lang: string; dict: any }
         {/* Actions & Balance */}
         <div className="flex flex-wrap items-center gap-3 w-full md:w-auto shrink-0">
           <Link
-            href={`/${lang}/pricing`}
+            href={`/${lang}/services`}
             className="flex-1 md:flex-initial px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer"
           >
             <span className="material-symbols-outlined text-base">add_circle</span>
@@ -500,7 +500,7 @@ export default function OrdersClient({ lang, dict }: { lang: string; dict: any }
                 : "Your submitted orders will appear here automatically."}
             </p>
             <Link
-              href={`/${lang}/pricing`}
+              href={`/${lang}/services`}
               className="inline-flex items-center gap-2 mt-2 px-5 py-2.5 rounded-xl bg-blue-600 text-white font-bold text-xs hover:bg-blue-700 transition-all shadow-sm cursor-pointer"
             >
               <span className="material-symbols-outlined text-sm">add_circle</span>

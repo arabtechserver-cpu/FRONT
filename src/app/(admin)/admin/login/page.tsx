@@ -14,6 +14,7 @@ export default function AdminLogin() {
   const [error, setError] = useState("");
   const [infoMessage, setInfoMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [clientReady, setClientReady] = useState(false);
 
   const [challengeToken, setChallengeToken] = useState("");
   const [otp, setOtp] = useState("");
@@ -30,6 +31,7 @@ export default function AdminLogin() {
   const router = useRouter();
 
   useEffect(() => {
+    setClientReady(true);
     try {
       deviceTokenRef.current = getOrCreateDeviceToken();
       getDeviceFingerprint().then((fp) => {
@@ -88,6 +90,7 @@ export default function AdminLogin() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!clientReady || loading) return;
     setError("");
     setInfoMessage("");
     setLoading(true);
@@ -192,6 +195,7 @@ export default function AdminLogin() {
 
   const handleVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!clientReady || loading) return;
     if (!otp.trim()) {
       setError("يرجى إدخال رمز التحقق");
       return;
@@ -350,7 +354,7 @@ export default function AdminLogin() {
             </div>
 
             {error && (
-              <div className="bg-error/10 border border-error/20 text-error px-4 py-3.5 rounded-xl mb-6 text-sm relative z-10 text-center font-medium">
+              <div role="alert" className="bg-error/10 border border-error/20 text-error px-4 py-3.5 rounded-xl mb-6 text-sm relative z-10 text-center font-medium">
                 <div>{error}</div>
                 {blockedIp && (
                   <div className="mt-3 flex items-center justify-center">
@@ -369,10 +373,14 @@ export default function AdminLogin() {
               </div>
             )}
 
-            <form onSubmit={handleLogin} className="space-y-5 relative z-10" dir="rtl">
+            {!clientReady && <div role="status" className="relative z-10 mb-5 text-sm leading-7 text-on-surface-variant text-center">جاري تجهيز نموذج الدخول… إذا استمر الانتظار، <a className="text-primary underline" href="/admin/login" target="_blank" rel="noopener noreferrer">افتح صفحة دخول جديدة</a>.</div>}
+            <noscript><p className="relative z-10 mb-5 text-sm text-error">فعّل JavaScript في المتصفح لاستخدام تسجيل الدخول الآمن.</p></noscript>
+            <form onSubmit={handleLogin} method="post" aria-busy={loading} className="space-y-5 relative z-10" dir="rtl">
               <div>
-                <label className="block text-sm font-medium text-on-surface-variant mb-2">اسم المستخدم</label>
+                <label htmlFor="admin-username" className="block text-sm font-medium text-on-surface-variant mb-2">اسم المستخدم</label>
                 <input
+                  id="admin-username"
+                  name="username"
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
@@ -383,9 +391,11 @@ export default function AdminLogin() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-on-surface-variant mb-2">كلمة المرور</label>
+                <label htmlFor="admin-password" className="block text-sm font-medium text-on-surface-variant mb-2">كلمة المرور</label>
                 <div className="relative">
                   <input
+                    id="admin-password"
+                    name="password"
                     type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -409,10 +419,10 @@ export default function AdminLogin() {
 
               <button
                 type="submit"
-                disabled={loading}
+                disabled={!clientReady || loading}
                 className="w-full btn-primary py-3 rounded-xl flex items-center justify-center gap-2 mt-8 text-lg font-bold shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all hover:-translate-y-1"
               >
-                {loading ? (
+                {!clientReady ? "جاري تجهيز الدخول…" : loading ? (
                   <span className="w-6 h-6 border-2 border-on-primary border-t-transparent rounded-full animate-spin"></span>
                 ) : (
                   <>
@@ -441,7 +451,7 @@ export default function AdminLogin() {
             )}
 
             {error && (
-              <div className="bg-error/10 border border-error/20 text-error px-4 py-3.5 rounded-xl mb-5 text-sm relative z-10 text-center font-medium">
+              <div role="alert" className="bg-error/10 border border-error/20 text-error px-4 py-3.5 rounded-xl mb-5 text-sm relative z-10 text-center font-medium">
                 <div>{error}</div>
                 {blockedIp && (
                   <div className="mt-3 flex items-center justify-center">
@@ -460,15 +470,17 @@ export default function AdminLogin() {
               </div>
             )}
 
-            <form onSubmit={handleVerifyOtp} className="space-y-6 relative z-10" dir="rtl">
+            <form onSubmit={handleVerifyOtp} method="post" aria-busy={loading} className="space-y-6 relative z-10" dir="rtl">
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="text-sm font-medium text-on-surface-variant">رمز التحقق السري</label>
+                  <label htmlFor="admin-otp" className="text-sm font-medium text-on-surface-variant">رمز التحقق السري</label>
                   <span className={`text-xs font-mono font-medium ${countdown < 60 ? "text-error" : "text-on-surface-variant"}`}>
                     صلاحية الرمز: {formatTime(countdown)}
                   </span>
                 </div>
                 <input
+                  id="admin-otp"
+                  name="otp"
                   ref={otpInputRef}
                   type="text"
                   dir="ltr"

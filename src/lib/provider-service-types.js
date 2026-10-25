@@ -57,7 +57,7 @@ function refinePackageGroupName(rawGroup, serviceName) {
 }
 
 function getProviderServiceType(service) {
-  const directType = String(service?.api_service_type || service?.service_type || "").toLowerCase().trim();
+  const directType = String(service?.api_service_type || service?.apiServiceType || service?.service_type || "").toLowerCase().trim();
   if (["topups", "appstores", "gamecodes", "subscriptions", "esim"].includes(directType)) return directType;
   if (directType === "gamecurrency" || directType === "game_codes") return "gamecodes";
   if (directType === "app_stores" || directType === "appstore") return "appstores";
@@ -66,7 +66,7 @@ function getProviderServiceType(service) {
 
   const name = String(service?.name || service?.service_name || service?.originalName || "").toLowerCase();
   const group = String(service?.groupName || service?.group_name || "").toLowerCase();
-  const cat = String(service?.category_name || service?.dhruCategory?.name || service?.category?.name || "").toLowerCase();
+  const cat = String(service?.category_name || service?.categoryName || service?.dhruCategory?.name || service?.category?.name || "").toLowerCase();
   const text = `${cat} ${group} ${name}`;
 
   // 1. App Stores & Gift Cards
