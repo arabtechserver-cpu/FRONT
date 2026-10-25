@@ -62,6 +62,7 @@ interface EditCustomField {
 
   // Add Bundle Modal State
   const [isAddBundleModalOpen, setIsAddBundleModalOpen] = useState(false);
+  const [addBundleTarget, setAddBundleTarget] = useState<{ categoryId?: string; groupName?: string } | null>(null);
 
   // Delete Single Service State
   const [deletingService, setDeletingService] = useState<any | null>(null);
@@ -1071,10 +1072,19 @@ interface EditCustomField {
       {/* Add Bundle Modal */}
       <AddBundleModal
         isOpen={isAddBundleModalOpen}
-        onClose={() => setIsAddBundleModalOpen(false)}
+        onClose={() => {
+          setIsAddBundleModalOpen(false);
+          setAddBundleTarget(null);
+        }}
         categories={categories}
+        initialCategoryId={addBundleTarget?.categoryId}
+        initialGroupName={addBundleTarget?.groupName}
         onSuccess={() => {
-          showToast("تمت إضافة الباقة والخدمات بنجاح في قاعدة البيانات!");
+          showToast(
+            addBundleTarget?.groupName
+              ? `تمت إضافة الخدمة بنجاح إلى باقة (${addBundleTarget.groupName}) في قاعدة البيانات!`
+              : "تمت إضافة الباقة والخدمات بنجاح في قاعدة البيانات!"
+          );
           fetchServices();
         }}
       />
@@ -1097,7 +1107,10 @@ interface EditCustomField {
           <div className="flex flex-wrap items-center gap-2.5">
             {/* ADD BUNDLE BUTTON */}
             <button
-              onClick={() => setIsAddBundleModalOpen(true)}
+              onClick={() => {
+                setAddBundleTarget(null);
+                setIsAddBundleModalOpen(true);
+              }}
               className="bg-gradient-to-r from-primary to-secondary hover:opacity-95 text-on-primary px-4 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center gap-1.5 shadow-md active:scale-95"
               title="إضافة باقة جديدة وخدمات مخصصة بحقول إدخال"
             >
@@ -1262,10 +1275,10 @@ interface EditCustomField {
               const visibleGroupEntries: [string, any[]][] = takeInitialGroups(groupEntries, visiblePackageCount);
 
               return (
-                <div key={category.id || idx} className="bg-surface-container border border-outline-variant/30 rounded-3xl p-6 md:p-8 shadow-sm">
+                <div key={category.id || idx} className="bg-surface-container border border-outline-variant/30 rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm">
                   {/* Category Header */}
-                  <div className="flex items-center gap-4 mb-6 pb-4 border-b border-outline-variant/30">
-                    <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+                  <div className="flex items-center gap-3 sm:gap-4 mb-5 sm:mb-6 pb-4 border-b border-outline-variant/30">
+                    <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
                       <span className="material-symbols-outlined text-2xl">
                         {category.name.toLowerCase().includes("imei")
                           ? "phone_iphone"
@@ -1274,13 +1287,13 @@ interface EditCustomField {
                           : "cast"}
                       </span>
                     </div>
-                    <div>
-                      <h3 className="text-2xl font-bold text-on-surface">{category.name}</h3>
-                      <p className="text-on-surface-variant text-sm mt-1">{category.services.length} خدمة في هذا القسم</p>
+                    <div className="min-w-0">
+                      <h3 className="text-xl sm:text-2xl font-bold text-on-surface truncate">{category.name}</h3>
+                      <p className="text-on-surface-variant text-xs sm:text-sm mt-0.5">{category.services.length} خدمة في هذا القسم</p>
                     </div>
                   </div>
 
-                  <div className="space-y-6">
+                  <div className="space-y-5 sm:space-y-6">
                     {visibleGroupEntries.map(([groupName, packageServices], groupIdx) => {
                       const packageKey = `${category.id}-${groupName}`;
                       const actionKey = `pkg-${category.id}-${groupName}`;
@@ -1294,52 +1307,78 @@ interface EditCustomField {
                       return (
                         <div
                           key={groupIdx}
-                          className={`border rounded-2xl p-5 transition-all ${
+                          className={`border rounded-2xl p-4 sm:p-5 transition-all ${
                             isAllHidden
                               ? "bg-surface-container-lowest/50 border-error/20 opacity-70"
                               : "bg-surface/50 border-outline-variant/20"
                           }`}
                         >
                           {/* Package / Group Header */}
-                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 pb-3 border-b border-outline-variant/10">
-                            <div className="flex items-center gap-3">
-                              <span className={`material-symbols-outlined ${isAllHidden ? "text-error" : "text-secondary"}`}>
-                                {isAllHidden ? "folder_off" : "folder"}
-                              </span>
-                              <div>
-                                <h4 className="text-base sm:text-lg font-bold text-on-surface flex items-center gap-2">
-                                  <span>{groupName}</span>
-                                  {isAllHidden && (
-                                    <span className="text-[10px] bg-error/15 text-error px-2 py-0.5 rounded-md font-bold">
-                                      الباقة بالكامل مخفية
-                                    </span>
-                                  )}
-                                </h4>
-                                <div className="flex items-center gap-2 text-xs text-on-surface-variant mt-0.5">
-                                  <span>{packageServices.length} خدمات</span>
-                                  <span>•</span>
-                                  <span className="text-primary font-medium">{activeServicesCount} نشطة</span>
-                                  {packageServices.length - activeServicesCount > 0 && (
-                                    <>
-                                      <span>•</span>
-                                      <span className="text-error font-medium">
-                                        {packageServices.length - activeServicesCount} مخفية
+                          <div className="flex flex-col gap-3.5 mb-4 pb-3.5 border-b border-outline-variant/15">
+                            {/* Top row: Package Identity & Add Service Button */}
+                            <div className="flex flex-wrap items-center justify-between gap-3">
+                              <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                                <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${isAllHidden ? "bg-error/15 text-error" : "bg-secondary/15 text-secondary"}`}>
+                                  <span className="material-symbols-outlined text-xl">
+                                    {isAllHidden ? "folder_off" : "folder"}
+                                  </span>
+                                </div>
+                                <div className="min-w-0">
+                                  <h4 className="text-base sm:text-lg font-bold text-on-surface flex items-center gap-2 flex-wrap">
+                                    <span>{groupName}</span>
+                                    {isAllHidden && (
+                                      <span className="text-[10px] bg-error/15 text-error px-2 py-0.5 rounded-md font-bold shrink-0">
+                                        الباقة بالكامل مخفية
                                       </span>
-                                    </>
-                                  )}
+                                    )}
+                                  </h4>
+                                  <div className="flex items-center gap-2 text-xs text-on-surface-variant mt-0.5 flex-wrap">
+                                    <span>{packageServices.length} خدمات</span>
+                                    <span>•</span>
+                                    <span className="text-primary font-medium">{activeServicesCount} نشطة</span>
+                                    {packageServices.length - activeServicesCount > 0 && (
+                                      <>
+                                        <span>•</span>
+                                        <span className="text-error font-medium">
+                                          {packageServices.length - activeServicesCount} مخفية
+                                        </span>
+                                      </>
+                                    )}
+                                  </div>
                                 </div>
                               </div>
+
+                              {/* Prominent Action: Add service to this package */}
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setAddBundleTarget({ categoryId: category.id, groupName });
+                                  setIsAddBundleModalOpen(true);
+                                }}
+                                className="bg-primary hover:bg-primary/90 text-on-primary px-3.5 py-2 rounded-xl font-bold text-xs transition-all flex items-center gap-1.5 shadow-sm active:scale-95 shrink-0"
+                                title={`إضافة خدمة جديدة مباشرة إلى باقة ${groupName}`}
+                              >
+                                <span className="material-symbols-outlined text-sm">add_circle</span>
+                                <span>إضافة خدمة للباقة</span>
+                              </button>
                             </div>
 
-                            <CatalogImageControl label="الباقة" imageUrl={packageServices.find((service: any) => service.groupImageUrl)?.groupImageUrl}
-                              target={{ categoryId: category.id, groupName }} onSaved={url => updateCatalogImage(category.id, groupName, null, url)} />
-                            <StorePagePlacementControl target={{ categoryId: category.id, groupName }} label={groupName} />
-                            {/* Package Action Button (Hide / Show Entire Group) */}
-                            <div className="flex items-center gap-2">
+                            {/* Second row: Package Customization & Controls */}
+                            <div className="flex flex-wrap items-center justify-between gap-2 text-xs pt-1">
+                              <div className="flex flex-wrap items-center gap-2">
+                                <CatalogImageControl
+                                  label="الباقة"
+                                  imageUrl={packageServices.find((service: any) => service.groupImageUrl)?.groupImageUrl}
+                                  target={{ categoryId: category.id, groupName }}
+                                  onSaved={url => updateCatalogImage(category.id, groupName, null, url)}
+                                />
+                                <StorePagePlacementControl target={{ categoryId: category.id, groupName }} label={groupName} />
+                              </div>
+
                               <button
                                 onClick={() => togglePackageVisibility(groupName, category.id, !isAllHidden)}
                                 disabled={actionLoadingKey === actionKey}
-                                className={`px-3 py-1.5 rounded-xl font-bold text-xs transition-all flex items-center gap-1.5 shadow-sm ${
+                                className={`px-3 py-1.5 rounded-xl font-bold text-xs transition-all flex items-center gap-1.5 shadow-sm shrink-0 ${
                                   !isAllHidden
                                     ? "bg-error/10 text-error hover:bg-error/20 border border-error/30"
                                     : "bg-primary/15 text-primary hover:bg-primary/25 border border-primary/40"
@@ -1369,7 +1408,7 @@ interface EditCustomField {
                               return (
                                 <div
                                   key={service.id}
-                                  className={`bg-surface p-4 rounded-xl border transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 ${
+                                  className={`bg-surface p-3.5 sm:p-4 rounded-xl border transition-all flex flex-col gap-3 ${
                                     !service.isActive
                                       ? "border-error/30 bg-error/5 opacity-60"
                                       : isZeroPrice
@@ -1377,65 +1416,67 @@ interface EditCustomField {
                                       : "border-outline-variant/30 hover:border-primary/50"
                                   }`}
                                 >
-                                  <div className="space-y-1.5">
-                                    <div className="font-bold text-on-surface flex items-center gap-2 text-sm flex-wrap">
-                                      <span>{service.name}</span>
-                                      {!service.isActive && (
-                                        <span className="text-[11px] bg-error/15 text-error px-2 py-0.5 rounded-md font-bold">
-                                          مخفي عن العميل
+                                  {/* Service Details & Price Header */}
+                                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                                    <div className="space-y-1.5 min-w-0">
+                                      <div className="font-bold text-on-surface flex items-center gap-2 text-sm flex-wrap">
+                                        <span className="break-words">{service.name}</span>
+                                        {!service.isActive && (
+                                          <span className="text-[11px] bg-error/15 text-error px-2 py-0.5 rounded-md font-bold shrink-0">
+                                            مخفي عن العميل
+                                          </span>
+                                        )}
+                                        {isZeroPrice && (
+                                          <span className="text-[11px] bg-amber-500/15 border border-amber-500/30 text-amber-400 px-2 py-0.5 rounded-md font-bold flex items-center gap-1 shrink-0">
+                                            <span className="material-symbols-outlined text-xs">warning</span>
+                                            <span>السعر $0.00 (يحتاج ضبط)</span>
+                                          </span>
+                                        )}
+                                      </div>
+                                      <div className="text-xs text-on-surface-variant flex flex-wrap items-center gap-3 sm:gap-4">
+                                        <span className="flex items-center gap-1">
+                                          <span className="material-symbols-outlined text-xs text-secondary">schedule</span>
+                                          <span>{service.time || "1-24 Hours"}</span>
                                         </span>
-                                      )}
-                                      {isZeroPrice && (
-                                        <span className="text-[11px] bg-amber-500/15 border border-amber-500/30 text-amber-400 px-2 py-0.5 rounded-md font-bold flex items-center gap-1">
-                                          <span className="material-symbols-outlined text-xs">warning</span>
-                                          <span>السعر $0.00 (يحتاج ضبط)</span>
+                                        <span className="text-[11px] text-on-surface-variant font-mono">
+                                          سعر التكلفة: ${srvCost.toFixed(2)}
                                         </span>
-                                      )}
-                                    </div>
-                                    <div className="text-xs text-on-surface-variant flex flex-wrap items-center gap-4">
-                                      <span className="flex items-center gap-1">
-                                        <span className="material-symbols-outlined text-xs text-secondary">schedule</span>
-                                        <span>{service.time || "1-24 Hours"}</span>
-                                      </span>
-                                      <span className="text-[11px] text-on-surface-variant font-mono">
-                                        سعر التكلفة: ${srvCost.toFixed(2)}
-                                      </span>
-                                      {srvMargin > 0 && (
-                                        <span className="text-[11px] text-secondary font-bold font-mono">
-                                          + ربح: ${srvMargin.toFixed(2)}
+                                        {srvMargin > 0 && (
+                                          <span className="text-[11px] text-secondary font-bold font-mono">
+                                            + ربح: ${srvMargin.toFixed(2)}
+                                          </span>
+                                        )}
+                                      </div>
+
+                                      {/* REQUIRED INPUT FIELDS FROM CUSTOMER FOR PROVIDER */}
+                                      <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                                        <span className="text-[10px] text-on-surface-variant font-bold flex items-center gap-1 shrink-0">
+                                          <span className="material-symbols-outlined text-xs text-secondary">input</span>
+                                          <span>الحقول المطلوبة من العميل:</span>
                                         </span>
-                                      )}
+
+                                        {getServiceRequiredFields(service).map((rf, rfIdx) => (
+                                          <span
+                                            key={rfIdx}
+                                            className={`text-[10px] px-2 py-0.5 rounded-lg border font-bold flex items-center gap-1 font-mono ${
+                                              rf.type === 'quantity'
+                                                ? 'bg-secondary/15 border-secondary/40 text-secondary'
+                                                : 'bg-surface-container-high border-primary/30 text-primary'
+                                            }`}
+                                          >
+                                            {rf.type === 'quantity' ? (
+                                              <span className="material-symbols-outlined text-[12px]">tag</span>
+                                            ) : (
+                                              <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+                                            )}
+                                            <span>{rf.label}</span>
+                                          </span>
+                                        ))}
+                                      </div>
                                     </div>
 
-                                    {/* REQUIRED INPUT FIELDS FROM CUSTOMER FOR PROVIDER */}
-                                    <div className="flex flex-wrap items-center gap-1.5 pt-1">
-                                      <span className="text-[10px] text-on-surface-variant font-bold flex items-center gap-1">
-                                        <span className="material-symbols-outlined text-xs text-secondary">input</span>
-                                        <span>الحقول المطلوبة من العميل:</span>
-                                      </span>
-
-                                      {getServiceRequiredFields(service).map((rf, rfIdx) => (
-                                        <span
-                                          key={rfIdx}
-                                          className={`text-[10px] px-2 py-0.5 rounded-lg border font-bold flex items-center gap-1 font-mono ${
-                                            rf.type === 'quantity'
-                                              ? 'bg-secondary/15 border-secondary/40 text-secondary'
-                                              : 'bg-surface-container-high border-primary/30 text-primary'
-                                          }`}
-                                        >
-                                          {rf.type === 'quantity' ? (
-                                            <span className="material-symbols-outlined text-[12px]">tag</span>
-                                          ) : (
-                                            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
-                                          )}
-                                          <span>{rf.label}</span>
-                                        </span>
-                                      ))}
-                                    </div>
-                                  </div>
-
-                                  <div className="flex items-center gap-2 md:min-w-fit justify-between md:justify-end border-t md:border-t-0 pt-2 md:pt-0 border-outline-variant/10">
-                                    <div className="flex flex-col items-start md:items-end mr-2">
+                                    {/* Customer Price Tag */}
+                                    <div className="flex items-center sm:flex-col sm:items-end justify-between sm:justify-start bg-surface-container-low sm:bg-transparent px-3 py-1.5 sm:p-0 rounded-lg border border-outline-variant/20 sm:border-0 shrink-0">
                                       <span className="text-[10px] text-on-surface-variant">السعر للعميل</span>
                                       <div
                                         className={`font-bold text-base font-price-display ${
@@ -1445,46 +1486,59 @@ interface EditCustomField {
                                         ${srvTotal.toFixed(2)} USD
                                       </div>
                                     </div>
+                                  </div>
 
-                                    {/* Toggle Single Service Button */}
-                                    <button
-                                      onClick={() => toggleVisibility(service)}
-                                      disabled={actionLoadingKey === service.id}
-                                      className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${
-                                        service.isActive
-                                          ? "bg-error/10 text-error hover:bg-error/20 border border-error/20"
-                                          : "bg-primary/10 text-primary hover:bg-primary/20 border border-primary/30"
-                                      }`}
-                                      title={service.isActive ? "إخفاء عن العملاء" : "إظهار للعملاء"}
-                                    >
-                                      {actionLoadingKey === service.id ? (
-                                        <span className="material-symbols-outlined animate-spin text-sm">refresh</span>
-                                      ) : (
-                                        <span className="material-symbols-outlined text-sm">
-                                          {service.isActive ? "visibility_off" : "visibility"}
-                                        </span>
-                                      )}
-                                    </button>
+                                  {/* Controls & Actions Toolbar */}
+                                  <div className="flex flex-wrap items-center justify-between gap-2 pt-2.5 border-t border-outline-variant/15">
+                                    <div className="flex flex-wrap items-center gap-2">
+                                      <CatalogImageControl
+                                        label="الخدمة"
+                                        imageUrl={service.imageUrl}
+                                        target={{ serviceId: service.id }}
+                                        onSaved={url => updateCatalogImage(category.id, groupName, service.id, url)}
+                                      />
+                                      <StorePagePlacementControl target={{ serviceId: service.id }} label={service.name} />
+                                    </div>
 
-                                    <CatalogImageControl label="الخدمة" imageUrl={service.imageUrl} target={{ serviceId: service.id }} onSaved={url => updateCatalogImage(category.id, groupName, service.id, url)} />
-                                    <StorePagePlacementControl target={{ serviceId: service.id }} label={service.name} />
-                                    {/* Edit Single Service Button */}
-                                    <button
-                                      onClick={() => handleOpenEdit(service)}
-                                      className="bg-surface-variant hover:bg-outline-variant/30 text-on-surface px-3 py-2 rounded-xl font-medium text-xs transition-colors flex items-center gap-1 border border-outline-variant/20"
-                                    >
-                                      <span className="material-symbols-outlined text-xs">edit</span>
-                                      <span>تعديل</span>
-                                    </button>
+                                    <div className="flex items-center gap-1.5 ms-auto">
+                                      {/* Toggle Single Service Button */}
+                                      <button
+                                        onClick={() => toggleVisibility(service)}
+                                        disabled={actionLoadingKey === service.id}
+                                        className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${
+                                          service.isActive
+                                            ? "bg-error/10 text-error hover:bg-error/20 border border-error/20"
+                                            : "bg-primary/10 text-primary hover:bg-primary/20 border border-primary/30"
+                                        }`}
+                                        title={service.isActive ? "إخفاء عن العملاء" : "إظهار للعملاء"}
+                                      >
+                                        {actionLoadingKey === service.id ? (
+                                          <span className="material-symbols-outlined animate-spin text-sm">refresh</span>
+                                        ) : (
+                                          <span className="material-symbols-outlined text-sm">
+                                            {service.isActive ? "visibility_off" : "visibility"}
+                                          </span>
+                                        )}
+                                      </button>
 
-                                    {/* Delete Single Service Button */}
-                                    <button
-                                      onClick={() => setDeletingService(service)}
-                                      className="w-9 h-9 rounded-xl flex items-center justify-center transition-all bg-error/10 text-error hover:bg-error/20 border border-error/20"
-                                      title="حذف هذه الخدمة"
-                                    >
-                                      <span className="material-symbols-outlined text-sm">delete</span>
-                                    </button>
+                                      {/* Edit Single Service Button */}
+                                      <button
+                                        onClick={() => handleOpenEdit(service)}
+                                        className="bg-surface-variant hover:bg-outline-variant/30 text-on-surface px-3 py-2 rounded-xl font-medium text-xs transition-colors flex items-center gap-1 border border-outline-variant/20"
+                                      >
+                                        <span className="material-symbols-outlined text-xs">edit</span>
+                                        <span>تعديل</span>
+                                      </button>
+
+                                      {/* Delete Single Service Button */}
+                                      <button
+                                        onClick={() => setDeletingService(service)}
+                                        className="w-9 h-9 rounded-xl flex items-center justify-center transition-all bg-error/10 text-error hover:bg-error/20 border border-error/20"
+                                        title="حذف هذه الخدمة"
+                                      >
+                                        <span className="material-symbols-outlined text-sm">delete</span>
+                                      </button>
+                                    </div>
                                   </div>
                                 </div>
                               );

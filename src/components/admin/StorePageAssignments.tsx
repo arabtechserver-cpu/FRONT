@@ -69,5 +69,5 @@ export function StorePagePlacementControl({ target, label }: { target: PageTarge
   const { placements, pages, loading, error, open } = useContext(Context);
   const choice = placements[pageTargetKey(target)];
   const summary = choice?.mode === 'all' ? 'الكل' : choice?.mode === 'selected' ? `${choice.pageIds.filter(id => pages.some(page => page.id === id && !page.archived)).length} صفحة` : target.serviceId ? 'حسب الباقة' : 'بدون صفحات';
-  return <span className="inline-flex flex-col items-start gap-1"><button type="button" disabled={loading || !!error} onClick={() => open(target, label)} className="text-xs font-bold px-3 py-2 rounded-lg border border-violet-400/30 text-violet-300 bg-violet-500/10 disabled:opacity-50">{loading ? 'تحميل الصفحات…' : `صفحات الظهور · ${summary}`}</button>{error && <small role="alert" className="text-red-400">{error}</small>}</span>;
+  return <span className="inline-flex flex-col items-start gap-1 shrink-0"><button type="button" disabled={loading || !!error} onClick={() => open(target, label)} className="text-xs font-bold px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg border border-violet-400/30 text-violet-300 bg-violet-500/10 disabled:opacity-50 whitespace-nowrap shrink-0">{loading ? 'تحميل الصفحات…' : `صفحات الظهور · ${summary}`}</button>{error && <small role="alert" className="text-red-400">{error}</small>}</span>;
 }
