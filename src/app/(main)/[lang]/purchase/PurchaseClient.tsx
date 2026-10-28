@@ -422,8 +422,8 @@ function PurchaseClientContent({
         );
         setTimeout(() => setActionSuccess(null), 3500);
       }
-    } catch {
-      setInputError(isAr ? "فشل إضافة الباقة للسلة" : "Failed to add package to cart");
+    } catch (error) {
+      setInputError(error instanceof Error ? error.message : isAr ? "فشل إضافة الباقة للسلة" : "Failed to add package to cart");
     } finally {
       setIsAdding(false);
     }
@@ -447,8 +447,8 @@ function PurchaseClientContent({
       });
 
       router.push(`/${lang}/cart`);
-    } catch {
-      setInputError(isAr ? "حدث خطأ أثناء التوجه للدفع" : "Error proceeding to checkout");
+    } catch (error) {
+      setInputError(error instanceof Error ? error.message : isAr ? "حدث خطأ أثناء التوجه للدفع" : "Error proceeding to checkout");
       setIsBuying(false);
     }
   };

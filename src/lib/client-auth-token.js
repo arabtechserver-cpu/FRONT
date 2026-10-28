@@ -1,6 +1,6 @@
 function getUserAuthToken(storage) {
-  const token = storage.getItem("user_token") || storage.getItem("token");
-  return token && token !== "null" && token !== "undefined" ? token : null;
+  return [storage.getItem("user_token"), storage.getItem("token")]
+    .find(token => typeof token === 'string' && token.trim() && !['null', 'undefined', 'false'].includes(token.trim())) || null;
 }
 
 module.exports = { getUserAuthToken };

@@ -42,6 +42,7 @@ export default function CartClient({ lang }: { lang: string }) {
     clearCart,
     checkout,
     isLoggedIn,
+    cartError,
     isLoading
   } = useCart();
 
@@ -163,6 +164,7 @@ export default function CartClient({ lang }: { lang: string }) {
         )}
       </div>
 
+      {cartError && !feedback && <p role="alert" className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">{cartError}</p>}
       {/* Feedback banner */}
       {feedback && (
         <div

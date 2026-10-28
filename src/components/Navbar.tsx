@@ -8,6 +8,7 @@ import { Locale } from "@/i18n/config";
 import { useAppInstall } from "@/components/InstallAppProvider";
 import { useTheme } from "@/context/ThemeContext";
 import { useCart } from "@/context/CartContext";
+import { getUserAuthToken } from '@/lib/client-auth-token';
 import { navigationPages } from '@/lib/store-pages';
 import { useStoreNavigation } from '@/components/StoreNavigationProvider';
 import '@/styles/store-pages.css';
@@ -94,7 +95,7 @@ export default function Navbar({ lang, dict, initialAnnouncementBar }: NavbarPro
           setUserSession(parsed);
 
           if (parsed?.email || parsed?.id) {
-            const token = localStorage.getItem("user_token");
+            const token = getUserAuthToken(localStorage);
             const queryParam = parsed.id
               ? `userId=${encodeURIComponent(parsed.id)}`
               : `email=${encodeURIComponent(parsed.email)}`;
@@ -104,7 +105,7 @@ export default function Navbar({ lang, dict, initialAnnouncementBar }: NavbarPro
             }
             const res = await fetch(`/api/users/profile?${queryParam}`, {
               headers,
-              credentials: "omit",
+              credentials: "include",
             });
             if (res.ok) {
               const data = await res.json().catch(() => null);

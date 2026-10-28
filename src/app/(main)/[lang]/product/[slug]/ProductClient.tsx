@@ -382,8 +382,8 @@ export default function ProductClient({
       } else {
         setInputError(isAr ? "تعذرت إضافة الباقة. حاول مرة أخرى." : "Could not add the package. Please try again.");
       }
-    } catch {
-      setInputError(isAr ? "فشل إضافة الباقة للسلة" : "Failed to add package to cart");
+    } catch (error) {
+      setInputError(error instanceof Error ? error.message : isAr ? "فشل إضافة الباقة للسلة" : "Failed to add package to cart");
     } finally {
       setIsAdding(false);
     }
