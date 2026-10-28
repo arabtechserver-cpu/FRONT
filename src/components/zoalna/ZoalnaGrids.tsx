@@ -135,6 +135,7 @@ export default function ZoalnaGrids({
       game_lordsmobile: "lords-mobile", game_bloodstrike: "blood-strike", game_redotpay: "redotpay",
       game_clashofclans: "clash-of-clans", game_clashroyale: "clash-royale", game_fifa: "fc-mobile",
       game_pes: "efootball", game_brawlstars: "brawl-stars", game_tiktok: "tiktok", game_starlink: "starlink", game_8ballpool: "8-ball-pool",
+      card_itunes: 'itunes-card', card_razergold: 'razer-gold', card_steam: 'steam-card', card_playstation: 'playstaion-card', card_xbox: 'xbox-card', card_subscriptions: 'subscriber2',
     };
     const imageKey = game.image.split("/").pop()?.split(".")[0] || "";
     return images[imageKey] ? `/${lang}/product/${images[imageKey]}` : formatLink(game.href);
@@ -298,7 +299,7 @@ export default function ZoalnaGrids({
                   ? subscriptionsCard.description
                   : "Streaming, music, and digital entertainment services with fast automated delivery."}
               </p>
-              <Link href={formatLink(subscriptionsCard.buttonUrl)} className="mini-card-btn">
+              <Link href={`/${lang}/pages/digital-stores`} className="mini-card-btn">
                 {isAr ? subscriptionsCard.buttonText : "Browse Now"}
               </Link>
             </div>

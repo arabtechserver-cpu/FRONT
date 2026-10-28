@@ -82,6 +82,18 @@ function isProviderQuantityField(field, key) {
       .some(value => /^(qnt|qty|quantity|الكمية|الكميه)$/i.test(String(value || '').replace(/^custom_/i, '').trim()));
 }
 
+function getPurchaseFieldDefinitions(service) {
+  return Object.entries(getProviderCustomFields(service) || {})
+    .filter(([key, field]) => !isProviderQuantityField(field, key))
+    .map(([key, field]) => ({ ...field, field_id: key,
+      required: ![false, 0, '0', 'false'].includes(field.required) }));
+}
+
+function getPurchaseTargetValue(fields, values) {
+  const primary = fields.find(field => isPrimaryTargetCustomField(field.field_id, field));
+  return String((primary && values[primary.field_id]) || fields.map(field => values[field.field_id]).find(Boolean) || 'N/A').trim();
+}
+
 function supportsProviderQuantity(service) {
   if (!service) return false;
   if (service.providerId === null) return false;
@@ -94,4 +106,4 @@ function supportsProviderQuantity(service) {
   return Object.entries(getProviderCustomFields(service) || {}).some(([key, field]) => isProviderQuantityField(field, key));
 }
 
-module.exports = { shouldShowDefaultImeiField, getProviderCustomFields, isProviderQuantityField, supportsProviderQuantity, isPrimaryTargetCustomField };
+module.exports = { shouldShowDefaultImeiField, getProviderCustomFields, getPurchaseFieldDefinitions, getPurchaseTargetValue, isProviderQuantityField, supportsProviderQuantity, isPrimaryTargetCustomField };

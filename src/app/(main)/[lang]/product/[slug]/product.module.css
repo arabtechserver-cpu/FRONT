@@ -21,7 +21,7 @@
 .loading, .empty { display: flex; gap: 8px; align-items: center; font-size: 12px; color: #64748b; }
 .fields { display: grid; gap: 8px; margin-top: 64px; }
 .fields > label { font-size: 12px; color: #64748b; }
-.fields > input { width: 100%; min-height: 44px; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 5px; font-size: 14px; background: transparent; }
+.fields > input, .fields > select, .fields > textarea { width: 100%; min-height: 44px; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 5px; font-size: 14px; background: var(--z-white, transparent); color: inherit; }
 .fields > input::placeholder { font-size: 11px; color: #9ca3af; }
 .serviceInfo { padding: 8px 0; color: var(--z-g500); line-height: 1.9; font-size: 12px; white-space: pre-line; }
 .cartRow { display: flex; gap: 10px; align-items: end; margin-top: 8px; }

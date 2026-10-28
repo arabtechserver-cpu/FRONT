@@ -11,6 +11,7 @@ import styles from "./services.module.css";
 import { getProviderServiceType } from "@/lib/provider-service-types";
 
 interface ServiceItem {
+  productSlug?: string | null;
   id: string;
   imageUrl?: string | null;
   groupImageUrl?: string | null;
@@ -174,7 +175,7 @@ export default function ServicesClient({
   const currency = pageContext ? (Number.isFinite(pageRates[baseCurrency.code]) && pageRates[baseCurrency.code] > 0 ? { ...baseCurrency, rate: pageRates[baseCurrency.code] } : CURRENCIES.USD) : baseCurrency;
 
   const formatPrice = (usd: number = 0) => {
-    if (!Number.isFinite(usd) || usd <= 0) return isAr ? 'السعر غير متاح' : 'Price unavailable';
+    if (!Number.isFinite(usd) || usd <= 0) return isAr ? 'بانتظار التسعير' : 'Price pending';
     const discounted = discountPercent > 0 ? usd * (1 - discountPercent / 100) : usd;
     const converted = discounted * currency.rate;
     const formatted = converted.toLocaleString(undefined, {
@@ -349,7 +350,8 @@ export default function ServicesClient({
   const selectCategory = (category: string) => { setSelectedCategory(category); setSearchQuery(""); };
   const selectBrand = (query: string) => { setSelectedCategory("all"); setSearchQuery(query); document.getElementById("gaming-catalog")?.scrollIntoView({ behavior: "smooth", block: "start" }); };
 
-  const getGameSlug = (groupName: string, serviceName: string = "") => {
+  const getGameSlug = (groupName: string, serviceName: string = "", productSlug?: string | null) => {
+    if (productSlug) return productSlug;
     const text = [groupName, serviceName].join(" ").toLowerCase();
     if (text.includes("free fire")) return "free-fire-id";
     if (text.includes("pubg")) return "pubg-id";
@@ -412,16 +414,16 @@ export default function ServicesClient({
               return <article key={group.key} className={styles.product + " bg-surface-container shadow-sm"}>
                 <div className={styles.productArt}><div className={styles.productArtCopy}><span className={styles.productType + " text-blue-600 dark:text-blue-400"}><Icon size={15} />{badge.label}</span><strong>{brand?.label || (directOrdering ? cleanHtmlToText(group.groupName) : isAr ? "خدمات رقمية" : "Digital services")}</strong><span className={styles.artLabel}>{brand ? (isAr ? brand.kindAr : brand.kindEn) : group.categoryName}</span></div>{customGroupImage || brand?.image ? <img src={customGroupImage || ("/images/zoalna/" + brand?.image)} alt="" width={120} height={120} loading="lazy" /> : <Icon className={styles.genericArt + " text-blue-600 dark:text-blue-400"} size={90} strokeWidth={1} />}</div>
                 <div className={styles.productBody}>
-                  <h3 title={cleanHtmlToText(group.groupName)}>{directOrdering ? <button type="button" onClick={() => toggleGroup(group.key)} className={styles.groupTitleButton}>{cleanHtmlToText(group.groupName)}</button> : <Link href={"/" + lang + "/product/" + getGameSlug(group.groupName)} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">{cleanHtmlToText(group.groupName)}</Link>}</h3>
+                  <h3 title={cleanHtmlToText(group.groupName)}>{directOrdering ? <button type="button" onClick={() => toggleGroup(group.key)} className={styles.groupTitleButton}>{cleanHtmlToText(group.groupName)}</button> : <Link href={"/" + lang + "/product/" + getGameSlug(group.groupName, "", group.services[0]?.productSlug)} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">{cleanHtmlToText(group.groupName)}</Link>}</h3>
                   <p className={styles.packageCount}><Layers3 size={14} />{group.services.length} {isAr ? "باقة متاحة" : "available packages"}</p>
                   <div className={styles.productFooter}><div><span>{isAr ? "يبدأ من" : "Starting at"}</span><strong className="text-blue-600 dark:text-blue-400">{formatPrice(group.minPrice)}</strong></div><div className="flex items-center gap-2">
-                    {!directOrdering && <Link href={"/" + lang + "/product/" + getGameSlug(group.groupName)} className="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center gap-1 shadow-sm"><span>{isAr ? "شحن اللعبة" : "Top Up"}</span><ArrowUpRight size={13} /></Link>}
+                    {!directOrdering && <Link href={"/" + lang + "/product/" + getGameSlug(group.groupName, "", group.services[0]?.productSlug)} className="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center gap-1 shadow-sm"><span>{isAr ? "شحن اللعبة" : "Top Up"}</span><ArrowUpRight size={13} /></Link>}
                     <button type="button" aria-expanded={expanded} aria-controls={detailsId} onClick={() => toggleGroup(group.key)} className={styles.packageButton + (directOrdering ? " bg-blue-600 hover:bg-blue-700 text-white" : " bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400")}>{expanded ? (isAr ? "إخفاء" : "Hide") : directOrdering ? (isAr ? "عرض الباقات" : "View packages") : (isAr ? "عرض" : "View")}<ChevronDown size={16} className={expanded ? styles.chevronOpen : ""} /></button>
                   </div></div>
                 </div>
                 {expanded && <div id={detailsId} className={styles.packageList}>{group.services.map(service => {
                   const price = getServicePrice(service);
-                  const href = directOrdering ? `/${lang}/purchase?serviceId=${encodeURIComponent(service.id)}` : "/" + lang + "/product/" + getGameSlug(group.groupName, service.name) + "?package=" + encodeURIComponent(service.id);
+                  const href = directOrdering ? `/${lang}/purchase?serviceId=${encodeURIComponent(service.id)}` : "/" + lang + "/product/" + getGameSlug(group.groupName, service.name, service.productSlug) + "?package=" + encodeURIComponent(service.id);
                   return <div key={service.id} className={styles.packageRow}>{service.imageUrl && <img src={service.imageUrl} alt="" width={48} height={48} loading="lazy" decoding="async" className="w-12 h-12 object-cover rounded-lg shrink-0" />}<div><h4>{cleanHtmlToText(service.name)}</h4><span className={styles.delivery}><Clock3 size={12} />{service.time || (isAr ? "حسب تفاصيل الخدمة" : "See service details")}{service.supportsQty && <small>{isAr ? "يدعم الكميات" : "Quantity enabled"}</small>}</span></div><div className={styles.packagePrice}><strong className="text-blue-600 dark:text-blue-400">{formatPrice(price)}</strong><Link aria-label={(isAr ? "طلب " : "Order ") + cleanHtmlToText(service.name)} href={href} className="bg-blue-600 hover:bg-blue-700 text-white font-bold">{directOrdering ? (isAr ? 'طلب الخدمة' : 'Order service') : (isAr ? "شحن الآن" : "Top Up")}<ArrowUpRight size={13} /></Link></div></div>;
                 })}</div>}
               </article>;

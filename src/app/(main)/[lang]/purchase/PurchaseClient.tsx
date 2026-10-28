@@ -42,12 +42,14 @@ import {
 } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { cleanHtmlToText, stripEmojis } from "@/utils/cleanHtml";
+import { getPurchaseFieldDefinitions, getPurchaseTargetValue } from '@/lib/purchase-service-fields';
 
 function formatText(txt: string = ""): string {
   return stripEmojis(cleanHtmlToText(txt || ""));
 }
 
 interface ServiceItem {
+  productSlug?: string | null;
   id: string;
   dhruId?: string;
   name: string;
@@ -124,18 +126,7 @@ function getServiceImage(groupName: string = "", serviceName: string = ""): stri
 }
 
 function parseCustomFields(rawRequiresCustom: any): CustomFieldDef[] {
-  if (!rawRequiresCustom) return [];
-  try {
-    const parsed = typeof rawRequiresCustom === "string" ? JSON.parse(rawRequiresCustom) : rawRequiresCustom;
-    if (Array.isArray(parsed)) {
-      return parsed.filter(
-        (f) => f && f.synthetic_quantity !== true && f.field_id !== "custom_QNT" && f.name !== "QNT"
-      );
-    }
-  } catch {
-    // Return empty on parse error
-  }
-  return [];
+  return getPurchaseFieldDefinitions({ requiresCustom: rawRequiresCustom });
 }
 
 const CUSTOMER_REVIEWS = [
@@ -330,7 +321,7 @@ function PurchaseClientContent({
   }, [selectedService]);
 
   const formatPrice = (usd: number = 0) => {
-    if (!Number.isFinite(usd) || usd <= 0) return isAr ? 'السعر غير متاح' : 'Price unavailable';
+    if (!Number.isFinite(usd) || usd <= 0) return isAr ? 'بانتظار التسعير' : 'Price pending';
     const converted = usd * currency.rate;
     const formatted = converted.toLocaleString(undefined, {
       minimumFractionDigits: 2,
@@ -377,7 +368,7 @@ function PurchaseClientContent({
           return false;
         }
       }
-    } else {
+    } else if (!selectedService?.productSlug) {
       if (!targetInput.trim()) {
         const isImei =
           selectedService?.apiServiceType === "imei" ||
@@ -400,8 +391,7 @@ function PurchaseClientContent({
 
   const resolveTargetDisplay = (): string => {
     if (customFields.length > 0) {
-      const firstKey = customFields[0].field_id || customFields[0].id || customFields[0].name || "";
-      return customFieldValues[firstKey] || Object.values(customFieldValues)[0] || "N/A";
+      return getPurchaseTargetValue(customFields, customFieldValues);
     }
     return targetInput.trim() || "N/A";
   };
@@ -833,18 +823,18 @@ function PurchaseClientContent({
                             {field.required !== false && <span className="text-red-500">*</span>}
                           </span>
                         </label>
-                        <input
+                        {(field.fieldtype || field.type) === 'select' ? <select value={customFieldValues[key] || ''} onChange={e => handleCustomFieldChange(key, e.target.value)} className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm"><option value="">{isAr ? 'اختر من القائمة' : 'Choose an option'}</option>{(Array.isArray(field.options || field.fieldoptions) ? (field.options || field.fieldoptions || []) : String(field.options || field.fieldoptions || '').split(/[\r\n|]+/).filter(Boolean)).map((option: any, index: number) => <option key={index} value={typeof option === 'object' ? option.value : option}>{typeof option === 'object' ? option.label || option.value : option}</option>)}</select> : <input
                           type={isPass ? "password" : isEmail ? "email" : "text"}
                           value={customFieldValues[key] || ""}
                           onChange={(e) => handleCustomFieldChange(key, e.target.value)}
                           placeholder={placeholder}
                           className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
-                        />
+                        />}
                       </div>
                     );
                   })}
                 </div>
-              ) : (
+              ) : selectedService?.productSlug ? <p className="text-sm text-slate-500">{isAr ? 'ستظهر تفاصيل البطاقة في طلباتك بعد تنفيذ الطلب.' : 'Card details will appear in your orders once fulfilled.'}</p> : (
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center justify-between">
                     <span className="flex items-center gap-1.5">
@@ -1011,7 +1001,7 @@ function PurchaseClientContent({
                 <button
                   type="button"
                   onClick={handleAddToCart}
-                  disabled={isAdding || isBuying}
+                  disabled={isAdding || isBuying || unitPriceUsd <= 0}
                   className="w-full py-4 px-6 rounded-2xl border-2 border-blue-600 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 font-bold text-sm transition-all flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50"
                 >
                   {isAdding ? (
@@ -1025,7 +1015,7 @@ function PurchaseClientContent({
                 <button
                   type="button"
                   onClick={handleBuyNow}
-                  disabled={isAdding || isBuying}
+                  disabled={isAdding || isBuying || unitPriceUsd <= 0}
                   className="w-full py-4 px-6 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-lg shadow-blue-500/25 transition-all flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50"
                 >
                   {isBuying ? (

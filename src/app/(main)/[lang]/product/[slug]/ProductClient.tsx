@@ -8,8 +8,10 @@ import { getServicePrice } from "@/lib/service-price";
 import styles from "./product.module.css";
 import { useCart } from "@/context/CartContext";
 import { cleanHtmlToText } from "@/utils/cleanHtml";
+import { getPurchaseFieldDefinitions, getPurchaseTargetValue } from "@/lib/purchase-service-fields";
 
 interface ServiceItem {
+  productSlug?: string | null;
   imageUrl?: string | null;
   groupImageUrl?: string | null;
   id: string;
@@ -195,6 +197,7 @@ export default function ProductClient({
   const [selectedServiceId, setSelectedServiceId] = useState<string>(initialPackageId || "");
   const [targetInput, setTargetInput] = useState<string>("");
   const [zoneId, setZoneId] = useState<string>("");
+  const [customFieldValues, setCustomFieldValues] = useState<Record<string, string>>({});
   const [quantity, setQuantity] = useState<number>(1);
   const [currencyCode, setCurrencyCode] = useState<string>("USD");
   const [inputError, setInputError] = useState<string>("");
@@ -268,7 +271,8 @@ export default function ProductClient({
       (cat.services || []).forEach((srv: any) => {
         const fullName = [srv.name, srv.groupName || "", cat.name || ""].join(" ").toLowerCase();
         const groupSlug = (srv.groupName || cat.name || "").toLowerCase().replace(/[^\p{L}\p{N}]+/gu, "-").replace(/^-|-$/g, "");
-        const isMatch = otherGame ? otherGame.queries.some(term => fullName.includes(term)) : matchedKey ? fullName.includes(query) : groupSlug === slug || fullName.includes(query);
+        const sourceAliases: Record<string, string> = { 'free-fire': 'free-fire-id', pubg: 'pubg-id', 'yalla-ludo': 'yalla-ludo-id', tiktok: 'tik-tok-offers', 'fc-mobile': '2023fifa-mobile', starlink: 'starlink-sub' };
+        const isMatch = srv.productSlug ? srv.productSlug === (sourceAliases[slug] || slug) : otherGame ? otherGame.queries.some(term => fullName.includes(term)) : matchedKey ? fullName.includes(query) : groupSlug === slug || fullName.includes(query);
         const isCodeProduct = /redeem|\bpin\b|giving code|not by player|for reseller/i.test(fullName);
         if (srv.isActive !== false && isMatch && !(slug.endsWith("-id") && isCodeProduct)) {
           list.push({
@@ -288,6 +292,8 @@ export default function ProductClient({
   }, [rawServices, gameConfig.query, matchedKey, slug]);
 
   const selectedService = useMemo(() => gamePackages.find(p => p.id === selectedServiceId), [gamePackages, selectedServiceId]);
+  const customFieldEntries = useMemo(() => getPurchaseFieldDefinitions(selectedService).map(field => [field.field_id, field]) as [string, any][], [selectedService]);
+  const needsDefaultTarget = customFieldEntries.length === 0 && !selectedService?.productSlug;
   const productTitle = isAr ? gameConfig.titleAr : gameConfig.titleEn;
   const displayTitle = !matchedKey && gamePackages.length ? cleanHtmlToText(gamePackages[0].groupName || productTitle) : productTitle;
 
@@ -299,6 +305,7 @@ export default function ProductClient({
   }, [selectedService]);
 
   const formatPrice = (usd: number = 0) => {
+    if (usd <= 0) return isAr ? "بانتظار التسعير" : "Price pending";
     const converted = usd * currency.rate;
     const formatted = converted.toLocaleString(undefined, {
       minimumFractionDigits: 2,
@@ -312,7 +319,17 @@ export default function ProductClient({
       setInputError(isAr ? "اختر أحد العروض أولاً" : "Choose a package first");
       return false;
     }
-    if (!targetInput.trim()) {
+    if (unitPriceUsd <= 0) {
+      setInputError(isAr ? "هذه الباقة بانتظار التسعير. تواصل مع الإدارة قبل الطلب." : "This package is awaiting pricing. Please contact support.");
+      return false;
+    }
+    for (const [key, field] of customFieldEntries) {
+      if ([true, 1, '1', 'true'].includes(field.required) && !customFieldValues[key]?.trim()) {
+        setInputError((isAr ? "يرجى إدخال " : "Please enter ") + (field.label || key));
+        return false;
+      }
+    }
+    if (needsDefaultTarget && !targetInput.trim()) {
       setInputError(
         isAr
           ? `يرجى إدخال ${gameConfig.idLabelAr} بدقة للمتابعة`
@@ -320,7 +337,7 @@ export default function ProductClient({
       );
       return false;
     }
-    if (gameConfig.hasZoneId && !zoneId.trim()) {
+    if (needsDefaultTarget && gameConfig.hasZoneId && !zoneId.trim()) {
       setInputError(
         isAr
           ? `يرجى إدخال ${gameConfig.zoneLabelAr} الخاص بحسابك`
@@ -339,8 +356,8 @@ export default function ProductClient({
     setIsAdding(true);
     setActionSuccess(null);
 
-    const customFieldsObj: Record<string, string> = {};
-    if (gameConfig.hasZoneId && zoneId.trim()) {
+    const customFieldsObj: Record<string, string> = Object.fromEntries(customFieldEntries.map(([key]) => [key, (customFieldValues[key] || '').trim()]));
+    if (needsDefaultTarget && gameConfig.hasZoneId && zoneId.trim()) {
       customFieldsObj["Zone ID"] = zoneId.trim();
     }
 
@@ -349,7 +366,7 @@ export default function ProductClient({
         serviceId: selectedService.id,
         serviceName: selectedService.name,
         groupName: selectedService.groupName,
-        targetInput: targetInput.trim(),
+        targetInput: needsDefaultTarget ? targetInput.trim() : getPurchaseTargetValue(getPurchaseFieldDefinitions(selectedService), customFieldsObj),
         customFields: Object.keys(customFieldsObj).length > 0 ? customFieldsObj : undefined,
         quantity,
         price: unitPriceUsd,
@@ -372,8 +389,9 @@ export default function ProductClient({
     }
   };
 
-  const lowestPrice = gamePackages.length ? getServicePrice(gamePackages[0]) : 0;
-  const highestPrice = gamePackages.length ? getServicePrice(gamePackages[gamePackages.length - 1]) : 0;
+  const pricedPackages = gamePackages.map(pkg => getServicePrice(pkg)).filter(price => price > 0);
+  const lowestPrice = pricedPackages.length ? Math.min(...pricedPackages) : 0;
+  const highestPrice = pricedPackages.length ? Math.max(...pricedPackages) : 0;
   const packageName = (name: string) => {
     const clean = cleanHtmlToText(name);
     if (gameConfig.query === "free fire") {
@@ -416,15 +434,23 @@ export default function ProductClient({
               {selectedService && <button type="button" className={styles.clear} onClick={() => setSelectedServiceId("")}>{isAr ? "إزالة" : "Clear"}</button>}
             </fieldset>
             <div className={styles.fields}>
-              <label htmlFor="product-player-id">{isAr ? "الآيدي :" : "Account ID:"}</label>
+              {customFieldEntries.map(([key, field]) => {
+                const rawOptions = field.options || field.fieldoptions || [];
+                const options = Array.isArray(rawOptions) ? rawOptions : String(rawOptions).split(/[\r\n|]+/).filter(Boolean);
+                const type = field.fieldtype || field.type || 'text';
+                const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => { setCustomFieldValues(values => ({ ...values, [key]: e.target.value })); setInputError(''); setActionSuccess(null); };
+                const props = { id: `product-custom-${key}`, value: customFieldValues[key] || '', onChange, required: [true, 1, '1', 'true'].includes(field.required) };
+                return <React.Fragment key={key}><label htmlFor={props.id}>{field.label || key}{props.required ? ' *' : ''}</label>{type === 'select' ? <select {...props}><option value="">{isAr ? 'اختر من القائمة' : 'Choose an option'}</option>{options.map((option: any, index: number) => <option key={index} value={typeof option === 'object' ? option.value : option}>{typeof option === 'object' ? option.label || option.value : option}</option>)}</select> : type === 'textarea' ? <textarea {...props} rows={3} /> : <input {...props} type={['email', 'password', 'number', 'tel', 'url'].includes(type) ? type : 'text'} autoComplete="off" placeholder={field.placeholder || ''} />}</React.Fragment>;
+              })}
+              {needsDefaultTarget && <><label htmlFor="product-player-id">{isAr ? "الآيدي :" : "Account ID:"}</label>
               <input id="product-player-id" type="text" autoComplete="off" value={targetInput} aria-invalid={Boolean(inputError)} aria-describedby={inputError ? "product-error" : undefined} onChange={e => { setTargetInput(e.target.value); setInputError(""); setActionSuccess(null); }} placeholder={isAr ? gameConfig.idPlaceholderAr : gameConfig.idPlaceholderEn} />
-              {gameConfig.hasZoneId && <><label htmlFor="product-zone-id">{isAr ? gameConfig.zoneLabelAr : gameConfig.zoneLabelEn}</label><input id="product-zone-id" type="text" value={zoneId} onChange={e => setZoneId(e.target.value)} /></>}
+              {gameConfig.hasZoneId && <><label htmlFor="product-zone-id">{isAr ? gameConfig.zoneLabelAr : gameConfig.zoneLabelEn}</label><input id="product-zone-id" type="text" value={zoneId} onChange={e => setZoneId(e.target.value)} /></>}</>}
               {selectedService?.info && <p className={styles.serviceInfo}>{cleanHtmlToText(selectedService.info)}</p>}
               {inputError && <p id="product-error" role="alert" className={styles.error}><AlertCircle size={16} />{inputError}</p>}
               {actionSuccess && <p role="status" className={styles.success}><CheckCircle2 size={16} />{actionSuccess}<button type="button" onClick={() => setIsCartOpen(true)}>{isAr ? "عرض السلة" : "View cart"}</button></p>}
               <div className={styles.cartRow}>
                 <label className={styles.quantity}>{isAr ? "الكمية" : "Quantity"}<input type="number" aria-label={isAr ? "الكمية" : "Quantity"} min="1" max="999" value={quantity} onChange={e => setQuantity(Math.min(999, Math.max(1, Math.floor(Number(e.target.value) || 1))))} /></label>
-                <button type="submit" className={styles.addButton} disabled={loading || gamePackages.length === 0 || isAdding}>{isAdding ? <LoaderCircle size={17} className="animate-spin" /> : <ShoppingBag size={17} />}{isAr ? "إضافة إلى السلة" : "Add to cart"}</button>
+                <button type="submit" className={styles.addButton} disabled={loading || gamePackages.length === 0 || isAdding || Boolean(selectedService && unitPriceUsd <= 0)}>{isAdding ? <LoaderCircle size={17} className="animate-spin" /> : <ShoppingBag size={17} />}{selectedService && unitPriceUsd <= 0 ? (isAr ? 'بانتظار التسعير' : 'Price pending') : (isAr ? "إضافة إلى السلة" : "Add to cart")}</button>
               </div>
               {selectedService && <p className={styles.total}>{isAr ? "الإجمالي:" : "Total:"} <strong>{formatPrice(unitPriceUsd * quantity)}</strong></p>}
             </div>
