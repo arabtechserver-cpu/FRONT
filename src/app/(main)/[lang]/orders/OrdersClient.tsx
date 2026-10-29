@@ -33,6 +33,22 @@ export default function OrdersClient({ lang, dict }: { lang: string; dict: any }
   const [selectedOrder, setSelectedOrder] = useState<OrderItem | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (selectedOrder) {
+      document.body.style.overflow = "hidden";
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Escape") {
+          setSelectedOrder(null);
+        }
+      };
+      window.addEventListener("keydown", handleKeyDown);
+      return () => {
+        document.body.style.overflow = "";
+        window.removeEventListener("keydown", handleKeyDown);
+      };
+    }
+  }, [selectedOrder]);
+
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => {
@@ -197,13 +213,13 @@ export default function OrdersClient({ lang, dict }: { lang: string; dict: any }
       )}
 
       {/* TOP HEADER SECTION */}
-      <div className="bg-surface-container dark:bg-surface-container rounded-2xl p-5 sm:p-7 border dark:border-white/10 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
+      <div className="bg-white dark:bg-surface-container rounded-2xl p-5 sm:p-7 border border-slate-200 dark:border-white/10 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
         <div className="space-y-1.5">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/40 border border-blue-100 dark:border-blue-900/40 text-blue-700 dark:text-blue-400 text-xs font-bold">
             <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
             <span>{isAr ? "مركز تتبع العمليات" : "Orders Command Center"}</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold dark:text-white flex items-center gap-2.5">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2.5">
             <span className="material-symbols-outlined text-blue-600 dark:text-blue-400 text-3xl">receipt_long</span>
             <span>{isAr ? "سجل طلباتي والخدمات" : "My Orders History"}</span>
           </h1>
@@ -225,7 +241,7 @@ export default function OrdersClient({ lang, dict }: { lang: string; dict: any }
           </Link>
 
           {userSession && (
-            <div className="flex-1 md:flex-initial p-2.5 px-4 rounded-xl dark:bg-background border dark:border-white/10 flex items-center justify-between gap-3 shadow-xs">
+            <div className="flex-1 md:flex-initial p-2.5 px-4 rounded-xl bg-slate-50 dark:bg-background border border-slate-200 dark:border-white/10 flex items-center justify-between gap-3 shadow-xs">
               <div>
                 <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase">{isAr ? "رصيدك" : "Balance"}</p>
                 <p className="text-sm font-bold text-blue-600 dark:text-blue-400 font-mono">${userBalance.toFixed(2)} USD</p>
@@ -248,7 +264,7 @@ export default function OrdersClient({ lang, dict }: { lang: string; dict: any }
           <div className="flex items-center gap-3">
             <span className="material-symbols-outlined text-3xl text-amber-600 dark:text-amber-400">lock</span>
             <div>
-              <p className="font-bold text-sm dark:text-white">
+              <p className="font-bold text-sm text-slate-900 dark:text-white">
                 {isAr ? "يرجى تسجيل الدخول لمشاهدة طلباتك" : "Please Sign In to View Your Orders"}
               </p>
               <p className="text-xs text-slate-600 dark:text-slate-300 mt-0.5">
@@ -295,13 +311,13 @@ export default function OrdersClient({ lang, dict }: { lang: string; dict: any }
       {/* METRICS SUMMARY GRID */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
         {/* Card 1: Total */}
-        <div className="bg-surface-container dark:bg-surface-container rounded-2xl p-4 sm:p-5 border dark:border-white/10 shadow-sm flex flex-col justify-between space-y-2">
+        <div className="bg-white dark:bg-surface-container rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-white/10 shadow-sm flex flex-col justify-between space-y-2">
           <div className="flex items-center justify-between text-slate-500 dark:text-slate-400">
             <span className="text-xs font-bold">{isAr ? "إجمالي الطلبات" : "Total Orders"}</span>
             <span className="material-symbols-outlined text-blue-600 dark:text-blue-400 text-xl">inventory_2</span>
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="text-2xl sm:text-3xl font-extrabold dark:text-white font-mono">
+            <span className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white font-mono">
               {metrics.total}
             </span>
             <span className="text-xs text-slate-500 dark:text-slate-400 font-semibold">{isAr ? "طلب" : "orders"}</span>
@@ -310,7 +326,7 @@ export default function OrdersClient({ lang, dict }: { lang: string; dict: any }
         </div>
 
         {/* Card 2: Completed */}
-        <div className="bg-surface-container dark:bg-surface-container rounded-2xl p-4 sm:p-5 border border-emerald-200 dark:border-emerald-900/40 shadow-sm flex flex-col justify-between space-y-2">
+        <div className="bg-white dark:bg-surface-container rounded-2xl p-4 sm:p-5 border border-emerald-200 dark:border-emerald-900/40 shadow-sm flex flex-col justify-between space-y-2">
           <div className="flex items-center justify-between text-emerald-700 dark:text-emerald-400">
             <span className="text-xs font-bold">{isAr ? "طلبات مكتملة" : "Completed"}</span>
             <span className="material-symbols-outlined text-emerald-600 dark:text-emerald-400 text-xl">check_circle</span>
@@ -323,7 +339,7 @@ export default function OrdersClient({ lang, dict }: { lang: string; dict: any }
               {metrics.successRate}%
             </span>
           </div>
-          <div className="w-full dark:bg-background rounded-full h-1.5 overflow-hidden">
+          <div className="w-full bg-slate-100 dark:bg-background rounded-full h-1.5 overflow-hidden">
             <div
               className="bg-emerald-600 h-full rounded-full transition-all duration-500"
               style={{ width: `${metrics.successRate}%` }}
@@ -332,7 +348,7 @@ export default function OrdersClient({ lang, dict }: { lang: string; dict: any }
         </div>
 
         {/* Card 3: Pending */}
-        <div className="bg-surface-container dark:bg-surface-container rounded-2xl p-4 sm:p-5 border border-amber-200 dark:border-amber-900/40 shadow-sm flex flex-col justify-between space-y-2">
+        <div className="bg-white dark:bg-surface-container rounded-2xl p-4 sm:p-5 border border-amber-200 dark:border-amber-900/40 shadow-sm flex flex-col justify-between space-y-2">
           <div className="flex items-center justify-between text-amber-700 dark:text-amber-400">
             <span className="text-xs font-bold">{isAr ? "قيد المعالجة" : "Pending"}</span>
             <span className="material-symbols-outlined text-amber-600 dark:text-amber-400 text-xl animate-spin">
@@ -349,7 +365,7 @@ export default function OrdersClient({ lang, dict }: { lang: string; dict: any }
         </div>
 
         {/* Card 4: Total Spent */}
-        <div className="bg-surface-container dark:bg-surface-container rounded-2xl p-4 sm:p-5 border dark:border-white/10 shadow-sm flex flex-col justify-between space-y-2">
+        <div className="bg-white dark:bg-surface-container rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-white/10 shadow-sm flex flex-col justify-between space-y-2">
           <div className="flex items-center justify-between text-slate-500 dark:text-slate-400">
             <span className="text-xs font-bold">{isAr ? "إجمالي المنصرف" : "Total Spent"}</span>
             <span className="material-symbols-outlined text-blue-600 dark:text-blue-400 text-xl">payments</span>
@@ -365,7 +381,7 @@ export default function OrdersClient({ lang, dict }: { lang: string; dict: any }
       </div>
 
       {/* CONTROLS CARD: SEARCH & FILTERS */}
-      <div className="bg-surface-container dark:bg-surface-container rounded-2xl p-4 sm:p-6 border dark:border-white/10 shadow-sm space-y-4">
+      <div className="bg-white dark:bg-surface-container rounded-2xl p-4 sm:p-6 border border-slate-200 dark:border-white/10 shadow-sm space-y-4">
         <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
           {/* Search Input */}
           <div className="relative flex-1">
@@ -381,7 +397,7 @@ export default function OrdersClient({ lang, dict }: { lang: string; dict: any }
                   ? "ابحث برقم الطلب، اسم الخدمة، رقم IMEI، أو كود التفعيل..."
                   : "Search by Order ID, service name, IMEI, or code..."
               }
-              className="w-full dark:bg-background border dark:border-white/10 rounded-xl py-2.5 ps-10 pe-4 text-xs dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:bg-white dark:focus:bg-surface-container focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 transition-all font-medium"
+              className="w-full bg-slate-50 dark:bg-background border border-slate-200 dark:border-white/10 rounded-xl py-2.5 ps-10 pe-4 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:bg-white dark:focus:bg-surface-container focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 transition-all font-medium"
             />
             {searchQuery && (
               <button
@@ -397,7 +413,7 @@ export default function OrdersClient({ lang, dict }: { lang: string; dict: any }
           {/* Filters & Actions */}
           <div className="flex flex-wrap items-center gap-2.5 justify-between sm:justify-start">
             {/* Status Tabs with smooth scroll */}
-            <div className="flex items-center overflow-x-auto no-scrollbar max-w-full dark:bg-background p-1 rounded-xl border dark:border-white/10 text-xs font-bold gap-0.5">
+            <div className="flex items-center overflow-x-auto no-scrollbar max-w-full bg-slate-100 dark:bg-background p-1 rounded-xl border border-slate-200 dark:border-white/10 text-xs font-bold gap-0.5">
               <button
                 type="button"
                 onClick={() => setFilterStatus("all")}
@@ -449,7 +465,7 @@ export default function OrdersClient({ lang, dict }: { lang: string; dict: any }
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
               aria-label={isAr ? "ترتيب الطلبات" : "Sort orders"}
-              className="dark:bg-background border dark:border-white/10 dark:text-slate-200 rounded-xl px-3 py-2 text-xs font-bold focus:outline-none focus:border-blue-600 cursor-pointer shadow-xs"
+              className="bg-white dark:bg-background border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-200 rounded-xl px-3 py-2 text-xs font-bold focus:outline-none focus:border-blue-600 cursor-pointer shadow-xs"
             >
               <option value="newest">{isAr ? "الأحدث أولاً" : "Newest first"}</option>
               <option value="oldest">{isAr ? "الأقدم أولاً" : "Oldest first"}</option>
@@ -462,7 +478,7 @@ export default function OrdersClient({ lang, dict }: { lang: string; dict: any }
               onClick={fetchCustomerOrders}
               disabled={loadingOrders}
               aria-label={isAr ? "تحديث قائمة الطلبات" : "Refresh orders"}
-              className="px-3 py-2 rounded-xl dark:bg-background border dark:border-white/10  dark:hover:bg-surface-container-high dark:text-slate-200 text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer disabled:opacity-50"
+              className="px-3 py-2 rounded-xl bg-white hover:bg-slate-50 dark:bg-background border border-slate-200 dark:border-white/10 dark:hover:bg-surface-container-high text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer disabled:opacity-50"
             >
               <span
                 className={`material-symbols-outlined text-sm text-blue-600 dark:text-blue-400 ${
@@ -510,10 +526,10 @@ export default function OrdersClient({ lang, dict }: { lang: string; dict: any }
         ) : (
           <div className="space-y-4 pt-2">
             {/* DESKTOP TABLE */}
-            <div className="hidden lg:block overflow-x-auto rounded-xl border dark:border-white/10 dark:bg-surface-container">
+            <div className="hidden lg:block overflow-x-auto rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-container">
               <table className="w-full text-start border-collapse text-xs">
                 <thead>
-                  <tr className="border-b dark:border-white/10 dark:bg-background text-slate-600 dark:text-slate-300 font-bold uppercase text-[11px]">
+                  <tr className="border-b border-slate-200 dark:border-white/10 bg-slate-50/80 dark:bg-background text-slate-600 dark:text-slate-300 font-bold uppercase text-[11px]">
                     <th className="p-3.5 text-start">{isAr ? "رقم الطلب" : "Order ID"}</th>
                     <th className="p-3.5 text-start">{isAr ? "اسم الخدمة" : "Service Name"}</th>
                     <th className="p-3.5 text-start">{isAr ? "رقم الجهاز / البيانات" : "Target / IMEI"}</th>
@@ -534,7 +550,7 @@ export default function OrdersClient({ lang, dict }: { lang: string; dict: any }
                     return (
                       <tr
                         key={ord.id}
-                        className="hover:bg-slate-50/80 dark:hover:bg-surface-container-high/80 dark:hover:bg-surface-container-high/40 transition-colors group cursor-pointer"
+                        className="hover:bg-slate-50 dark:hover:bg-surface-container-high/60 transition-colors group cursor-pointer"
                         onClick={() => setSelectedOrder(ord)}
                       >
                         {/* ID */}
@@ -556,7 +572,7 @@ export default function OrdersClient({ lang, dict }: { lang: string; dict: any }
                         </td>
 
                         {/* Service Name */}
-                        <td className="p-3.5 font-bold dark:text-white text-start max-w-xs">
+                        <td className="p-3.5 font-bold text-slate-900 dark:text-white text-start max-w-xs">
                           <div className="flex flex-col">
                             <span className="truncate">{ord.serviceName}</span>
                             {ord.notes && (
@@ -568,7 +584,7 @@ export default function OrdersClient({ lang, dict }: { lang: string; dict: any }
                         </td>
 
                         {/* Target Input */}
-                        <td className="p-3.5 text-start font-mono dark:text-white">
+                        <td className="p-3.5 text-start font-mono text-slate-900 dark:text-white">
                           {ord.targetInput ? (
                             <button
                               type="button"
@@ -576,7 +592,7 @@ export default function OrdersClient({ lang, dict }: { lang: string; dict: any }
                                 e.stopPropagation();
                                 copyToClipboard(ord.targetInput!, isAr ? "رقم الجهاز" : "Target Input");
                               }}
-                              className="dark:bg-background px-2.5 py-1 rounded-lg border dark:border-white/10 font-bold text-[11px] dark:text-slate-200 inline-flex items-center gap-1 max-w-[180px] truncate cursor-pointer hover:bg-slate-200 dark:hover:bg-surface-container-high transition-colors"
+                              className="bg-slate-100 hover:bg-slate-200 dark:bg-background px-2.5 py-1 rounded-lg border border-slate-200 dark:border-white/10 font-bold text-[11px] text-slate-700 dark:text-slate-200 inline-flex items-center gap-1 max-w-[180px] truncate cursor-pointer dark:hover:bg-surface-container-high transition-colors"
                               title={isAr ? "اضغط للنسخ" : "Click to copy"}
                             >
                               <span className="truncate">{ord.targetInput}</span>
@@ -626,7 +642,7 @@ export default function OrdersClient({ lang, dict }: { lang: string; dict: any }
                         {/* Price & Qty */}
                         <td className="p-3.5 text-start">
                           <div className="flex flex-col">
-                            <span className="font-bold dark:text-white font-mono">
+                            <span className="font-bold text-slate-900 dark:text-white font-mono">
                               ${parseFloat(String(ord.price || 0)).toFixed(2)} USD
                             </span>
                             <span className="text-[10px] text-slate-500 dark:text-slate-400 font-sans">
@@ -675,7 +691,7 @@ export default function OrdersClient({ lang, dict }: { lang: string; dict: any }
                               e.stopPropagation();
                               setSelectedOrder(ord);
                             }}
-                            className="p-1.5 rounded-lg dark:bg-background hover:bg-slate-200 dark:hover:bg-surface-container-high dark:text-slate-200 transition-colors cursor-pointer"
+                            className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-background dark:hover:bg-surface-container-high text-slate-600 dark:text-slate-200 transition-colors cursor-pointer"
                             title={isAr ? "عرض التفاصيل" : "View details"}
                           >
                             <span className="material-symbols-outlined text-base">visibility</span>
@@ -700,7 +716,7 @@ export default function OrdersClient({ lang, dict }: { lang: string; dict: any }
                   <div
                     key={ord.id}
                     onClick={() => setSelectedOrder(ord)}
-                    className="p-4 rounded-xl border dark:border-white/10 dark:bg-surface-container hover:bg-slate-50/70 dark:hover:bg-surface-container-high/70 dark:hover:bg-surface-container-high/40 transition-all space-y-3 shadow-xs cursor-pointer"
+                    className="p-4 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-container hover:bg-slate-50 dark:hover:bg-surface-container-high/60 transition-all space-y-3 shadow-xs cursor-pointer"
                   >
                     {/* Top Row */}
                     <div className="flex items-center justify-between">
@@ -738,7 +754,7 @@ export default function OrdersClient({ lang, dict }: { lang: string; dict: any }
 
                     {/* Service Name */}
                     <div>
-                      <h4 className="text-sm font-bold dark:text-white leading-snug">{ord.serviceName}</h4>
+                      <h4 className="text-sm font-bold text-slate-900 dark:text-white leading-snug">{ord.serviceName}</h4>
                       {ord.notes && (
                         <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-1">{ord.notes}</p>
                       )}
@@ -746,7 +762,7 @@ export default function OrdersClient({ lang, dict }: { lang: string; dict: any }
 
                     {/* Target Input */}
                     {ord.targetInput && (
-                      <div className="p-2 rounded-lg dark:bg-background border dark:border-white/10 flex items-center justify-between text-xs">
+                      <div className="p-2 rounded-lg bg-slate-50 dark:bg-background border border-slate-200 dark:border-white/10 flex items-center justify-between text-xs">
                         <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold">
                           {isAr ? "البيانات / IMEI:" : "Target:"}
                         </span>
@@ -756,7 +772,7 @@ export default function OrdersClient({ lang, dict }: { lang: string; dict: any }
                             e.stopPropagation();
                             copyToClipboard(ord.targetInput!, isAr ? "رقم الجهاز" : "Target Input");
                           }}
-                          className="font-mono dark:text-slate-200 text-xs font-bold flex items-center gap-1 cursor-pointer"
+                          className="font-mono text-slate-800 dark:text-slate-200 text-xs font-bold flex items-center gap-1 cursor-pointer"
                         >
                           <span className="truncate max-w-[170px]">{ord.targetInput}</span>
                           <span className="material-symbols-outlined text-xs text-slate-400">
@@ -783,7 +799,7 @@ export default function OrdersClient({ lang, dict }: { lang: string; dict: any }
                             e.stopPropagation();
                             copyToClipboard(rawReply, isAr ? "كود التفعيل" : "Unlock Code");
                           }}
-                          className="p-1 rounded dark:bg-background text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-surface-container-high transition-colors shrink-0 border border-emerald-200 dark:border-emerald-800/40 cursor-pointer"
+                          className="p-1 rounded bg-white hover:bg-emerald-100 dark:bg-background text-emerald-700 dark:text-emerald-300 dark:hover:bg-surface-container-high transition-colors shrink-0 border border-emerald-200 dark:border-emerald-800/40 cursor-pointer"
                         >
                           <span className="material-symbols-outlined text-sm">content_copy</span>
                         </button>
@@ -791,8 +807,8 @@ export default function OrdersClient({ lang, dict }: { lang: string; dict: any }
                     )}
 
                     {/* Bottom Row */}
-                    <div className="flex items-center justify-between pt-2 border-t dark:border-white/10 text-xs">
-                      <span className="font-mono font-bold dark:text-white">
+                    <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-white/10 text-xs">
+                      <span className="font-mono font-bold text-slate-900 dark:text-white">
                         ${parseFloat(String(ord.price || 0)).toFixed(2)} USD
                       </span>
                       <span className="text-slate-500 dark:text-slate-400 font-mono text-[11px]">
@@ -814,54 +830,84 @@ export default function OrdersClient({ lang, dict }: { lang: string; dict: any }
 
       {/* FULL DETAILS MODAL */}
       {selectedOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs">
+        <div
+          className="fixed inset-0 z-[20000] flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-xs"
+          onClick={() => setSelectedOrder(null)}
+        >
           <div
-            className="w-full max-w-xl rounded-2xl border dark:border-white/10 dark:bg-surface-container p-6 sm:p-7 shadow-2xl space-y-5 relative max-h-[90vh] overflow-y-auto"
+            className="w-full max-w-xl rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-container p-5 sm:p-7 shadow-2xl space-y-4 sm:space-y-5 relative max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="flex items-start justify-between pb-3.5 border-b dark:border-white/10">
+            <div className="flex items-start justify-between pb-3.5 border-b border-slate-100 dark:border-white/10">
               <div className="space-y-0.5">
                 <span className="text-[10px] uppercase font-bold text-blue-600 dark:text-blue-400">
                   {isAr ? "تفاصيل الطلب الكاملة" : "Order Details"}
                 </span>
-                <h3 className="text-lg font-bold dark:text-white flex items-center gap-2 font-mono">
+                <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2 font-mono">
                   <span>#{selectedOrder.id}</span>
                 </h3>
               </div>
               <button
                 type="button"
                 onClick={() => setSelectedOrder(null)}
-                className="p-1.5 rounded-xl dark:bg-background hover:bg-slate-200 dark:hover:bg-surface-container-high text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-all cursor-pointer"
+                className="p-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-background dark:hover:bg-surface-container-high text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-all cursor-pointer"
+                title={isAr ? "إغلاق" : "Close"}
               >
                 <span className="material-symbols-outlined text-lg">close</span>
               </button>
             </div>
 
             {/* Content */}
-            <div className="space-y-3.5 text-xs">
-              <div className="p-3.5 rounded-xl dark:bg-background border dark:border-white/10 space-y-1">
+            <div className="space-y-3 text-xs">
+              {/* Service */}
+              <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-background border border-slate-200 dark:border-white/10 space-y-1">
                 <span className="text-slate-500 dark:text-slate-400 text-[11px] block">{isAr ? "اسم الخدمة" : "Service"}</span>
-                <p className="font-bold dark:text-white text-sm">{selectedOrder.serviceName}</p>
+                <p className="font-bold text-slate-900 dark:text-white text-sm">{selectedOrder.serviceName}</p>
               </div>
 
+              {/* Status and Cost */}
               <div className="grid grid-cols-2 gap-3">
-                <div className="p-3.5 rounded-xl dark:bg-background border dark:border-white/10 space-y-1">
+                <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-background border border-slate-200 dark:border-white/10 space-y-1.5">
                   <span className="text-slate-500 dark:text-slate-400 text-[11px] block">{isAr ? "الحالة" : "Status"}</span>
-                  <p className="font-bold text-sm text-emerald-700 dark:text-emerald-400 uppercase">
-                    {selectedOrder.status}
-                  </p>
+                  <div>
+                    {selectedOrder.status === "completed" && (
+                      <span className="px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800/50 text-emerald-700 dark:text-emerald-300 text-xs font-bold inline-flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+                        <span>{isAr ? "مكتمل" : "Completed"}</span>
+                      </span>
+                    )}
+                    {(selectedOrder.status === "processing" || selectedOrder.status === "pending" || selectedOrder.status === "dispatching") && (
+                      <span className="px-2.5 py-1 rounded-full bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800/50 text-amber-700 dark:text-amber-300 text-xs font-bold inline-flex items-center gap-1.5 animate-pulse">
+                        <span className="w-1.5 h-1.5 rounded-full bg-amber-600" />
+                        <span>{isAr ? "قيد الانتظار" : "Pending"}</span>
+                      </span>
+                    )}
+                    {(selectedOrder.status === "failed" || selectedOrder.status === "rejected") && (
+                      <span className="px-2.5 py-1 rounded-full bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800/50 text-rose-700 dark:text-rose-300 text-xs font-bold inline-flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-rose-600" />
+                        <span>{isAr ? "مرفوض" : "Failed"}</span>
+                      </span>
+                    )}
+                    {!["completed", "processing", "pending", "dispatching", "failed", "rejected"].includes(selectedOrder.status) && (
+                      <span className="px-2.5 py-1 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-xs font-bold">
+                        {selectedOrder.status}
+                      </span>
+                    )}
+                  </div>
                 </div>
-                <div className="p-3.5 rounded-xl dark:bg-background border dark:border-white/10 space-y-1">
+
+                <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-background border border-slate-200 dark:border-white/10 space-y-1">
                   <span className="text-slate-500 dark:text-slate-400 text-[11px] block">{isAr ? "التكلفة" : "Cost"}</span>
-                  <p className="font-bold text-sm dark:text-white font-mono">
+                  <p className="font-bold text-sm text-slate-900 dark:text-white font-mono">
                     ${parseFloat(String(selectedOrder.price || 0)).toFixed(2)} USD
                   </p>
                 </div>
               </div>
 
+              {/* Target / IMEI */}
               {selectedOrder.targetInput && (
-                <div className="p-3.5 rounded-xl dark:bg-background border dark:border-white/10 space-y-1.5">
+                <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-background border border-slate-200 dark:border-white/10 space-y-1.5">
                   <div className="flex items-center justify-between">
                     <span className="text-slate-500 dark:text-slate-400 text-[11px]">
                       {isAr ? "البيانات المدخلة / IMEI" : "Target / IMEI"}
@@ -877,12 +923,13 @@ export default function OrdersClient({ lang, dict }: { lang: string; dict: any }
                       <span>{isAr ? "نسخ" : "Copy"}</span>
                     </button>
                   </div>
-                  <p className="font-mono font-bold dark:text-white text-sm select-all">
+                  <p className="font-mono font-bold text-slate-900 dark:text-white text-sm select-all break-all">
                     {selectedOrder.targetInput}
                   </p>
                 </div>
               )}
 
+              {/* Reply / Unlock code */}
               {selectedOrder.reply && (
                 <div className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/40 space-y-2">
                   <div className="flex items-center justify-between">
@@ -903,30 +950,33 @@ export default function OrdersClient({ lang, dict }: { lang: string; dict: any }
                       <span>{isAr ? "نسخ الكود" : "Copy Code"}</span>
                     </button>
                   </div>
-                  <div className="p-3 rounded-lg dark:bg-background border border-emerald-200 dark:border-emerald-800/40 font-mono text-emerald-900 dark:text-emerald-200 text-xs whitespace-pre-wrap select-all font-bold">
+                  <div className="p-3 rounded-lg bg-white dark:bg-background border border-emerald-200 dark:border-emerald-800/40 font-mono text-emerald-900 dark:text-emerald-200 text-xs whitespace-pre-wrap select-all font-bold break-all">
                     {cleanHtmlToText(selectedOrder.reply)}
                   </div>
                 </div>
               )}
 
+              {/* Notes */}
               {selectedOrder.notes && (
-                <div className="p-3.5 rounded-xl dark:bg-background border dark:border-white/10 space-y-1">
+                <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-background border border-slate-200 dark:border-white/10 space-y-1">
                   <span className="text-slate-500 dark:text-slate-400 text-[11px] block">{isAr ? "ملاحظات" : "Notes"}</span>
-                  <p className="dark:text-slate-300">{selectedOrder.notes}</p>
+                  <p className="text-slate-700 dark:text-slate-300 whitespace-pre-wrap break-words">{selectedOrder.notes}</p>
                 </div>
               )}
 
-              <div className="p-3 rounded-xl dark:bg-background border dark:border-white/10 flex items-center justify-between text-slate-500 dark:text-slate-400 text-[11px] font-mono">
+              {/* Order Date */}
+              <div className="p-3 rounded-xl bg-slate-50 dark:bg-background border border-slate-200 dark:border-white/10 flex items-center justify-between text-slate-500 dark:text-slate-400 text-[11px] font-mono">
                 <span>{isAr ? "تاريخ الطلب:" : "Created At:"}</span>
                 <span>{new Date(selectedOrder.createdAt).toLocaleString(isAr ? "ar-EG" : "en-US")}</span>
               </div>
             </div>
 
+            {/* Footer */}
             <div className="pt-2 flex items-center justify-end">
               <button
                 type="button"
                 onClick={() => setSelectedOrder(null)}
-                className="px-5 py-2.5 rounded-xl dark:bg-background hover:bg-slate-200 dark:hover:bg-surface-container-high dark:text-slate-200 font-bold text-xs transition-all cursor-pointer"
+                className="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-background dark:hover:bg-surface-container-high text-slate-700 dark:text-slate-200 font-bold text-xs transition-all cursor-pointer"
               >
                 {isAr ? "إغلاق" : "Close"}
               </button>

@@ -714,13 +714,13 @@ export default function WalletClient({ lang, dict }: { lang: Locale; dict: any }
               <div className={styles.sectionTitle}><span className={styles.step + " text-blue-600 dark:text-blue-400"}>01</span><div><h3>{isAr ? "اختر وسيلة الدفع" : "Choose how to pay"}</h3><p className={styles.muted}>{isAr ? "الطريقة المناسبة لك" : "Pick what works for you"}</p></div></div>
               <div className={styles.methodList}>{paymentMethods.map(method => {
                 const selected = activeMethod.id === method.id; const Icon = getMethodIcon(method);
-                return <button key={method.id} type="button" aria-pressed={selected} aria-label={isAr ? method.nameAr : method.nameEn} onClick={() => { setSelectedMethodId(method.id); setErrorMessage(""); }} className={styles.method + " " + (selected ? styles.methodSelected + " bg-blue-50/70 dark:bg-blue-950/40 border-blue-600 dark:border-blue-500" : "dark:bg-background dark:border-white/10 hover:bg-slate-50/50 dark:hover:bg-surface-container-high/30")}><span className={styles.methodIcon + " text-white " + method.color}><Icon size={20} /></span><span className={styles.methodName}><strong>{isAr ? method.nameAr : method.nameEn}</strong><small>{method.badge} · {method.isAutomaticPayPal ? (isAr ? "دفع مباشر" : "Direct payment") : isAr ? "تحويل وإرفاق إيصال" : "Transfer with receipt"}</small></span><span className={styles.radio + " text-blue-600 dark:text-blue-400"}>{selected && <Check size={12} strokeWidth={3} />}</span></button>;
+                return <button key={method.id} type="button" aria-pressed={selected} aria-label={isAr ? method.nameAr : method.nameEn} onClick={() => { setSelectedMethodId(method.id); setErrorMessage(""); }} className={styles.method + " " + (selected ? styles.methodSelected + " bg-blue-50/70 dark:bg-blue-950/40 border-blue-600 dark:border-blue-500" : "bg-white dark:bg-background border border-slate-200 dark:border-white/10 hover:bg-slate-50/70 dark:hover:bg-surface-container-high/30")}><span className={styles.methodIcon + " text-white " + method.color}><Icon size={20} /></span><span className={styles.methodName}><strong>{isAr ? method.nameAr : method.nameEn}</strong><small>{method.badge} · {method.isAutomaticPayPal ? (isAr ? "دفع مباشر" : "Direct payment") : isAr ? "تحويل وإرفاق إيصال" : "Transfer with receipt"}</small></span><span className={styles.radio + " text-blue-600 dark:text-blue-400"}>{selected && <Check size={12} strokeWidth={3} />}</span></button>;
               })}</div>
               <div className={styles.rates}><div className={styles.ratesHeader}><span>{isAr ? "أسعار الصرف" : "Exchange rates"}</span><span className={styles.muted}>1 USD</span></div>{[{code:"SDG", value:sdgRate}, {code:"EGP", value:currencyConfig?.usdToEgp || 50}, {code:"SAR", value:currencyConfig?.usdToSar || 3.75}].map(rate => <div key={rate.code}><span className={styles.muted}>{rate.code}</span><strong dir="ltr">{rate.value.toLocaleString()}</strong></div>)}</div>
             </aside>
             <div className={styles.details}>
               <div className={styles.sectionTitle}><span className={styles.step + " text-blue-600 dark:text-blue-400"}>02</span><div><h3>{isAr ? "المبلغ وتفاصيل التحويل" : "Amount and transfer details"}</h3><p className={styles.muted}>{isAr ? "كل التفاصيل قبل تأكيد طلبك" : "Everything you need before you confirm"}</p></div></div>
-              {!activeMethod.isAutomaticPayPal && <div className={styles.transferDetails + " dark:bg-background border dark:border-white/10"}><div className={styles.transferAccount}><div><span className={styles.muted}>{isAr ? activeMethod.detailLabelAr : activeMethod.detailLabelEn}</span><strong dir="ltr">{activeMethod.copyValue || "N/A"}</strong></div>{activeMethod.copyValue && <button type="button" aria-label={isAr ? "نسخ بيانات التحويل" : "Copy transfer details"} onClick={() => handleCopy(activeMethod.copyValue, "method-" + activeMethod.id)} className={styles.copyButton + " text-blue-600 dark:text-blue-400"}>{copiedId === "method-" + activeMethod.id ? <Check size={18} /> : <Copy size={18} />}<span>{copiedId === "method-" + activeMethod.id ? (isAr ? "تم النسخ" : "Copied") : isAr ? "نسخ" : "Copy"}</span></button>}</div><p>{cleanHtmlToText(isAr ? activeMethod.instructionsAr : activeMethod.instructionsEn)}</p></div>}
+              {!activeMethod.isAutomaticPayPal && <div className={styles.transferDetails + " bg-slate-50 dark:bg-background border border-slate-200 dark:border-white/10"}><div className={styles.transferAccount}><div><span className={styles.muted}>{isAr ? activeMethod.detailLabelAr : activeMethod.detailLabelEn}</span><strong dir="ltr">{activeMethod.copyValue || "N/A"}</strong></div>{activeMethod.copyValue && <button type="button" aria-label={isAr ? "نسخ بيانات التحويل" : "Copy transfer details"} onClick={() => handleCopy(activeMethod.copyValue, "method-" + activeMethod.id)} className={styles.copyButton + " text-blue-600 dark:text-blue-400"}>{copiedId === "method-" + activeMethod.id ? <Check size={18} /> : <Copy size={18} />}<span>{copiedId === "method-" + activeMethod.id ? (isAr ? "تم النسخ" : "Copied") : isAr ? "نسخ" : "Copy"}</span></button>}</div><p>{cleanHtmlToText(isAr ? activeMethod.instructionsAr : activeMethod.instructionsEn)}</p></div>}
                           <form onSubmit={handleDepositSubmit} className={styles.form}>
               {/* AMOUNT FIELDS */}
               <div className="space-y-2">
@@ -738,7 +738,7 @@ export default function WalletClient({ lang, dict }: { lang: Locale; dict: any }
                       className={`px-3 py-1.5 rounded-lg font-mono text-xs font-bold border transition-all cursor-pointer ${
                         parseFloat(depositAmount) === parseFloat(preset)
                           ? "bg-blue-600 text-white border-blue-600"
-                          : "dark:bg-background dark:text-slate-300 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-surface-container-high"
+                          : "bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 dark:bg-background dark:text-slate-300 dark:border-white/10 dark:hover:bg-surface-container-high"
                       }`}
                     >
                       ${preset}
@@ -765,7 +765,7 @@ export default function WalletClient({ lang, dict }: { lang: Locale; dict: any }
                         value={depositAmount}
                         onChange={(e) => setDepositAmount(e.target.value)}
                         placeholder="10.00"
-                        className="w-full dark:bg-background border dark:border-white/10 rounded-xl py-2.5 ps-8 pe-4 dark:text-white font-mono font-bold text-sm focus:outline-none focus:bg-white dark:focus:bg-background focus:border-blue-600 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/40 transition-all"
+                        className="w-full bg-slate-50 dark:bg-background border border-slate-200 dark:border-white/10 rounded-xl py-2.5 ps-8 pe-4 text-slate-900 dark:text-white font-mono font-bold text-sm focus:outline-none focus:bg-white dark:focus:bg-background focus:border-blue-600 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/40 transition-all"
                       />
                     </div>
                   </div>
@@ -783,7 +783,7 @@ export default function WalletClient({ lang, dict }: { lang: Locale; dict: any }
                           value={depositSdgAmount}
                           onChange={(e) => handleSdgAmountChange(e.target.value)}
                           placeholder="28500"
-                          className="w-full dark:bg-background border dark:border-white/10 rounded-xl py-2.5 px-4 dark:text-white font-mono font-bold text-sm focus:outline-none focus:bg-white dark:focus:bg-background focus:border-blue-600 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/40 transition-all"
+                          className="w-full bg-slate-50 dark:bg-background border border-slate-200 dark:border-white/10 rounded-xl py-2.5 px-4 text-slate-900 dark:text-white font-mono font-bold text-sm focus:outline-none focus:bg-white dark:focus:bg-background focus:border-blue-600 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/40 transition-all"
                         />
                         <span className="absolute end-3.5 top-1/2 -translate-y-1/2 text-[11px] font-bold text-slate-400 dark:text-slate-500">
                           SDG
@@ -817,7 +817,7 @@ export default function WalletClient({ lang, dict }: { lang: Locale; dict: any }
                           ? "مثال: رقم العملية في الإشعار أو رقم حسابك المحول منه"
                           : "e.g. Transaction ID or sender number"
                       }
-                      className="w-full dark:bg-background border dark:border-white/10 rounded-xl py-2.5 px-4 dark:text-white font-mono text-sm focus:outline-none focus:bg-white dark:focus:bg-background focus:border-blue-600 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/40 transition-all"
+                      className="w-full bg-slate-50 dark:bg-background border border-slate-200 dark:border-white/10 rounded-xl py-2.5 px-4 text-slate-900 dark:text-white font-mono text-sm focus:outline-none focus:bg-white dark:focus:bg-background focus:border-blue-600 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/40 transition-all"
                     />
                   </div>
 
@@ -837,7 +837,7 @@ export default function WalletClient({ lang, dict }: { lang: Locale; dict: any }
                       className={`${styles.upload} relative flex flex-col items-center justify-center p-5 border-2 border-dashed rounded-2xl transition-all text-center cursor-pointer ${
                         receiptImage
                           ? "border-emerald-500 bg-emerald-50/30 dark:bg-emerald-950/20"
-                          : "border-slate-300 dark:border-white/15 hover:border-blue-500 dark:bg-background"
+                          : "border-slate-300 dark:border-white/15 hover:border-blue-500 bg-white dark:bg-background"
                       }`}
                     >
                       <input

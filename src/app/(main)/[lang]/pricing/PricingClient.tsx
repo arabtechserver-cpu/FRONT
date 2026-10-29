@@ -131,7 +131,7 @@ function ServicesListRenderer({ servicesList, lang, dict, discountPercent = 0 }:
       <div className="hidden sm:block overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="dark:bg-background border-b dark:border-white/10">
+            <tr className="bg-slate-50 dark:bg-background border-b border-slate-200 dark:border-white/10">
               <th className={`py-3.5 px-6 font-semibold text-xs text-slate-600 dark:text-slate-300 uppercase ${lang === 'ar' ? 'text-right' : 'text-left'}`}>{dict.pricing?.serviceName || "اسم الخدمة"}</th>
               <th className={`py-3.5 px-6 font-semibold text-xs text-slate-600 dark:text-slate-300 uppercase ${lang === 'ar' ? 'text-right' : 'text-left'}`}>{dict.pricing?.deliveryTime || "وقت التسليم"}</th>
               <th className={`py-3.5 px-6 font-semibold text-xs text-slate-600 dark:text-slate-300 uppercase ${lang === 'ar' ? 'text-left' : 'text-right'}`}>{dict.pricing?.price || "السعر"}</th>
@@ -183,10 +183,10 @@ function ServicesListRenderer({ servicesList, lang, dict, discountPercent = 0 }:
 
       {/* Show more inside huge group if needed */}
       {hasMore && (
-        <div className="p-4 dark:bg-background border-t dark:border-white/10 flex justify-center">
+        <div className="p-4 bg-slate-50 dark:bg-background border-t border-slate-200 dark:border-white/10 flex justify-center">
           <button
             onClick={() => setLimit(prev => prev + 50)}
-            className="dark:bg-surface-container  dark:hover:bg-surface-container-high text-blue-600 dark:text-blue-400 border dark:border-white/10 px-5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-xs"
+            className="bg-white hover:bg-slate-50 dark:bg-surface-container dark:hover:bg-surface-container-high text-blue-600 dark:text-blue-400 border border-slate-200 dark:border-white/10 px-5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-xs"
           >
             <span>{lang === 'ar' ? `عرض بقية الخدمات في هذا القسم (+${servicesList.length - displayedServices.length})` : `Show remaining services in this group (+${servicesList.length - displayedServices.length})`}</span>
             <span className="material-symbols-outlined text-sm">expand_more</span>
@@ -558,7 +558,7 @@ export default function PricingClient({
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
           
           {/* Breadcrumb & Navigation Header */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 dark:bg-surface-container p-5 sm:p-6 rounded-2xl border dark:border-white/10 shadow-xs">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-surface-container p-5 sm:p-6 rounded-2xl border border-slate-200 dark:border-white/10 shadow-xs">
             <div>
               <div className="flex items-center gap-2 text-xs font-bold text-blue-600 dark:text-blue-400 uppercase mb-2">
                 <button onClick={closeSingleSection} className="hover:underline flex items-center gap-1">
@@ -599,9 +599,9 @@ export default function PricingClient({
           </div>
 
           {/* Standalone Section Card */}
-          <div className="dark:bg-surface-container rounded-2xl overflow-hidden border dark:border-white/10 shadow-xs">
-            <div className="dark:bg-surface-container px-5 sm:px-6 py-4 border-b dark:border-white/10 flex items-center justify-between">
-              <h3 className="text-base sm:text-lg font-bold dark:text-white flex items-center gap-3">
+          <div className="bg-white dark:bg-surface-container rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 shadow-xs">
+            <div className="bg-white dark:bg-surface-container px-5 sm:px-6 py-4 border-b border-slate-200 dark:border-white/10 flex items-center justify-between">
+              <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-3">
                 <span className="material-symbols-outlined text-blue-600 dark:text-blue-400">folder_open</span>
                 {stripEmojis(singleSectionData.groupName)}
               </h3>
@@ -681,7 +681,7 @@ export default function PricingClient({
                 </div>
               </div>
 
-              <div className="px-3.5 py-1.5 rounded-xl dark:bg-surface-container border border-blue-200 dark:border-blue-900/50 flex items-center gap-2">
+              <div className="px-3.5 py-1.5 rounded-xl bg-white dark:bg-surface-container border border-blue-200 dark:border-blue-900/50 flex items-center gap-2">
                 <span className="text-xs text-slate-600 dark:text-slate-300 font-medium">{lang === 'ar' ? 'نسبة الخصم:' : 'Active Discount:'}</span>
                 <span className="text-base font-extrabold text-blue-600 dark:text-blue-400 font-mono">
                   -{discountPercent}%
@@ -703,7 +703,7 @@ export default function PricingClient({
                   placeholder={dict.pricing?.search || "ابحث عن خدمة أو موديل أو قسم..."}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className={`w-full dark:bg-surface-container border dark:border-white/10 rounded-xl py-3 ${lang === 'ar' ? 'pr-10 pl-4' : 'pl-10 pr-4'} dark:text-white focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 transition-all shadow-xs placeholder:text-slate-400 dark:placeholder:text-slate-500`}
+                  className={`w-full bg-white dark:bg-surface-container border border-slate-200 dark:border-white/10 rounded-xl py-3 ${lang === 'ar' ? 'pr-10 pl-4' : 'pl-10 pr-4'} text-slate-900 dark:text-white focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 transition-all shadow-xs placeholder:text-slate-400 dark:placeholder:text-slate-500`}
                 />
                 {searchQuery && (
                   <button
@@ -723,7 +723,7 @@ export default function PricingClient({
                 aria-label={lang === 'ar' ? 'تصفية حسب نوع الخدمة' : 'Filter by category'}
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="dark:bg-surface-container border dark:border-white/10 rounded-xl py-2.5 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm dark:text-slate-200 focus:outline-none focus:border-blue-600 w-full min-[480px]:w-auto min-[480px]:min-w-[180px] max-w-full shadow-xs cursor-pointer"
+                className="bg-white dark:bg-surface-container border border-slate-200 dark:border-white/10 rounded-xl py-2.5 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-600 w-full min-[480px]:w-auto min-[480px]:min-w-[180px] max-w-full shadow-xs cursor-pointer"
               >
                 <option value="all">{lang === 'ar' ? 'جميع الأقسام' : 'All Categories'}</option>
                 <option value="imei">{lang === 'ar' ? 'خدمات IMEI' : 'IMEI Services'}</option>
@@ -736,14 +736,14 @@ export default function PricingClient({
             <div className="flex items-center gap-2 shrink-0">
               <button
                 onClick={() => toggleAllGroups(false)}
-                className="dark:bg-surface-container border dark:border-white/10 hover:border-blue-500 dark:hover:border-blue-500 text-xs px-3.5 py-2.5 rounded-xl font-medium dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all flex items-center gap-1.5 shadow-xs"
+                className="bg-white hover:bg-slate-50 dark:bg-surface-container border border-slate-200 dark:border-white/10 hover:border-blue-500 dark:hover:border-blue-500 text-xs px-3.5 py-2.5 rounded-xl font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all flex items-center gap-1.5 shadow-xs"
               >
                 <span className="material-symbols-outlined text-base">unfold_more</span>
                 {lang === 'ar' ? 'توسيع الكل' : 'Expand All'}
               </button>
               <button
                 onClick={() => toggleAllGroups(true)}
-                className="dark:bg-surface-container border dark:border-white/10  dark:hover:border-white/20 text-xs px-3.5 py-2.5 rounded-xl font-medium dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-all flex items-center gap-1.5 shadow-xs"
+                className="bg-white hover:bg-slate-50 dark:bg-surface-container border border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 text-xs px-3.5 py-2.5 rounded-xl font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-all flex items-center gap-1.5 shadow-xs"
               >
                 <span className="material-symbols-outlined text-base">unfold_less</span>
                 {lang === 'ar' ? 'طي الكل' : 'Collapse All'}
@@ -766,7 +766,7 @@ export default function PricingClient({
           </div>
 
           {allDisplayGroups.length === 0 ? (
-            <div className="p-12 text-center dark:bg-surface-container rounded-2xl border dark:border-white/10 text-slate-500 dark:text-slate-400 flex flex-col items-center gap-3 shadow-xs">
+            <div className="p-12 text-center bg-white dark:bg-surface-container rounded-2xl border border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-400 flex flex-col items-center gap-3 shadow-xs">
               <span className="material-symbols-outlined text-4xl text-slate-300 dark:text-slate-600">search_off</span>
               <p className="font-semibold text-base dark:text-slate-100">
                 {lang === 'ar' ? 'لم يتم العثور على أي خدمات تطابق بحثك.' : 'No services matched your search criteria.'}
@@ -801,20 +801,20 @@ export default function PricingClient({
                     return (
                       <div 
                         key={idx} 
-                        className="dark:bg-surface-container rounded-2xl overflow-hidden border dark:border-white/10 shadow-xs  dark:hover:border-white/20 transition-all duration-200 group/card"
+                        className="bg-white dark:bg-surface-container rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 shadow-xs hover:border-slate-300 dark:hover:border-white/20 transition-all duration-200 group/card"
                       >
                         {/* Category Section Header */}
                         <div 
                           onClick={() => toggleGroupCollapse(groupName, isCollapsed)}
-                          className="dark:bg-surface-container hover:bg-slate-50/80 dark:hover:bg-surface-container-high/80 dark:hover:bg-surface-container-high/70 px-5 sm:px-6 py-4 border-b dark:border-white/10 flex items-center justify-between cursor-pointer select-none transition-colors group/head"
+                          className="bg-white dark:bg-surface-container hover:bg-slate-50 dark:hover:bg-surface-container-high/80 px-5 sm:px-6 py-4 border-b border-slate-200 dark:border-white/10 flex items-center justify-between cursor-pointer select-none transition-colors group/head"
                           title={lang === 'ar' ? 'انقر لفتح وإغلاق خدمات هذا القسم' : 'Click to toggle section services'}
                         >
                           <div className="flex items-center gap-3">
                             <span className="material-symbols-outlined text-blue-600 dark:text-blue-400 text-2xl group-hover/head:scale-105 transition-transform">folder</span>
                             <div>
-                              <h3 className="text-base sm:text-lg font-bold dark:text-white group-hover/head:text-blue-600 dark:group-hover/head:text-blue-400 transition-colors flex items-center gap-2">
+                              <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white group-hover/head:text-blue-600 dark:group-hover/head:text-blue-400 transition-colors flex items-center gap-2">
                                 {stripEmojis(groupName)}
-                                <span className="text-xs font-normal text-slate-500 dark:text-slate-400 dark:bg-background px-2.5 py-0.5 rounded-full border dark:border-white/10">
+                                <span className="text-xs font-normal text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-background px-2.5 py-0.5 rounded-full border border-slate-200 dark:border-white/10">
                                   {groupServicesList.length} {lang === 'ar' ? 'خدمات' : 'services'}
                                 </span>
                               </h3>
@@ -848,7 +848,7 @@ export default function PricingClient({
                                 setTimeout(() => setCopiedGroup(null), 3000);
                               }}
                               title={lang === 'ar' ? 'نسخ رابط الشراء المباشر' : 'Copy purchase link'}
-                              className="dark:bg-background border dark:border-white/10 hover:border-blue-500 dark:hover:border-blue-500 text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 p-2 rounded-xl transition-all flex items-center gap-1 text-xs font-medium shadow-xs"
+                              className="bg-slate-100 hover:bg-slate-200 dark:bg-background border border-slate-200 dark:border-white/10 hover:border-blue-500 dark:hover:border-blue-500 text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 p-2 rounded-xl transition-all flex items-center gap-1 text-xs font-medium shadow-xs"
                             >
                               <span className="material-symbols-outlined text-base">link</span>
                               <span className="hidden sm:inline">{copiedGroup === groupName ? (lang === 'ar' ? 'تم النسخ!' : 'Copied!') : (lang === 'ar' ? 'نسخ الرابط' : 'Copy Link')}</span>
@@ -857,7 +857,7 @@ export default function PricingClient({
                             {/* Expand / Collapse Icon */}
                             <button
                               onClick={(e) => { e.stopPropagation(); toggleGroupCollapse(groupName, isCollapsed); }}
-                              className="w-8 h-8 rounded-lg dark:bg-background border dark:border-white/10 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+                              className="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-background border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
                             >
                               <span className="material-symbols-outlined text-xl transition-transform duration-300" style={{ transform: isCollapsed ? 'rotate(0deg)' : 'rotate(180deg)' }}>
                                 expand_more
