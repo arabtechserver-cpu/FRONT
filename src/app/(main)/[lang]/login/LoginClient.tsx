@@ -1,11 +1,10 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import Link from "next/link";
-import Script from "next/script";
+import GoogleSignIn from "@/components/GoogleSignIn";
 import { Locale } from "@/i18n/config";
 
-const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "149631802250-7n94rcr7nd1041iq06ck2310uctituve.apps.googleusercontent.com";
 
 export default function LoginClient({ lang, dict }: { lang: Locale; dict: any }) {
   const [email, setEmail] = useState("");
@@ -64,37 +63,6 @@ export default function LoginClient({ lang, dict }: { lang: Locale; dict: any })
       setIsLoading(false);
     }
   }, [lang]);
-
-  const initGoogleAuth = useCallback(() => {
-    if (typeof window !== "undefined" && (window as any).google?.accounts?.id) {
-      try {
-        (window as any).google.accounts.id.initialize({
-          client_id: GOOGLE_CLIENT_ID,
-          callback: handleGoogleCallback,
-          auto_select: false,
-          cancel_on_tap_outside: true,
-        });
-        // Render native button or prompt
-        const btnContainer = document.getElementById("googleSignInBtnCustom");
-        if (btnContainer) {
-          (window as any).google.accounts.id.renderButton(btnContainer, {
-            theme: "outline",
-            size: "large",
-            width: 360,
-            text: "continue_with",
-            shape: "pill",
-            locale: lang === "ar" ? "ar" : "en",
-          });
-        }
-      } catch (err) {
-        console.warn("[Google Auth] Init skipped or error:", err);
-      }
-    }
-  }, [handleGoogleCallback, lang]);
-
-  useEffect(() => {
-    initGoogleAuth();
-  }, [initGoogleAuth]);
 
   // Login Submit Handler
   const handleLoginSubmit = async (e: React.FormEvent) => {
@@ -251,12 +219,7 @@ export default function LoginClient({ lang, dict }: { lang: Locale; dict: any })
 
         {/* Quick Google Sign-In Button */}
         <div className="mb-5 flex flex-col gap-4">
-          <Script 
-            src="https://accounts.google.com/gsi/client" 
-            strategy="afterInteractive" 
-            onLoad={initGoogleAuth}
-          />
-          <div id="googleSignInBtnCustom" className="w-full flex justify-center min-h-[44px]"></div>
+          <GoogleSignIn lang={lang} onCredential={handleGoogleCallback} />
 
           {/* Divider */}
           <div className="relative flex items-center justify-center">

@@ -13,6 +13,8 @@ export interface CartItem {
   customFields?: Record<string, any> | null;
   quantity: number;
   price: number;
+  total?: number;
+  quoteError?: string;
   notes?: string | null;
   image?: string | null;
   createdAt?: string;
@@ -23,6 +25,7 @@ interface CartContextType {
   cartCount: number;
   cartTotal: number;
   cartError: string | null;
+  walletBalance: number | null;
   isCartOpen: boolean;
   setIsCartOpen: (open: boolean) => void;
   addToCart: (item: Omit<CartItem, "id">) => Promise<boolean>;
@@ -44,6 +47,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [cartError, setCartError] = useState<string | null>(null);
+  const [walletBalance, setWalletBalance] = useState<number | null>(null);
   const syncPending = useRef<Promise<void> | null>(null);
 
   const checkLogin = useCallback(() => {
@@ -67,11 +71,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const serverRequest = useCallback(async (path: string, options: { method?: string; body?: string } = {}) => {
     try {
       const data = await requestCart(fetch, localStorage, path, options);
+      if (typeof data.balance === 'number') setWalletBalance(data.balance);
       setCartError(null);
       setIsLoggedIn(true);
       return data;
     } catch (error: any) {
       setCartError(error.message);
+      if (typeof error.data?.balance === 'number') setWalletBalance(error.data.balance);
       if (error.status === 401) {
         // A cached profile is not proof of a valid login. Keep guest items so
         // they can be synchronized after the customer signs in again.
@@ -79,6 +85,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         localStorage.removeItem('token');
         localStorage.removeItem('user_session');
         setIsLoggedIn(false);
+        setWalletBalance(null);
         window.dispatchEvent(new Event('user_session_change'));
       }
       throw error;
@@ -118,7 +125,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         if (logged) {
           await syncGuestCart();
           if (active && checkLogin()) await fetchServerCart();
-        } else if (active) setCartItems(loadGuestCart());
+        } else if (active) { setCartItems(loadGuestCart()); setWalletBalance(null); }
       } catch { /* serverRequest retains the actual error for the customer. */ }
       finally { if (active) setIsLoading(false); }
     }
@@ -132,6 +139,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       window.removeEventListener('cart_change', onCartChange);
     };
   }, [checkLogin, syncGuestCart, fetchServerCart, loadGuestCart]);
+
+  useEffect(() => {
+    if (isCartOpen && checkLogin()) void fetchServerCart();
+  }, [isCartOpen, checkLogin, fetchServerCart]);
 
   const addToCart = useCallback(async (item: Omit<CartItem, 'id'>): Promise<boolean> => {
     if (checkLogin()) {
@@ -200,7 +211,16 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       // Failed additions in older versions were incorrectly kept as guest
       // items. Transfer them before placing an order, and stop on sync failure.
       await syncGuestCart();
-      const data = await serverRequest('/api/cart/checkout', { method: 'POST', body: '{}' });
+      // Read the balance and quote from the same authenticated backend immediately
+      // before debit; localStorage is only a cached profile, never wallet funds.
+      const snapshot = await serverRequest('/api/cart');
+      if (!Array.isArray(snapshot.items) || typeof snapshot.total !== 'number') throw new Error('تعذر التحقق من سعر السلة. أعد تحميل الصفحة.');
+      setCartItems(snapshot.items);
+      if (snapshot.items.some((item: CartItem) => item.quoteError)) throw new Error('إحدى الباقات غير متاحة أو غير مسعّرة. راجع السلة.');
+      const displayedTotal = Number(cartItems.reduce((sum, item) => sum + (item.total ?? (item.price || 0) * (item.quantity || 1)), 0).toFixed(2));
+      if (Math.abs(snapshot.total - displayedTotal) > 0.000001) return { success: false, error: 'تم تحديث أسعار أو محتويات السلة. راجع الإجمالي واضغط تأكيد الشراء مرة أخرى.' };
+      const data = await serverRequest('/api/cart/checkout', { method: 'POST', body: JSON.stringify({ itemIds: snapshot.items.map((item: CartItem) => item.id), expectedTotal: snapshot.total }) });
+      if (typeof data.newBalance === 'number') setWalletBalance(data.newBalance);
       setCartItems([]);
       try {
         const session = JSON.parse(localStorage.getItem('user_session') || 'null');
@@ -211,11 +231,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     } catch (error: any) {
       return { success: false, error: error.message };
     }
-  }, [checkLogin, syncGuestCart, serverRequest]);
+  }, [checkLogin, syncGuestCart, serverRequest, cartItems]);
 
   const cartCount = useMemo(() => cartItems.reduce((sum, item) => sum + (item.quantity || 1), 0), [cartItems]);
-  const cartTotal = useMemo(() => Number(cartItems.reduce((sum, item) => sum + (item.price || 0) * (item.quantity || 1), 0).toFixed(2)), [cartItems]);
-  return <CartContext.Provider value={{ cartItems, cartCount, cartTotal, cartError, isCartOpen, setIsCartOpen, addToCart, updateQuantity, removeFromCart, clearCart, syncGuestCart, checkout, isLoading, isLoggedIn }}>{children}</CartContext.Provider>;
+  const cartTotal = useMemo(() => Number(cartItems.reduce((sum, item) => sum + (item.total ?? (item.price || 0) * (item.quantity || 1)), 0).toFixed(2)), [cartItems]);
+  return <CartContext.Provider value={{ cartItems, cartCount, cartTotal, cartError, walletBalance, isCartOpen, setIsCartOpen, addToCart, updateQuantity, removeFromCart, clearCart, syncGuestCart, checkout, isLoading, isLoggedIn }}>{children}</CartContext.Provider>;
 }
 
 export function useCart() {

@@ -30,6 +30,7 @@ export default function CartDrawer({ lang }: { lang: string }) {
     checkout,
     isLoggedIn,
     cartError,
+    walletBalance,
   } = useCart();
 
   const [currencyCode, setCurrencyCode] = useState<string>("USD");
@@ -359,7 +360,7 @@ export default function CartDrawer({ lang }: { lang: string }) {
                       {isAr ? "رصيد محفظتك المتاح:" : "Available balance:"}
                     </span>
                     <strong className="font-mono text-slate-800 dark:text-slate-200">
-                      ${(userSession.balance || 0).toFixed(2)} USD
+                      {walletBalance === null ? (isAr ? 'جاري التحقق…' : 'Checking…') : '$' + walletBalance.toFixed(2) + ' USD'}
                     </strong>
                   </div>
                 )}

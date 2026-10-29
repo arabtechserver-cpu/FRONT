@@ -40,6 +40,7 @@ async function proxyRequest(
     'x-idempotency-key',
     'x-admin-token',
     'x-user-token',
+    'x-cart-user-id',
     'x-forwarded-for',
     'x-forwarded-proto',
     'x-forwarded-host',

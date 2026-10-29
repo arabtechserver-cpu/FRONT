@@ -43,6 +43,7 @@ export default function CartClient({ lang }: { lang: string }) {
     checkout,
     isLoggedIn,
     cartError,
+    walletBalance,
     isLoading
   } = useCart();
 
@@ -375,7 +376,7 @@ export default function CartClient({ lang }: { lang: string }) {
                         {isAr ? "رصيدك المتاح:" : "Available balance:"}
                       </span>
                       <strong className="font-mono font-bold text-slate-900 dark:text-white">
-                        ${(userSession.balance || 0).toFixed(2)} USD
+                        {walletBalance === null ? (isAr ? 'جاري التحقق…' : 'Checking…') : `$${walletBalance.toFixed(2)} USD`}
                       </strong>
                     </div>
                   )}
